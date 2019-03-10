@@ -63,107 +63,67 @@ async def command_handler_get_ieee(app, listener, ieee, cmd, data, service):
 
 
 async def command_handler_get_groups(app, listener, ieee, cmd, data, service):
-    from zigpy.zcl.clusters.general import Groups
+    from . import groups
+    importlib.reload(groups)
+
     _LOGGER.debug("running 'fmr group' command: %s", service)
     if ieee is None:
         return
-    device = app.get_device(ieee=ieee)
-    grp_id = int(data, base=16)
-    for ep_id, ep in device.endpoints.items():
-        if ep_id == 0:
-            continue
-        if Groups.cluster_id in ep.in_clusters:
-            grp_cluster = ep.in_clusters[Groups.cluster_id]
-            break
-    name_support = await grp_cluster.read_attributes(['name_support'])
-    _LOGGER.debug("Group on 0x%04x name support: %s", device.nwk, name_support)
-
-    all_groups = await grp_cluster.get_membership([])
-    _LOGGER.debug("Groups on 0x%04x : %s", device.nwk, all_groups)
+    src_dev = app.get_device(ieee=ieee)
+    await groups.get_groups(src_dev)
 
 
 async def command_handler_set_group(app, listener, ieee, cmd, data, service):
-    from zigpy.zcl.clusters.general import Groups
+    from . import groups
+    importlib.reload(groups)
+
     _LOGGER.debug("running 'fmr group' command: %s", service)
-    if ieee is None:
+    if ieee is None or not data:
         return
-    device = app.get_device(ieee=ieee)
-    grp_id = int(data, base=16)
-    for ep_id, ep in device.endpoints.items():
-        if ep_id == 0:
-            continue
-        if Groups.cluster_id in ep.in_clusters:
-            grp_cluster = ep.in_clusters[Groups.cluster_id]
-            break
-    if not grp_id:
-        return
-    res = await grp_cluster.add(grp_id, [])
-    _LOGGER.debug("0x%04x: Setting group 0x%04x: %s", device.nwk, grp_id, res)
+    src_dev = app.get_device(ieee=ieee)
+    group_id = int(data, base=16)
+    await groups.set_group(src_dev, group_id)
 
 
 async def command_handler_bind_group(app, listener, ieee, cmd, data, service):
-    from zigpy.zdo.types import MultiAddress
-    from zigpy import types as t
+    from . import binds
+    importlib.reload(binds)
+
     _LOGGER.debug("running 'bind group' command: %s", service)
     if ieee is None:
         return
-    device = app.get_device(ieee=ieee)
-    grp_id = int(data, base=16)
-    if not grp_id:
+    src_dev = app.get_device(ieee=ieee)
+    if not data:
         return
-    zdo = device.zdo
-    src_cls = [6, 8]
+    group_id = int(data, base=16)
 
-    # find src ep_id
-    for ep_id, ep in device.endpoints.items():
-        if ep_id == 0:
-            continue
-        if src_cls[0] in ep.out_clusters:
-            src_ep = ep_id
-            break
-    if not src_ep:
-        _LOGGER.debug("0x%04x: couldn't find client ep", device.nwk)
-        return
-    dst_addr = MultiAddress()
-    dst_addr.addrmode = t.uint8_t(1)
-    dst_addr.nwk = t.uint16_t(grp_id)
-    for src_cluster in src_cls:
-        _LOGGER.debug("0x%04x: binding %s, ep: %s, cluster: %s",
-                      device.nwk, str(device.ieee), src_ep, src_cluster)
-        res = await zdo.request(0x0021, ieee, src_ep, src_cluster, dst_addr)
-        _LOGGER.debug("0x%04x: binding group 0x%04x: %s",
-                      device.nwk, grp_id, res)
+    await binds.bind_group(src_dev, group_id)
 
 
-async def command_handler_unbind_group(app, listener, ieee, cmd, data, service):
-    from zigpy.zdo.types import MultiAddress
-    from zigpy import types as t
+async def command_handler_unbind_group(app, listener, ieee, cmd, data,
+                                       service):
+    from . import binds
+    importlib.reload(binds)
+
     _LOGGER.debug("running 'bind group' command: %s", service)
-    if ieee is None:
+    if ieee is None or not data:
         return
-    device = app.get_device(ieee=ieee)
-    grp_id = int(data, base=16)
-    if not grp_id:
-        return
-    zdo = device.zdo
-    src_cls = [6, 8]
+    src_dev = app.get_device(ieee=ieee)
+    group_id = int(data, base=16)
 
-    # find src ep_id
-    for ep_id, ep in device.endpoints.items():
-        if ep_id == 0:
-            continue
-        if src_cls[0] in ep.out_clusters:
-            src_ep = ep_id
-            break
-    if not src_ep:
-        _LOGGER.debug("0x%04x: couldn't find client ep", device.nwk)
+    await binds.unbind_group(src_dev, group_id)
+
+
+async def command_handler_bind_ieee(app, listener, ieee, cmd, data, service):
+    from zigpy import types as t
+    from . import binds
+    importlib.reload(binds)
+
+    if ieee is None or not data:
         return
-    dst_addr = MultiAddress()
-    dst_addr.addrmode = t.uint8_t(1)
-    dst_addr.nwk = t.uint16_t(grp_id)
-    for src_cluster in src_cls:
-        _LOGGER.debug("0x%04x: unbinding %s, ep: %s, cluster: %s",
-                      device.nwk, str(device.ieee), src_ep, src_cluster)
-        res = await zdo.request(0x0022, ieee, src_ep, src_cluster, dst_addr)
-        _LOGGER.debug("0x%04x: unbinding group 0x%04x: %s",
-                      device.nwk, grp_id, res)
+    _LOGGER.debug("running 'bind ieee' command: %s", service)
+    src_dev = app.get_device(ieee=ieee)
+    dst_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(':')])
+    dst_dev = app.get_device(ieee=dst_ieee)
+
+    await binds.bind_ieee(src_dev, dst_dev)
