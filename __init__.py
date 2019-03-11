@@ -127,3 +127,17 @@ async def command_handler_bind_ieee(app, listener, ieee, cmd, data, service):
     dst_dev = app.get_device(ieee=dst_ieee)
 
     await binds.bind_ieee(src_dev, dst_dev)
+
+
+async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
+    from zigpy import types as t
+
+    if ieee is None or not data:
+        return
+    _LOGGER.debug("running 'rejoin' command: %s", service)
+    src = app.get_device(ieee=ieee)
+    parent_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(':')])
+
+    await app.permit(node=parent_ieee)
+    res = await src.zdo.request(0x0034, src.ieee, 0x01)
+    _LOGGER("%s: leave and rejoin result: %s", src,ieee, res)
