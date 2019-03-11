@@ -72,14 +72,14 @@ async def bind_ieee(src_dev, dst_dev):
     src_clusters = [6, 8, 768]
 
     for src_cluster in src_clusters:
-        src_ep = None
-        for ep_id, ep in src_dev.endpoints.items():
-            if ep_id == 0:
-                continue
-            if src_cluster in ep.out_clusters:
-                src_ep = ep_id
-                break
-        if not src_ep:
+        src_endpoints = [
+            ep_id for ep_id, ep in src_dev.endpoints.items()
+            if ep_id != 0 and src_cluster in ep.out_clusters
+        ]
+        LOGGER.debug("0x%04x: got the %s endpoints for %s cluster",
+                     src_dev.nwk, src_endpoints, src_cluster)
+
+        if not src_endpoints:
             LOGGER.debug("0x%04x: skipping %s cluster as non present",
                          src_dev.nwk, src_cluster)
             continue
@@ -99,11 +99,13 @@ async def bind_ieee(src_dev, dst_dev):
             continue
         dst_addr.endpoint = t.uint8_t(dst_epid)
 
-        LOGGER.debug(
-            "0x%04x: binding %s, ep: %s, cluster: %s to %s dev %s ep",
-            src_dev.nwk, str(src_dev.ieee), src_ep, src_cluster,
-            str(dst_dev.ieee), dst_epid)
-        res = await zdo.request(0x0021, src_dev.ieee, src_ep, src_cluster, dst_addr)
-        LOGGER.debug("0x%04x: binding ieee %s: %s",
-                     src_dev.nwk, str(dst_dev.ieee), res)
+        for src_ep in src_endpoints:
+            LOGGER.debug(
+                "0x%04x: binding %s, ep: %s, cluster: %s to %s dev %s ep",
+                src_dev.nwk, str(src_dev.ieee), src_ep, src_cluster,
+                str(dst_dev.ieee), dst_epid)
+            res = await zdo.request(0x0021, src_dev.ieee, src_ep, src_cluster,
+                                    dst_addr)
+            LOGGER.debug("0x%04x: binding ieee %s: %s",
+                         src_dev.nwk, str(dst_dev.ieee), res)
 
