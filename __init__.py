@@ -2,10 +2,75 @@ import importlib
 import logging
 import os
 
+import voluptuous as vol
+
+import homeassistant.helpers.config_validation as cv
 from homeassistant.util.json import save_json
 
+DEPENDENCIES = ['zha']
+
+DOMAIN = 'zha_custom'
+
+ATTR_COMMAND = 'command'
+ATTR_COMMAND_DATA = 'command_data'
+ATTR_DURATION = 'duration'
+ATTR_IEEE_ADDRESS = 'ieee_address'
+ATTR_IEEE = 'ieee'
+DATA_ZHAC = 'zha_custom'
+
+SERVICE_CUSTOM = 'execute'
 
 _LOGGER = logging.getLogger(__name__)
+
+SERVICE_SCHEMAS = {
+    SERVICE_CUSTOM: vol.Schema({
+        vol.Optional(ATTR_IEEE_ADDRESS): cv.string,
+        vol.Optional(ATTR_COMMAND): cv.string,
+        vol.Optional(ATTR_COMMAND_DATA): cv.string,
+    }, extra=vol.ALLOW_EXTRA),
+}
+
+
+async def async_setup(hass, config):
+    """Set up ZHA from config."""
+
+    if DOMAIN not in config:
+        return True
+
+    try:
+        zha_gw = hass.data['zha']['zha_gateway']
+    except KeyError:
+        return True
+
+    async def custom_service(service):
+        """Run command from custom module."""
+        _LOGGER.info("Running custom service: %s", service)
+        from zigpy.types import EUI64, uint8_t
+        ieee = service.data.get(ATTR_IEEE_ADDRESS)
+        if ieee:
+            ieee = EUI64([uint8_t(p, base=16) for p in ieee.split(':')])
+        cmd = service.data.get(ATTR_COMMAND)
+        cmd_data = service.data.get(ATTR_COMMAND_DATA)
+        mod_path = 'custom_components.{}'.format(DOMAIN)
+        try:
+            module = importlib.import_module(mod_path)
+        except ImportError as err:
+            _LOGGER.error("Couldn't load zha_service module: %s", err)
+            return
+        importlib.reload(module)
+        _LOGGER.debug("module is %s", module)
+        if cmd:
+            handler = getattr(module, 'command_handler_{}'.format(cmd))
+            await handler(zha_gw.application_controller, zha_gw, ieee, cmd,
+                          cmd_data, service)
+        else:
+            await module.default_command(
+                zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data,
+                service)
+
+    hass.services.async_register(DOMAIN, SERVICE_CUSTOM, custom_service,
+                                 schema=SERVICE_SCHEMAS[SERVICE_CUSTOM])
+    return True
 
 
 async def default_command(app, listener, ieee, cmd, data, service):

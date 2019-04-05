@@ -1,0 +1,13 @@
+# Describes the format for available zha services
+execute:
+  description: Execute custom zha service
+  fields:
+    ieee_address:
+      description: IEEE address of the node to execute command
+      example: "00:0d:6f:00:05:7d:2d:34"
+    command:
+      description: Command name
+      example: scan_nodes
+    command_data:
+      description: data for the command
+      example: attribute_scan
