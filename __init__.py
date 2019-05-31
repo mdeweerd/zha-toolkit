@@ -189,7 +189,7 @@ async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
     _LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
 
 
-async def command_handler_get_zll_groups(*args, **kwargs):
+def command_handler_get_zll_groups(*args, **kwargs):
     from . import groups
     importlib.reload(groups)
 
