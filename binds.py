@@ -1,12 +1,24 @@
 import logging
 
+from zigpy.zdo.types import ZDOCmd
+
 LOGGER = logging.getLogger(__name__)
 
 
-async def bind_group(src_dev, group_id):
+async def bind_group(app, listener, ieee, cmd, data, service):
     from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
 
+    LOGGER.debug("running 'bind group' command: %s", service)
+    if ieee is None:
+        LOGGER.error("missing ieee")
+        return
+    src_dev = app.get_device(ieee=ieee)
+    if not data:
+        LOGGER.error("missing cmd_data")
+        return
+
+    group_id = int(data, base=16)
     zdo = src_dev.zdo
     src_cls = [6, 8, 768]
 
@@ -28,15 +40,22 @@ async def bind_group(src_dev, group_id):
             continue
         LOGGER.debug("0x%04x: binding %s, ep: %s, cluster: %s",
                      src_dev.nwk, str(src_dev.ieee), src_epid, src_cluster)
-        res = await zdo.request(0x0021, src_dev.ieee, src_epid, src_cluster,
-                                dst_addr)
+        res = await zdo.request(ZDOCmd.Bind_req, src_dev.ieee, src_epid,
+                                src_cluster, dst_addr)
         LOGGER.debug("0x%04x: binding group 0x%04x: %s",
                      src_dev.nwk, group_id, res)
 
 
-async def unbind_group(src_dev, group_id):
+async def unbind_group(app, listener, ieee, cmd, data, service):
     from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
+
+    LOGGER.debug("running 'unbind group' command: %s", service)
+    if ieee is None or not data:
+        LOGGER.error("missing ieee")
+        return
+    src_dev = app.get_device(ieee=ieee)
+    group_id = int(data, base=16)
 
     zdo = src_dev.zdo
     src_cls = [6, 8, 768]
@@ -58,15 +77,23 @@ async def unbind_group(src_dev, group_id):
             continue
         LOGGER.debug("0x%04x: unbinding %s, ep: %s, cluster: %s",
                      src_dev.nwk, str(src_dev.ieee), src_ep, src_cluster)
-        res = await zdo.request(0x0022, src_dev.ieee, src_ep, src_cluster,
-                                dst_addr)
+        res = await zdo.request(ZDOCmd.Unbind_req, src_dev.ieee, src_ep,
+                                src_cluster, dst_addr)
         LOGGER.debug("0x%04x: unbinding group 0x%04x: %s",
                      src_dev.nwk, group_id, res)
 
 
-async def bind_ieee(src_dev, dst_dev):
+async def bind_ieee(app, listener, ieee, cmd, data, service):
     from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
+
+    if ieee is None or not data:
+        LOGGER.error("missing ieee")
+        return
+    LOGGER.debug("running 'bind ieee' command: %s", service)
+    src_dev = app.get_device(ieee=ieee)
+    dst_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(':')])
+    dst_dev = app.get_device(ieee=dst_ieee)
 
     zdo = src_dev.zdo
     src_clusters = [6, 8, 768]
@@ -104,8 +131,7 @@ async def bind_ieee(src_dev, dst_dev):
                 "0x%04x: binding %s, ep: %s, cluster: %s to %s dev %s ep",
                 src_dev.nwk, str(src_dev.ieee), src_ep, src_cluster,
                 str(dst_dev.ieee), dst_epid)
-            res = await zdo.request(0x0021, src_dev.ieee, src_ep, src_cluster,
-                                    dst_addr)
+            res = await zdo.request(ZDOCmd.Bind_req, src_dev.ieee, src_ep,
+                                    src_cluster, dst_addr)
             LOGGER.debug("0x%04x: binding ieee %s: %s",
                          src_dev.nwk, str(dst_dev.ieee), res)
-

@@ -1,12 +1,14 @@
 import asyncio
 import logging
+import os
 from collections import OrderedDict
 
-from zigpy.util import retryable
 from zigpy.exceptions import DeliveryError
+from zigpy.util import retryable
 
+from homeassistant.util.json import save_json
 
-_LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @retryable((DeliveryError, asyncio.TimeoutError), tries=5)
@@ -25,13 +27,13 @@ async def scan_results(device):
         'nwk': '0x{:04x}'.format(device.nwk),
     }
 
-    _LOGGER.debug("Scanning device 0x{:04x}".format(device.nwk))
+    LOGGER.debug("Scanning device 0x{:04x}".format(device.nwk))
 
     endpoints = []
     for epid, ep in device.endpoints.items():
         if epid == 0:
             continue
-        _LOGGER.debug("scanning endpoint #%i", epid)
+        LOGGER.debug("scanning endpoint #%i", epid)
         result['model'] = ep.model
         result['manufacturer'] = ep.manufacturer
         endpoint = {
@@ -50,7 +52,7 @@ async def scan_endpoint(ep):
     result = {}
     clusters = {}
     for cluster in ep.in_clusters.values():
-        _LOGGER.debug(
+        LOGGER.debug(
             "Scanning cluster_id 0x{:04x}/'{}' input cluster".format(
                 cluster.cluster_id, cluster.ep_attribute))
         key = '0x{:04x}'.format(cluster.cluster_id)
@@ -61,7 +63,7 @@ async def scan_endpoint(ep):
 
     clusters = {}
     for cluster in ep.out_clusters.values():
-        _LOGGER.debug(
+        LOGGER.debug(
             "Scanning cluster_id 0x{:04x}/'{}' output cluster".format(
                 cluster.cluster_id, cluster.ep_attribute))
         key = '0x{:04x}'.format(cluster.cluster_id)
@@ -91,7 +93,7 @@ async def scan_cluster(cluster, is_server=True):
 async def discover_attributes_extended(cluster, manufacturer=None):
     from zigpy.zcl import foundation
 
-    _LOGGER.debug("Discovering attributes extended")
+    LOGGER.debug("Discovering attributes extended")
     result = {}
     attr_id = 0
     done = False
@@ -101,12 +103,12 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             done, rsp = await wrapper(
                 cluster.discover_attributes_extended, attr_id, 16, manufacturer)
         except DeliveryError as ex:
-            _LOGGER.error(
+            LOGGER.error(
                 "Failed to discover attributes extended starting %s. Error: {}".
                 format(attr_id, ex))
             break
         if isinstance(rsp, foundation.Status):
-            _LOGGER.error("got %s status for discover_attribute starting %s", rsp, attr_id)
+            LOGGER.error("got %s status for discover_attribute starting %s", rsp, attr_id)
             break
         for attr_rec in rsp:
             attr_id = attr_rec.attrid
@@ -131,12 +133,12 @@ async def discover_attributes_extended(cluster, manufacturer=None):
         await asyncio.sleep(0.2)
 
     to_read = list(result.keys())
-    _LOGGER.debug("Reading attrs: %s", to_read)
+    LOGGER.debug("Reading attrs: %s", to_read)
     chunk, to_read = to_read[:4], to_read[4:]
     while chunk:
         try:
             success, failed = await read_attr(cluster, chunk)
-            _LOGGER.debug("Reading attr success: %s, failed %s", success, failed)
+            LOGGER.debug("Reading attr success: %s, failed %s", success, failed)
             for attr_id, value in success.items():
                 if isinstance(value, bytes):
                     try:
@@ -145,7 +147,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                         value = value.hex()
                 result[attr_id]['attribute_value'] = value
         except DeliveryError as exc:
-            _LOGGER.error("Couldn't read attr_id %i: %s", attr_id, exc)
+            LOGGER.error("Couldn't read attr_id %i: %s", attr_id, exc)
         chunk, to_read = to_read[:4], to_read[4:]
 
     return OrderedDict(
@@ -156,7 +158,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
 async def discover_commands_received(cluster, is_server, manufacturer=None):
     from zigpy.zcl.foundation import Status
 
-    _LOGGER.debug("Discovering commands received")
+    LOGGER.debug("Discovering commands received")
     direction = 'received' if is_server else 'generated'
     result = {}
     cmd_id = 0
@@ -167,12 +169,12 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             done, rsp = await wrapper(cluster.discover_commands_received,
                                       cmd_id, 16, manufacturer=manufacturer)
         except DeliveryError as ex:
-            _LOGGER.error(
+            LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(
                     cmd_id, ex))
             break
         if isinstance(rsp, Status):
-            _LOGGER.error("got %s status for discover_attribute starting %s", rsp, cmd_id)
+            LOGGER.error("got %s status for discover_attribute starting %s", rsp, cmd_id)
             break
         for cmd_id in rsp:
             cmd_data = cluster.server_commands.get(cmd_id, (str(cmd_id), 'not_in_zcl', None))
@@ -202,11 +204,11 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             done, rsp = await wrapper(cluster.discover_commands_generated,
                                       cmd_id, 16, manufacturer=manufacturer)
         except DeliveryError as ex:
-            _LOGGER.error(
+            LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex))
             break
         if isinstance(rsp, Status):
-            _LOGGER.error("got %s status for discover_attribute starting %s", rsp, cmd_id)
+            LOGGER.error("got %s status for discover_attribute starting %s", rsp, cmd_id)
             break
         for cmd_id in rsp:
             cmd_data = cluster.client_commands.get(cmd_id, (str(cmd_id), 'not_in_zcl', None))
@@ -222,3 +224,28 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             cmd_id += 1
         await asyncio.sleep(0.2)
     return OrderedDict(sorted(result.items(), key=lambda k: k[0]))
+
+
+async def scan_device(app, listener, ieee, cmd, data, service):
+    if ieee is None:
+        LOGGER.error("missine ieee")
+        return
+
+    LOGGER.debug("running 'scan_device' command: %s", service)
+    device = app.get_device(ieee=ieee)
+    scan = await scan_device.scan_results(device)
+
+    model = scan.get('model')
+    manufacturer = scan.get('manufacturer')
+    if model is not None and manufacturer is not None:
+        ieee_tail = ''.join(['%02x' % (o, ) for o in ieee[-4:]])
+        file_name = '{}_{}_{}_scan_results.txt'.format(model, manufacturer,
+                                                       ieee_tail)
+    else:
+        ieee_tail = ''.join(['%02x' % (o, ) for o in ieee])
+        file_name = '{}_scan_results.txt'.format(ieee_tail)
+
+    file_name = os.path.join(
+        listener._hass.config.config_dir, 'scans', file_name)
+    save_json(file_name, scan)
+    LOGGER.debug("Finished writing scan results int '%s'", file_name)

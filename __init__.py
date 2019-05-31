@@ -1,11 +1,10 @@
 import importlib
 import logging
-import os
 
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.util.json import save_json
+from homeassistant.components.zha.core.helpers import convert_ieee
 
 DEPENDENCIES = ['zha']
 
@@ -13,7 +12,6 @@ DOMAIN = 'zha_custom'
 
 ATTR_COMMAND = 'command'
 ATTR_COMMAND_DATA = 'command_data'
-ATTR_DURATION = 'duration'
 ATTR_IEEE_ADDRESS = 'ieee_address'
 ATTR_IEEE = 'ieee'
 DATA_ZHAC = 'zha_custom'
@@ -24,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_SCHEMAS = {
     SERVICE_CUSTOM: vol.Schema({
-        vol.Optional(ATTR_IEEE_ADDRESS): cv.string,
+        vol.Optional(ATTR_IEEE_ADDRESS): convert_ieee,
         vol.Optional(ATTR_COMMAND): cv.string,
         vol.Optional(ATTR_COMMAND_DATA): cv.string,
     }, extra=vol.ALLOW_EXTRA),
@@ -45,10 +43,7 @@ async def async_setup(hass, config):
     async def custom_service(service):
         """Run command from custom module."""
         _LOGGER.info("Running custom service: %s", service)
-        from zigpy.types import EUI64, uint8_t
         ieee = service.data.get(ATTR_IEEE_ADDRESS)
-        if ieee:
-            ieee = EUI64([uint8_t(p, base=16) for p in ieee.split(':')])
         cmd = service.data.get(ATTR_COMMAND)
         cmd_data = service.data.get(ATTR_COMMAND_DATA)
         mod_path = 'custom_components.{}'.format(DOMAIN)
@@ -78,131 +73,147 @@ async def default_command(app, listener, ieee, cmd, data, service):
 
 
 async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
+    """Rediscover a device.
+    ieee -- ieee of the device
+    data -- nwk of the device in decimal format
+    """
     _LOGGER.debug("running 'handle_join' command: %s", service)
     if ieee is None:
         return
     app.handle_join(int(data), ieee, 0)
 
 
-async def command_handler_scan_device(app, listener, ieee, cmd, data, service):
+async def command_handler_scan_device(*args, **kwargs):
+    """Scan a device for all supported attributes and commands.
+    ieee -- ieee of the device to scan
+    """
+
     from . import scan_device
     importlib.reload(scan_device)
 
-    if ieee is None:
-        return
-    _LOGGER.debug("running 'scan_device' command: %s", service)
-    device = app.get_device(ieee=ieee)
-    scan = await scan_device.scan_results(device)
-
-    model = scan.get('model')
-    manufacturer = scan.get('manufacturer')
-    if model is not None and manufacturer is not None:
-        ieee_tail = ''.join(['%02x' % (o, ) for o in ieee[-4:]])
-        file_name = '{}_{}_{}_scan_results.txt'.format(model, manufacturer,
-                                                       ieee_tail)
-    else:
-        ieee_tail = ''.join(['%02x' % (o, ) for o in ieee])
-        file_name = '{}_scan_results.txt'.format(ieee_tail)
-
-    file_name = os.path.join(
-        listener._hass.config.config_dir, 'scans', file_name)
-    save_json(file_name, scan)
-    _LOGGER.debug("Finished writing scan results int '%s'", file_name)
+    await scan_device.scan_device(*args, **kwargs)
 
 
-async def command_handler_scan_neighbors(app, listener, ieee, cmd, data,
-                                         service):
-    _LOGGER.debug("Scanning neigbour: %s", service)
-    zha_dev = listener.get_device_entity(service.data.get('ieee_address'))
-    if zha_dev is not None:
-        await zha_dev.async_update_tech_info()
+async def command_handler_get_groups(*args, **kwargs):
+    """Get all groups a device is member of.
+    ieee -- ieee of the device to issue "get_groups" cluster command
+    """
 
-
-async def command_handler_get_ieee(app, listener, ieee, cmd, data, service):
-    if ieee is None:
-        return
-
-    _LOGGER.debug("running 'get_ieee' command: %s", service)
-    nwk = await app._ezsp.lookupNodeIdByEui64(ieee)
-    _LOGGER.debug("NWK 0x%04x for %s node", nwk, ieee)
-
-
-async def command_handler_get_groups(app, listener, ieee, cmd, data, service):
     from . import groups
     importlib.reload(groups)
 
-    _LOGGER.debug("running 'fmr group' command: %s", service)
-    if ieee is None:
-        return
-    src_dev = app.get_device(ieee=ieee)
-    await groups.get_groups(src_dev)
+    await groups.get_groups(*args, **kwargs)
 
 
-async def command_handler_set_group(app, listener, ieee, cmd, data, service):
+async def command_handler_add_group(*args, **kwargs):
+    """Add a group to the device.
+    ieee -- device to issue "add_group" Groups cluster command
+    data -- group_id of the group to add, in 0xXXXX format
+    """
     from . import groups
     importlib.reload(groups)
 
-    _LOGGER.debug("running 'fmr group' command: %s", service)
-    if ieee is None or not data:
-        return
-    src_dev = app.get_device(ieee=ieee)
-    group_id = int(data, base=16)
-    await groups.set_group(src_dev, group_id)
+    await groups.add_group(*args, **kwargs)
 
 
-async def command_handler_bind_group(app, listener, ieee, cmd, data, service):
+async def command_handler_remove_group(*args, **kwargs):
+    """Remove a group from the device.
+    ieee -- device to issue "remove_group" Groups cluster command
+    data -- group_id of the group to remove in 0xXXXX format
+    """
+    from . import groups
+    importlib.reload(groups)
+
+    await groups.remove_group(*args, **kwargs)
+
+
+async def command_handler_remove_all_groups(*args, **kwargs):
+    """Remove all groups from a device.
+    ieee -- device to issue "remove all" Groups cluster command
+    """
+    from . import groups
+    importlib.reload(groups)
+
+    await groups.remove_all_groups(*args, **kwargs)
+
+
+async def command_handler_bind_group(*args, **kwargs):
+    """Add group binding to a device.
+    ieee -- ieee of the remote (device configured with a binding)
+    data -- group_id
+    """
     from . import binds
     importlib.reload(binds)
 
-    _LOGGER.debug("running 'bind group' command: %s", service)
-    if ieee is None:
-        return
-    src_dev = app.get_device(ieee=ieee)
-    if not data:
-        return
-    group_id = int(data, base=16)
-
-    await binds.bind_group(src_dev, group_id)
+    await binds.bind_group(*args, **kwargs)
 
 
-async def command_handler_unbind_group(app, listener, ieee, cmd, data,
-                                       service):
+async def command_handler_unbind_group(*args, **kwargs):
+    """Remove group binding from a device.
+    ieee -- ieee of the remote (device configured with a binding)
+    data -- group_id
+    """
     from . import binds
     importlib.reload(binds)
 
-    _LOGGER.debug("running 'bind group' command: %s", service)
-    if ieee is None or not data:
-        return
-    src_dev = app.get_device(ieee=ieee)
-    group_id = int(data, base=16)
-
-    await binds.unbind_group(src_dev, group_id)
+    await binds.unbind_group(*args, **kwargs)
 
 
-async def command_handler_bind_ieee(app, listener, ieee, cmd, data, service):
-    from zigpy import types as t
+async def command_handler_bind_ieee(*args, **kwargs):
+    """IEEE bind device.
+    ieee -- ieee of the remote (device configured with a binding)
+    data -- ieee of the target device (device remote sends commands to)
+    """
     from . import binds
     importlib.reload(binds)
 
-    if ieee is None or not data:
-        return
-    _LOGGER.debug("running 'bind ieee' command: %s", service)
-    src_dev = app.get_device(ieee=ieee)
-    dst_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(':')])
-    dst_dev = app.get_device(ieee=dst_ieee)
-
-    await binds.bind_ieee(src_dev, dst_dev)
+    await binds.bind_ieee(*args, **kwargs)
 
 
 async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
-    from zigpy import types as t
-
-    if ieee is None or not data:
+    """Leave and rejoin command.
+    data -- device ieee to allow joining through
+    ieee -- ieee of the device to leave and rejoin
+    """
+    if ieee is None:
+        _LOGGER.error("missing ieee")
         return
     _LOGGER.debug("running 'rejoin' command: %s", service)
     src = app.get_device(ieee=ieee)
-    parent_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(':')])
 
-    await app.permit(node=parent_ieee)
+    if data is None:
+        await app.permit()
+    else:
+        await app.permit(node=convert_ieee(data))
     res = await src.zdo.request(0x0034, src.ieee, 0x01)
-    _LOGGER("%s: leave and rejoin result: %s", src,ieee, res)
+    _LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
+
+
+async def command_handler_get_zll_groups(*args, **kwargs):
+    from . import groups
+    importlib.reload(groups)
+
+    return groups.get_zll_groups(*args, **kwargs)
+
+
+def command_handler_add_to_group(*args, **kwargs):
+    """Add device to a group."""
+    from . import groups
+    importlib.reload(groups)
+
+    return groups.add_to_group(*args, **kwargs)
+
+
+def command_handler_remove_from_group(*args, **kwargs):
+    """Remove device from a group."""
+    from . import groups
+    importlib.reload(groups)
+
+    return groups.remove_from_group(*args, **kwargs)
+
+
+def command_handler_sinope(*args, **kwargs):
+    from . import sinope
+    importlib.reload(sinope)
+
+    return sinope.sinope_write_test(*args, **kwargs)
