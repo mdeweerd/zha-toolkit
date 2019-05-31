@@ -4,31 +4,24 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def get_groups(app, listener, ieee, cmd, data, service):
-    from zigpy.zcl.clusters.general import Groups
-
     LOGGER.debug("running 'get_groups' command: %s", service)
     if ieee is None:
         LOGGER.error("missing ieee")
         return
     src_dev = app.get_device(ieee=ieee)
 
-    grp_cluster = None
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0:
             continue
-        if Groups.cluster_id in ep.out_clusters:
-            grp_cluster = ep.out_clusters[Groups.cluster_id]
-            break
+        try:
+            name_support = await ep.groups.read_attributes(['name_support'])
+            LOGGER.debug("Group on 0x%04x name support: %s", src_dev.nwk,
+                         name_support)
 
-    if not grp_cluster:
-        LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
-        return
-
-    name_support = await grp_cluster.read_attributes(['name_support'])
-    LOGGER.debug("Group on 0x%04x name support: %s", src_dev.nwk, name_support)
-
-    all_groups = await grp_cluster.get_membership([])
-    LOGGER.debug("Groups on 0x%04x : %s", src_dev.nwk, all_groups)
+            all_groups = await ep.groups.get_membership([])
+            LOGGER.debug("Groups on 0x%04x : %s", src_dev.nwk, all_groups)
+        except AttributeError:
+            LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
 
 
 async def add_group(app, listener, ieee, cmd, data, service):
