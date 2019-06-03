@@ -233,7 +233,7 @@ async def scan_device(app, listener, ieee, cmd, data, service):
 
     LOGGER.debug("running 'scan_device' command: %s", service)
     device = app.get_device(ieee=ieee)
-    scan = await scan_device.scan_results(device)
+    scan = await scan_results(device)
 
     model = scan.get('model')
     manufacturer = scan.get('manufacturer')

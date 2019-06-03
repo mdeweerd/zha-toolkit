@@ -86,6 +86,8 @@ async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
 async def command_handler_scan_device(*args, **kwargs):
     """Scan a device for all supported attributes and commands.
     ieee -- ieee of the device to scan
+
+    ToDo: use manufacturer_id to scan for manufacturer specific clusters/attrs.
     """
 
     from . import scan_device
