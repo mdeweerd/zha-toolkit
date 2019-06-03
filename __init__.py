@@ -12,7 +12,6 @@ DOMAIN = 'zha_custom'
 
 ATTR_COMMAND = 'command'
 ATTR_COMMAND_DATA = 'command_data'
-ATTR_IEEE_ADDRESS = 'ieee_address'
 ATTR_IEEE = 'ieee'
 DATA_ZHAC = 'zha_custom'
 
@@ -22,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_SCHEMAS = {
     SERVICE_CUSTOM: vol.Schema({
-        vol.Optional(ATTR_IEEE_ADDRESS): convert_ieee,
+        vol.Optional(ATTR_IEEE): convert_ieee,
         vol.Optional(ATTR_COMMAND): cv.string,
         vol.Optional(ATTR_COMMAND_DATA): cv.string,
     }, extra=vol.ALLOW_EXTRA),
@@ -43,7 +42,7 @@ async def async_setup(hass, config):
     async def custom_service(service):
         """Run command from custom module."""
         _LOGGER.info("Running custom service: %s", service)
-        ieee = service.data.get(ATTR_IEEE_ADDRESS)
+        ieee = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
         cmd_data = service.data.get(ATTR_COMMAND_DATA)
         mod_path = 'custom_components.{}'.format(DOMAIN)
@@ -219,3 +218,15 @@ def command_handler_sinope(*args, **kwargs):
     importlib.reload(sinope)
 
     return sinope.sinope_write_test(*args, **kwargs)
+
+
+def command_handler_get_routes_and_neighbours(*args, **kwargs):
+    """Scan a device for neigbours and routes.
+    ieee -- ieee of the device to scan
+
+    ToDo: use manufacturer_id to scan for manufacturer specific clusters/attrs.
+    """
+    from . import neighbours
+    importlib.reload(neighbours)
+
+    return neighbours.routes_and_neighbours(*args, **kwargs)
