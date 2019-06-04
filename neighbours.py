@@ -5,6 +5,7 @@ import os
 from collections import OrderedDict
 from random import uniform
 
+import zigpy.types as t
 import zigpy.zdo.types as zdo_t
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
@@ -19,8 +20,15 @@ def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 
 
-async def get_routes(dev):
-    return []
+def patch_zdo():
+    zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Rtg_rsp] = (
+        zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Rtg_rsp][0],
+        (zdo_t.Status, t.Optional(zdo_t.Routes))
+    )
+    zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Lqi_rsp] = (
+        zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Lqi_rsp][0],
+        (zdo_t.Status, t.Optional(zdo_t.Neighbors))
+    )
 
 
 async def routes_and_neighbours(app, listener, ieee, cmd, data, service):
@@ -28,12 +36,18 @@ async def routes_and_neighbours(app, listener, ieee, cmd, data, service):
         LOGGER.error("missing ieee")
         return
 
+    patch_zdo()  # ToDo fix this upstream
+
     LOGGER.debug("Getting routes and neighbours: %s", service)
     device = app.get_device(ieee=ieee)
-    routes = await get_routes(device)
+    await _routes_and_neighbours(device, listener)
+
+
+async def _routes_and_neighbours(device, listener):
+    routes = await async_get_routes(device)
     nbns = await async_get_neighbours(device)
 
-    ieee_tail = ''.join(['%02x' % (o, ) for o in ieee])
+    ieee_tail = ''.join(['%02x' % (o, ) for o in device.ieee])
     file_suffix = '_{}.txt'.format(ieee_tail)
 
     routes_name = os.path.join(
@@ -45,6 +59,16 @@ async def routes_and_neighbours(app, listener, ieee, cmd, data, service):
     save_json(neighbours_name, nbns)
 
     LOGGER.debug("Wrote scan results to '%s' and '%s'", routes_name, neighbours_name)
+
+
+async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
+    LOGGER.debug("Getting routes and neighbours for all devices: %s", service)
+
+    patch_zdo()  # ToDo fix this upstream
+    for device in app.devices.values():
+        if device.node_desc.is_end_device:
+            continue
+        await _routes_and_neighbours(device, listener)
 
 
 async def async_get_neighbours(device):
@@ -133,3 +157,50 @@ async def async_get_neighbours(device):
         await asyncio.sleep(uniform(0.1, 1.0))
 
     return sorted(result, key=lambda x: x['ieee'])
+
+
+async def async_get_routes(device):
+    """Pull routing table from a device."""
+
+    def _process_route(route):
+        """Return a dict representing routing entry."""
+        class RouteStatus(enum.IntEnum):
+            Active = 0x0
+            Discovery_Underway = 0x1
+            Discovery_Failed = 0x2
+            Inactive = 0x3
+            Validation_Underway = 0x4
+
+        res = {}
+        res['destination'] = '0x{:04x}'.format(route.DstNWK)
+        res['next_hop'] = '0x{:04x}'.format(route.NextHop)
+        raw = route.RouteStatus & 0x07
+        try:
+            cooked = RouteStatus(raw).name
+        except ValueError:
+            cooked = 'reserved_{:02x}'.format(raw)
+        res['status'] = cooked
+        res['memory_constrained'] = bool((route.RouteStatus >> 3) & 0x01)
+        res['many_to_one'] = bool((route.RouteStatus >> 4) & 0x01)
+        res['route_record_required'] = bool((route.RouteStatus >> 5) & 0x01)
+        return res
+
+    routes = []
+    idx = 0
+    while True:
+        status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Rtg_req, idx)
+        LOGGER.debug("%s: route request Status:%s. Routes: %r",
+                     device.ieee, status, val)
+        if zdo_t.Status.SUCCESS != status:
+            LOGGER.debug("%s: Does not support 'Mgmt_rtg_req': %s",
+                         device.ieee, status)
+            break
+
+        for route in val.RoutingTableList:
+            routes.append(_process_route(route))
+            idx += 1
+        if idx >= val.Entries:
+            break
+        await asyncio.sleep(uniform(0.1, 1.0))
+
+    return routes

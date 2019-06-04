@@ -221,12 +221,18 @@ def command_handler_sinope(*args, **kwargs):
 
 
 def command_handler_get_routes_and_neighbours(*args, **kwargs):
-    """Scan a device for neigbours and routes.
+    """Scan a device for neighbours and routes.
     ieee -- ieee of the device to scan
-
-    ToDo: use manufacturer_id to scan for manufacturer specific clusters/attrs.
     """
     from . import neighbours
     importlib.reload(neighbours)
 
     return neighbours.routes_and_neighbours(*args, **kwargs)
+
+
+def command_handler_all_routes_and_neighbours(*args, **kwargs):
+    """Scan all devices for neighbours and routes. """
+    from . import neighbours
+    importlib.reload(neighbours)
+
+    return neighbours.all_routes_and_neighbours(*args, **kwargs)
