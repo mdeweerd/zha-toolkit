@@ -2,7 +2,6 @@ import asyncio
 import enum
 import logging
 import os
-from collections import OrderedDict
 from random import uniform
 
 import zigpy.types as t
@@ -44,8 +43,15 @@ async def routes_and_neighbours(app, listener, ieee, cmd, data, service):
 
 
 async def _routes_and_neighbours(device, listener):
-    routes = await async_get_routes(device)
-    nbns = await async_get_neighbours(device)
+    try:
+        routes = await asyncio.wait_for(async_get_routes(device), 180)
+    except asyncio.TimeoutError:
+        routes = []
+    await asyncio.sleep(uniform(1.0, 1.5))
+    try:
+        nbns = await asyncio.wait_for(async_get_neighbours(device), 180)
+    except asyncio.TimeoutError:
+        nbns = []
 
     ieee_tail = ''.join(['%02x' % (o, ) for o in device.ieee])
     file_suffix = '_{}.txt'.format(ieee_tail)
@@ -58,17 +64,23 @@ async def _routes_and_neighbours(device, listener):
         listener._hass.config.config_dir, 'scans', 'neighbours'+file_suffix)
     save_json(neighbours_name, nbns)
 
-    LOGGER.debug("Wrote scan results to '%s' and '%s'", routes_name, neighbours_name)
+    LOGGER.debug("Wrote scan results to '%s' and '%s'",
+                 routes_name,
+                 neighbours_name)
 
 
 async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
     LOGGER.debug("Getting routes and neighbours for all devices: %s", service)
 
     patch_zdo()  # ToDo fix this upstream
-    for device in app.devices.values():
-        if device.node_desc.is_end_device:
-            continue
+    counter = 1
+    devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
+    for device in devs:
+        LOGGER.debug("%s: Quering routes and neighbours: %s out of %s",
+                     device.ieee, counter, len(devs))
         await _routes_and_neighbours(device, listener)
+        LOGGER.debug("%s: Got %s out of %s", device.ieee, counter, len(devs))
+        counter += 1
 
 
 async def async_get_neighbours(device):
@@ -154,7 +166,7 @@ async def async_get_neighbours(device):
             idx += 1
         if idx >= val.Entries:
             break
-        await asyncio.sleep(uniform(0.1, 1.0))
+        await asyncio.sleep(uniform(1.0, 1.5))
 
     return sorted(result, key=lambda x: x['ieee'])
 
@@ -201,6 +213,6 @@ async def async_get_routes(device):
             idx += 1
         if idx >= val.Entries:
             break
-        await asyncio.sleep(uniform(0.1, 1.0))
+        await asyncio.sleep(uniform(1.0, 1.5))
 
     return routes
