@@ -59,7 +59,6 @@ async def _routes_and_neighbours(device, listener):
 async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
     LOGGER.debug("Getting routes and neighbours for all devices: %s", service)
 
-    patch_zdo()  # ToDo fix this upstream
     counter = 1
     devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
     for device in devs:
