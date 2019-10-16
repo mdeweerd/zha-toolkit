@@ -19,23 +19,10 @@ def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 
 
-def patch_zdo():
-    zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Rtg_rsp] = (
-        zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Rtg_rsp][0],
-        (zdo_t.Status, t.Optional(zdo_t.Routes))
-    )
-    zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Lqi_rsp] = (
-        zdo_t.CLUSTERS[zdo_t.ZDOCmd.Mgmt_Lqi_rsp][0],
-        (zdo_t.Status, t.Optional(zdo_t.Neighbors))
-    )
-
-
 async def routes_and_neighbours(app, listener, ieee, cmd, data, service):
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-
-    patch_zdo()  # ToDo fix this upstream
 
     LOGGER.debug("Getting routes and neighbours: %s", service)
     device = app.get_device(ieee=ieee)
@@ -72,7 +59,6 @@ async def _routes_and_neighbours(device, listener):
 async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
     LOGGER.debug("Getting routes and neighbours for all devices: %s", service)
 
-    patch_zdo()  # ToDo fix this upstream
     counter = 1
     devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
     for device in devs:
