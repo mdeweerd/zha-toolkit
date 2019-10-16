@@ -2,9 +2,9 @@ import importlib
 import logging
 
 import voluptuous as vol
+import zigpy.types as t
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.zha.core.helpers import convert_ieee
 
 DEPENDENCIES = ['zha']
 
@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_SCHEMAS = {
     SERVICE_CUSTOM: vol.Schema({
-        vol.Optional(ATTR_IEEE): convert_ieee,
+        vol.Optional(ATTR_IEEE): t.EUI64.convert,
         vol.Optional(ATTR_COMMAND): cv.string,
         vol.Optional(ATTR_COMMAND_DATA): cv.string,
     }, extra=vol.ALLOW_EXTRA),
@@ -236,3 +236,35 @@ def command_handler_all_routes_and_neighbours(*args, **kwargs):
     importlib.reload(neighbours)
 
     return neighbours.all_routes_and_neighbours(*args, **kwargs)
+
+
+def command_handler_zigpy_deconz(*args, **kwargs):
+    """Zigpy deconz test. """
+    from . import zigpy_deconz
+    importlib.reload(zigpy_deconz)
+
+    return zigpy_deconz.zigpy_deconz(*args, **kwargs)
+
+
+def command_handler_ezsp_set_channel(*args, **kwargs):
+    """Set EZSP radio channel. """
+    from . import ezsp
+    importlib.reload(ezsp)
+
+    return ezsp.set_channel(*args, **kwargs)
+
+
+def command_handler_ezsp_get_token(*args, **kwargs):
+    """Set EZSP radio channel. """
+    from . import ezsp
+    importlib.reload(ezsp)
+
+    return ezsp.get_token(*args, **kwargs)
+
+
+def command_handler_ota_notify(*args, **kwargs):
+    """Set EZSP radio channel. """
+    from . import ota
+    importlib.reload(ota)
+
+    return ota.notify(*args, **kwargs)
