@@ -79,7 +79,7 @@ async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
     _LOGGER.debug("running 'handle_join' command: %s", service)
     if ieee is None:
         return
-    app.handle_join(int(data), ieee, 0)
+    app.handle_join(int(data, 16), ieee, 0)
 
 
 async def command_handler_scan_device(*args, **kwargs):
@@ -236,3 +236,17 @@ def command_handler_all_routes_and_neighbours(*args, **kwargs):
     importlib.reload(neighbours)
 
     return neighbours.all_routes_and_neighbours(*args, **kwargs)
+
+
+def command_handler_get_node_desc(*args, **kwargs):
+    from . import scan_device
+    importlib.reload(scan_device)
+
+    return scan_device.get_node_desc(*args, **kwargs)
+
+
+def command_handler_leave(*args, **kwargs):
+    from . import zdo
+    importlib.reload(zdo)
+
+    return zdo.leave(*args, **kwargs)
