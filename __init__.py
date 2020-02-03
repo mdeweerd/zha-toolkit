@@ -251,6 +251,13 @@ def command_handler_leave(*args, **kwargs):
 
     return zdo.leave(*args, **kwargs)
 
+
+def command_handler_ieee_ping(*args, **kwargs):
+    from . import zdo
+    importlib.reload(zdo)
+
+    return zdo.ieee_ping(*args, **kwargs)
+
 def command_handler_zigpy_deconz(*args, **kwargs):
     """Zigpy deconz test. """
     from . import zigpy_deconz

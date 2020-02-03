@@ -17,3 +17,16 @@ async def leave(app, listener, ieee, cmd, data, service):
 
     res = await parent.zdo.request(zdo_t.ZDOCmd.Mgmt_Leave_req, ieee, 0x02)
     LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", parent.nwk, res)
+
+
+async def ieee_ping(app, listener, ieee, cmd, data, service):
+    if ieee is None:
+        LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s",
+                       service)
+        return
+    dev = app.get_device(ieee=ieee)
+
+    LOGGER.debug("running 'ieee_ping' command to 0x%s", dev.nwk)
+
+    res = await dev.zdo.request(zdo_t.ZDOCmd.IEEE_addr_req, dev.nwk, 0x00, 0x00)
+    LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)
