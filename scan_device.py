@@ -101,7 +101,8 @@ async def discover_attributes_extended(cluster, manufacturer=None):
     while not done:
         try:
             done, rsp = await wrapper(
-                cluster.discover_attributes_extended, attr_id, 16, manufacturer)
+                cluster.discover_attributes_extended, attr_id, 16, manufacturer=manufacturer)
+            await asyncio.sleep(0.4)
         except DeliveryError as ex:
             LOGGER.error(
                 "Failed to discover attributes extended starting %s. Error: {}".
@@ -149,6 +150,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
         except DeliveryError as exc:
             LOGGER.error("Couldn't read attr_id %i: %s", attr_id, exc)
         chunk, to_read = to_read[:4], to_read[4:]
+        await asyncio.sleep(0.3)
 
     return OrderedDict(
         [('0x{:04x}'.format(a_id), result[a_id]) for a_id in sorted(result)]
@@ -168,6 +170,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
         try:
             done, rsp = await wrapper(cluster.discover_commands_received,
                                       cmd_id, 16, manufacturer=manufacturer)
+            await asyncio.sleep(0.3)
         except DeliveryError as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(
@@ -203,6 +206,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
         try:
             done, rsp = await wrapper(cluster.discover_commands_generated,
                                       cmd_id, 16, manufacturer=manufacturer)
+            await asyncio.sleep(0.3)
         except DeliveryError as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex))
