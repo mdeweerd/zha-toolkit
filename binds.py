@@ -35,15 +35,21 @@ async def bind_group(app, listener, ieee, cmd, data, service):
                 src_epid = ep_id
                 break
         if not src_epid:
-            LOGGER.debug("0x%04x: skipping %s cluster as non present",
-                         src_dev.nwk, src_cluster)
+            LOGGER.debug(
+                "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
+            )
             continue
-        LOGGER.debug("0x%04x: binding %s, ep: %s, cluster: %s",
-                     src_dev.nwk, str(src_dev.ieee), src_epid, src_cluster)
-        res = await zdo.request(ZDOCmd.Bind_req, src_dev.ieee, src_epid,
-                                src_cluster, dst_addr)
-        LOGGER.debug("0x%04x: binding group 0x%04x: %s",
-                     src_dev.nwk, group_id, res)
+        LOGGER.debug(
+            "0x%04x: binding %s, ep: %s, cluster: %s",
+            src_dev.nwk,
+            str(src_dev.ieee),
+            src_epid,
+            src_cluster,
+        )
+        res = await zdo.request(
+            ZDOCmd.Bind_req, src_dev.ieee, src_epid, src_cluster, dst_addr
+        )
+        LOGGER.debug("0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res)
 
 
 async def unbind_group(app, listener, ieee, cmd, data, service):
@@ -72,15 +78,21 @@ async def unbind_group(app, listener, ieee, cmd, data, service):
                 src_ep = ep_id
                 break
         if not src_ep:
-            LOGGER.debug("0x%04x: skipping %s cluster as non present",
-                         src_dev.nwk, src_cluster)
+            LOGGER.debug(
+                "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
+            )
             continue
-        LOGGER.debug("0x%04x: unbinding %s, ep: %s, cluster: %s",
-                     src_dev.nwk, str(src_dev.ieee), src_ep, src_cluster)
-        res = await zdo.request(ZDOCmd.Unbind_req, src_dev.ieee, src_ep,
-                                src_cluster, dst_addr)
-        LOGGER.debug("0x%04x: unbinding group 0x%04x: %s",
-                     src_dev.nwk, group_id, res)
+        LOGGER.debug(
+            "0x%04x: unbinding %s, ep: %s, cluster: %s",
+            src_dev.nwk,
+            str(src_dev.ieee),
+            src_ep,
+            src_cluster,
+        )
+        res = await zdo.request(
+            ZDOCmd.Unbind_req, src_dev.ieee, src_ep, src_cluster, dst_addr
+        )
+        LOGGER.debug("0x%04x: unbinding group 0x%04x: %s", src_dev.nwk, group_id, res)
 
 
 async def bind_ieee(app, listener, ieee, cmd, data, service):
@@ -92,7 +104,7 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
         return
     LOGGER.debug("running 'bind ieee' command: %s", service)
     src_dev = app.get_device(ieee=ieee)
-    dst_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(':')])
+    dst_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(":")])
     dst_dev = app.get_device(ieee=dst_ieee)
 
     zdo = src_dev.zdo
@@ -100,15 +112,21 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
 
     for src_cluster in src_clusters:
         src_endpoints = [
-            ep_id for ep_id, ep in src_dev.endpoints.items()
+            ep_id
+            for ep_id, ep in src_dev.endpoints.items()
             if ep_id != 0 and src_cluster in ep.out_clusters
         ]
-        LOGGER.debug("0x%04x: got the %s endpoints for %s cluster",
-                     src_dev.nwk, src_endpoints, src_cluster)
+        LOGGER.debug(
+            "0x%04x: got the %s endpoints for %s cluster",
+            src_dev.nwk,
+            src_endpoints,
+            src_cluster,
+        )
 
         if not src_endpoints:
-            LOGGER.debug("0x%04x: skipping %s cluster as non present",
-                         src_dev.nwk, src_cluster)
+            LOGGER.debug(
+                "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
+            )
             continue
         dst_addr = MultiAddress()
         dst_addr.addrmode = t.uint8_t(3)
@@ -129,9 +147,16 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
         for src_ep in src_endpoints:
             LOGGER.debug(
                 "0x%04x: binding %s, ep: %s, cluster: %s to %s dev %s ep",
-                src_dev.nwk, str(src_dev.ieee), src_ep, src_cluster,
-                str(dst_dev.ieee), dst_epid)
-            res = await zdo.request(ZDOCmd.Bind_req, src_dev.ieee, src_ep,
-                                    src_cluster, dst_addr)
-            LOGGER.debug("0x%04x: binding ieee %s: %s",
-                         src_dev.nwk, str(dst_dev.ieee), res)
+                src_dev.nwk,
+                str(src_dev.ieee),
+                src_ep,
+                src_cluster,
+                str(dst_dev.ieee),
+                dst_epid,
+            )
+            res = await zdo.request(
+                ZDOCmd.Bind_req, src_dev.ieee, src_ep, src_cluster, dst_addr
+            )
+            LOGGER.debug(
+                "0x%04x: binding ieee %s: %s", src_dev.nwk, str(dst_dev.ieee), res
+            )

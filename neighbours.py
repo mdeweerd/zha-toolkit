@@ -40,20 +40,20 @@ async def _routes_and_neighbours(device, listener):
     except asyncio.TimeoutError:
         nbns = []
 
-    ieee_tail = ''.join(['%02x' % (o, ) for o in device.ieee])
-    file_suffix = '_{}.txt'.format(ieee_tail)
+    ieee_tail = "".join(["%02x" % (o,) for o in device.ieee])
+    file_suffix = "_{}.txt".format(ieee_tail)
 
     routes_name = os.path.join(
-        listener._hass.config.config_dir, 'scans', 'routes'+file_suffix)
+        listener._hass.config.config_dir, "scans", "routes" + file_suffix
+    )
     save_json(routes_name, routes)
 
     neighbours_name = os.path.join(
-        listener._hass.config.config_dir, 'scans', 'neighbours'+file_suffix)
+        listener._hass.config.config_dir, "scans", "neighbours" + file_suffix
+    )
     save_json(neighbours_name, nbns)
 
-    LOGGER.debug("Wrote scan results to '%s' and '%s'",
-                 routes_name,
-                 neighbours_name)
+    LOGGER.debug("Wrote scan results to '%s' and '%s'", routes_name, neighbours_name)
 
 
 async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
@@ -62,8 +62,12 @@ async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
     counter = 1
     devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
     for device in devs:
-        LOGGER.debug("%s: Quering routes and neighbours: %s out of %s",
-                     device.ieee, counter, len(devs))
+        LOGGER.debug(
+            "%s: Quering routes and neighbours: %s out of %s",
+            device.ieee,
+            counter,
+            len(devs),
+        )
         await _routes_and_neighbours(device, listener)
         LOGGER.debug("%s: Got %s out of %s", device.ieee, counter, len(devs))
         counter += 1
@@ -74,6 +78,7 @@ async def async_get_neighbours(device):
 
     def _process_neighbor(nbg):
         """Return dict of a neighbor entry."""
+
         class NeighbourType(enum.IntEnum):
             Coordinator = 0x0
             Router = 0x1
@@ -99,39 +104,39 @@ async def async_get_neighbours(device):
 
         res = {}
 
-        res['pan_id'] = str(nbg.PanId)
-        res['ieee'] = str(nbg.IEEEAddr)
+        res["pan_id"] = str(nbg.PanId)
+        res["ieee"] = str(nbg.IEEEAddr)
 
         raw = nbg.NeighborType & 0x03
         try:
             nei_type = NeighbourType(raw).name
         except ValueError:
-            nei_type = 'undefined_0x{:02x}'.format(raw)
-        res['device_type'] = nei_type
+            nei_type = "undefined_0x{:02x}".format(raw)
+        res["device_type"] = nei_type
 
         raw = (nbg.NeighborType >> 2) & 0x03
         try:
             rx_on = RxOnIdle(raw).name
         except ValueError:
-            rx_on = 'undefined_0x{:02x}'.format(raw)
-        res['rx_on_when_idle'] = rx_on
+            rx_on = "undefined_0x{:02x}".format(raw)
+        res["rx_on_when_idle"] = rx_on
 
         raw = (nbg.NeighborType >> 4) & 0x07
         try:
             relation = Relation(raw).name
         except ValueError:
-            relation = 'undefined_0x{:02x}'.format(raw)
-        res['relationship'] = relation
+            relation = "undefined_0x{:02x}".format(raw)
+        res["relationship"] = relation
 
         raw = nbg.PermitJoining & 0x02
         try:
             joins = PermitJoins(raw).name
         except ValueError:
-            joins = 'undefined_0x{:02x}'.format(raw)
-        res['new_joins_accepted'] = joins
+            joins = "undefined_0x{:02x}".format(raw)
+        res["new_joins_accepted"] = joins
 
-        res['depth'] = nbg.Depth
-        res['lqi'] = nbg.LQI
+        res["depth"] = nbg.Depth
+        res["lqi"] = nbg.LQI
 
         return res
 
@@ -139,11 +144,11 @@ async def async_get_neighbours(device):
     idx = 0
     while True:
         status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Lqi_req, idx)
-        LOGGER.debug("%s: neighbor request Status: %s. Response: %r",
-                     device.ieee, status, val)
+        LOGGER.debug(
+            "%s: neighbor request Status: %s. Response: %r", device.ieee, status, val
+        )
         if zdo_t.Status.SUCCESS != status:
-            LOGGER.debug("%s: device oes not support 'Mgmt_Lqi_req'",
-                         device.ieee)
+            LOGGER.debug("%s: device oes not support 'Mgmt_Lqi_req'", device.ieee)
             break
 
         neighbors = val.NeighborTableList
@@ -154,7 +159,7 @@ async def async_get_neighbours(device):
             break
         await asyncio.sleep(uniform(1.0, 1.5))
 
-    return sorted(result, key=lambda x: x['ieee'])
+    return sorted(result, key=lambda x: x["ieee"])
 
 
 async def async_get_routes(device):
@@ -162,6 +167,7 @@ async def async_get_routes(device):
 
     def _process_route(route):
         """Return a dict representing routing entry."""
+
         class RouteStatus(enum.IntEnum):
             Active = 0x0
             Discovery_Underway = 0x1
@@ -170,28 +176,28 @@ async def async_get_routes(device):
             Validation_Underway = 0x4
 
         res = {}
-        res['destination'] = '0x{:04x}'.format(route.DstNWK)
-        res['next_hop'] = '0x{:04x}'.format(route.NextHop)
+        res["destination"] = "0x{:04x}".format(route.DstNWK)
+        res["next_hop"] = "0x{:04x}".format(route.NextHop)
         raw = route.RouteStatus & 0x07
         try:
             cooked = RouteStatus(raw).name
         except ValueError:
-            cooked = 'reserved_{:02x}'.format(raw)
-        res['status'] = cooked
-        res['memory_constrained'] = bool((route.RouteStatus >> 3) & 0x01)
-        res['many_to_one'] = bool((route.RouteStatus >> 4) & 0x01)
-        res['route_record_required'] = bool((route.RouteStatus >> 5) & 0x01)
+            cooked = "reserved_{:02x}".format(raw)
+        res["status"] = cooked
+        res["memory_constrained"] = bool((route.RouteStatus >> 3) & 0x01)
+        res["many_to_one"] = bool((route.RouteStatus >> 4) & 0x01)
+        res["route_record_required"] = bool((route.RouteStatus >> 5) & 0x01)
         return res
 
     routes = []
     idx = 0
     while True:
         status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Rtg_req, idx)
-        LOGGER.debug("%s: route request Status:%s. Routes: %r",
-                     device.ieee, status, val)
+        LOGGER.debug(
+            "%s: route request Status:%s. Routes: %r", device.ieee, status, val
+        )
         if zdo_t.Status.SUCCESS != status:
-            LOGGER.debug("%s: Does not support 'Mgmt_rtg_req': %s",
-                         device.ieee, status)
+            LOGGER.debug("%s: Does not support 'Mgmt_rtg_req': %s", device.ieee, status)
             break
 
         for route in val.RoutingTableList:

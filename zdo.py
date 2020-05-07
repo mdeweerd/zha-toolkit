@@ -7,11 +7,11 @@ LOGGER = logging.getLogger(__name__)
 
 async def leave(app, listener, ieee, cmd, data, service):
     if ieee is None or not data:
-        LOGGER.warning("Incorrect parameters for 'zdo.leave' command: %s",
-                       service)
+        LOGGER.warning("Incorrect parameters for 'zdo.leave' command: %s", service)
         return
-    LOGGER.debug("running 'leave' command. Telling 0x%s to remove %s: %s",
-                 data, ieee, service)
+    LOGGER.debug(
+        "running 'leave' command. Telling 0x%s to remove %s: %s", data, ieee, service
+    )
     parent = int(data, base=16)
     parent = app.get_device(nwk=parent)
 
@@ -21,8 +21,7 @@ async def leave(app, listener, ieee, cmd, data, service):
 
 async def ieee_ping(app, listener, ieee, cmd, data, service):
     if ieee is None:
-        LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s",
-                       service)
+        LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s", service)
         return
     dev = app.get_device(ieee=ieee)
 

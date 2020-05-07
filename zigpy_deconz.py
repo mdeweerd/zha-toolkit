@@ -19,11 +19,9 @@ async def zigpy_deconz(app, listener, ieee, cmd, data, service):
     return
     LOGGER.debug("Getting model from iris: %s", service)
 
-    ieee = t.EUI64(b'\x00\x0d\x6f\x00\x0f\x3a\xf6\xa6')
+    ieee = t.EUI64(b"\x00\x0d\x6f\x00\x0f\x3a\xf6\xa6")
     dev = app.get_device(ieee=ieee)
 
     cluster = dev.endpoints[2].basic
-    res = await cluster.read_attributes(['model', 'manufacturer'], allow_cache=False)
+    res = await cluster.read_attributes(["model", "manufacturer"], allow_cache=False)
     LOGGER.info("Iris 2nd ep attr read: %s", res)
-
-

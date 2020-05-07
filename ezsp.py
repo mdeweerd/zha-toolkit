@@ -12,6 +12,7 @@ async def set_channel(app, listener, ieee, cmd, data, service):
     res = await app._ezsp.setRadioChannel(ch)
     LOGGER.info("Writing attrs status: %s", res)
 
+
 async def get_token(app, listener, ieee, cmd, data, service):
     token = t.uint8_t(data)
     for token in range(0, 31):
@@ -19,5 +20,19 @@ async def get_token(app, listener, ieee, cmd, data, service):
         res = await app._ezsp.getToken(token)
         LOGGER.info(f"Getting token {token} status: {res[0]}")
         LOGGER.info(f"Getting token {token} data: {res[1]}")
-        LOGGER.info((f"Getting token {token} data: "
-                      "{binascii.hexlify(res[1].serialize())}"))
+        LOGGER.info(
+            (f"Getting token {token} data: " "{binascii.hexlify(res[1].serialize())}")
+        )
+
+
+async def start_mfg(app, listener, ieee, cmd, data, service):
+    LOGGER.info("Starting mfg lib")
+    res = await app._ezsp.mfglibStart(True)
+    LOGGER.info("starting mfg lib result: %s", res)
+
+    channel = 11
+    res = await app._ezsp.mfglibSetChannel(channel)
+    LOGGER.info("mfg lib change channel: %s", res)
+
+    res = await app._ezsp.mfglibEnd()
+    LOGGER.info("mfg lib change channel: %s", res)

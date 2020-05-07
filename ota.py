@@ -30,9 +30,8 @@ async def notify(app, listener, ieee, cmd, data, service):
         return
     basic = device.endpoints[cluster.endpoint.endpoint_id].basic
     await basic.bind()
-    ret = await basic.configure_reporting('sw_build_id', 0, 1800, 1)
+    ret = await basic.configure_reporting("sw_build_id", 0, 1800, 1)
     LOGGER.debug("Configured reporting: %s", ret)
     ret = await cluster.image_notify(0, 100)
 
     LOGGER.debug("Sent image notify command to 0x%04x: %s", device.nwk, ret)
-
