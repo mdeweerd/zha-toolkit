@@ -293,3 +293,30 @@ async def get_node_desc(app, listener, ieee, cmd, data, service):
             device.node_desc.logical_type,
             device.node_desc.is_mains_powered,
         )
+
+
+async def discover_device_endpoints(app, listener, ieee, cmd, data, service):
+    """Discover devices endpoints."""
+    if ieee is None:
+        LOGGER.error("Missing IEEE address")
+        return
+
+    dev = app.get_device(ieee=ieee)
+    LOGGER.info("[0x%04x] Discovering endpoints", dev.nwk)
+    try:
+        epr = await dev.zdo.Active_EP_req(dev.nwk, tries=3, delay=2)
+        if epr[0] != 0:
+            raise Exception("Endpoint request failed: %s", epr)
+    except Exception:
+        dev.exception(
+            "Failed ZDO request during device initialization", exc_info=True
+        )
+        return
+
+    LOGGER.info("[0x%04x] Discovered endpoints: %s", dev.nwk, epr[2])
+
+    for endpoint_id in epr[2]:
+        sdr = await dev.zdo.Simple_Desc_req(
+            dev.nwk, endpoint_id, tries=3, delay=2
+        )
+        LOGGER.info("[0x%04x] Endpoint %s info: %s", dev.nwk, endpoint_id, sdr)
