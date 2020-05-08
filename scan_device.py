@@ -314,9 +314,16 @@ async def discover_device_endpoints(app, listener, ieee, cmd, data, service):
         return
 
     LOGGER.info("[0x%04x] Discovered endpoints: %s", dev.nwk, epr[2])
+    endpoints = []
 
     for endpoint_id in epr[2]:
         sdr = await dev.zdo.Simple_Desc_req(
             dev.nwk, endpoint_id, tries=3, delay=2
         )
         LOGGER.info("[0x%04x] Endpoint %s info: %s", dev.nwk, endpoint_id, sdr)
+        endpoints.append[sdr[2]]
+
+    LOGGER.info("[0x%04x] Discovered endpoints: %s", dev.nwk, epr[2])
+    for ep in endpoints:
+        LOGGER.info("[0x%04x] Endpoint info: %s", dev.nwk, ep)
+
