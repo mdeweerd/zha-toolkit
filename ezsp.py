@@ -41,12 +41,17 @@ async def start_mfg(app, listener, ieee, cmd, data, service):
 async def get_keys(app, listener, ieee, cmd, data, service):
     LOGGER.info("getting all keys")
     result = {}
+    erase = True if data is not None and data else False
 
     for idx in range(0, 192):
         LOGGER.debug("Getting key index %s", idx)
         (status, key_struct) = await app._ezsp.getKeyTableEntry(idx)
         if status == app._ezsp.types.EmberStatus.SUCCESS:
             result[idx] = key_struct
+            if key_struct.partnerEUI64 not in app.devices:
+                LOGGER.warning("Partner %s for key %s is not present", key_struct.partnerEUI64, idx)
+                if erase:
+                    await app._ezsp.eraseKeyTableEntry(idx)
         elif status == app._ezsp.types.EmberStatus.INDEX_OUT_OF_RANGE:
             break
         else:
