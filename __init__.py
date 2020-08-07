@@ -336,3 +336,10 @@ def command_handler_ota_notify(*args, **kwargs):
     importlib.reload(ota)
 
     return ota.notify(*args, **kwargs)
+
+
+def command_handler_zdo_join_with_code(*args, **kwargs):
+    from . import zdo
+    importlib.reload(zdo)
+
+    return zdo.join_with_code(*args, **kwargs)
