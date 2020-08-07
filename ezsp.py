@@ -36,3 +36,21 @@ async def start_mfg(app, listener, ieee, cmd, data, service):
 
     res = await app._ezsp.mfglibEnd()
     LOGGER.info("mfg lib change channel: %s", res)
+
+
+async def get_keys(app, listener, ieee, cmd, data, service):
+    LOGGER.info("getting all keys")
+    result = {}
+
+    for idx in range(0, 192):
+        LOGGER.debug("Getting key index %s", idx)
+        (status, key_struct) = await app._ezsp.getKeyTableEntry(idx)
+        if status == app._ezsp.types.EmberStatus.SUCCESS:
+            result[idx] = key_struct
+        elif status == app._ezsp.types.EmberStatus.INDEX_OUT_OF_RANGE:
+            break
+        else:
+            LOGGER.warning("No key at %s idx: %s", idx, status)
+
+    for idx in result:
+        LOGGER.info("EZSP %s key: %s", idx, result[idx])
