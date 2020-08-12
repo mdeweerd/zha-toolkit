@@ -59,3 +59,12 @@ async def get_keys(app, listener, ieee, cmd, data, service):
 
     for idx in result:
         LOGGER.info("EZSP %s key: %s", idx, result[idx])
+
+
+async def add_transient_key(app, listener, ieee, cmd, data, service):
+    LOGGER.info("adding well known link key as transient key")
+    if ieee is None:
+        LOGGER.error("No ieee to install transient key for")
+
+    (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
+    LOGGER.debug("Installed key for %s: %s", ieee, status)

@@ -338,6 +338,15 @@ def command_handler_ezsp_get_keys(*args, **kwargs):
     return ezsp.get_keys(*args, **kwargs)
 
 
+def command_handler_ezsp_add_key(*args, **kwargs):
+    """Add transient link key. """
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.add_transient_key(*args, **kwargs)
+
+
 def command_handler_ota_notify(*args, **kwargs):
     """Set EZSP radio channel. """
     from . import ota
