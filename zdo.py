@@ -2,7 +2,8 @@ import logging
 
 import zigpy.zdo.types as zdo_t
 import zigpy.types as t
-import bellows.types as bt
+import zigpy.device
+import zigpy.zdo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,10 +37,39 @@ async def ieee_ping(app, listener, ieee, cmd, data, service):
 async def join_with_code(app, listener, ieee, cmd, data, service):
 
     code = b"\xA8\x16\x92\x7F\xB1\x9B\x78\x55\xC1\xD7\x76\x0D\x5C\xAD\x63\x7F\x69\xCC"
-    #res = await app.permit_with_key(node, code, 60)
+    # res = await app.permit_with_key(node, code, 60)
     import bellows.types as bt
+
     node = t.EUI64.convert("04:cf:8c:df:3c:75:e1:e7")
     link_key = bt.EmberKeyData(b"ZigBeeAlliance09")
     res = await app._ezsp.addTransientLinkKey(node, link_key)
     LOGGER.debug("permit with key: %s", res)
     res = await app.permit(60)
+
+
+async def update_nwk_id(app, listener, ieee, cmd, data, service):
+    """Update NWK id. data contains new NWK id."""
+    if data is None:
+        LOGGER.error("Need NWK update id in the data")
+        return
+
+    nwk_upd_id = t.uint8_t(data)
+
+    await zigpy.device.broadcast(
+        app,
+        0,
+        zdo_t.ZDOCmd.Mgmt_NWK_Update_req,
+        0,
+        0,
+        0x0000,
+        0x00,
+        0xEE,
+        b"\xee"
+        + t.Channels.ALL_CHANNELS.serialize()
+        + b"\xFF"
+        + nwk_upd_id.serialize()
+        + b"\x00\x00",
+    )
+
+    res = await app._ezsp.getNetworkParameters()
+    LOGGER.debug("Network params: %s", res)

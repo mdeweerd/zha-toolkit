@@ -361,3 +361,10 @@ def command_handler_zdo_join_with_code(*args, **kwargs):
     importlib.reload(zdo)
 
     return zdo.join_with_code(*args, **kwargs)
+
+
+def command_handler_zdo_update_nwk_id(*args, **kwargs):
+    from . import zdo
+    importlib.reload(zdo)
+
+    return zdo.update_nwk_id(*args, **kwargs)
