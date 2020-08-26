@@ -347,6 +347,15 @@ def command_handler_ezsp_add_key(*args, **kwargs):
     return ezsp.add_transient_key(*args, **kwargs)
 
 
+def command_handler_ezsp_clear_keys(*args, **kwargs):
+    """Clear key table."""
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.clear_keys(*args, **kwargs)
+
+
 def command_handler_ota_notify(*args, **kwargs):
     """Set EZSP radio channel. """
     from . import ota

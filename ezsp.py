@@ -68,3 +68,9 @@ async def add_transient_key(app, listener, ieee, cmd, data, service):
 
     (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
     LOGGER.debug("Installed key for %s: %s", ieee, status)
+
+
+async def clear_keys(app, listener, ieee, cmd, data, service):
+    LOGGER.info("Clear key table")
+    (status,) = await app._ezsp.clearKeyTable()
+    LOGGER.info("Cleared key table: %s", status)
