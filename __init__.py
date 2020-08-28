@@ -356,6 +356,24 @@ def command_handler_ezsp_clear_keys(*args, **kwargs):
     return ezsp.clear_keys(*args, **kwargs)
 
 
+def command_handler_ezsp_get_config_value(*args, **kwargs):
+    """Get EZSP config value."""
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.get_config_value(*args, **kwargs)
+
+
+def command_handler_ezsp_get_value(*args, **kwargs):
+    """Get EZSP value."""
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.get_value(*args, **kwargs)
+
+
 def command_handler_ota_notify(*args, **kwargs):
     """Set EZSP radio channel. """
     from . import ota

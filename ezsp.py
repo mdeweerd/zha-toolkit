@@ -74,3 +74,33 @@ async def clear_keys(app, listener, ieee, cmd, data, service):
     LOGGER.info("Clear key table")
     (status,) = await app._ezsp.clearKeyTable()
     LOGGER.info("Cleared key table: %s", status)
+
+
+async def get_config_value(app, listener, ieee, cmd, data, service):
+    if data is None:
+        LOGGER.error("Need EZSP config value")
+        return
+
+    cfg_id = app._ezsp.types.EzspConfigId(data)
+    LOGGER.info("Getting EZSP configuration value: %s", cfg_id)
+    (status, value) = await app._ezsp.getConfigurationValue(cfg_id)
+    if status != app._ezsp.types.EzspStatus.SUCCESS:
+        LOGGER.error("Couldn't get %s configuration value: %s", status, cfg_id)
+        return
+
+    LOGGER.info("%s = %s", cfg_id.name, value)
+
+
+async def get_value(app, listener, ieee, cmd, data, service):
+    if data is None:
+        LOGGER.error("Need EZSP value id")
+        return
+
+    value_id = app._ezsp.types.EzspValueId(data)
+    LOGGER.info("Getting EZSP value: %s", value_id)
+    (status, value) = await app._ezsp.getValue(value_id)
+    if status != app._ezsp.types.EzspStatus.SUCCESS:
+        LOGGER.error("Couldn't get %s value: %s", status, value_id)
+        return
+
+    LOGGER.info("%s = %s", value_id.name, value)
