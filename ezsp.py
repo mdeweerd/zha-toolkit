@@ -2,15 +2,44 @@ import binascii
 import logging
 
 from zigpy import types as t
+import zigpy.zdo.types
+import bellows.types
 
 LOGGER = logging.getLogger(__name__)
 
 
 async def set_channel(app, listener, ieee, cmd, data, service):
     ch = t.uint8_t(data)
-    LOGGER.info("Setting EZSP channel to: %s", ch)
+    assert 11 << ch << 26
+    ch_mask = zigpy.types.Channels(1 << ch)
+
+    LOGGER.info("Setting EZSP channel to: %s/%s", ch, ch_mask)
+
+    aps_frame = bellows.types.EmberApsFrame(
+        profileId=0x0000,
+        clusterId=zigpy.zdo.types.ZDOCmd.Mgmt_NWK_Update_req,
+        sourceEndpoint=0x00,
+        destinationEndpoint=0x00,
+        options=bellows.types.EmberApsOption.APS_OPTION_NONE,
+        groupId=0x0000,
+        sequence=0xDE,
+    )
+
+    status, _, network_params = await app._ezsp.getNetworkParameters()
+    if status != bellows.types.EmberStatus.SUCCESS:
+        LOGGER.error("Couldn't get network parameters, abort channel change: %s", status)
+        return
+
+    payload = b"\xDE" + ch_mask.serialize() + b"\xFE"
+    payload += network_params.nwkUpdateId.serialize()
+
+    status, _ = await app._ezsp.sendBroadcast(
+        zigpy.types.BroadcastAddress.ALL_DEVICES, aps_frame, 0x00, 0x01, payload,
+    )
+    assert status == bellows.types.EmberStatus.SUCCESS
+
     res = await app._ezsp.setRadioChannel(ch)
-    LOGGER.info("Writing attrs status: %s", res)
+    LOGGER.info("Set channel status: %s", res)
 
 
 async def get_token(app, listener, ieee, cmd, data, service):
