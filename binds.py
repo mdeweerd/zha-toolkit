@@ -160,3 +160,22 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
             LOGGER.debug(
                 "0x%04x: binding ieee %s: %s", src_dev.nwk, str(dst_dev.ieee), res
             )
+
+
+async def unbind_coordinator(app, listener, ieee, cmd, data, service):
+
+    LOGGER.debug("running 'unbind coordinator' command: %s", service)
+    if ieee is None or not data:
+        LOGGER.error("missing ieee and/or data")
+        return
+    src_dev = app.get_device(ieee=ieee)
+    cluster_id = int(data)
+
+    for ep_id, ep in src_dev.endpoints.items():
+        if not ep_id or cluster_id not in ep.out_clusters:
+            continue
+        LOGGER.debug(
+            "0x%04x: unbinding ep: %s, cluster: %s", src_dev.nwk, ep_id, cluster_id
+        )
+        res = await ep.out_clusters[cluster_id].unbind()
+        LOGGER.debug("0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res)

@@ -184,6 +184,18 @@ async def command_handler_bind_ieee(*args, **kwargs):
     await binds.bind_ieee(*args, **kwargs)
 
 
+async def command_handler_unbind_coordinator(*args, **kwargs):
+    """IEEE bind device.
+    ieee -- ieee of the device to unbind from coordinator
+    data -- cluster ID to unbind
+    """
+    from . import binds
+
+    importlib.reload(binds)
+
+    await binds.unbind_coordinator(*args, **kwargs)
+
+
 async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
     """Leave and rejoin command.
     data -- device ieee to allow joining through
@@ -385,6 +397,7 @@ def command_handler_ota_notify(*args, **kwargs):
 
 def command_handler_zdo_join_with_code(*args, **kwargs):
     from . import zdo
+
     importlib.reload(zdo)
 
     return zdo.join_with_code(*args, **kwargs)
@@ -392,6 +405,7 @@ def command_handler_zdo_join_with_code(*args, **kwargs):
 
 def command_handler_zdo_update_nwk_id(*args, **kwargs):
     from . import zdo
+
     importlib.reload(zdo)
 
     return zdo.update_nwk_id(*args, **kwargs)
