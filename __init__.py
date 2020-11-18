@@ -269,26 +269,6 @@ def command_handler_all_routes_and_neighbours(*args, **kwargs):
     return neighbours.all_routes_and_neighbours(*args, **kwargs)
 
 
-def command_handler_get_node_desc(*args, **kwargs):
-    from . import scan_device
-
-    importlib.reload(scan_device)
-
-    return scan_device.get_node_desc(*args, **kwargs)
-
-
-async def command_handler_discover_device_endpoints(*args, **kwargs):
-    """discover device endpoints.
-    ieee -- ieee of the device to discover
-    """
-
-    from . import scan_device
-
-    importlib.reload(scan_device)
-
-    await scan_device.discover_device_endpoints(*args, **kwargs)
-
-
 def command_handler_leave(*args, **kwargs):
     from . import zdo
 
