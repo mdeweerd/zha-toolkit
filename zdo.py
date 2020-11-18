@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import zigpy.zdo.types as zdo_t
@@ -73,3 +74,9 @@ async def update_nwk_id(app, listener, ieee, cmd, data, service):
 
     res = await app._ezsp.getNetworkParameters()
     LOGGER.debug("Network params: %s", res)
+
+
+async def topo_scan_now(app, listener, ieee, cmd, data, service):
+
+    LOGGER.debug("Scanning topology")
+    asyncio.create_task(app.topology.scan())

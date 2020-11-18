@@ -49,7 +49,9 @@ async def get_keys(app, listener, ieee, cmd, data, service):
         if status == app._ezsp.types.EmberStatus.SUCCESS:
             result[idx] = key_struct
             if key_struct.partnerEUI64 not in app.devices:
-                LOGGER.warning("Partner %s for key %s is not present", key_struct.partnerEUI64, idx)
+                LOGGER.warning(
+                    "Partner %s for key %s is not present", key_struct.partnerEUI64, idx
+                )
                 if erase:
                     await app._ezsp.eraseKeyTableEntry(idx)
         elif status == app._ezsp.types.EmberStatus.INDEX_OUT_OF_RANGE:
@@ -59,6 +61,8 @@ async def get_keys(app, listener, ieee, cmd, data, service):
 
     for idx in result:
         LOGGER.info("EZSP %s key: %s", idx, result[idx])
+    _, _, params = await app._ezsp.getNetworkParameters()
+    LOGGER.info("Current network: %s", params)
 
 
 async def add_transient_key(app, listener, ieee, cmd, data, service):
@@ -68,3 +72,18 @@ async def add_transient_key(app, listener, ieee, cmd, data, service):
 
     (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
     LOGGER.debug("Installed key for %s: %s", ieee, status)
+
+
+async def get_ieee_by_nwk(app, listener, ieee, cmd, data, service):
+    LOGGER.info("Lookup IEEE by nwk")
+    nwk = int(data, base=16)
+    status, eui64 = await app._ezsp.lookupEui64ByNodeId(nwk)
+    LOGGER.debug("nwk: 0x%04x, ieee: %s: %s", nwk, eui64, status)
+
+
+async def get_policy(app, listener, ieee, cmd, data, service):
+    policy = int(data)
+
+    LOGGER.info("Getting EZSP %s policy id", policy)
+    status, value = await app._ezsp.getPolicy(policy)
+    LOGGER.debug("policy: %s, value: %s", app._ezsp.types.EzspPolicyId(policy), value)

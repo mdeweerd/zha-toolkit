@@ -343,8 +343,23 @@ def command_handler_ezsp_add_key(*args, **kwargs):
     from . import ezsp
 
     importlib.reload(ezsp)
-
     return ezsp.add_transient_key(*args, **kwargs)
+
+
+def command_handler_ezsp_get_ieee_by_nwk(*args, **kwargs):
+    """Get EZSP keys. """
+    from . import ezsp
+
+    importlib.reload(ezsp)
+    return ezsp.get_ieee_by_nwk(*args, **kwargs)
+
+
+def command_handler_ezsp_get_policy(*args, **kwargs):
+    """Get EZSP keys. """
+    from . import ezsp
+
+    importlib.reload(ezsp)
+    return ezsp.get_policy(*args, **kwargs)
 
 
 def command_handler_ota_notify(*args, **kwargs):
@@ -358,6 +373,7 @@ def command_handler_ota_notify(*args, **kwargs):
 
 def command_handler_zdo_join_with_code(*args, **kwargs):
     from . import zdo
+
     importlib.reload(zdo)
 
     return zdo.join_with_code(*args, **kwargs)
@@ -365,6 +381,15 @@ def command_handler_zdo_join_with_code(*args, **kwargs):
 
 def command_handler_zdo_update_nwk_id(*args, **kwargs):
     from . import zdo
+
     importlib.reload(zdo)
 
     return zdo.update_nwk_id(*args, **kwargs)
+
+
+def command_handler_zdo_scan_now(*args, **kwargs):
+    from . import zdo
+
+    importlib.reload(zdo)
+
+    return zdo.topo_scan_now(*args, **kwargs)
