@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-from collections import OrderedDict
 
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
@@ -11,12 +10,12 @@ from homeassistant.util.json import save_json
 LOGGER = logging.getLogger(__name__)
 
 
-@retryable((DeliveryError, asyncio.TimeoutError), tries=5)
+@retryable((DeliveryError, asyncio.TimeoutError), tries=3)
 async def read_attr(cluster, attrs):
     return await cluster.read_attributes(attrs, allow_cache=False)
 
 
-@retryable((DeliveryError, asyncio.TimeoutError), tries=5)
+@retryable((DeliveryError, asyncio.TimeoutError), tries=3)
 def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 
@@ -56,7 +55,7 @@ async def scan_endpoint(ep):
         )
         key = "0x{:04x}".format(cluster.cluster_id)
         clusters[key] = await scan_cluster(cluster, is_server=True)
-    result["in_clusters"] = OrderedDict(sorted(clusters.items(), key=lambda k: k[0]))
+    result["in_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
 
     clusters = {}
     for cluster in ep.out_clusters.values():
@@ -67,7 +66,7 @@ async def scan_endpoint(ep):
         )
         key = "0x{:04x}".format(cluster.cluster_id)
         clusters[key] = await scan_cluster(cluster, is_server=True)
-    result["out_clusters"] = OrderedDict(sorted(clusters.items(), key=lambda k: k[0]))
+    result["out_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
     return result
 
 
@@ -104,7 +103,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.4)
-        except DeliveryError as ex:
+        except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover attributes extended starting %s. Error: {}".format(
                     attr_id, ex
@@ -154,14 +153,14 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                     except UnicodeDecodeError:
                         value = value.hex()
                 result[attr_id]["attribute_value"] = value
-        except DeliveryError as exc:
-            LOGGER.error("Couldn't read attr_id %i: %s", attr_id, exc)
+        except (DeliveryError, asyncio.TimeoutError) as ex:
+            LOGGER.error("Couldn't read attr_id %i: %s", attr_id, ex)
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
 
-    return OrderedDict(
-        [("0x{:04x}".format(a_id), result[a_id]) for a_id in sorted(result)]
-    )
+    return {
+        "0x{:04x}".format(a_id): result[a_id] for a_id in sorted(result)
+    }
 
 
 async def discover_commands_received(cluster, is_server, manufacturer=None):
@@ -182,7 +181,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
-        except DeliveryError as ex:
+        except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex)
             )
@@ -207,7 +206,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             }
             cmd_id += 1
         await asyncio.sleep(0.2)
-    return OrderedDict(sorted(result.items(), key=lambda k: k[0]))
+    return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
 async def discover_commands_generated(cluster, is_server, manufacturer=None):
@@ -227,7 +226,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
-        except DeliveryError as ex:
+        except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex)
             )
@@ -252,7 +251,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             }
             cmd_id += 1
         await asyncio.sleep(0.2)
-    return OrderedDict(sorted(result.items(), key=lambda k: k[0]))
+    return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
 async def scan_device(app, listener, ieee, cmd, data, service):
