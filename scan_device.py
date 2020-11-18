@@ -37,7 +37,8 @@ async def scan_results(device):
             "device_type": "0x{:04x}".format(ep.device_type),
             "profile": "0x{:04x}".format(ep.profile_id),
         }
-        endpoint.update(await scan_endpoint(ep))
+        if epid != 242:
+            endpoint.update(await scan_endpoint(ep))
         endpoints.append(endpoint)
 
     result["endpoints"] = endpoints
@@ -256,7 +257,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
 
 async def scan_device(app, listener, ieee, cmd, data, service):
     if ieee is None:
-        LOGGER.error("missine ieee")
+        LOGGER.error("missing ieee")
         return
 
     LOGGER.debug("running 'scan_device' command: %s", service)
@@ -272,6 +273,10 @@ async def scan_device(app, listener, ieee, cmd, data, service):
         ieee_tail = "".join(["%02x" % (o,) for o in ieee])
         file_name = "{}_scan_results.txt".format(ieee_tail)
 
-    file_name = os.path.join(listener._hass.config.config_dir, "scans", file_name)
+    conf_dir = listener._hass.config.config_dir
+    scan_dir = os.path.join(conf_dir, "scans")
+    if not os.path.isdir(scan_dir):
+        os.mkdir(scan_dir)
+    file_name = os.path.join(scan_dir, file_name)
     save_json(file_name, scan)
     LOGGER.debug("Finished writing scan results int '%s'", file_name)
