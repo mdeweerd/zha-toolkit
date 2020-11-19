@@ -184,6 +184,18 @@ async def command_handler_bind_ieee(*args, **kwargs):
     await binds.bind_ieee(*args, **kwargs)
 
 
+async def command_handler_unbind_coordinator(*args, **kwargs):
+    """IEEE bind device.
+    ieee -- ieee of the device to unbind from coordinator
+    data -- cluster ID to unbind
+    """
+    from . import binds
+
+    importlib.reload(binds)
+
+    await binds.unbind_coordinator(*args, **kwargs)
+
+
 async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
     """Leave and rejoin command.
     data -- device ieee to allow joining through
@@ -255,26 +267,6 @@ def command_handler_all_routes_and_neighbours(*args, **kwargs):
     importlib.reload(neighbours)
 
     return neighbours.all_routes_and_neighbours(*args, **kwargs)
-
-
-def command_handler_get_node_desc(*args, **kwargs):
-    from . import scan_device
-
-    importlib.reload(scan_device)
-
-    return scan_device.get_node_desc(*args, **kwargs)
-
-
-async def command_handler_discover_device_endpoints(*args, **kwargs):
-    """discover device endpoints.
-    ieee -- ieee of the device to discover
-    """
-
-    from . import scan_device
-
-    importlib.reload(scan_device)
-
-    await scan_device.discover_device_endpoints(*args, **kwargs)
 
 
 def command_handler_leave(*args, **kwargs):
@@ -360,6 +352,33 @@ def command_handler_ezsp_get_policy(*args, **kwargs):
 
     importlib.reload(ezsp)
     return ezsp.get_policy(*args, **kwargs)
+
+
+def command_handler_ezsp_clear_keys(*args, **kwargs):
+    """Clear key table."""
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.clear_keys(*args, **kwargs)
+
+
+def command_handler_ezsp_get_config_value(*args, **kwargs):
+    """Get EZSP config value."""
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.get_config_value(*args, **kwargs)
+
+
+def command_handler_ezsp_get_value(*args, **kwargs):
+    """Get EZSP value."""
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.get_value(*args, **kwargs)
 
 
 def command_handler_ota_notify(*args, **kwargs):

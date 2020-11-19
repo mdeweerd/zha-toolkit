@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-from collections import OrderedDict
 
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
@@ -11,12 +10,12 @@ from homeassistant.util.json import save_json
 LOGGER = logging.getLogger(__name__)
 
 
-@retryable((DeliveryError, asyncio.TimeoutError), tries=5)
+@retryable((DeliveryError, asyncio.TimeoutError), tries=3)
 async def read_attr(cluster, attrs):
     return await cluster.read_attributes(attrs, allow_cache=False)
 
 
-@retryable((DeliveryError, asyncio.TimeoutError), tries=5)
+@retryable((DeliveryError, asyncio.TimeoutError), tries=3)
 def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 
@@ -38,7 +37,8 @@ async def scan_results(device):
             "device_type": "0x{:04x}".format(ep.device_type),
             "profile": "0x{:04x}".format(ep.profile_id),
         }
-        endpoint.update(await scan_endpoint(ep))
+        if epid != 242:
+            endpoint.update(await scan_endpoint(ep))
         endpoints.append(endpoint)
 
     result["endpoints"] = endpoints
@@ -56,7 +56,7 @@ async def scan_endpoint(ep):
         )
         key = "0x{:04x}".format(cluster.cluster_id)
         clusters[key] = await scan_cluster(cluster, is_server=True)
-    result["in_clusters"] = OrderedDict(sorted(clusters.items(), key=lambda k: k[0]))
+    result["in_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
 
     clusters = {}
     for cluster in ep.out_clusters.values():
@@ -67,7 +67,7 @@ async def scan_endpoint(ep):
         )
         key = "0x{:04x}".format(cluster.cluster_id)
         clusters[key] = await scan_cluster(cluster, is_server=True)
-    result["out_clusters"] = OrderedDict(sorted(clusters.items(), key=lambda k: k[0]))
+    result["out_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
     return result
 
 
@@ -104,7 +104,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.4)
-        except DeliveryError as ex:
+        except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover attributes extended starting %s. Error: {}".format(
                     attr_id, ex
@@ -154,14 +154,14 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                     except UnicodeDecodeError:
                         value = value.hex()
                 result[attr_id]["attribute_value"] = value
-        except DeliveryError as exc:
-            LOGGER.error("Couldn't read attr_id %i: %s", attr_id, exc)
+        except (DeliveryError, asyncio.TimeoutError) as ex:
+            LOGGER.error("Couldn't read attr_id %i: %s", attr_id, ex)
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
 
-    return OrderedDict(
-        [("0x{:04x}".format(a_id), result[a_id]) for a_id in sorted(result)]
-    )
+    return {
+        "0x{:04x}".format(a_id): result[a_id] for a_id in sorted(result)
+    }
 
 
 async def discover_commands_received(cluster, is_server, manufacturer=None):
@@ -182,7 +182,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
-        except DeliveryError as ex:
+        except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex)
             )
@@ -207,7 +207,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             }
             cmd_id += 1
         await asyncio.sleep(0.2)
-    return OrderedDict(sorted(result.items(), key=lambda k: k[0]))
+    return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
 async def discover_commands_generated(cluster, is_server, manufacturer=None):
@@ -227,7 +227,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
-        except DeliveryError as ex:
+        except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex)
             )
@@ -252,12 +252,12 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             }
             cmd_id += 1
         await asyncio.sleep(0.2)
-    return OrderedDict(sorted(result.items(), key=lambda k: k[0]))
+    return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
 async def scan_device(app, listener, ieee, cmd, data, service):
     if ieee is None:
-        LOGGER.error("missine ieee")
+        LOGGER.error("missing ieee")
         return
 
     LOGGER.debug("running 'scan_device' command: %s", service)
@@ -273,57 +273,10 @@ async def scan_device(app, listener, ieee, cmd, data, service):
         ieee_tail = "".join(["%02x" % (o,) for o in ieee])
         file_name = "{}_scan_results.txt".format(ieee_tail)
 
-    file_name = os.path.join(listener._hass.config.config_dir, "scans", file_name)
+    conf_dir = listener._hass.config.config_dir
+    scan_dir = os.path.join(conf_dir, "scans")
+    if not os.path.isdir(scan_dir):
+        os.mkdir(scan_dir)
+    file_name = os.path.join(scan_dir, file_name)
     save_json(file_name, scan)
     LOGGER.debug("Finished writing scan results int '%s'", file_name)
-
-
-async def get_node_desc(app, listener, ieee, cmd, data, service):
-    for device in app.devices.values():
-        model = manufacturer = None
-        ep = next((e for epid, e in device.endpoints.items() if epid), None)
-        if ep is not None:
-            model = ep.model
-            manufacturer = ep.manufacturer
-        LOGGER.info(
-            "%s: %s %s is a %s. Mains powered=%s",
-            device.ieee,
-            manufacturer,
-            model,
-            device.node_desc.logical_type,
-            device.node_desc.is_mains_powered,
-        )
-
-
-async def discover_device_endpoints(app, listener, ieee, cmd, data, service):
-    """Discover devices endpoints."""
-    if ieee is None:
-        LOGGER.error("Missing IEEE address")
-        return
-
-    dev = app.get_device(ieee=ieee)
-    LOGGER.info("[0x%04x] Discovering endpoints", dev.nwk)
-    try:
-        epr = await dev.zdo.Active_EP_req(dev.nwk, tries=3, delay=2)
-        if epr[0] != 0:
-            raise Exception("Endpoint request failed: %s", epr)
-    except Exception:
-        dev.exception(
-            "Failed ZDO request during device initialization", exc_info=True
-        )
-        return
-
-    LOGGER.info("[0x%04x] Discovered endpoints: %s", dev.nwk, epr[2])
-    endpoints = []
-
-    for endpoint_id in epr[2]:
-        sdr = await dev.zdo.Simple_Desc_req(
-            dev.nwk, endpoint_id, tries=3, delay=2
-        )
-        LOGGER.info("[0x%04x] Endpoint %s info: %s", dev.nwk, endpoint_id, sdr)
-        endpoints.append(sdr[2])
-
-    LOGGER.info("[0x%04x] Discovered endpoints: %s", dev.nwk, epr[2])
-    for ep in endpoints:
-        LOGGER.info("[0x%04x] Endpoint info: %s", dev.nwk, ep)
-
