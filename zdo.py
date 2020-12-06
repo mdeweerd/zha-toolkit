@@ -80,3 +80,36 @@ async def topo_scan_now(app, listener, ieee, cmd, data, service):
 
     LOGGER.debug("Scanning topology")
     asyncio.create_task(app.topology.scan())
+
+
+async def flood_parent_annce(app, listener, ieee, cmd, data, service):
+
+    LOGGER.debug("flooding network with parent annce")
+
+    flooder_task = getattr(app, "flooder_task", None)
+    if flooder_task and not flooder_task.done():
+        flooder_task.cancel()
+        LOGGER.debug("Stop flooding network with parent annce messages")
+        setattr(app, "flooder_tass", None)
+        return
+
+    flooder_task = asyncio.create_task(_flood_with_parent_annce(app))
+    setattr(app, "flooder_task", flooder_task)
+
+
+async def _flood_with_parent_annce(app):
+
+    coord = app.get_device(app.ieee)
+
+    while True:
+        children = [nei.device.ieee for nei in coord.neighbors if nei.device.node_desc.is_end_device]
+        coord.debug("Have the following children: %s", children)
+        res = await zigpy.zdo.broadcast(
+            app,
+            zigpy.zdo.types.ZDOCmd.Parent_annce,
+            0x0000,
+            0x00,
+            children,
+            broadcast_address=t.BroadcastAddress.ALL_ROUTERS_AND_COORDINATOR,
+        )
+        await asyncio.sleep(.1)

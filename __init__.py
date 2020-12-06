@@ -412,3 +412,11 @@ def command_handler_zdo_scan_now(*args, **kwargs):
     importlib.reload(zdo)
 
     return zdo.topo_scan_now(*args, **kwargs)
+
+
+def command_handler_zdo_flood_parent_annce(*args, **kwargs):
+    from . import zdo
+
+    importlib.reload(zdo)
+
+    return zdo.flood_parent_annce(*args, **kwargs)
