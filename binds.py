@@ -57,8 +57,11 @@ async def unbind_group(app, listener, ieee, cmd, data, service):
     from zigpy import types as t
 
     LOGGER.debug("running 'unbind group' command: %s", service)
-    if ieee is None or not data:
+    if ieee is None:
         LOGGER.error("missing ieee")
+        return
+    if not data:
+        LOGGER.error("missing data (destination ieee)")
         return
     src_dev = app.get_device(ieee=ieee)
     group_id = int(data, base=16)
