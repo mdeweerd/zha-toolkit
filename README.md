@@ -47,3 +47,12 @@ data:
 
 ```
 
+
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: attr_write
+  # Data: Endpoint, Cluster ID, Attribute Id, Attribute Type, Attribute Value
+  command_data: 11,0x0006,0x0000,0x10,1
+```
