@@ -20,9 +20,8 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
 
     # Store backup information to file
 
-    #fname="/root/config/custom_components/zha_custom/nwk_backup.json"
     # Set name with regards to local path
-    fname=path.dirname(__file__)+'/nwk_backup.json'
+    fname=path.dirname(__file__)+'/local/nwk_backup.json'
     f=open(fname,"w")
     f.write(json.dumps(backup_obj,indent=4))
     f.close()

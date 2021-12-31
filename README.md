@@ -1,25 +1,44 @@
+# Setup
+
+This component needs to be added to your custom_components directory either manually or using [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration).
 
 
-# Examples
-
-Add to configuration.yaml, to load the customization:
+The component is only available in Home Assistant after adding 
+the next line to `configuration.yaml`, and restarting Home Assistant.
 ```yaml
 zha_custom:
 ```
 
-Add to logger configuration:
+Before restarting, you may also want to enable debug verbosity.
+This will help verify that the commands you send have the desired effect.
+
+Add/update the logger configuration (in the `configuration.yaml` file):
 ```yaml
 logger:
   log:
-    zha_custom: debug
+    custom_components.zha_custom: debug
 ```
 
-https://homeassistant.local:8123/developer-tools/service
+# Use
+
+You can use a service as an action in automations, but most actions are
+done only once and you can perform them using the developer tools.
+
+If you use HASS.os the following direct link may work.  Otherwise, find
+the developer tools in the menu and go to Services.  Direct link:
+https://homeassistant.local:8123/developer-tools/service .
 Choose `zha_custom.execute`
 
 
-Examples are work in progress, may not be functionnal
+# Examples
 
+Examples are work in progress and may not be functionnal.
+
+For sleepy devices (on a battery) you may need to wake them up
+just after sending the command so that they can receive it.
+
+
+## Scan a device
 
 ```yaml
 service: zha_custom.execute
@@ -28,6 +47,9 @@ data:
   command: scan_device
 ```
 
+## Bind matching cluster to another device
+
+Binds all matching clusters (within the scope of the integrated list)
 
 ```yaml
 service: zha_custom.execute
@@ -38,6 +60,8 @@ data:
 
 ```
 
+## Handle join - interrogate device
+
 ```yaml
 service: zha_custom.execute
 data:
@@ -47,6 +71,10 @@ data:
 
 ```
 
+## Write(/Read) an attribute value
+
+You can write an attribute value to any endpoint/cluster/attribute.
+You can provide the numerical value of the attribute, or the zigpy internal name.
 
 ```yaml
 service: zha_custom.execute
@@ -58,12 +86,19 @@ data:
 ```
 
 
-Configure Temperature reporting on a SonOff SNZB-02 (eWeLink/TH01).
+## Configure reporting
+
+You can set the minimum and maximum delay between two reports and
+set the level of change required to report a value (before the maximum
+delay is expired).
+
+This example configures Temperature reporting on a SonOff SNZB-02 (eWeLink/TH01).
 Note that you (may) need to press the button on the thermometer just after
-requesting the command.
-I got timeouts for these commands, but at least one of them passed and
-the temperature reporting was in practice every 20s (probably the minimum
-of the device itself) for changes of minimum 0.10 degC.
+requesting the command (it's a sleepy device and does not wake up often).
+
+After succeeding the configuration, the minimum delay was actually 20s
+which is likely the measurement period itself.
+The changes were reported when they exceeded 0.10 degrees C.
 
 ```yaml
 service: zha_custom.execute
@@ -76,7 +111,7 @@ data:
 
 # Backup ZNP network data 
 
-Use to transfer to another ZNP key later, backup or simply get network key and other info.
+Used to transfer to another ZNP key later, backup or simply get network key and other info.
 
 The output is written to the customisation directory as 'nwk_backup.json'
 
