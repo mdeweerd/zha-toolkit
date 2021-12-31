@@ -257,6 +257,14 @@ def command_handler_attr_write(*args, **kwargs):
     return zcl_attr.attr_write(*args, **kwargs)
 
 
+def command_handler_conf_report(*args, **kwargs):
+    from . import zcl_attr
+
+    importlib.reload(zcl_attr)
+
+    return zcl_attr.conf_report(*args, **kwargs)
+
+
 def command_handler_get_routes_and_neighbours(*args, **kwargs):
     """Scan a device for neighbours and routes.
     ieee -- ieee of the device to scan

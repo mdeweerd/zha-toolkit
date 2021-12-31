@@ -56,3 +56,19 @@ data:
   # Data: Endpoint, Cluster ID, Attribute Id, Attribute Type, Attribute Value
   command_data: 11,0x0006,0x0000,0x10,1
 ```
+
+
+Configure Temperature reporting on a SonOff SNZB-02 (eWeLink/TH01).
+Note that you (may) need to press the button on the thermometer just after
+requesting the command.
+I got timeouts for these commands, but at least one of them passed and
+the temperature reporting was in practice every 20s (probably the minimum
+of the device itself) for changes of minimum 0.10 degC.
+
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 00:12:4b:00:23:b3:da:a5
+  command: conf_report
+  command_data: 1,0x0402,0x0000,5,300,10
+```

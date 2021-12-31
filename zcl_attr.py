@@ -7,17 +7,84 @@ import zigpy.zcl as zcl
 LOGGER = logging.getLogger(__name__)
 
 
+# Convert string to int if possible or return original string
+#  (Returning the original string is usefull for named attributes)
 def str2int(s):
     if s.startswith("0x") or s.startswith("0X"):
         return int(s, 16)
-    elif s.startswith("0"):
+    elif s.startswith("0") and s.isnumeric():
         return int(s, 8)
-    else:
+    elif s.startswith("b") and s[1:].isnumeric():
+        return int(s[1:], 2)
+    elif s.isnumeric():
         return int(s)
+    else:
+        return s
+
+
+async def conf_report(app, listener, ieee, cmd, data, service):
+    # Data format is endpoint,cluster_id,attr_id,min_interval,max_interval,reportable_change,manufacturer
+    
+        # Split command_data and assign to string variables
+    params = data.split(',')
+    i = 0
+    # addr_str=params[i] ; i+=1
+    addr_str = ieee
+    ep_id_str = params[i] ; i += 1
+    cluster_id_str = params[i] ; i += 1
+    attr_id_str = params[i] ; i += 1
+    min_interval_str = params[i] ; i += 1
+    max_interval_str = params[i] ; i += 1
+    reportable_change_str = params[i] ; i += 1
+    
+    if i in params:
+        manf = str2int(params[i]) ; i += 1
+    else:
+        manf = None
+        
+    # Decode the variables
+
+    # # Decode address
+    if (addr_str.count(':') == 7):
+        ieee = t.EUI64.convert(addr_str)
+
+    # # Decode endpoint
+    ep_id = str2int(ep_id_str)
+
+    # # Decode cluster id
+    cluster_id = str2int(cluster_id_str)
+    
+    attr_id = str2int(attr_id_str)
+    min_interval = str2int(min_interval_str)
+    max_interval = str2int(max_interval_str)
+    reportable_change = str2int(reportable_change_str)
+
+    dev = app.get_device(ieee)
+    
+    for key, value in dev.endpoints.items():
+        LOGGER.info("Endpoint %s" % (key))
+        if key == 0:
+            continue
+        for cl, v in value.in_clusters.items():
+            LOGGER.info("InCluster 0x%04X" % (cl))
+        for cl, v in value.out_clusters.items():
+            LOGGER.info("OutCluster 0x%04X" % (cl))
+    if ep_id not in dev.endpoints:
+        LOGGER.error("Endpoint %s not found for '%s'", ep_id, repr(ieee))
+
+    if cluster_id not in dev.endpoints[ep_id].in_clusters:
+        LOGGER.error("Cluster 0x%04X not found for '%s', endpoint %s", cluster_id, repr(ieee), ep_id)
+
+    cluster = dev.endpoints[ep_id].in_clusters[cluster_id]
+ 
+    # await cluster.bind()   -> commented, not performing bind to coordinator
+    LOGGER.info("Configure report %u, %s, %u, %u, %u", ep_id, attr_id, min_interval, max_interval, reportable_change)
+    result = await cluster.configure_reporting(attr_id, min_interval, max_interval, reportable_change, manufacturer=manf)
+    LOGGER.info("Configure report result: %s", result)
 
 
 async def attr_write(app, listener, ieee, cmd, data, service):
-    # Data format is addr,endpoint,cluster_id,attr_id,attr_type,attr_value
+    # Data format is endpoint,cluster_id,attr_id,attr_type,attr_value
 
     # Split command_data and assign to string variables
     params = data.split(',')
@@ -53,14 +120,14 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         if key == 0:
             continue
         for cl, v in value.in_clusters.items():
-            print("InCluster 0x%04X" % (cl))
+            LOGGER.info("InCluster 0x%04X" % (cl))
         for cl, v in value.out_clusters.items():
-            print("OutCluster 0x%04X" % (cl))
+            LOGGER.info("OutCluster 0x%04X" % (cl))
     if ep_id not in dev.endpoints:
         LOGGER.error("Endpoint %s not found for '%s'", ep_id, repr(ieee))
 
     if cluster_id not in dev.endpoints[ep_id].in_clusters:
-        LOGGER.error("Cluster 0x%0x04X not found for '%s', endpoint %s", cluster_id, repr(ieee), ep_id)
+        LOGGER.error("Cluster 0x%04X not found for '%s', endpoint %s", cluster_id, repr(ieee), ep_id)
 
     cluster = dev.endpoints[ep_id].in_clusters[cluster_id]
  
@@ -84,9 +151,9 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     # Convert attribute value (provided as a string) to appropriate attribute value
     # If the attr_type is not set, then the attribute will be only read.
     attr_val = None
-    if attr_type==0x10:
+    if attr_type == 0x10:
         attr_val = foundation.TypeValue(attr_type, t.Bool(str2int(attr_val_str)))
-    elif attr_type==0x20:
+    elif attr_type == 0x20:
         attr_val = foundation.TypeValue(attr_type, t.uint8_t(str2int(attr_val_str)))
     elif attr_type <= 0x31 and attr_type >= 0x08:
         # uint, int, bool, bitmap and enum
@@ -101,17 +168,17 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         attr = foundation.Attribute(attr_id, value=attr_val)
         attr_write_list.append(attr)  # Write list
 
-    if True:    
+    if True: 
         LOGGER.info("Request attr read")
         result = await cluster.read_attributes(attr_read_list, manufacturer=manf)
         LOGGER.info("Reading attr status: %s", result)
 
-    if len(attr_write_list)!=0:
+    if len(attr_write_list) != 0:
         LOGGER.info("Request attr write")
         result = await cluster._write_attributes(attr_write_list, manufacturer=manf)
         LOGGER.info("Write attr status: %s", result)
 
-    if True:    
+    if True: 
         LOGGER.info("Request attr read")
         result = await cluster.read_attributes(attr_read_list, manufacturer=manf)
         LOGGER.info("Reading attr status: %s", result)
