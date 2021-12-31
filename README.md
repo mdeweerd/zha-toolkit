@@ -40,6 +40,9 @@ just after sending the command so that they can receive it.
 
 ## Scan a device
 
+The result of the scan is written to the `scan` directory located
+in the configuration directory of Home Assistant.
+
 ```yaml
 service: zha_custom.execute
 data:
