@@ -5,5 +5,6 @@
     "requirements": [],
     "dependencies": ["zha"],
     "version": "0.0.1.1",
-    "codeowners": ["@dmulcahey", "@adminiuga"]
+    "codeowners": ["@dmulcahey", "@adminiuga"],
+    "issue_tracker": "https://github.com/mdeweerd/zha_custom/issues"
 }
