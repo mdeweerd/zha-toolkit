@@ -444,5 +444,4 @@ def command_handler_znp_backup(*args, **kwargs):
 
     importlib.reload(znp)
 
-    return znp.znp_backup(*args,**kwargs)
-
+    return znp.znp_backup(*args, **kwargs)
