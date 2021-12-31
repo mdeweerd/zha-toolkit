@@ -436,3 +436,13 @@ def command_handler_zdo_flood_parent_annce(*args, **kwargs):
     importlib.reload(zdo)
 
     return zdo.flood_parent_annce(*args, **kwargs)
+
+
+def command_handler_znp_backup(*args, **kwargs):
+    """ Backup ZNP network information. """
+    from . import znp
+
+    importlib.reload(znp)
+
+    return znp.znp_backup(*args,**kwargs)
+

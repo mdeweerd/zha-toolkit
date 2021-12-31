@@ -72,3 +72,12 @@ data:
   command: conf_report
   command_data: 1,0x0402,0x0000,5,300,10
 ```
+
+
+# Backup ZNP network data (to transfer later, backup or simply get network key)
+
+```yaml
+service: zha_custom.execute
+data:
+  command: znp_backup
+```
