@@ -74,8 +74,11 @@ data:
 ```
 
 
-# Backup ZNP network data (to transfer later, backup or simply get network key)
-# The output is written to the customisation directory as 'nwk_backup.json'
+# Backup ZNP network data 
+
+Use to transfer to another ZNP key later, backup or simply get network key and other info.
+
+The output is written to the customisation directory as 'nwk_backup.json'
 
 ```yaml
 service: zha_custom.execute
