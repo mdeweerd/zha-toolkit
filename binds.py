@@ -111,7 +111,12 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
     dst_dev = app.get_device(ieee=dst_ieee)
 
     zdo = src_dev.zdo
-    src_clusters = [6, 8, 768]
+    src_clusters = [
+            0x0006, # OnOff
+            0x0008, # Level
+            0x0300, # Color Control
+            0X0402  # Temperature
+        ]
 
     for src_cluster in src_clusters:
         src_endpoints = [
