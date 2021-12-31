@@ -1,6 +1,6 @@
 {
   "name": "ZHA Custom Service Commands",
-  "content_in_root": true,
+  "content_in_root": false,
   "zip_release": false,
   "render_readme": true,
   "domains": [],
