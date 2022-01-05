@@ -26,13 +26,25 @@ logger:
 
 # Use
 
+This components provides a single service (`zha_custom.execute`) that
+provides several command (`command` parameter) providing access
+to several ZHA/Zigbee actions that are not otherwise available.
+
+
 You can use a service as an action in automations, but most actions are
 done only once and you can perform them using the developer tools.
 
-If you use HASS.os the following direct link may work.  Otherwise, find
-the developer tools in the menu and go to Services.  Direct link:
-https://homeassistant.local:8123/developer-tools/service .
-Choose `zha_custom.execute`
+If you use HASS.os the following direct link may work:
+https://homeassistant.local:8123/developer-tools/service .  
+If not, find the developer tools in the menu and go to Services.
+
+Choose `zha_custom.execute` as the service.  
+Enable Yaml entry.  
+
+There are several examples below for different commands.  
+
+Not all commands are documented, some seem to be very specific trials
+from the original authors.  
 
 
 # Examples
@@ -81,8 +93,10 @@ data:
 
 ## Write(/Read) an attribute value
 
-You can write an attribute value to any endpoint/cluster/attribute.
-You can provide the numerical value of the attribute, or the zigpy internal name.
+Write an attribute value to any endpoint/cluster/attribute.
+
+You can provide the numerical value of the attribute id,
+or the internal zigpy name (string).
 
 ```yaml
 service: zha_custom.execute
@@ -96,7 +110,7 @@ data:
 
 ## Configure reporting
 
-You can set the minimum and maximum delay between two reports and
+Set the minimum and maximum delay between two reports and
 set the level of change required to report a value (before the maximum
 delay is expired).
 
