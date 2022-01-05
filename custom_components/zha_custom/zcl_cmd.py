@@ -44,7 +44,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
     # The command to send
     cmd_id     = u.str2int(extra['cmd'])
     # The direction (to in or out cluster)
-    dir_int=1
+    dir_int=0
     if 'dir' in extra:
         dir_int = u.str2int(extra['dir'])
 
@@ -69,7 +69,8 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
             LOGGER.debug("cmd arg %s",val)
             cmd_args.append(u.str2int(val))
 
-    is_in_cluster = (dir_int != 0)
+    # Direction 0 = Client to Server, as in protocol bit
+    is_in_cluster = (dir_int == 0)
 
     dev = app.get_device(ieee=ieee)
 

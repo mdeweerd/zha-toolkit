@@ -158,8 +158,8 @@ data:
     cmd: 0
     cluster: 1006
     endpoint: 111
-    # Optional: direction (1=to in_cluster (default), 0=to out_cluster),
-    dir: 1
+    # Optional: direction (0=to in_cluster (default), 1=to out_cluster),
+    dir: 0
     # Optional: expect_reply  (default=true - false when 0 or 'false')
     expect_reply: true 
     # Optional: manf - manufacturer - default : None
@@ -183,8 +183,8 @@ data:
     cmd: 1
     cluster: 6
     endpoint: 11
-    # Optional: direction (1=to in_cluster)
-    dir: 1
+    # Optional: direction (0=to in_cluster)
+    dir: 0
 
 ```
 
@@ -200,7 +200,7 @@ data:
     cmd: 0
     cluster: 6
     endpoint: 11
-    dir: 1
+    dir: 0
 
 ```
 
@@ -214,7 +214,7 @@ data:
     cmd: 4
     cluster: 5
     endpoint: 11
-    dir: 1
+    dir: 0
     args: [ 2, 5 ]
 ```
 
@@ -228,7 +228,7 @@ data:
     cmd: 5
     cluster: 5
     endpoint: 11
-    dir: 1
+    dir: 0
     args: [ 2, 5 ]
 ```
 
