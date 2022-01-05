@@ -5,7 +5,7 @@
 -->
 # Setup
 
-This component needs to be added to your custom_components directory either manually or 
+This component needs to be added to your custom_components directory either manually or using HACS.
 
 
 The component is only available in Home Assistant after adding 
