@@ -1,11 +1,11 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
-![hacs installs](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Flauwbier.nl%2Fhacs%2Fpowercalc)
-![Version](https://img.shields.io/github/v/release/bramstroker/homeassistant-powercalc)
-![Downloads](https://img.shields.io/github/downloads/bramstroker/homeassistant-powercalc/total)
-
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration).
+<!-- [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+![Version](https://img.shields.io/github/v/release/mdeweerd/zha_custom)
+![Downloads](https://img.shields.io/github/downloads/release/mdeweerd/zha_custom/total)
+-->
 # Setup
 
-This component needs to be added to your custom_components directory either manually or using [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration).
+This component needs to be added to your custom_components directory either manually or 
 
 
 The component is only available in Home Assistant after adding 
