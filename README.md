@@ -172,7 +172,7 @@ data:
 ```
 
 
-Exemple to send the on command to an OnOff Cluster.  These were tested
+# Example: Send on command to an OnOff Cluster.  These were tested
 with a real device:
 
 ```yaml
@@ -190,7 +190,8 @@ data:
 ```
 
 
-Example to send the off command to an OnOff Cluster:
+# Example: send off command to an OnOff Cluster:
+
 ```yaml
 service: zha_custom.execute
 data:
@@ -203,6 +204,50 @@ data:
     dir: 1
 
 ```
+
+# Example: store scene:
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: zcl_cmd
+  extra:
+    cmd: 4
+    cluster: 5
+    endpoint: 11
+    dir: 1
+    args: [ 2, 5 ]
+```
+
+# Example: recall scene:
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: zcl_cmd
+  extra:
+    cmd: 5
+    cluster: 5
+    endpoint: 11
+    dir: 1
+    args: [ 2, 5 ]
+```
+
+Results in (sniffed):
+```raw
+ZigBee Cluster Library Frame
+    Frame Control Field: Cluster-specific (0x01)
+        .... ..01 = Frame Type: Cluster-specific (0x1)
+        .... .0.. = Manufacturer Specific: False
+        .... 0... = Direction: Client to Server
+        ...0 .... = Disable Default Response: False
+    Sequence Number: 94
+    Command: Recall Scene (0x05)
+    Payload
+        Group ID: 0x0002
+        Scene ID: 0x05
+```
+
 
 
 ## Backup ZNP network data 
