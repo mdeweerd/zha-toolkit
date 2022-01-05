@@ -260,7 +260,7 @@ data:
     cmd: 0
     cluster: 5
     endpoint: 11
-    dir: 1
+    dir: 0
     args: [ 2, 5, 2, "Abc", [1,2] ]
 ```
 
