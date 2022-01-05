@@ -172,7 +172,7 @@ data:
 ```
 
 
-# Example: Send `on` command to an OnOff Cluster.
+### Example: Send `on` command to an OnOff Cluster.
 
 ```yaml
 service: zha_custom.execute
@@ -189,7 +189,7 @@ data:
 ```
 
 
-# Example: send `off` command to an OnOff Cluster:
+### Example: send `off` command to an OnOff Cluster:
 
 ```yaml
 service: zha_custom.execute
@@ -204,7 +204,7 @@ data:
 
 ```
 
-# Example: store scene:
+### Example: store scene:
 ```yaml
 service: zha_custom.execute
 data:
@@ -218,7 +218,7 @@ data:
     args: [ 2, 5 ]
 ```
 
-# Example: recall scene:
+### Example: recall scene:
 ```yaml
 service: zha_custom.execute
 data:
@@ -247,6 +247,42 @@ ZigBee Cluster Library Frame
         Scene ID: 0x05
 ```
 
+### Example: add scene
+
+This example shows that you can provide a list of bytes for an argument:
+
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: zcl_cmd
+  extra:
+    cmd: 0
+    cluster: 5
+    endpoint: 11
+    dir: 1
+    args: [ 2, 5, 2, "Abc", [1,2] ]
+```
+
+sniffed as:
+```raw
+ZigBee Cluster Library Frame
+    Frame Control Field: Cluster-specific (0x01)
+        .... ..01 = Frame Type: Cluster-specific (0x1)
+        .... .0.. = Manufacturer Specific: False
+        .... 0... = Direction: Client to Server
+        ...0 .... = Disable Default Response: False
+    Sequence Number: 80
+    Command: Add Scene (0x00)
+    Payload, String: Abc
+        Group ID: 0x0002
+        Scene ID: 0x05
+        Transition Time: 2 seconds
+        Length: 3
+        String: Abc
+        Extension Set: 020102
+
+```
 
 
 ## Backup ZNP network data 
