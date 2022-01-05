@@ -172,8 +172,7 @@ data:
 ```
 
 
-# Example: Send on command to an OnOff Cluster.  These were tested
-with a real device:
+# Example: Send `on` command to an OnOff Cluster.
 
 ```yaml
 service: zha_custom.execute
@@ -190,7 +189,7 @@ data:
 ```
 
 
-# Example: send off command to an OnOff Cluster:
+# Example: send `off` command to an OnOff Cluster:
 
 ```yaml
 service: zha_custom.execute
