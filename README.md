@@ -24,6 +24,17 @@ logger:
     custom_components.zha_custom: debug
 ```
 
+You can also change the log configuration dynamically by calling the logger.setlevel service.
+Example that sets the debug level for this `zha_custom` component and for `zigpy.zcl`
+(which helps to see some information about actual ZCL frames sent) :
+
+```yaml
+service: logger.set_level
+data: 
+    custom_components.zha_custom: debug
+    zigpy.zcl: debug
+```
+
 # Use
 
 This components provides a single service (`zha_custom.execute`) that
@@ -128,6 +139,69 @@ data:
   ieee: 00:12:4b:00:23:b3:da:a5
   command: conf_report
   command_data: 1,0x0402,0x0000,5,300,10
+```
+
+## Send a Cluster command
+
+Allows you to send a cluster command.
+Also accepts command arguments, but that's not tested yet.
+
+Should be useable to use scenes.
+
+
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: zcl_cmd
+  extra:
+    cmd: 0
+    cluster: 1006
+    endpoint: 111
+    # Optional: direction (1=to in_cluster (default), 0=to out_cluster),
+    dir: 1
+    # Optional: expect_reply  (default=true - false when 0 or 'false')
+    expect_reply: true 
+    # Optional: manf - manufacturer - default : None
+    manf: 0x0000
+    # Optional: tries - default : 1
+    tries: 1
+    # Optional (only add when the command requires it): arguments (default=empty)
+    args: [ 1, 3] 
+
+```
+
+
+Exemple to send the on command to an OnOff Cluster.  These were tested
+with a real device:
+
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: zcl_cmd
+  extra:
+    cmd: 1
+    cluster: 6
+    endpoint: 11
+    # Optional: direction (1=to in_cluster)
+    dir: 1
+
+```
+
+
+Example to send the off command to an OnOff Cluster:
+```yaml
+service: zha_custom.execute
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  command: zcl_cmd
+  extra:
+    cmd: 0
+    cluster: 6
+    endpoint: 11
+    dir: 1
+
 ```
 
 
