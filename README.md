@@ -129,6 +129,43 @@ data:
   command: znp_backup
 ```
 
+## Restore ZNP network data
+
+Will restore network data from `local/nwk_backup.json` where `local`
+is a directory in the `zha_component` directory.
+
+Note: currently under test.
+
+For safety, a backup is made of the current network before restoring
+`local/nwk_backup.json`.  The name of that backup is according to the format
+`local/nwk_backup_YYmmDD_HHMMSS.json`.
+
+
+A typical use for this is when you migrate from one key to another.
+
+The procedure should be:
+1. Backup using the `znp_backup` command in the `zha_custom` service.
+   Verify that the `nwk_backup.json` file is generated in the `local`
+   directory.
+2. Remove the original key from your system.
+   Insert the new key.
+3. Restart Home Assistant.
+4. Restore using the `znp_restore` command.
+5. Check the logs.
+6. Restart HA.
+7. Check that everything is ok.
+
+
+```yaml
+service: zha_custom.execute
+data:
+  command: znp_restore
+  # Optional:
+  #  command_data = Counter_increment (for tx).
+  #                 defaults to 2500
+  command_data: 2500
+```
+
 
 # Credits/Motivation
 

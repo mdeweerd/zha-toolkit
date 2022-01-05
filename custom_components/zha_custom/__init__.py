@@ -447,4 +447,13 @@ def command_handler_znp_backup(*args, **kwargs):
     return znp.znp_backup(*args, **kwargs)
 
 
+def command_handler_znp_restore(*args, **kwargs):
+    """ Restore ZNP network information. """
+    from . import znp
+
+    importlib.reload(znp)
+
+    return znp.znp_restore(*args, **kwargs)
+
+
 
