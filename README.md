@@ -135,12 +135,18 @@ data:
 
 Used to transfer to another ZNP key later, backup or simply get network key and other info.
 
-The output is written to the customisation directory as 'nwk_backup.json'
+The output is written to the customisation directory as `local/nwk_backup.json` when `command_data` is empty or not provided.  When `command_data` is provided, it is added just after nwk_backup.
+
+
+The name of that backup is according to the format
 
 ```yaml
 service: zha_custom.execute
 data:
   command: znp_backup
+  # Optional command_data, string added to the basename.
+  # With this example the backup is written to `nwk_backup_20220105.json`
+  command_data: _20220105
 ```
 
 ## Restore ZNP network data

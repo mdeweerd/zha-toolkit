@@ -44,6 +44,11 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
+
+    # Ensure that data is an empty string when not set
+    if data is None:
+        data=''
+
     fname = out_dir + 'nwk_backup' + str(data) + '.json'
        
     f = open(fname, "w")
