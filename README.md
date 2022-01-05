@@ -1,3 +1,8 @@
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+![hacs installs](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Flauwbier.nl%2Fhacs%2Fpowercalc)
+![Version](https://img.shields.io/github/v/release/bramstroker/homeassistant-powercalc)
+![Downloads](https://img.shields.io/github/downloads/bramstroker/homeassistant-powercalc/total)
+
 # Setup
 
 This component needs to be added to your custom_components directory either manually or using [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration).
@@ -112,7 +117,7 @@ data:
 ```
 
 
-# Backup ZNP network data 
+## Backup ZNP network data 
 
 Used to transfer to another ZNP key later, backup or simply get network key and other info.
 
@@ -123,3 +128,64 @@ service: zha_custom.execute
 data:
   command: znp_backup
 ```
+
+
+# Credits/Motivation
+
+This project was forked from [Adminiguaga/zha_custom](https://github.com/Adminiuga/zha_custom) where the "hard tricks" for providing services and accessing ZHA functions were implemented/demonstrated.  The original codeowners were "dmulcahey" and "adminiuga".
+
+The initial purpose of this fork was mainly to add custom attribute writes, custom reporting and more binding possibilities.
+
+The structure was then updated to be compliant with HACS integration so that the component can be easily added to a Home Assistant setup.
+
+# License
+
+I set the License the same as Home Assistant that has the ZHA component.  The original zha_custom repository does not mention a license.
+
+# Contributing 
+
+## Adding commands/documentation
+
+Feel free to propose documentation of the available commands (not all are documented above) or propose new commands.
+
+To add a new command, one has to add the `command_handler` to the `__init__.py` file and the actual command itself to an existing module or a new module if that is appropriate.
+Also add a short description of the command in this `README.md` .
+
+
+Example of addition to `__init__.py`:
+
+```python
+def command_handler_znp_backup(*args, **kwargs):
+    """ Backup ZNP network information. """
+    from . import znp
+
+    importlib.reload(znp)
+
+    return znp.znp_backup(*args, **kwargs)
+```
+
+Anything after `command_handler_` is used to match the `command` parameter to the service - simply adding a function with such a name "adds" the corresponding command.
+
+The `reload` in the code above allows you to change the contents of the module and test it without having to restart Home Assistant.
+
+The code above imports and reloads `znp.py` and then calls `znp_backup` in that module.
+
+All methods take the same parameters.  'args' and 'kwargs` do some python magics to ppropagate a variable number of fixed and named parameters.  But in the end the method signature has to look like this:
+
+```python
+async def znp_backup(app, listener, ieee, cmd, data, service):
+    """ Backup ZNP network information. """
+
+```
+
+Where `app` is the `zigpy` instance and `listener` is the gateway instance.
+`ieee`, `cmd` and `data` correspond to the parameters provided to the service.  
+You can examine some of the existing code how you can use them.  
+Possibly `data` could be more than a string, but that has not been validated for now.
+
+Then you have to import the modules you require in the function - or add/enable them as imports at the module level.
+
+You can also run `flake8` on your files to find some common basic errors and provide some code styling consistency.
+
+As far as ZHA and zigpy are concerned, you can find the code for the ZHA integration at https://github.com/home-assistant/core/tree/dev/homeassistant/components/zha , and the `zigpy` repositories are under https://github.com/zigpy .
+
