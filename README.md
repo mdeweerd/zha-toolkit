@@ -146,7 +146,7 @@ data:
 ## Restore ZNP network data
 
 Will restore network data from `local/nwk_backup.json` where `local`
-is a directory in the `zha_component` directory.
+is a directory in the `zha_custom` directory.
 
 Note: currently under test.
 
