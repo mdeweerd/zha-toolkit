@@ -3,23 +3,9 @@ import logging
 from zigpy import types as t
 from zigpy.zcl import foundation
 # import zigpy.zcl as zcl
+from . import utils as u
 
 LOGGER = logging.getLogger(__name__)
-
-
-# Convert string to int if possible or return original string
-#  (Returning the original string is usefull for named attributes)
-def str2int(s):
-    if s.startswith("0x") or s.startswith("0X"):
-        return int(s, 16)
-    elif s.startswith("0") and s.isnumeric():
-        return int(s, 8)
-    elif s.startswith("b") and s[1:].isnumeric():
-        return int(s[1:], 2)
-    elif s.isnumeric():
-        return int(s)
-    else:
-        return s
 
 
 async def conf_report(app, listener, ieee, cmd, data, service):
@@ -39,7 +25,7 @@ async def conf_report(app, listener, ieee, cmd, data, service):
     reportable_change_str = params[i] ; i += 1
 
     if i in params:
-        manf = str2int(params[i]) ; i += 1
+        manf = u.str2int(params[i]) ; i += 1
     else:
         manf = None
 
@@ -50,15 +36,15 @@ async def conf_report(app, listener, ieee, cmd, data, service):
         ieee = t.EUI64.convert(addr_str)
 
     # Decode endpoint
-    ep_id = str2int(ep_id_str)
+    ep_id = u.str2int(ep_id_str)
 
     # Decode cluster id
-    cluster_id = str2int(cluster_id_str)
+    cluster_id = u.str2int(cluster_id_str)
 
-    attr_id = str2int(attr_id_str)
-    min_interval = str2int(min_interval_str)
-    max_interval = str2int(max_interval_str)
-    reportable_change = str2int(reportable_change_str)
+    attr_id = u.str2int(attr_id_str)
+    min_interval = u.str2int(min_interval_str)
+    max_interval = u.str2int(max_interval_str)
+    reportable_change = u.str2int(reportable_change_str)
 
     dev = app.get_device(ieee)
 
@@ -104,7 +90,7 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     attr_type_str = params[i] ; i += 1
     attr_val_str = params[i] ; i += 1
     if i in params:
-        manf = str2int(params[i]) ; i += 1
+        manf = u.str2int(params[i]) ; i += 1
     else:
         manf = None
 
@@ -115,10 +101,10 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         ieee = t.EUI64.convert(addr_str)
 
     # Decode endpoint
-    ep_id = str2int(ep_id_str)
+    ep_id = u.str2int(ep_id_str)
 
     # Decode cluster id
-    cluster_id = str2int(cluster_id_str)
+    cluster_id = u.str2int(cluster_id_str)
 
     dev = app.get_device(ieee)
 
@@ -152,10 +138,10 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
     # Decode attribute id
     # Could accept name for attribute, but extra code to check
-    attr_id = str2int(attr_id_str)
+    attr_id = u.str2int(attr_id_str)
 
     # Decode attribute type
-    attr_type = str2int(attr_type_str)
+    attr_type = u.str2int(attr_type_str)
 
     # Convert attribute value (provided as a string) to appropriate
     # attribute value
@@ -163,14 +149,14 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     attr_val = None
     if attr_type == 0x10:
         attr_val = foundation.TypeValue(
-            attr_type, t.Bool(str2int(attr_val_str)))
+            attr_type, t.Bool(u.str2int(attr_val_str)))
     elif attr_type == 0x20:
         attr_val = foundation.TypeValue(
-            attr_type, t.uint8_t(str2int(attr_val_str)))
+            attr_type, t.uint8_t(u.str2int(attr_val_str)))
     elif attr_type <= 0x31 and attr_type >= 0x08:
         # uint, int, bool, bitmap and enum
         attr_val = foundation.TypeValue(
-            attr_type, t.FixedIntType(str2int(attr_val_str)))
+            attr_type, t.FixedIntType(u.str2int(attr_val_str)))
     elif attr_type == 0x41:  # Octet string
         # Not tested
         attr_val = foundation.TypeValue(

@@ -456,4 +456,12 @@ def command_handler_znp_restore(*args, **kwargs):
     return znp.znp_restore(*args, **kwargs)
 
 
+def command_handler_zcl_cmd(*args, **kwargs):
+    """ Perform scene command. """
+    from . import zcl_cmd
+
+    importlib.reload(zcl_cmd)
+
+    return zcl_cmd.zcl_cmd(*args, **kwargs)
+
 
