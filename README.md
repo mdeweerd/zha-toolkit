@@ -15,7 +15,7 @@ reloaded on each call).
 Provide access to some higher level commands such as ZNP backup (and restore).
 
 Make it easier to perform one-time operations where (some) Zigbee
-knowlegde is sufficient and avoiding the need to understand the inner
+knowledge is sufficient and avoiding the need to understand the inner
 workings of ZHA or Zigpy (methods, quirks, etc).
 
 
