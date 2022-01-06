@@ -21,7 +21,8 @@ workings of ZHA or Zigpy (methods, quirks, etc).
 
 # Setup
 
-This component needs to be added to your custom_components directory either manually or using HACS.
+This component needs to be added to your custom_components directory
+either manually or using HACS.
 
 
 The component is only available in Home Assistant after adding 
@@ -40,9 +41,11 @@ logger:
     custom_components.zha_custom: debug
 ```
 
-You can also change the log configuration dynamically by calling the logger.setlevel service.
-Example that sets the debug level for this `zha_custom` component and for `zigpy.zcl`
-(which helps to see some information about actual ZCL frames sent) :
+You can also change the log configuration dynamically by calling the
+`logger.setlevel` service.
+Example that sets the debug level for this `zha_custom` component and for
+zigpy.zcl` (which helps to see some information about actual ZCL frames sent).
+This method allows you to enable debug logging only for a limited duration :
 
 ```yaml
 service: logger.set_level
@@ -51,7 +54,7 @@ data:
     zigpy.zcl: debug
 ```
 
-# Use
+# Using `zha_custom`
 
 This components provides a single service (`zha_custom.execute`) that
 provides several command (`command` parameter) providing access
@@ -160,19 +163,22 @@ data:
 ## Send a Cluster command
 
 Allows you to send a cluster command.
-Also accepts command arguments, but that's not tested yet.
-
-Should be useable to use scenes.
+Also accepts command arguments.
 
 
 ```yaml
 service: zha_custom.execute
 data:
+  # Device IEEE address - mandatory
   ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Serivce command - mandatory
   command: zcl_cmd
   extra:
+    # Command id - mandatory
     cmd: 0
+    # Cluster id - mandatory
     cluster: 1006
+    # Endpoitn - mandatory
     endpoint: 111
     # Optional: direction (0=to in_cluster (default), 1=to out_cluster),
     dir: 0
@@ -183,7 +189,7 @@ data:
     # Optional: tries - default : 1
     tries: 1
     # Optional (only add when the command requires it): arguments (default=empty)
-    args: [ 1, 3] 
+    args: [ 1, 3, [ 1, 2, 3] ] 
 
 ```
 
@@ -200,12 +206,10 @@ data:
     cluster: 6
     endpoint: 11
     # Optional: direction (0=to in_cluster)
-    dir: 0
-
 ```
 
 
-### Example: send `off` command to an OnOff Cluster:
+### Example: Send `off` command to an OnOff Cluster:
 
 ```yaml
 service: zha_custom.execute
@@ -216,11 +220,10 @@ data:
     cmd: 0
     cluster: 6
     endpoint: 11
-    dir: 0
-
 ```
 
-### Example: store scene:
+### Example: "Store Scene"
+
 ```yaml
 service: zha_custom.execute
 data:
@@ -230,7 +233,6 @@ data:
     cmd: 4
     cluster: 5
     endpoint: 11
-    dir: 0
     args: [ 2, 5 ]
 ```
 
@@ -244,7 +246,6 @@ data:
     cmd: 5
     cluster: 5
     endpoint: 11
-    dir: 0
     args: [ 2, 5 ]
 ```
 
@@ -263,7 +264,7 @@ ZigBee Cluster Library Frame
         Scene ID: 0x05
 ```
 
-### Example: Add Scene
+### Example: "Add Scene"
 
 This example shows that you can provide a list of bytes for an argument:
 
@@ -276,7 +277,6 @@ data:
     cmd: 0
     cluster: 5
     endpoint: 11
-    dir: 0
     args:
       - 2
       - 5
@@ -309,9 +309,12 @@ ZigBee Cluster Library Frame
 
 ## Backup ZNP network data 
 
-Used to transfer to another ZNP key later, backup or simply get network key and other info.
+Used to transfer to another ZNP key later, backup or simply get network key
+and other info.
 
-The output is written to the customisation directory as `local/nwk_backup.json` when `command_data` is empty or not provided.  When `command_data` is provided, it is added just after nwk_backup.
+The output is written to the customisation directory as `local/nwk_backup.json`
+when `command_data` is empty or not provided.  When `command_data` is provided,
+it is added just after nwk_backup.
 
 
 The name of that backup is according to the format
@@ -365,23 +368,31 @@ data:
 
 # Credits/Motivation
 
-This project was forked from [Adminiguaga/zha_custom](https://github.com/Adminiuga/zha_custom) where the "hard tricks" for providing services and accessing ZHA functions were implemented/demonstrated.  The original codeowners were "dmulcahey" and "adminiuga".
+This project was forked from [Adminiguaga/zha_custom](https://github.com/Adminiuga/zha_custom)
+where the "hard tricks" for providing services and accessing ZHA functions were
+implemented/demonstrated.  The original codeowners were "dmulcahey" and "adminiuga".
 
-The initial purpose of this fork was mainly to add custom attribute writes, custom reporting and more binding possibilities.
+The initial purpose of this fork was mainly to add custom attribute writes,
+custom reporting and more binding possibilities.
 
-The structure was then updated to be compliant with HACS integration so that the component can be easily added to a Home Assistant setup.
+The structure was then updated to be compliant with HACS integration so that
+the component can be easily added to a Home Assistant setup.
 
 # License
 
-I set the License the same as Home Assistant that has the ZHA component.  The original zha_custom repository does not mention a license.
+I set the License the same as Home Assistant that has the ZHA component.
+The original zha_custom repository does not mention a license.
 
 # Contributing 
 
 ## Adding commands/documentation
 
-Feel free to propose documentation of the available commands (not all are documented above) or propose new commands.
+Feel free to propose documentation of the available commands (not all are documented
+above) or propose new commands.
 
-To add a new command, one has to add the `command_handler` to the `__init__.py` file and the actual command itself to an existing module or a new module if that is appropriate.
+To add a new command, one has to add the `command_handler` to the `__init__.py`
+file and the actual command itself to an existing module or a new module if that
+is appropriate.
 Also add a short description of the command in this `README.md` .
 
 
@@ -397,13 +408,19 @@ def command_handler_znp_backup(*args, **kwargs):
     return znp.znp_backup(*args, **kwargs)
 ```
 
-Anything after `command_handler_` is used to match the `command` parameter to the service - simply adding a function with such a name "adds" the corresponding command.
+Anything after `command_handler_` is used to match the `command` parameter
+to the service - simply adding a function with such a name "adds" the
+ corresponding command.
 
-The `reload` in the code above allows you to change the contents of the module and test it without having to restart Home Assistant.
+The `reload` in the code above allows you to change the contents of the
+module and test it without having to restart Home Assistant.
 
-The code above imports and reloads `znp.py` and then calls `znp_backup` in that module.
+The code above imports and reloads `znp.py` and then calls `znp_backup`
+in that module.
 
-All methods take the same parameters.  'args' and 'kwargs` do some python magics to ppropagate a variable number of fixed and named parameters.  But in the end the method signature has to look like this:
+All methods take the same parameters.  'args' and 'kwargs` do some python
+magic to ppropagate a variable number of fixed and named parameters.  But 
+in the end the method signature has to look like this:
 
 ```python
 async def znp_backup(app, listener, ieee, cmd, data, service):
@@ -416,9 +433,13 @@ Where `app` is the `zigpy` instance and `listener` is the gateway instance.
 You can examine some of the existing code how you can use them.  
 Possibly `data` could be more than a string, but that has not been validated for now.
 
-Then you have to import the modules you require in the function - or add/enable them as imports at the module level.
+Then you have to import the modules you require in the function - or
+add/enable them as imports at the module level.
 
-You can also run `flake8` on your files to find some common basic errors and provide some code styling consistency.
+You can also run `flake8` on your files to find some common basic errors
+and provide some code styling consistency.
 
-As far as ZHA and zigpy are concerned, you can find the code for the ZHA integration at https://github.com/home-assistant/core/tree/dev/homeassistant/components/zha , and the `zigpy` repositories are under https://github.com/zigpy .
-
+As far as ZHA and zigpy are concerned, you can find the code for the
+ZHA integration at
+https://github.com/home-assistant/core/tree/dev/homeassistant/components/zha ,
+and the `zigpy` repositories are under https://github.com/zigpy .
