@@ -4,6 +4,6 @@
   "zip_release": false,
   "render_readme": true,
   "domains": [],
-  "persistent_directory": "output",
+  "persistent_directory": "local",
   "homeassistant": "2021.1"
 }	
