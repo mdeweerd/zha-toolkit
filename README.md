@@ -247,7 +247,7 @@ ZigBee Cluster Library Frame
         Scene ID: 0x05
 ```
 
-### Example: add scene
+### Example: Add Scene
 
 This example shows that you can provide a list of bytes for an argument:
 
@@ -261,7 +261,14 @@ data:
     cluster: 5
     endpoint: 11
     dir: 0
-    args: [ 2, 5, 2, "Abc", [1,2] ]
+    args:
+      - 2
+      - 5
+      - 2
+      - "Final Example"
+      # Two bytes of cluster Id (LSB first), length, attribute value bytes
+      #   repeat as needed (inside the list!)
+      - [ 0x06, 0x00, 1, 1 ]
 ```
 
 sniffed as:
@@ -272,16 +279,15 @@ ZigBee Cluster Library Frame
         .... .0.. = Manufacturer Specific: False
         .... 0... = Direction: Client to Server
         ...0 .... = Disable Default Response: False
-    Sequence Number: 80
+    Sequence Number: 76
     Command: Add Scene (0x00)
-    Payload, String: Abc
+    Payload, String: Final Example
         Group ID: 0x0002
         Scene ID: 0x05
         Transition Time: 2 seconds
-        Length: 3
-        String: Abc
-        Extension Set: 020102
-
+        Length: 13
+        String: Final Example
+        Extension Set: 06000101
 ```
 
 
