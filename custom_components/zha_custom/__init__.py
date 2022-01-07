@@ -96,7 +96,18 @@ async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
     LOGGER.debug("running 'handle_join' command: %s", service)
     if ieee is None:
         return
-    app.handle_join(int(data, 16), ieee, 0)
+    dev = None
+    if data is None:
+        try:
+            dev = app.get_device(ieee=ieee)
+            data = dev.nwk
+            LOGGER.debug("Using NWK '%s' for '%s'", data, ieee)
+        finally:
+            LOGGER.debug("Device '%s' not found in device table, provide NWK address")
+
+ 
+    if data is None and ieee in 
+    app.handle_join(u.str2int(data), ieee, 0)
 
 
 async def command_handler_scan_device(*args, **kwargs):
