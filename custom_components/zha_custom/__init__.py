@@ -477,3 +477,28 @@ def command_handler_zcl_cmd(*args, **kwargs):
     return zcl_cmd.zcl_cmd(*args, **kwargs)
 
 
+def command_handler_znp_nvram_backup(*args, **kwargs):
+    """ Backup ZNP network information. """
+    from . import znp
+
+    importlib.reload(znp)
+
+    return znp.znp_nvram_backup(*args, **kwargs)
+
+
+def command_handler_znp_nvram_restore(*args, **kwargs):
+    """ Restore ZNP network information. """
+    from . import znp
+
+    importlib.reload(znp)
+
+    return znp.znp_nvram_restore(*args, **kwargs)
+
+
+def command_handler_znp_nvram_reset(*args, **kwargs):
+    """ Restore ZNP network information. """
+    from . import znp
+
+    importlib.reload(znp)
+
+    return znp.znp_nvram_reset(*args, **kwargs)

@@ -348,6 +348,61 @@ ZigBee Cluster Library Frame
 ```
 
 
+## `znp_nvram_backup`: Backup ZNP NVRAM data
+
+The output is written to the customisation directory as `local/nvram_backup.json`
+when `command_data` is empty or not provided.  When `command_data` is provided,
+it is added just after nvram_backup.
+
+Note: currently under test.
+
+
+```yaml
+service: zha_custom.execute
+data:
+  command: znp_nvram_backup
+  # Optional command_data, string added to the basename.
+  # With this example the backup is written to `nwk_backup_20220105.json`
+  command_data: _20220105
+```
+
+## `znp_nvram_restore`: Restore ZNP NVRAM data
+
+Will restore ZNP NVRAM data from `local/nvram_backup.json` where `local`
+is a directory in the `zha_custom` directory.
+
+Note: currently under test.
+
+For safety, a backup is made of the current network before restoring
+`local/nvram_backup.json`.  The name of that backup is according to the format
+`local/nvram_backup_YYmmDD_HHMMSS.json`.
+
+```yaml
+service: zha_custom.execute
+data:
+  command: znp_nvram_restore
+```
+
+
+## `znp_nvram_reset`: Reset ZNP NVRAM data
+
+Will reset ZNP NVRAM data from `local/nvram_backup.json` where `local`
+is a directory in the `zha_custom` directory.
+
+Note: currently under test.
+
+For safety, a backup is made of the current network before restoring
+`local/nvram_backup.json`.  The name of that backup is according to the format
+`local/nvram_backup_YYmmDD_HHMMSS.json`.
+
+
+```yaml
+service: zha_custom.execute
+data:
+  command: znp_nvram_reset
+```
+
+
 ## `znp_backup`: Backup ZNP network data 
 
 Used to transfer to another ZNP key later, backup or simply get network key
