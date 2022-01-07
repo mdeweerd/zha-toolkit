@@ -13,7 +13,7 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
     """ Backup ZNP network information. """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'%s' is only available for ZNP".format(cmd)
+        msg = "'{}' is only available for ZNP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -32,10 +32,9 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-
     # Ensure that data is an empty string when not set
     if data is None:
-        data=''
+        data = ''
 
     fname = out_dir + 'nwk_backup' + str(data) + '.json'
 
@@ -43,11 +42,12 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
     f.write(json.dumps(backup_obj, indent=4))
     f.close()
 
+
 async def znp_restore(app, listener, ieee, cmd, data, service):
     """ Restore ZNP network information. """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'%s' is only available for ZNP".format(cmd)
+        msg = "'{}' is only available for ZNP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -63,19 +63,17 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
 
     counter_increment = t.uint32_t(counter_increment)
 
-
     from datetime import datetime
-    current_datetime=datetime.now().strftime('_%Y%m%d_%H%M%S')
+    current_datetime = datetime.now().strftime('_%Y%m%d_%H%M%S')
 
     # Safety: backup current configuration
     await znp_backup(app, listener, ieee, cmd, current_datetime, service)
 
     # Import stuff we need for restoring
-    from zigpy_znp.tools.network_restore import restore_network, json_backup_to_zigpy_state
+    from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
     from zigpy_znp.tools.common import validate_backup_json
     from os import path
     import json
-
 
     # Set name with regards to local path
     fname = path.dirname(__file__) + '/local/nwk_backup.json'
@@ -93,7 +91,7 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
 
     network_info, node_info = json_backup_to_zigpy_state(backup)
 
-    network_info.network_key.tx_counter+=counter_increment
+    network_info.network_key.tx_counter += counter_increment
 
     # Network already formed in HA
     # app._znp.startup(force_form=True)
@@ -115,60 +113,62 @@ async def znp_nvram_backup(app, listener, ieee, cmd, data, service):
     """ Save ZNP NVRAM to file for backup """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'%s' is only available for ZNP".format(cmd)
+        msg = "'{}' is only available for ZNP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
 
     # Store backup information to file
     from zigpy_znp.tools.nvram_read import nvram_read
+    import os
+    import json
 
     # Set name with regards to local path
     out_dir = os.path.dirname(__file__) + '/local/'
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
-
 
     LOGGER.info("Reading NVRAM from device")
     backup_obj = await nvram_read(app._znp)
 
     # Ensure that data is an empty string when not set
     if data is None:
-        data=''
+        data = ''
 
     fname = out_dir + 'nvram_backup' + str(data) + '.json'
 
-    LOGGER.info("Saving NVRAM to '%s'",fname)
+    LOGGER.info("Saving NVRAM to '%s'", fname)
     f = open(fname, "w")
     f.write(json.dumps(backup_obj, indent=4))
     f.close()
-    LOGGER.info("NVRAM backup saved to '%s'",fname)
+    LOGGER.info("NVRAM backup saved to '%s'", fname)
 
 
 async def znp_nvram_restore(app, listener, ieee, cmd, data, service):
     """ Restore ZNP NVRAM from file """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'%s' is only available for ZNP".format(cmd)
+        msg = "'{}' is only available for ZNP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
 
-
     # Safety: backup current configuration
+    from datetime import datetime
+    current_datetime = datetime.now().strftime('_%Y%m%d_%H%M%S')
     await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)
 
-
-    from zigpy_znp.tools.nvram_write import nvram_write
     # Restore NVRAM backup from file
+    from zigpy_znp.tools.nvram_write import nvram_write
+    import os
+    import json
 
     # Set name with regards to local path
     out_dir = os.path.dirname(__file__) + '/local/'
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-
     # Ensure that data is an empty string when not set
     if data is None:
-        data=''
+        data = ''
 
     fname = out_dir + 'nvram_backup' + str(data) + '.json'
 
@@ -187,13 +187,12 @@ async def znp_nvram_reset(app, listener, ieee, cmd, data, service):
     """ Reset ZNP NVRAM """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'%s' is only available for ZNP".format(cmd)
+        msg = "'{}' is only available for ZNP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
 
-
     from datetime import datetime
-    current_datetime=datetime.now().strftime('_%Y%m%d_%H%M%S')
+    current_datetime = datetime.now().strftime('_%Y%m%d_%H%M%S')
 
     # Safety: backup current configuration
     await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)
@@ -201,16 +200,13 @@ async def znp_nvram_reset(app, listener, ieee, cmd, data, service):
     # Import stuff we need for resetting
     from zigpy_znp.tools.nvram_reset import nvram_reset
 
-
     # Write back information from backup
     LOGGER.info("Reset NVRAM")
     await nvram_reset(app._znp)
 
     # Shutdown znp?
-    # LOGGER.info("Write done, call pre_shutdown().  Restart the device/HA after this.")
+    # LOGGER.info("Write done, call pre_shutdown(). Restart the device/HA after this.")
     # await app._znp.pre_shutdown()
     # LOGGER.info("pre_shutdown() Done.")
 
     # TODO: restart znp, HA?
-
-
