@@ -106,13 +106,14 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             await asyncio.sleep(0.4)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover attributes extended starting attr_id 0x%04x. Error: %s",
-                    attr_id, ex
+                "Failed to discover attributes extended starting 0x%04x/0x%04x. Error: %s",
+                cluster.cluster_id, attr_id, ex
             )
             break
         if isinstance(rsp, foundation.Status):
             LOGGER.error(
-                "got %s status for discover_attribute starting attr_id 0x%04x", rsp, attr_id
+                "got %s status for discover_attribute starting 0x%04x/0x%04x",
+                rsp, cluster.cluster_id, attr_id
             )
             break
         for attr_rec in rsp:
@@ -145,7 +146,10 @@ async def discover_attributes_extended(cluster, manufacturer=None):
     while chunk:
         try:
             success, failed = await read_attr(cluster, chunk)
-            LOGGER.debug("Reading attr success: %s, failed %s", success, failed)
+            LOGGER.debug(
+                "Reading attr success: %s, failed %s",
+                success, failed
+            )
             for attr_id, value in success.items():
                 if isinstance(value, bytes):
                     try:
@@ -154,7 +158,10 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                         value = value.hex()
                 result[attr_id]["attribute_value"] = value
         except (DeliveryError, asyncio.TimeoutError) as ex:
-            LOGGER.error("Couldn't read attr_id 0x%04x: %s", attr_id, ex)
+            LOGGER.error(
+                "Couldn't read 0x%04x/0x%04x: %s",
+                cluster.cluster_id, attr_id, ex
+            )
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
 
@@ -183,12 +190,14 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.3)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex)
+                "Failed to discover %s commands starting %s. Error: %s",
+                cmd_id, ex
             )
             break
         if isinstance(rsp, Status):
             LOGGER.error(
-                "got %s status for discover_attribute starting %s", rsp, cmd_id
+                "got %s status for discover_commands starting %s",
+                rsp, cmd_id
             )
             break
         for cmd_id in rsp:
@@ -212,6 +221,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
 async def discover_commands_generated(cluster, is_server, manufacturer=None):
     from zigpy.zcl.foundation import Status
 
+    LOGGER.debug("Discovering commands generated")
     direction = "generated" if is_server else "received"
     result = {}
     cmd_id = 0
@@ -228,12 +238,14 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.3)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover commands starting %s. Error: {}".format(cmd_id, ex)
+                "Failed to discover commands starting %s. Error: %s",
+                cmd_id, ex
             )
             break
         if isinstance(rsp, Status):
             LOGGER.error(
-                "got %s status for discover_attribute starting %s", rsp, cmd_id
+                "got %s status for discover_commands starting %s",
+                rsp, cmd_id
             )
             break
         for cmd_id in rsp:

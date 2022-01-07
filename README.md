@@ -102,10 +102,14 @@ For sleepy devices (on a battery) you may need to wake them up
 just after sending the command so that they can receive it.
 
 
-## `scan_device`: Scan a device
+## `scan_device`: Scan a device/Read all attribute values
+
+This operation will get all values for the attributes discovered
+on the device.
 
 The result of the scan is written to the `scan` directory located
-in the configuration directory of Home Assistant.
+in the configuration directory of Home Assistant (`config/scan/*_result.txt`).
+
 
 ```yaml
 service: zha_custom.execute
