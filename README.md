@@ -118,6 +118,16 @@ data:
   command: scan_device
 ```
 
+## `zdo_scan_now`: Do a topology scan
+
+Runs `topology.scan()`. 
+
+```yaml
+service: zha_custom.execute
+data:
+  command: zdo_scan_now
+```yaml
+
 ## `bind_ieee`: Bind matching cluster to another device
 
 Binds all matching clusters (within the scope of the integrated list)
