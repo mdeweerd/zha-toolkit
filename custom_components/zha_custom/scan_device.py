@@ -106,14 +106,13 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             await asyncio.sleep(0.4)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover attributes extended starting %s. Error: {}".format(
+                "Failed to discover attributes extended starting attr_id 0x%04x. Error: %s",
                     attr_id, ex
-                )
             )
             break
         if isinstance(rsp, foundation.Status):
             LOGGER.error(
-                "got %s status for discover_attribute starting %s", rsp, attr_id
+                "got %s status for discover_attribute starting attr_id 0x%04x", rsp, attr_id
             )
             break
         for attr_rec in rsp:
@@ -155,7 +154,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                         value = value.hex()
                 result[attr_id]["attribute_value"] = value
         except (DeliveryError, asyncio.TimeoutError) as ex:
-            LOGGER.error("Couldn't read attr_id %i: %s", attr_id, ex)
+            LOGGER.error("Couldn't read attr_id 0x%04x: %s", attr_id, ex)
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
 
