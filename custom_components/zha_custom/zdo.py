@@ -6,6 +6,8 @@ import zigpy.types as t
 import zigpy.device
 import zigpy.zdo
 
+from . import utils as u
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -16,8 +18,8 @@ async def leave(app, listener, ieee, cmd, data, service):
     LOGGER.debug(
         "running 'leave' command. Telling 0x%s to remove %s: %s", data, ieee, service
     )
-    parent = int(data, base=16)
-    parent = app.get_device(nwk=parent)
+
+    parent = await u.get_device(app, listener, data)
 
     res = await parent.zdo.request(zdo_t.ZDOCmd.Mgmt_Leave_req, ieee, 0x02)
     LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", parent.nwk, res)
@@ -27,7 +29,8 @@ async def ieee_ping(app, listener, ieee, cmd, data, service):
     if ieee is None:
         LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s", service)
         return
-    dev = app.get_device(ieee=ieee)
+    
+    parent = app.get_device(ieee)
 
     LOGGER.debug("running 'ieee_ping' command to 0x%s", dev.nwk)
 

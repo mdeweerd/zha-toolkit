@@ -2,6 +2,8 @@ import logging
 
 from zigpy.zdo.types import ZDOCmd
 
+from . import utils as u
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -13,12 +15,14 @@ async def bind_group(app, listener, ieee, cmd, data, service):
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-    src_dev = app.get_device(ieee=ieee)
+   
+    dev = app.get_device(ieee=ieee)
+
     if not data:
         LOGGER.error("missing cmd_data")
         return
 
-    group_id = int(data, base=16)
+    group_id = u.str2int(data)
     zdo = src_dev.zdo
     src_cls = [6, 8, 768]
 
@@ -63,8 +67,10 @@ async def unbind_group(app, listener, ieee, cmd, data, service):
     if not data:
         LOGGER.error("missing data (destination ieee)")
         return
+
     src_dev = app.get_device(ieee=ieee)
-    group_id = int(data, base=16)
+
+    group_id = u.str2int(data)
 
     zdo = src_dev.zdo
     src_cls = [6, 8, 768]
@@ -102,15 +108,14 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
     from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
 
+
     if ieee is None or not data:
         LOGGER.error("missing ieee")
         return
     LOGGER.debug("running 'bind ieee' command: %s", service)
     src_dev = app.get_device(ieee=ieee)
 
-    #dst_ieee = t.EUI64([t.uint8_t(p, base=16) for p in data.split(":")])
-    dst_ieee = t.EUI64.convert(data)
-    dst_dev = app.get_device(ieee=dst_ieee)
+    dst_dev = await u.get_device(app, listener, data)
 
     zdo = src_dev.zdo
     src_out_clusters = [

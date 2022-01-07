@@ -1,33 +1,21 @@
 import logging
 
 from zigpy import types as t
+
+from . import utils as u
 # from zigpy.zcl import foundation
 # import zigpy.zcl as zcl
 
 LOGGER = logging.getLogger(__name__)
 
 
-# Convert string to int if possible or return original string
-#  (Returning the original string is usefull for named attributes)
-def str2int(s):
-    if not type(s) == str:
-        return s
-    elif s.startswith("0x") or s.startswith("0X"):
-        return int(s, 16)
-    elif s.startswith("0") and s.isnumeric():
-        return int(s, 8)
-    elif s.startswith("b") and s[1:].isnumeric():
-        return int(s[1:], 2)
-    elif s.isnumeric():
-        return int(s)
-    else:
-        return s
-
-
-
-
 async def znp_backup(app, listener, ieee, cmd, data, service):
     """ Backup ZNP network information. """
+
+    if u.get_radiotype(app) != u.RadioType.ZNP:
+        msg = "'%s' is only available for ZNP".format(cmd)
+        LOGGER.debug(msg)
+        raise Exception(msg) 
 
     # Import stuff we need
     from zigpy_znp.tools.network_backup import backup_network as backup_network
@@ -57,13 +45,18 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
 
 async def znp_restore(app, listener, ieee, cmd, data, service):
     """ Restore ZNP network information. """
-  
+
+    if u.get_radiotype(app) != u.RadioType.ZNP:
+        msg = "'%s' is only available for ZNP".format(cmd)
+        LOGGER.debug(msg)
+        raise Exception(msg) 
+
     # Get/set parameters
 
     # command_data (data):
     #    counter_increment (defaults to 2500)
 
-    counter_increment = str2int(data)
+    counter_increment = u.str2int(data)
 
     if type(counter_increment) != int:
         counter_increment = 2500

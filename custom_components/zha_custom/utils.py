@@ -1,7 +1,9 @@
 import logging
+from enum import Enum
+from zigpy import types as t
+
 
 LOGGER = logging.getLogger(__name__)
-
 
 # Convert string to int if possible or return original string
 #  (Returning the original string is usefull for named attributes)
@@ -23,3 +25,63 @@ def str2int(s):
     else:
         return s
 
+
+
+class RadioType(Enum):
+    UNKNOWN = 0
+    ZNP = 1
+
+def get_radiotype(app):
+    if app._znp is not None:
+        return RadioType.ZNP
+    LOGGER.debug("Type recognition for '%s' not implemented", type(app))
+    return RadioType.UNKNOWN
+
+    
+# Get zigbee IEEE address (EUI64) for the reference.
+#  Reference can be entity, device, or IEEE address
+async def get_ieee(app, listener, ref):
+    if type(ref) == str:
+        # Check if valid ref address
+        if (ref.count(':') == 7):
+            return t.EUI64.convert(ref)
+
+        # Check if network address
+        nwk=str2int(ref)
+        if (type(nwk) == int) and nwk>=0x0000 and nwk<=0xFFF7:
+            device=app.get_device(nwk=nwk)
+            if device is None:
+                return None
+            else:
+                LOGGER.debug("NWK addr 0x04x -> %s", nwk, device.ieee)
+                return device.ieee
+      
+        # Todo: check if NWK address
+        entity_registry = await listener._hass.helpers.entity_registry.async_get_registry()
+        #LOGGER.debug("registry %s",entity_registry)
+        registry_entity = entity_registry.async_get(ref)
+        LOGGER.debug("registry_entity %s",registry_entity)
+        if registry_entity is None:
+            return None
+        if registry_entity.platform != "zha":
+            LOGGER.error("Not a ZHA device : '%s'", ref)
+            return None
+
+        device_registry = await listener._hass.helpers.device_registry.async_get_registry()
+        registry_device = device_registry.async_get(registry_entity.device_id)
+        LOGGER.debug("registry_device %s",registry_device)
+        for identifier in registry_device.identifiers:
+            if identifier[0]=='zha':
+                return t.EUI64.convert(identifier[1])
+        return None
+
+    # Other type, suppose it's already an EUI64
+    return ref
+
+
+# Get a zigbee device instance for the reference.
+#  Reference can be entity, device, or IEEE address
+def get_device(app, listener, reference):
+    # Method is called get 
+    ieee=get_ieee(app, listener, reference)
+    return app.get_device(ieee)

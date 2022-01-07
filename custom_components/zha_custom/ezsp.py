@@ -5,6 +5,8 @@ from zigpy import types as t
 import zigpy.zdo.types
 import bellows.types
 
+from . import utils as u
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -105,9 +107,9 @@ async def add_transient_key(app, listener, ieee, cmd, data, service):
 
 async def get_ieee_by_nwk(app, listener, ieee, cmd, data, service):
     LOGGER.info("Lookup IEEE by nwk")
-    nwk = int(data, base=16)
+    nwk = u.str2int(data)
     status, eui64 = await app._ezsp.lookupEui64ByNodeId(nwk)
-    LOGGER.debug("nwk: 0x%04x, ieee: %s: %s", nwk, eui64, status)
+    LOGGER.debug("nwk: 0x%04x, ieee: %s, status: %s", nwk, eui64, status)
 
 
 async def get_policy(app, listener, ieee, cmd, data, service):

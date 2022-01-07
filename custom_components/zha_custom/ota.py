@@ -17,7 +17,9 @@ async def notify(app, listener, ieee, cmd, data, service):
         return
 
     LOGGER.debug("running 'image_notify' command: %s", service)
+
     device = app.get_device(ieee=ieee)
+
     cluster = None
     for epid, ep in device.endpoints.items():
         if epid == 0:

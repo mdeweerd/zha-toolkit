@@ -1,5 +1,7 @@
 import logging
 
+from . import utils
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -8,6 +10,7 @@ async def get_groups(app, listener, ieee, cmd, data, service):
     if ieee is None:
         LOGGER.error("missing ieee")
         return
+   
     src_dev = app.get_device(ieee=ieee)
 
     for ep_id, ep in src_dev.endpoints.items():
@@ -27,8 +30,10 @@ async def add_group(app, listener, ieee, cmd, data, service):
     LOGGER.debug("running 'add group' command: %s", service)
     if ieee is None or not data:
         return
+
     src_dev = app.get_device(ieee=ieee)
-    group_id = int(data, base=16)
+
+    group_id = str2int(data)
 
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0:
@@ -45,8 +50,11 @@ async def remove_group(app, listener, ieee, cmd, data, service):
     if ieee is None or not data:
         LOGGER.error("missing ieee")
         return
+
     src_dev = app.get_device(ieee=ieee)
-    group_id = int(data, base=16)
+
+    group_id = u.str2int(data)
+
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0:
             continue
@@ -63,7 +71,9 @@ async def remove_all_groups(app, listener, ieee, cmd, data, service):
     LOGGER.debug("running 'remove all group' command: %s", service)
     if ieee is None:
         return
+
     src_dev = app.get_device(ieee=ieee)
+
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0:
             continue
@@ -79,8 +89,9 @@ async def add_to_group(app, listener, ieee, cmd, data, service):
         LOGGER.error("invalid arguments for subscribe_group()")
         return
 
-    dev = app.get_device(ieee)
-    grp_id = int(data, base=16)
+    dev = app.get_device(ieee=ieee)
+
+    grp_id = u.str2int(data)
     LOGGER.debug("Subscribing EZSP to %s group: %s", grp_id, service)
     res = await dev.add_to_group(grp_id, "Group {}".format(data))
     LOGGER.info("Subscribed NCP to %s group: %s", grp_id, res)
@@ -92,7 +103,8 @@ async def remove_from_group(app, listener, ieee, cmd, data, service):
         return
 
     dev = app.get_device(ieee)
-    grp_id = int(data, base=16)
+
+    grp_id = u.str2int(data)
     LOGGER.debug("Unsubscribing EZSP to %s group: %s", grp_id, service)
     res = await dev.remove_from_group(grp_id)
     LOGGER.info("Unsubscribed NCP to %s group: %s", grp_id, res)
@@ -102,7 +114,7 @@ async def get_zll_groups(app, listener, ieee, cmd, data, service):
     from zigpy.zcl.clusters.lightlink import LightLink
 
     if ieee is None:
-        LOGGER.error("missine ieee")
+        LOGGER.error("missing ieee")
         return
     LOGGER.debug("Getting ZLL groups: %s", service)
     dev = app.get_device(ieee=ieee)

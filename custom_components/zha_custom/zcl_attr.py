@@ -16,7 +16,7 @@ async def conf_report(app, listener, ieee, cmd, data, service):
     params = data.split(',')
     i = 0
     # addr_str=params[i] ; i+=1
-    addr_str = ieee
+     
     ep_id_str = params[i] ; i += 1
     cluster_id_str = params[i] ; i += 1
     attr_id_str = params[i] ; i += 1
@@ -31,10 +31,6 @@ async def conf_report(app, listener, ieee, cmd, data, service):
 
     # Decode the variables
 
-    # Decode address
-    if (addr_str.count(':') == 7):
-        ieee = t.EUI64.convert(addr_str)
-
     # Decode endpoint
     ep_id = u.str2int(ep_id_str)
 
@@ -46,7 +42,7 @@ async def conf_report(app, listener, ieee, cmd, data, service):
     max_interval = u.str2int(max_interval_str)
     reportable_change = u.str2int(reportable_change_str)
 
-    dev = app.get_device(ieee)
+    dev = app.get_device(ieee=ieee)
 
     for key, value in dev.endpoints.items():
         LOGGER.info("Endpoint %s" % (key))
@@ -82,8 +78,6 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     # Split command_data and assign to string variables
     params = data.split(',')
     i = 0
-    # addr_str=params[i] ; i+=1
-    addr_str = ieee
     ep_id_str = params[i] ; i += 1
     cluster_id_str = params[i] ; i += 1
     attr_id_str = params[i] ; i += 1
@@ -96,17 +90,13 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
     # Decode the variables
 
-    # Decode address
-    if (addr_str.count(':') == 7):
-        ieee = t.EUI64.convert(addr_str)
-
     # Decode endpoint
     ep_id = u.str2int(ep_id_str)
 
     # Decode cluster id
     cluster_id = u.str2int(cluster_id_str)
 
-    dev = app.get_device(ieee)
+    dev = app.get_device(ieee=ieee)
 
     for key, value in dev.endpoints.items():
         print("Endpoint %s" % (key))

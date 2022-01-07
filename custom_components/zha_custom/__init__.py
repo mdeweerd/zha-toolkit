@@ -6,6 +6,8 @@ import zigpy.types as t
 
 import homeassistant.helpers.config_validation as cv
 
+from . import utils as u
+
 DEPENDENCIES = ["zha"]
 
 DOMAIN = "zha_custom"
@@ -17,12 +19,12 @@ DATA_ZHAC = "zha_custom"
 
 SERVICE_CUSTOM = "execute"
 
-_LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 SERVICE_SCHEMAS = {
     SERVICE_CUSTOM: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): t.EUI64.convert,
+            vol.Optional(ATTR_IEEE): cv.string,  # was: t.EUI64.convert, - keeping ieee for compatibility
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
         },
@@ -44,18 +46,28 @@ async def async_setup(hass, config):
 
     async def custom_service(service):
         """Run command from custom module."""
-        _LOGGER.info("Running custom service: %s", service)
-        ieee = service.data.get(ATTR_IEEE)
+        LOGGER.info("Running custom service: %s", service)
+
+        ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
         cmd_data = service.data.get(ATTR_COMMAND_DATA)
+
+        importlib.reload(u)
+
+        app=zha_gw.application_controller
+
+        ieee = await u.get_ieee(app, zha_gw, service.data.get(ATTR_IEEE))
+        if ieee is not None: 
+            LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", str(ieee_str), str(ieee))
+
         mod_path = "custom_components.{}".format(DOMAIN)
         try:
             module = importlib.import_module(mod_path)
         except ImportError as err:
-            _LOGGER.error("Couldn't load zha_service module: %s", err)
+            LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
             return
         importlib.reload(module)
-        _LOGGER.debug("module is %s", module)
+        LOGGER.debug("module is %s", module)
         if cmd:
             handler = getattr(module, "command_handler_{}".format(cmd))
             await handler(
@@ -73,7 +85,7 @@ async def async_setup(hass, config):
 
 
 async def default_command(app, listener, ieee, cmd, data, service):
-    _LOGGER.debug("running default command: %s", service)
+    LOGGER.debug("running default command: %s", service)
 
 
 async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
@@ -81,7 +93,7 @@ async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
     ieee -- ieee of the device
     data -- nwk of the device in decimal format
     """
-    _LOGGER.debug("running 'handle_join' command: %s", service)
+    LOGGER.debug("running 'handle_join' command: %s", service)
     if ieee is None:
         return
     app.handle_join(int(data, 16), ieee, 0)
@@ -202,9 +214,9 @@ async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
     ieee -- ieee of the device to leave and rejoin
     """
     if ieee is None:
-        _LOGGER.error("missing ieee")
+        LOGGER.error("missing ieee")
         return
-    _LOGGER.debug("running 'rejoin' command: %s", service)
+    LOGGER.debug("running 'rejoin' command: %s", service)
     src = app.get_device(ieee=ieee)
 
     if data is None:
@@ -212,7 +224,7 @@ async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
     else:
         await app.permit(node=convert_ieee(data))
     res = await src.zdo.request(0x0034, src.ieee, 0x01)
-    _LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
+    LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
 
 
 def command_handler_get_zll_groups(*args, **kwargs):

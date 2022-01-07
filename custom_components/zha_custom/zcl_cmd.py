@@ -6,11 +6,11 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-ERRMSG_PARAMETERS_001 = "Expecting parameters for 'extra'"
-ERRMSG_DATA_MISSING_002 = "Expecting 'extra' parameter '{}'"
-ERRMSG_PARAMETER_MISSING_003 = "Expecting parameter '{}'"
-ERRMSG_NOT_IN_CLUSTER_004 = "In cluster 0x%04X not found for '%s', endpoint %s",
-ERRMSG_NOT_OUT_CLUSTER_005 = "Out cluster 0x%04X not found for '%s', endpoint %s",
+ERR001_PARAMETERS = "Expecting parameters for 'extra'"
+ERR002_DATA_MISSING = "Expecting 'extra' parameter '{}'"
+ERR003_PARAMETER_MISSING = "Expecting parameter '{}'"
+ERR004_NOT_IN_CLUSTER = "In cluster 0x%04X not found for '%s', endpoint %s",
+ERR005_NOT_OUT_CLUSTER = "Out cluster 0x%04X not found for '%s', endpoint %s",
 
 
 
@@ -24,17 +24,17 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
     LOGGER.info( "Extra '%s'", extra ) 
     if not isinstance(extra, dict):
         LOGGER.error( "Type '%s'", type(extra) ) 
-        raise Exception(ERRMSG_PARAMETERS_001)
+        raise Exception(ERR001_PARAMETERS)
 
     if ieee is None:
-        msg=ERRMSG_PARAMETER_MISSING_003.format('ieee')
+        msg=ERR003_PARAMETER_MISSING.format('ieee')
         LOGGER.error(msg)
         raise Exception(msg)
 
     required_options=[ 'cmd', 'cluster', 'endpoint' ]
     for key in required_options:
       if not key in extra:
-        msg=ERRMSG_DATA_MISSING_002.format(key)
+        msg=ERR002_DATA_MISSING.format(key)
         LOGGER.error(msg)
         raise Exception(msg)
 
@@ -100,7 +100,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
     try:
       if is_in_cluster:
         if not cluster_id in endpoint.in_clusters:
-            msg=ERRMSG_NOT_IN_CLUSTER_004.format(
+            msg=ERR004_NOT_IN_CLUSTER.format(
                       cluster_id, repr(ieee), ep_id)
             LOGGER.error(msg)
             raise Exception(msg)
@@ -119,7 +119,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
         )
       else:
         if not cluster_id in endpoint.out_clusters:
-            msg=ERRMSG_NOT_OUT_CLUSTER_005.format(
+            msg=ERR005_NOT_OUT_CLUSTER.format(
                       cluster_id, repr(ieee), ep_id)
             LOGGER.error(msg)
             raise Exception(msg)
