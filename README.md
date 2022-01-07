@@ -76,10 +76,7 @@ The developer tools are handy to test the service first before adding
 them to an automation.
 
 If you use HASS.os the following direct link may lead directly to
-the Developer tools > Services page - if not use the HA menu or modify
-your url to use your local IP or the (sub)domain your Home Assistant
-is using:
-https://homeassistant.local:8123/developer-tools/service .  
+the [Developer tools > Services page](https://my.home-assistant.io/redirect/developer-tools/service).
 
 Choose `zha_custom.execute` as the service.  
 Enable Yaml entry.  
