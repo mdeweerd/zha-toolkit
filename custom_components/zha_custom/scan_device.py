@@ -23,7 +23,7 @@ def wrapper(cmd, *args, **kwargs):
 async def scan_results(device):
     result = {"ieee": str(device.ieee), "nwk": "0x{:04x}".format(device.nwk)}
 
-    LOGGER.debug("Scanning device 0x{:04x}".format(device.nwk))
+    LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
 
     endpoints = []
     for epid, ep in device.endpoints.items():
@@ -290,4 +290,4 @@ async def scan_device(app, listener, ieee, cmd, data, service):
         os.mkdir(scan_dir)
     file_name = os.path.join(scan_dir, file_name)
     save_json(file_name, scan)
-    LOGGER.debug("Finished writing scan results int '%s'", file_name)
+    LOGGER.debug("Finished writing scan results in '%s'", file_name)
