@@ -206,13 +206,17 @@ data:
 Allows you to send a cluster command.
 Also accepts command arguments.
 
+Note:  
+There is also the official core service `zha.issue_zigbee_cluster_command`.  You may want to use that instead if it suits your needs.  
+The `zha_custom` version allows lists of bytes as arg paramters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a custom_component.
+
 
 ```yaml
 service: zha_custom.execute
 data:
   # Device IEEE address - mandatory
   ieee: 5c:02:72:ff:fe:92:c2:5d
-  # Serivce command - mandatory
+  # Service command - mandatory
   command: zcl_cmd
   extra:
     # Command id - mandatory
