@@ -79,6 +79,7 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
 
     # Set name with regards to local path
     fname = path.dirname(__file__) + '/local/nwk_backup.json'
+    LOGGER.info("Restore from '%s'", fname)
 
     # Read backup file
     f = open(fname, "r")
@@ -86,7 +87,9 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     f.close()
 
     # validate the backup file
+    LOGGER.info("Validating backup contents")
     validate_backup_json(backup)
+    LOGGER.info("Backup contents validated")
 
     network_info, node_info = json_backup_to_zigpy_state(backup)
 
@@ -96,10 +99,14 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     # app._znp.startup(force_form=True) 
 
     # Write back information from backup
+    LOGGER.info("Writing to device")
     await app._znp.write_network_info(network_info=network_info, node_info=node_info) 
 
     # Shutdown znp?
+    LOGGER.info("Write done, call pre_shutdown().  Restart the device/HA after this.")
+    LOGGER.info("Write done, call pre_shutdown().  Restart the device/HA after this.")
     await app._znp.pre_shutdown()
+    LOGGER.info("pre_shutdown() Done.")
 
     # TODO: restart znp, HA?
     
