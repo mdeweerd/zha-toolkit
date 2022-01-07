@@ -119,6 +119,15 @@ data:
   command: scan_device
 ```
 
+Scan using the entity name:
+
+```yaml
+service: zha_custom.execute
+data:
+  command: scan_device
+  ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
+```
+
 ## `zdo_scan_now`: Do a topology scan
 
 Runs `topology.scan()`. 
