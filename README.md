@@ -101,6 +101,10 @@ Examples are work in progress and may not be functionnal.
 For sleepy devices (on a battery) you may need to wake them up
 just after sending the command so that they can receive it.
 
+The 'ieee' address can be the IEEE address, the short network address
+(0x1203 for instance), or the entity name (example: "light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off").  Be aware that the network address can change over
+time but it is shorter to enter if you know it.
+
 
 ## `scan_device`: Scan a device/Read all attribute values
 
