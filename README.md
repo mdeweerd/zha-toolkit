@@ -21,18 +21,21 @@ workings of ZHA or Zigpy (methods, quirks, etc).
 
 # Setup
 
-This component needs to be added to your custom_components directory
-either manually or using HACS.
+The component files needs to be added to your `custom_components` directory
+either manually or using [HACS](https://hacs.xyz/docs/setup/prerequisites)
+([Tutorial](https://codingcyclist.medium.com/how-to-install-any-custom-component-from-github-in-less-than-5-minutes-ad84e6dc56ff)).
 
-
-The component is only available in Home Assistant after adding 
+Then, the integration is only available in Home Assistant after adding 
 the next line to `configuration.yaml`, and restarting Home Assistant.
 ```yaml
 zha_custom:
 ```
 
-Before restarting, you may also want to enable debug verbosity.
-This will help verify that the commands you send have the desired effect.
+Before restarting, you may also want to enable debug verbosity.  `zha_custom`
+isn't verbose when you use it occasionnaly.  As it's a service, there is
+no really good way to inform the user about errors other than the log.
+
+Logging will help verify that the commands you send have the desired effect.
 
 Add/update the logger configuration (in the `configuration.yaml` file):
 ```yaml
@@ -40,6 +43,7 @@ logger:
   log:
     custom_components.zha_custom: debug
 ```
+
 
 You can also change the log configuration dynamically by calling the
 `logger.setlevel` service.
@@ -57,24 +61,37 @@ data:
 # Using `zha_custom`
 
 This components provides a single service (`zha_custom.execute`) that
-provides several command (`command` parameter) providing access
-to several ZHA/Zigbee actions that are not otherwise available.
+provides several commands (`command` parameter) providing access
+to ZHA/Zigbee actions that are not otherwise available.
 
 
-You can use a service as an action in automations, but most actions are
-done only once and you can perform them using the developer tools.
+You can use a service as an action in automations.  So you can send the
+commands according to a schedule or other triggers.  For instance, you
+could plan a daily backup of your TI-ZNP USB Key configuration.
 
-If you use HASS.os the following direct link may work:
+It will be more common to send a Zigbee command only once: for instance
+bind one device to another, set a manufacturer attribute, ... .  
+You can perform them using the developer tools.  
+The developer tools are handy to test the service first before adding
+them to an automation.
+
+If you use HASS.os the following direct link may lead directly to
+the Developer tools > Services page - if not use the HA menu or modify
+your url to use your local IP or the (sub)domain your Home Assistant
+is using:
 https://homeassistant.local:8123/developer-tools/service .  
-If not, find the developer tools in the menu and go to Services.
 
 Choose `zha_custom.execute` as the service.  
 Enable Yaml entry.  
 
-There are several examples below for different commands.  
+There are several examples below for different commands.  You can
+copy/paste them to start from.
 
-Not all commands are documented, some seem to be very specific trials
+Not all available commands are documented.  The undocumented ones
+were in the original repository.  
+Some of these undocumented commands seem to be very specific trials
 from the original authors.  
+Feel free to propose documentation updates.
 
 
 # Examples
@@ -85,7 +102,7 @@ For sleepy devices (on a battery) you may need to wake them up
 just after sending the command so that they can receive it.
 
 
-## Scan a device
+## `scan_device`: Scan a device
 
 The result of the scan is written to the `scan` directory located
 in the configuration directory of Home Assistant.
@@ -97,7 +114,7 @@ data:
   command: scan_device
 ```
 
-## Bind matching cluster to another device
+## `bind_ieee`: Bind matching cluster to another device
 
 Binds all matching clusters (within the scope of the integrated list)
 
@@ -110,7 +127,7 @@ data:
 
 ```
 
-## Handle join - interrogate device
+## `handle_join`: Handle join - interrogate device
 
 ```yaml
 service: zha_custom.execute
@@ -121,7 +138,7 @@ data:
 
 ```
 
-## Write(/Read) an attribute value
+## `attr_write`: Write(/Read) an attribute value
 
 Write an attribute value to any endpoint/cluster/attribute.
 
@@ -138,7 +155,7 @@ data:
 ```
 
 
-## Configure reporting
+## `conf_report`: Configure reporting
 
 Set the minimum and maximum delay between two reports and
 set the level of change required to report a value (before the maximum
@@ -160,7 +177,7 @@ data:
   command_data: 1,0x0402,0x0000,5,300,10
 ```
 
-## Send a Cluster command
+## `zcl_cmd`: Send a Cluster command
 
 Allows you to send a cluster command.
 Also accepts command arguments.
@@ -194,7 +211,7 @@ data:
 ```
 
 
-### Example: Send `on` command to an OnOff Cluster.
+### `zcl_cmd` Example: Send `on` command to an OnOff Cluster.
 
 ```yaml
 service: zha_custom.execute
@@ -209,7 +226,7 @@ data:
 ```
 
 
-### Example: Send `off` command to an OnOff Cluster:
+### `zcl_cmd` Example: Send `off` command to an OnOff Cluster:
 
 ```yaml
 service: zha_custom.execute
@@ -222,7 +239,7 @@ data:
     endpoint: 11
 ```
 
-### Example: "Store Scene"
+### `zcl_cmd` Example: "Store Scene"
 
 ```yaml
 service: zha_custom.execute
@@ -236,7 +253,7 @@ data:
     args: [ 2, 5 ]
 ```
 
-### Example: recall scene:
+### `zcl_cmd` Example: "Recall Scene"
 ```yaml
 service: zha_custom.execute
 data:
@@ -264,7 +281,7 @@ ZigBee Cluster Library Frame
         Scene ID: 0x05
 ```
 
-### Example: "Add Scene"
+### `zcl_cmd` Example: "Add Scene"
 
 This example shows that you can provide a list of bytes for an argument:
 
@@ -307,7 +324,7 @@ ZigBee Cluster Library Frame
 ```
 
 
-## Backup ZNP network data 
+## `znp_backup`: Backup ZNP network data 
 
 Used to transfer to another ZNP key later, backup or simply get network key
 and other info.
@@ -328,7 +345,7 @@ data:
   command_data: _20220105
 ```
 
-## Restore ZNP network data
+## `znp_restore`: Restore ZNP network data
 
 Will restore network data from `local/nwk_backup.json` where `local`
 is a directory in the `zha_custom` directory.
@@ -370,7 +387,8 @@ data:
 
 This project was forked from [Adminiguaga/zha_custom](https://github.com/Adminiuga/zha_custom)
 where the "hard tricks" for providing services and accessing ZHA functions were
-implemented/demonstrated.  The original codeowners were "dmulcahey" and "adminiuga".
+implemented/demonstrated.  The original codeowners were "[dmulcahey](https://github.com/dmulcahey)"
+and "[Adminiuga](https://github.com/adminiuga)".
 
 The initial purpose of this fork was mainly to add custom attribute writes,
 custom reporting and more binding possibilities.
