@@ -96,7 +96,7 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     # app._znp.startup(force_form=True) 
 
     # Write back information from backup
-    app._znp.write_network_info(network_info=network_info, node_info=node_info) 
+    await app._znp.write_network_info(network_info=network_info, node_info=node_info) 
 
     # Shutdown znp?
     await app._znp.pre_shutdown()
