@@ -75,7 +75,7 @@ You can perform them using the developer tools.
 The developer tools are handy to test the service first before adding
 them to an automation.
 
-If you use HASS.os the following direct link may lead directly to
+Go to Developer Tools > Services in your instance : 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
 Choose `zha_custom.execute` as the service.  
