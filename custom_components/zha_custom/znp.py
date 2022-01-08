@@ -17,6 +17,7 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
         LOGGER.debug(msg)
         raise Exception(msg)
 
+
     # Import stuff we need
     from zigpy_znp.tools.network_backup import backup_network as backup_network
     import os
@@ -100,8 +101,10 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     LOGGER.info("Writing to device")
     await app._znp.write_network_info(network_info=network_info, node_info=node_info)
 
+    #LOGGER.debug("List of attributes/methods in app %s", dir(app))
+    LOGGER.debug("List of attributes/methods in znp %s", dir(app._znp))
+
     # Shutdown znp?
-    LOGGER.info("Write done, call pre_shutdown().  Restart the device/HA after this.")
     LOGGER.info("Write done, call pre_shutdown().  Restart the device/HA after this.")
     await app._znp.pre_shutdown()
     LOGGER.info("pre_shutdown() Done.")
