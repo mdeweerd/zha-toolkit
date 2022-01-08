@@ -458,20 +458,20 @@ The procedure should be:
    Verify that the `nwk_backup.json` file is generated in the `local`
    directory.
 2. 
-   a. Remove the original Coordinator from your system (e.g., remove the USB key, ...).  
-   b. Insert the new Coordinator.
-   c. *Only when migrating to a Coordinator with different port/serial path/socket.*
+   1. Remove the original Coordinator from your system (e.g., remove the USB key, ...).  
+   2. Insert the new Coordinator.
+   3. *Only when migrating to a Coordinator with different port/serial path/socket.*  
       Remove/Disable the ZHA Integration from Home Assistant.  
       The alternative is to modify HA’s config file directly to update
       the current integration’s serial path and baudrate
-   d. Copy the zigbee.db file (for backup).  
+   4. Copy the zigbee.db file (for backup).  
       Moving/renaming it should not be needed.  If you Move or Rename
       the `zigbee.db` the Entity name are lost after the restore 
       (which impacts your automations, UI, etc).
 3. 
-   a. Restart Home Assistant.
-   b. Enable/Add the ZHA Integration to Home Assistant
-      (needed if you disabled or removed the ZHA integration in step 2.c.)
+   1. Restart Home Assistant.
+   2. Enable/Add the ZHA Integration to Home Assistant
+      (needed if you disabled or removed the ZHA integration in step 2.iii.)
 4. Restore using the `znp_restore` command.  
    (If you used a custom file name for the backup then make sure you copy
     it to `nwk_backup.json`).
