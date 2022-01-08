@@ -450,11 +450,21 @@ The procedure should be:
    directory.
 2. Remove the original key from your system.
    Insert the new key.
-3. Restart Home Assistant.
-4. Restore using the `znp_restore` command.
-5. Check the logs.
-6. Restart HA.
-7. Check that everything is ok.
+3. Remove the ZHA Integration from Home Assistant (may not be needed)
+3. Delete/Move the zigbee.db file (may not be needed)
+4. Restart Home Assistant.
+5. Add the ZHA Integration to Home Assistant (needed if you removed it)
+6. Restore using the `znp_restore` command.
+7. Check the logs (currently the `pre_shutdown` call failed for the first
+   successful test, but that is not critical).
+8. Restart HA (may not be needed).
+7. Check that everything is ok.  
+   Devices may take a while to rejoin the network as the Zigbee
+   specification requires them to "back-off" in case of communication
+   problems.  
+   You may speed up the process by power cycling devices.
+
+(See the [Home Assistant Community Forum](https://community.home-assistant.io/t/zha-custom-service-to-send-custom-zha-commands-extra-functions/373346/33) for a success story.
 
 
 ```yaml
