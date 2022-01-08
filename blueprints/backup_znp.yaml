@@ -1,0 +1,24 @@
+blueprint:
+  name: Daily ZNP Backup - Monthly rotation
+  description: Backup ZNP Zigbee configuration, monthly rotation
+  domain: automation
+  input:
+    backup_time:
+      name: Backup time
+      description: Time at which the daily backup should be madeaction should start
+      selector:
+        time:
+trigger:
+  - platform: time
+    at: !input backup_time
+condition: []
+action:
+  - service: zha_custom.execute
+    data:
+      command: znp_backup
+      command_data: '{{ now().strftime("_%d") }}'
+  - service: zha_custom.execute
+    data:
+      command: znp_nvram_backup
+      command_data: '{{ now().strftime("_%d") }}'
+mode: restart
