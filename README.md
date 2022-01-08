@@ -58,6 +58,13 @@ data:
     zigpy.zcl: debug
 ```
 
+# Automations
+
+This is a list (of 1) automation:
+
+* DAILY BACKUP OF ZNP DONGLE: [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha_custom%2Fdev%2Fblueprints%2Fbackup_znp.yaml)
+
+
 # Using `zha_custom`
 
 This components provides a single service (`zha_custom.execute`) that
@@ -418,6 +425,8 @@ The output is written to the customisation directory as `local/nwk_backup.json`
 when `command_data` is empty or not provided.  When `command_data` is provided,
 it is added just after nwk_backup.
 
+You can use the blueprint to setup daily backup: [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha_custom%2Fdev%2Fblueprints%2Fbackup_znp.yaml).
+
 
 The name of that backup is according to the format
 
@@ -448,21 +457,38 @@ The procedure should be:
 1. Backup using the `znp_backup` command in the `zha_custom` service.
    Verify that the `nwk_backup.json` file is generated in the `local`
    directory.
-2. Remove the original key from your system.
-   Insert the new key.
-3. Remove the ZHA Integration from Home Assistant (may not be needed)
-3. Delete/Move the zigbee.db file (may not be needed)
-4. Restart Home Assistant.
-5. Add the ZHA Integration to Home Assistant (needed if you removed it)
-6. Restore using the `znp_restore` command.
+2. 
+   a. Remove the original Coordinator from your system (e.g., remove the USB key, ...).  
+   b. Insert the new Coordinator.
+   c. *Only when migrating to a Coordinator with different port/serial path/socket.*
+      Remove/Disable the ZHA Integration from Home Assistant.  
+      The alternative is to modify HA’s config file directly to update
+      the current integration’s serial path and baudrate
+   d. Copy the zigbee.db file (for backup).  
+      Moving/renaming it should not be needed.  If you Move or Rename
+      the `zigbee.db` the Entity name are lost after the restore 
+      (which impacts your automations, UI, etc).
+3. 
+   a. Restart Home Assistant.
+   b. Enable/Add the ZHA Integration to Home Assistant
+      (needed if you disabled or removed the ZHA integration in step 2.c.)
+4. Restore using the `znp_restore` command.  
+   (If you used a custom file name for the backup then make sure you copy
+    it to `nwk_backup.json`).
 7. Check the logs (currently the `pre_shutdown` call failed for the first
    successful test, but that is not critical).
-8. Restart HA (may not be needed).
+8. Restart HA
 7. Check that everything is ok.  
-   Devices may take a while to rejoin the network as the Zigbee
-   specification requires them to "back-off" in case of communication
-   problems.  
-   You may speed up the process by power cycling devices.
+
+**NOTES :**
+
+- Devices may take a while to rejoin the network as the Zigbee
+  specification requires them to "back-off" in case of communication
+  problems.  
+- You may speed up the process by power cycling devices.
+- Devices may not be instantly responsive because the zigbee mesh
+  needs to be recreated (try the `zdo_scan_now` command to speed
+  that up).
 
 (See the [Home Assistant Community Forum](https://community.home-assistant.io/t/zha-custom-service-to-send-custom-zha-commands-extra-functions/373346/33) for a success story.)
 
