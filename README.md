@@ -464,7 +464,7 @@ The procedure should be:
    problems.  
    You may speed up the process by power cycling devices.
 
-(See the [Home Assistant Community Forum](https://community.home-assistant.io/t/zha-custom-service-to-send-custom-zha-commands-extra-functions/373346/33) for a success story.
+(See the [Home Assistant Community Forum](https://community.home-assistant.io/t/zha-custom-service-to-send-custom-zha-commands-extra-functions/373346/33) for a success story.)
 
 
 ```yaml
