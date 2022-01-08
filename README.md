@@ -143,7 +143,7 @@ Runs `topology.scan()`.
 service: zha_custom.execute
 data:
   command: zdo_scan_now
-```yaml
+```
 
 ## `bind_ieee`: Bind matching cluster to another device
 
