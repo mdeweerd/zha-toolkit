@@ -180,7 +180,7 @@ async def znp_nvram_restore(app, listener, ieee, cmd, data, service):
     nvram_obj = json.load(f)
     f.close()
 
-    nvram_write(app._znp, nvram_obj)
+    await nvram_write(app._znp, nvram_obj)
     LOGGER.info("Restored NVRAM from '%s'", fname)
 
     # TODO: restart znp, HA?
