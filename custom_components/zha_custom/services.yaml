@@ -2,12 +2,64 @@
 execute:
   description: Execute custom zha service
   fields:
-    ieee:
-      description: IEEE address of the node to execute command
-      example: "00:0d:6f:00:05:7d:2d:34"
     command:
       description: Command name
-      example: scan_nodes
+      example: scan_device
+      required: true
+      selector:
+        select:
+          options:
+            - handle_join
+            - scan_device
+            - get_groups
+            - add_group
+            - remove_group
+            - remove_all_groups
+            - bind_group
+            - unbind_group
+            - bind_ieee
+            - unbind_coordinator
+            - rejoin
+            - get_zll_groups
+            - add_to_group
+            - remove_from_group
+            - sinope
+            - attr_write
+            - conf_report
+            - get_routes_and_neighbours
+            - all_routes_and_neighbours
+            - leave
+            - ieee_ping
+            - zigpy_deconz
+            - ezsp_set_channel
+            - ezsp_get_token
+            - ezsp_start_mfg
+            - ezsp_get_keys
+            - ezsp_add_key
+            - ezsp_get_ieee_by_nwk
+            - ezsp_get_policy
+            - ezsp_clear_keys
+            - ezsp_get_config_value
+            - ezsp_get_value
+            - ota_notify
+            - zdo_join_with_code
+            - zdo_update_nwk_id
+            - zdo_scan_now
+            - zdo_flood_parent_annce
+            - znp_backup
+            - znp_restore
+            - zcl_cmd
+            - znp_nvram_backup
+            - znp_nvram_restore
+            - znp_nvram_reset
+    ieee:
+      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
+      example: "00:0d:6f:00:05:7d:2d:34"
+      selector:
+        entity:
+          integration: zha
     command_data:
-      description: data for the command
+      description: data for the command (in some cases more complex than text)
       example: attribute_scan
+      selector:
+        text:
