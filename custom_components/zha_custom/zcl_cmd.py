@@ -23,8 +23,8 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
     extra=service.data.get('extra')
     LOGGER.info( "Extra '%s'", extra ) 
     if not isinstance(extra, dict):
-        LOGGER.error( "Type '%s'", type(extra) ) 
-        raise Exception(ERR001_PARAMETERS)
+        # Fall back to paramters in 'data:' key
+        extra=service.data
 
     if ieee is None:
         msg=ERR003_PARAMETER_MISSING.format('ieee')

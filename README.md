@@ -198,8 +198,8 @@ data:
   command: attr_write
   ieee: 5c:02:72:ff:fe:92:c2:5d
   endpoint: 11
-  cluster_id: 0x1706
-  attr_id: 0x0000
+  cluster: 0x1706
+  attribute: 0x0000
   attr_type: 0x41
   # Example of octet strings (the length is added because of attr_type)
   attr_val:  [41,33,8,45,52,46,50,191,55,57,136,60,100,102,63]

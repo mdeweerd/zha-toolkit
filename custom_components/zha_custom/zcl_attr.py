@@ -102,10 +102,10 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     LOGGER.info( "Extra '%s'", type(extra) )
     if "endpoint" in extra:
         ep_id_str = extra["endpoint"]
-    if "cluster_id" in extra:
-        cluster_id_str = extra["cluster_id"]
-    if "attr_id" in extra:
-        attr_id_str = extra["attr_id"]
+    if "cluster" in extra:
+        cluster_id_str = extra["cluster"]
+    if "attribute" in extra:
+        attr_id_str = extra["attribute"]
     if "attr_type" in extra:
         attr_type_str = extra["attr_type"]
     if "attr_val" in extra:
