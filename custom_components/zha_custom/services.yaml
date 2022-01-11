@@ -1,6 +1,6 @@
 # Describes the format for available zha services
 execute:
-  description: Execute custom zha service
+  description: Execute custom zha service (Examine the documentation or code to know which parameters are needed)
   fields:
     command:
       description: Command name
@@ -59,7 +59,75 @@ execute:
         entity:
           integration: zha
     command_data:
-      description: data for the command (in some cases more complex than text)
-      example: attribute_scan
+      description: data for the command (specific command. Example, second IEEE address for binding)
+      example: "00:0d:6f:00:05:7d:2d:34"
       selector:
         text:
+    manf:
+      description: Manufacturer id
+      selector:
+        number:
+          min: 1
+          max: 0xFFFF
+    cmd:
+      description: Command Id (zcl_cmd)
+      selector:
+        number:
+          min: 0
+          max: 255 
+    endpoint:
+      description: target endpoint
+      selector:
+        number:
+          min: 1
+          max: 255 
+    cluster:
+      description: target cluster
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    attribute:
+      description: target attribute id (or name, accepted in most cases)
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    attr_type:
+      description: Attribute type (to write, ...)
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    attr_val:
+      description: Attribute value to write
+      selector:
+        text:
+    min_interval:
+      description: Minimum report interval (seconds)
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    max_interval:
+      description: Maximum report interval (seconds)
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    reportable_change:
+      description: Minimum change before reporting
+      selector:
+        number:
+          min: 0
+    dir:
+      description: Direction indicator, according to commmand
+      selector:
+        number:
+          min: 0
+          max: 1  
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0 
