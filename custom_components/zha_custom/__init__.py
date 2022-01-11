@@ -58,7 +58,7 @@ async def async_setup(hass, config):
 
         ieee = await u.get_ieee(app, zha_gw, service.data.get(ATTR_IEEE))
         if ieee is not None: 
-            LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", str(ieee_str), str(ieee))
+            LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
 
         mod_path = "custom_components.{}".format(DOMAIN)
         try:

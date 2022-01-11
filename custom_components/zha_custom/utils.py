@@ -41,6 +41,7 @@ def get_radiotype(app):
 # Get zigbee IEEE address (EUI64) for the reference.
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
+    # LOGGER.debug("Type IEEE: %s", type(ref))
     if type(ref) == str:
         # Check if valid ref address
         if (ref.count(':') == 7):
@@ -81,7 +82,8 @@ async def get_ieee(app, listener, ref):
 
 # Get a zigbee device instance for the reference.
 #  Reference can be entity, device, or IEEE address
-def get_device(app, listener, reference):
+async def get_device(app, listener, reference):
     # Method is called get 
-    ieee=get_ieee(app, listener, reference)
+    ieee=await get_ieee(app, listener, reference)
+    LOGGER.debug("IEEE for get_device: %s", ieee)
     return app.get_device(ieee)
