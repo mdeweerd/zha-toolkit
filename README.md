@@ -183,8 +183,28 @@ service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: attr_write
-  # Data: Endpoint, Cluster ID, Attribute Id, Attribute Type, Attribute Value
+  # Data: Endpoint, Cluster ID, Attribute Id, Attribute Type, Attribute Value, Optional Manf
   command_data: 11,0x0006,0x0000,0x10,1
+```
+
+
+Alternate method, not using `command_data` but individual parameters.
+(In case `command_data` is used, the more specific paramters override the values)
+
+
+```yaml
+service: zha_custom.execute
+data:
+  command: attr_write
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  endpoint: 11
+  cluster_id: 0x1706
+  attr_id: 0x0000
+  attr_type: 0x41
+  # Example of octet strings (the length is added because of attr_type)
+  attr_val:  [41,33,8,45,52,46,50,191,55,57,136,60,100,102,63]
+  # Optional manufacturer Id
+  manf: 0x1021
 ```
 
 
