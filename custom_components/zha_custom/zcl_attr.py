@@ -12,22 +12,50 @@ async def conf_report(app, listener, ieee, cmd, data, service):
     # Data format is endpoint, cluster_id, attr_id, min_interval,
     #                 max_interval,reportable_change,manufacturer
 
-    # Split command_data and assign to string variables
-    params = data.split(',')
-    i = 0
-    # addr_str=params[i] ; i+=1
-     
-    ep_id_str = params[i] ; i += 1
-    cluster_id_str = params[i] ; i += 1
-    attr_id_str = params[i] ; i += 1
-    min_interval_str = params[i] ; i += 1
-    max_interval_str = params[i] ; i += 1
-    reportable_change_str = params[i] ; i += 1
+    # Default manf value
+    manf = None
 
-    if i in params:
-        manf = u.str2int(params[i]) ; i += 1
-    else:
-        manf = None
+    if data is not None:
+        # Split command_data and assign to string variables
+        params = data.split(',')
+        i = 0
+        # addr_str=params[i] ; i+=1
+        if i in params:
+            ep_id_str = params[i] ; i += 1
+        if i in params:
+            cluster_id_str = params[i] ; i += 1
+        if i in params:
+            attr_id_str = params[i] ; i += 1
+        if i in params:
+            min_interval_str = params[i] ; i += 1
+        if i in params:
+            max_interval_str = params[i] ; i += 1
+        if i in params:
+            reportable_change_str = params[i] ; i += 1
+        if i in params:
+            manf = u.str2int(params[i]) ; i += 1
+
+    # Get more parameters from "extra"
+    # extra = service.data.get('extra')
+    # Take extra parameters from "data" level
+    extra=service.data  #.get('extra')
+    LOGGER.info( "Extra '%s'", type(extra) )
+    if "endpoint" in extra:
+        ep_id_str = extra["endpoint"]
+    if "cluster" in extra:
+        cluster_id_str = extra["cluster"]
+    if "attribute" in extra:
+        attr_id_str = extra["attribute"]
+    if "min_interval" in extra:
+        min_interval_str = extra["min_interval"]
+    if "max_interval" in extra:
+        max_interval_str = extra["max_interval"]
+    if "reportable_change" in extra:
+        reportable_change_str = extra["reportable_change"]
+    if "manf" in extra:
+        manf = u.str2int(extra["manf"])
+
+
 
     # Decode the variables
 

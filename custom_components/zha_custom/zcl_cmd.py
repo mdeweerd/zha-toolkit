@@ -21,7 +21,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
     # Verify parameter presence
 
     extra=service.data.get('extra')
-    LOGGER.info( "Extra '%s'", extra ) 
+    #LOGGER.info( "Extra '%s'", extra ) 
     if not isinstance(extra, dict):
         # Fall back to paramters in 'data:' key
         extra=service.data
@@ -136,7 +136,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
       catched_e = e
     finally:
       # Restore replaced cluster command definitions
-      LOGGER.debug("replaced %s", org_cluster_cmd_defs)
+      # LOGGER.debug("replaced %s", org_cluster_cmd_defs)
       for key, value in org_cluster_cmd_defs.items():
         if is_in_cluster:
           cluster.server_commands[key]=org_cluster_cmd_defs[key]

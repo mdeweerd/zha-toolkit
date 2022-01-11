@@ -230,6 +230,23 @@ data:
   command_data: 1,0x0402,0x0000,5,300,10
 ```
 
+Parameters as keys:
+
+```yaml
+service: zha_custom.execute
+data:
+  command: conf_report
+  ieee: 00:12:4b:00:23:b3:da:a5
+  endpoint: 1
+  cluster: 0x702
+  attribute: 0x0100
+  min_interval: 60
+  max_interval: 300
+  reportable_change: 10
+  # Optional manufacturer 
+  #manf: 0x1204
+```
+
 ## `zcl_cmd`: Send a Cluster command
 
 Allows you to send a cluster command.
@@ -237,7 +254,7 @@ Also accepts command arguments.
 
 Note:  
 There is also the official core service `zha.issue_zigbee_cluster_command`.  You may want to use that instead if it suits your needs.  
-The `zha_custom` version allows lists of bytes as arg paramters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a custom_component.
+The `zha_custom` version allows lists of bytes as arg paramters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a `custom_component`.
 
 
 ```yaml
@@ -247,23 +264,22 @@ data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Service command - mandatory
   command: zcl_cmd
-  extra:
-    # Command id - mandatory
-    cmd: 0
-    # Cluster id - mandatory
-    cluster: 1006
-    # Endpoitn - mandatory
-    endpoint: 111
-    # Optional: direction (0=to in_cluster (default), 1=to out_cluster),
-    dir: 0
-    # Optional: expect_reply  (default=true - false when 0 or 'false')
-    expect_reply: true 
-    # Optional: manf - manufacturer - default : None
-    manf: 0x0000
-    # Optional: tries - default : 1
-    tries: 1
-    # Optional (only add when the command requires it): arguments (default=empty)
-    args: [ 1, 3, [ 1, 2, 3] ] 
+  # Command id - mandatory
+  cmd: 0
+  # Cluster id - mandatory
+  cluster: 1006
+  # Endpoint - mandatory
+  endpoint: 111
+  # Optional: direction (0=to in_cluster (default), 1=to out_cluster),
+  dir: 0
+  # Optional: expect_reply  (default=true - false when 0 or 'false')
+  expect_reply: true 
+  # Optional: manf - manufacturer - default : None
+  manf: 0x0000
+  # Optional: tries - default : 1
+  tries: 1
+  # Optional (only add when the command requires it): arguments (default=empty)
+  args: [ 1, 3, [ 1, 2, 3] ] 
 
 ```
 
@@ -275,11 +291,9 @@ service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
-  extra:
-    cmd: 1
-    cluster: 6
-    endpoint: 11
-    # Optional: direction (0=to in_cluster)
+  cmd: 1
+  cluster: 6
+  endpoint: 11
 ```
 
 
@@ -290,10 +304,9 @@ service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
-  extra:
-    cmd: 0
-    cluster: 6
-    endpoint: 11
+  cmd: 0
+  cluster: 6
+  endpoint: 11
 ```
 
 ### `zcl_cmd` Example: "Store Scene"
@@ -303,11 +316,10 @@ service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
-  extra:
-    cmd: 4
-    cluster: 5
-    endpoint: 11
-    args: [ 2, 5 ]
+  cmd: 4
+  cluster: 5
+  endpoint: 11
+  args: [ 2, 5 ]
 ```
 
 ### `zcl_cmd` Example: "Recall Scene"
@@ -316,11 +328,10 @@ service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
-  extra:
-    cmd: 5
-    cluster: 5
-    endpoint: 11
-    args: [ 2, 5 ]
+  cmd: 5
+  cluster: 5
+  endpoint: 11
+  args: [ 2, 5 ]
 ```
 
 Results in (sniffed):
@@ -347,18 +358,17 @@ service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
-  extra:
-    cmd: 0
-    cluster: 5
-    endpoint: 11
-    args:
-      - 2
-      - 5
-      - 2
-      - "Final Example"
-      # Two bytes of cluster Id (LSB first), length, attribute value bytes
-      #   repeat as needed (inside the list!)
-      - [ 0x06, 0x00, 1, 1 ]
+  cmd: 0
+  cluster: 5
+  endpoint: 11
+  args:
+    - 2
+    - 5
+    - 2
+    - "Final Example"
+    # Two bytes of cluster Id (LSB first), length, attribute value bytes
+    #   repeat as needed (inside the list!)
+    - [ 0x06, 0x00, 1, 1 ]
 ```
 
 sniffed as:
