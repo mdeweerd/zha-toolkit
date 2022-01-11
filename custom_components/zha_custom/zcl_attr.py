@@ -75,18 +75,44 @@ async def conf_report(app, listener, ieee, cmd, data, service):
 async def attr_write(app, listener, ieee, cmd, data, service):
     # Data format is endpoint,cluster_id,attr_id,attr_type,attr_value
 
+    # Default
+    manf = None
+
     # Split command_data and assign to string variables
-    params = data.split(',')
-    i = 0
-    ep_id_str = params[i] ; i += 1
-    cluster_id_str = params[i] ; i += 1
-    attr_id_str = params[i] ; i += 1
-    attr_type_str = params[i] ; i += 1
-    attr_val_str = params[i] ; i += 1
-    if i in params:
+    if data is not None:
+      params = data.split(',')
+      i = 0
+      if i in params:
+        ep_id_str = params[i] ; i += 1
+      if i in params:
+        cluster_id_str = params[i] ; i += 1
+      if i in params:
+        attr_id_str = params[i] ; i += 1
+      if i in params:
+        attr_type_str = params[i] ; i += 1
+      if i in params:
+        attr_val_str = params[i] ; i += 1
+      if i in params:
         manf = u.str2int(params[i]) ; i += 1
-    else:
-        manf = None
+
+    # Get more parameters from "extra"
+    # extra = service.data.get('extra')
+    # Take extra parameters from "data" level
+    extra=service.data  #.get('extra')
+    LOGGER.info( "Extra '%s'", type(extra) )
+    if "endpoint" in extra:
+        ep_id_str = extra["endpoint"]
+    if "cluster_id" in extra:
+        cluster_id_str = extra["cluster_id"]
+    if "attr_id" in extra:
+        attr_id_str = extra["attr_id"]
+    if "attr_type" in extra:
+        attr_type_str = extra["attr_type"]
+    if "attr_val" in extra:
+        attr_val_str = extra["attr_val"]
+    if "manf" in extra:
+        manf = u.str2int(extra["manf"])
+
 
     # Decode the variables
 
@@ -148,7 +174,12 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         attr_val = foundation.TypeValue(
             attr_type, t.FixedIntType(u.str2int(attr_val_str)))
     elif attr_type == 0x41:  # Octet string
-        # Not tested
+        # Octet string requires length -> LVBytes
+
+        if isinstance(attr_val_str, list):
+            # Convert list to List of uint8_t
+            attr_val_str = t.List[t.uint8_t]([t.uint8_t(i) for i in attr_val_str])
+
         attr_val = foundation.TypeValue(
             attr_type, t.LVBytes(attr_val_str))
 
