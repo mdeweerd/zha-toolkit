@@ -274,6 +274,14 @@ def command_handler_sinope(*args, **kwargs):
     return sinope.sinope_write_test(*args, **kwargs)
 
 
+def command_handler_attr_read(*args, **kwargs):
+    from . import zcl_attr
+
+    importlib.reload(zcl_attr)
+
+    return zcl_attr.attr_read(*args, **kwargs)
+
+
 def command_handler_attr_write(*args, **kwargs):
     from . import zcl_attr
 

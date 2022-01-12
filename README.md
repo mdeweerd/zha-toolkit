@@ -171,6 +171,30 @@ data:
 
 ```
 
+## `attr_read`: Read an attribute value
+
+Read a zigbee attribute value, optionnally write to a state.
+
+```yaml
+service: zha_custom.execute
+data:
+  command: attr_read
+  ieee: sensor.zigbee_sensor
+  # The endpoint is optional - when missing tries to find endpoint matching the cluster
+  # endpoint: 1
+  cluster: 0xb04
+  attribute: 0x50f
+  # Optional, state to write the read value to
+  state_id: sensor.test
+  # Optional, state attribute to write the value to, when missing: writes state itself
+  state_attr: option
+  # Optional, when true, allows creating the state (if not the state must exist)
+  allow_create: True
+  # The manufacturer should be set only for manufacturer attributes
+  manf: 0x12
+
+```
+
 ## `attr_write`: Write(/Read) an attribute value
 
 Write an attribute value to any endpoint/cluster/attribute.
@@ -191,12 +215,14 @@ data:
 Alternate method, not using `command_data` but individual parameters.
 (In case `command_data` is used, the more specific paramters override the values)
 
+Before and after writing the value is read from the attribute - this can be written to a state.
 
 ```yaml
 service: zha_custom.execute
 data:
   command: attr_write
   ieee: 5c:02:72:ff:fe:92:c2:5d
+  # The endpoint is optional - when missing tries to find endpoint matching the cluster
   endpoint: 11
   cluster: 0x1706
   attribute: 0x0000
@@ -205,6 +231,14 @@ data:
   attr_val:  [41,33,8,45,52,46,50,191,55,57,136,60,100,102,63]
   # Optional manufacturer Id
   manf: 0x1021
+  # Optional, state to write the read value to
+  state_id: sensor.test
+  # Optional, state attribute to write the value to, when missing: writes state itself
+  state_attr: option
+  # Optional, when true, allows creating the state (if not the state must exist)
+  allow_create: True
+  # The manufacturer should be set only for manufacturer attributes
+  manf: 0x1202
 ```
 
 
