@@ -3,6 +3,12 @@
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha_custom)
 ![Downloads](https://img.shields.io/github/downloads/release/mdeweerd/zha_custom/total)
 -->
+# Highlights
+
+* Read Zigbee attributes into Home Assistant attributes
+* Daily ZNP Coordinator backup (See blueprint)
+* "Low level" access to most Zigbee commands (read/write/report/cmd/discover)
+
 # Purpose
 
 Using the Home Assistant 'Services' feature, provide direct control over
