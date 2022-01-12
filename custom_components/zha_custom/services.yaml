@@ -133,7 +133,7 @@ execute:
       selector:
         number:
           min: 0 
-          min: 255
+          max: 255
     state_id:
       description: When defined, name of state to write the read attribute value to
       example: sensor.example
