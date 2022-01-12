@@ -208,20 +208,23 @@ Write an attribute value to any endpoint/cluster/attribute.
 You can provide the numerical value of the attribute id,
 or the internal zigpy name (string).
 
+Before and after writing the value is read from the attribute.
+If debug logging is active, this will be visible in the `home_assistant.log`.
+The last read this can be written to a state.
+
 ```yaml
 service: zha_custom.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: attr_write
   # Data: Endpoint, Cluster ID, Attribute Id, Attribute Type, Attribute Value, Optional Manf
-  command_data: 11,0x0006,0x0000,0x10,1
+  command_data: 11,0x0006,0x0000,0x10,
 ```
 
 
 Alternate method, not using `command_data` but individual parameters.
 (In case `command_data` is used, the more specific paramters override the values)
 
-Before and after writing the value is read from the attribute - this can be written to a state.
 
 ```yaml
 service: zha_custom.execute
