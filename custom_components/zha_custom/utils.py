@@ -102,12 +102,13 @@ def set_state(hass, entity_id, value, key = None, allow_create=False, force_upda
     else:
         stateAttrs = {}
 
-    LOGGER.debug("Before: entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
+    # LOGGER.debug("Before: entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
     if key is not None:
         stateAttrs[key] = value
         value = None 
 
-    LOGGER.debug("entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
+    # LOGGER.debug("entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
+
     # Store to DB_state
     hass.states.async_set(
             entity_id = entity_id,

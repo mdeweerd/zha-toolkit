@@ -246,22 +246,22 @@ async def attr_write(app, listener, ieee, cmd, data, service):
             attr_write_list.append(attr)  # Write list
 
     if True:
-        LOGGER.info("Request attr read")
+        LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
             attr_read_list, manufacturer=manf)
-        LOGGER.info("Reading attr status: %s", result_read)
+        LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
 
     if len(attr_write_list) != 0:
-        LOGGER.debug("Request attr write")
+        LOGGER.debug("Request attr write %s", attr_write_list)
         result_write = await cluster._write_attributes(
             attr_write_list, manufacturer=manf)
         LOGGER.debug("Write attr status: %s", result_write)
 
         if True:
-            LOGGER.debug("Request attr read")
+            LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster.read_attributes(
                 attr_read_list, manufacturer=manf)
-            LOGGER.debug("Read attr status: %s", result_read)
+            LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
 
     # Write value to provided state or state attribute
     if state_id is not None:
