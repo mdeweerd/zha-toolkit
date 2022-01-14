@@ -144,7 +144,38 @@ execute:
       example: other_attr 
       selector:
         text:
+    event_success:
+      desciption: Event name in case of success (currently for attr_read, attr_write).  Has event data with relevant attributes.
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      desciption: Event name in case of failure (currently for attr_read, attr_write).  Has event data with relevant attributes.
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done: my_read_success_trigger_event          
+      desciption: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
     allow_create:
        description: Allow state creation (given by state_id) if it does not exist
        selector:
          boolean:
+    read_before_write:
+       description: Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True.
+       selector:
+         boolean:
+    read_after_write:
+       description: Read attribute after writing.  Can be used to ensure the values match.  Defaults to True
+       selector:
+         boolean:
+    write_if_equal:
+       description: Force writing the attribute even if the read attribute already matches.  Defaults to False
+       selector:
+         boolean:
+
+
+
+

@@ -4,6 +4,7 @@ from zigpy import types as t
 from zigpy.zcl import foundation
 # import zigpy.zcl as zcl
 from . import utils as u
+from homeassistant.util import dt as dt_util
 
 LOGGER = logging.getLogger(__name__)
 
@@ -114,6 +115,8 @@ async def attr_read(app, listener, ieee, cmd, data, service):
 
 async def attr_write(app, listener, ieee, cmd, data, service):
     # Data format is endpoint,cluster_id,attr_id,attr_type,attr_value
+    event_data = { "ieee": str(ieee), "command" : cmd, "start_time": dt_util.utcnow().isoformat() }
+
 
     # Default
     manf = None
@@ -160,6 +163,21 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     else:
         state_id = None
 
+    if "read_before_write" in extra:
+        read_before_write = u.str2bool(extra["read_before_write"])==1
+    else:
+        read_before_write = True
+
+    if "read_after_write" in extra:
+        read_after_write = u.str2bool(extra["read_after_write"])==1
+    else:
+        read_after_write = True
+
+    if "write_if_equal" in extra:
+        write_if_equal = u.str2bool(extra["write_if_equal"])==1
+    else:
+        write_if_equal = True
+
     if "state_attr" in extra:
         state_attr = extra["state_attr"]
     else:
@@ -170,6 +188,22 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         allow = u.str2int(extra["allow_create"])
         allow_create = ( allow is not None ) and ( (allow == True ) or (allow == 1) )
 
+    if "event_done" in extra:
+        event_done = extra["event_done"]
+    else:
+        event_done = None
+
+    if "event_fail" in extra:
+        event_fail = extra["event_fail"]
+    else:
+        event_fail = None
+
+    if "event_success" in extra:
+        event_success = extra["event_success"]
+    else:
+        event_success = None
+
+    success = True
 
     # Decode the variables
 
@@ -245,23 +279,46 @@ async def attr_write(app, listener, ieee, cmd, data, service):
             attr = foundation.Attribute(attr_id, value=attr_val)
             attr_write_list.append(attr)  # Write list
 
-    if True:
+
+    result_read = None
+    if read_before_write or (len(attr_write_list) == 0):
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
             attr_read_list, manufacturer=manf)
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
+        success = (len(result_read[1]) == 0 and len(result_read[0]) == 1)
 
-    if len(attr_write_list) != 0:
+
+    if ( len(attr_write_list) != 0  and
+        ( 
+             not(read_before_write)
+             or write_if_equal
+             or ( not attr_id in result_read[0] or result_read[0][attr_id] == attr_val.serialize())
+        )
+        ):
+        if result_read is not None:
+            event_data["read_before"] = result_read
+            result_read is None
+
         LOGGER.debug("Request attr write %s", attr_write_list)
         result_write = await cluster._write_attributes(
             attr_write_list, manufacturer=manf)
         LOGGER.debug("Write attr status: %s", result_write)
+        event_data["result_write"] = result_write
 
-        if True:
+        if read_after_write:
             LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster.read_attributes(
                 attr_read_list, manufacturer=manf)
             LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
+            success = success and (len(result_read[1]) == 0 and len(result_read[0]) == 1) and (result_read == attr_val.serialize())
+
+    if result_read is not None:
+        event_data["result_read"] = result_read
+
+
+    event_data["success"] = success
+
 
     # Write value to provided state or state attribute
     if state_id is not None:
@@ -273,8 +330,24 @@ async def attr_write(app, listener, ieee, cmd, data, service):
                  else:
                      LOGGER.debug("Set state %s -> %s from attr_id %s", state_id, val, id)
                  u.set_state(listener._hass, state_id, val, key=state_attr, allow_create=allow_create) 
+                 LOGGER.debug("STATE is set")
 
-    return result_read
+    # Fire events
+    if success: 
+        if type(event_success) == str:
+            LOGGER.debug("Fire %s -> %s", event_success, event_data)
+            listener._hass.bus.fire(event_success, event_data)
+    else:
+        if type(event_fail) == str:
+            LOGGER.debug("Fire %s -> %s", event_fail, event_data)
+            listener._hass.bus.fire(event_fail, event_data)
+    if type(event_done) == str:
+        LOGGER.debug("Fire %s -> %s", event_done, event_data)
+        listener._hass.bus.fire(event_done, event_data)
+
+    
+    # For internal use
+    return result_read 
 
     # Example where attributes are not types
     # (supposed typed by the internals):

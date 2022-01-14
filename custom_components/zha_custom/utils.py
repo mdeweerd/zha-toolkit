@@ -27,6 +27,15 @@ def str2int(s):
 
 
 
+# Convert string to best boolean representation
+def str2bool(s):
+    if s is None or s=='':
+        return False
+    if s==True or s==False:
+        return s
+    return u.str2int(s) != 0
+
+
 class RadioType(Enum):
     UNKNOWN = 0
     ZNP = 1

@@ -248,6 +248,18 @@ data:
   allow_create: True
   # The manufacturer should be set only for manufacturer attributes
   manf: 0x1202
+  # You can set the next events to use as a trigger.
+  # The event data has the result of the command (currently attr_read, attr_write)
+  event_success: my_read_success_trigger_event
+  event_fail: my_read_success_trigger_event
+  event_done: my_read_success_trigger_event
+  # Settings for attr_write
+  # Read attribute before writing it (defaults to True)
+  read_before_write: True
+  # Read attribute after writing it (defaults to True)
+  read_after_write: True
+  # Write attribute when the read value matches (defaults to False)
+  write_if_equal: False
 ```
 
 
