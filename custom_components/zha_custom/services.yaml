@@ -145,17 +145,17 @@ execute:
       selector:
         text:
     event_success:
-      desciption: Event name in case of success (currently for attr_read, attr_write).  Has event data with relevant attributes.
+      description: Event name in case of success (currently for attr_read, attr_write).  Has event data with relevant attributes.
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
-      desciption: Event name in case of failure (currently for attr_read, attr_write).  Has event data with relevant attributes.
+      description: Event name in case of failure (currently for attr_read, attr_write).  Has event data with relevant attributes.
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
-      desciption: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
