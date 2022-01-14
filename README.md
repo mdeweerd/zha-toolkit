@@ -251,8 +251,8 @@ data:
   # You can set the next events to use as a trigger.
   # The event data has the result of the command (currently attr_read, attr_write)
   event_success: my_read_success_trigger_event
-  event_fail: my_read_success_trigger_event
-  event_done: my_read_success_trigger_event
+  event_fail: my_read_fail_trigger_event
+  event_done: my_read_done_trigger_event
   # Settings for attr_write
   # Read attribute before writing it (defaults to True)
   read_before_write: True
