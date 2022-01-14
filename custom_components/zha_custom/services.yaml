@@ -154,7 +154,7 @@ execute:
       example: my_read_fail_trigger_event
       selector:
         text:
-    event_done: my_read_success_trigger_event          
+    event_done:
       desciption: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
@@ -175,7 +175,3 @@ execute:
        description: Force writing the attribute even if the read attribute already matches.  Defaults to False
        selector:
          boolean:
-
-
-
-
