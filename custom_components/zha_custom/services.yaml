@@ -164,14 +164,14 @@ execute:
        selector:
          boolean:
     read_before_write:
-       description: Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True.
+       description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
        selector:
          boolean:
     read_after_write:
-       description: Read attribute after writing.  Can be used to ensure the values match.  Defaults to True
+       description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
        selector:
          boolean:
     write_if_equal:
-       description: Force writing the attribute even if the read attribute already matches.  Defaults to False
+       description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
        selector:
          boolean:
