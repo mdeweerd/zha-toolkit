@@ -285,9 +285,10 @@ service: zha_custom.execute
 data:
   command: conf_report
   ieee: 00:12:4b:00:23:b3:da:a5
-  endpoint: 1
-  cluster: 0x702
-  attribute: 0x0100
+  # Optional endpoint, when missing will match cluster 
+  # endpoint: 1
+  cluster: 0x402
+  attribute: 0x0000
   min_interval: 60
   max_interval: 300
   reportable_change: 10
@@ -297,9 +298,9 @@ data:
   tries: 3
   # You can set the next events to use as a trigger.
   # The event data has the result of the command (currently attr_read, attr_write)
-  event_success: my_read_success_trigger_event
-  event_fail: my_read_fail_trigger_event
-  event_done: my_read_done_trigger_event
+  event_success: my_conf_success_trigger_event
+  event_fail: my_conf_fail_trigger_event
+  event_done: my_conf_done_trigger_event
 ```
 
 ## `zcl_cmd`: Send a Cluster command
