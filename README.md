@@ -303,6 +303,61 @@ data:
   event_done: my_conf_done_trigger_event
 ```
 
+Exemple of data available in the event report.
+
+```json
+{
+    "event_type": "my_conf_done_trigger_event",
+    "data": {
+        "ieee": "00:12:4b:00:24:42:d1:dc",
+        "command": "conf_report",
+        "start_time": "2022-01-16T21:56:21.393322+00:00",
+        "params": {
+            "cmd_id": null,
+            "endpoint_id": 1,
+            "cluster_id": 513,
+            "attr_id": 0,
+            "attr_type": null,
+            "attr_val": null,
+            "min_interval": 60,
+            "max_interval": 300,
+            "reportable_change": 10,
+            "dir": null,
+            "manf": null,
+            "tries": 3,
+            "expect_reply": true,
+            "args": [],
+            "state_id": "sensor.test",
+            "state_attr": null,
+            "allow_create": true,
+            "event_success": "my_conf_success_trigger_event",
+            "event_fail": "my_conf_fail_trigger_event",
+            "event_done": "my_conf_done_trigger_event",
+            "read_before_write": true,
+            "read_after_write": true,
+            "write_if_equal": false
+        },
+        "result_conf": [
+            [
+                {
+                    "status": 0,
+                    "direction": null,
+                    "attrid": null
+                }
+            ]
+        ]
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-16T21:56:28.248353+00:00",
+    "context": {
+        "id": "596b9ba7b29d76545295881ea73c5708",
+        "parent_id": null,
+        "user_id": null
+    }
+}
+```
+
+
 ## `zcl_cmd`: Send a Cluster command
 
 Allows you to send a cluster command.
