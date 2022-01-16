@@ -55,10 +55,11 @@ async def conf_report(app, listener, ieee, cmd, data, service):
                 params['reportable_change'],
                 manufacturer=params['manf']
             )
+            event_data["params"]=params
             event_data["result_conf"]=result_conf
             triesToGo=0 # Stop loop
-            LOGGER.info("Configure report result: %s", result)
-            success=True
+            LOGGER.info("Configure report result: %s", result_conf)
+            success=(result_conf[0][0].status==f.Status.SUCCESS)
         except (DeliveryError, asyncio.TimeoutError) as e:
             continue
         except Exception as e:
