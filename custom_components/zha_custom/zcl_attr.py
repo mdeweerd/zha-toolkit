@@ -107,12 +107,10 @@ async def conf_report(app, listener, ieee, cmd, data, service):
 
 
 async def attr_read(app, listener, ieee, cmd, data, service):
-    if 'attr_val' in service.data:
-        # avoid writing when value is present
-        del service.data['attr_val']
     await attr_write(app, listener, ieee, cmd, data, service)
 
-
+# This code is shared with attr_read.
+# Can read and write 1 attribute
 async def attr_write(app, listener, ieee, cmd, data, service):
     # Data format is endpoint,cluster_id,attr_id,attr_type,attr_value
     event_data = { "ieee": str(ieee), "command" : cmd, "start_time": dt_util.utcnow().isoformat() }
@@ -281,7 +279,7 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
 
     result_read = None
-    if read_before_write or (len(attr_write_list) == 0):
+    if read_before_write or (len(attr_write_list) == 0) or cmd != 'attr_write':
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
             attr_read_list, manufacturer=manf)
@@ -295,7 +293,7 @@ async def attr_write(app, listener, ieee, cmd, data, service):
              or write_if_equal
              or ( not attr_id in result_read[0] or result_read[0][attr_id] == attr_val.serialize())
         )
-        ):
+        ) and cmd == 'attr_write':
         if result_read is not None:
             event_data["read_before"] = result_read
             result_read is None
