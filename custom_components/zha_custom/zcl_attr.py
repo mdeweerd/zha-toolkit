@@ -1,7 +1,7 @@
 import logging
 
 from zigpy import types as t
-from zigpy.zcl import foundation
+from zigpy.zcl import foundation as f
 # import zigpy.zcl as zcl
 from . import utils as u
 from homeassistant.util import dt as dt_util
@@ -40,8 +40,6 @@ async def conf_report(app, listener, ieee, cmd, data, service):
     # Get more parameters from "extra"
     # extra = service.data.get('extra')
     # Take extra parameters from "data" level
-    extra=service.data  #.get('extra')
-    LOGGER.info( "Extra '%s'", type(extra) )
     if "endpoint" in extra:
         ep_id_str = extra["endpoint"]
     if "cluster" in extra:
@@ -142,7 +140,6 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     # extra = service.data.get('extra')
     # Take extra parameters from "data" level
     extra=service.data  #.get('extra')
-    LOGGER.info( "Extra '%s'", type(extra) )
     if "endpoint" in extra:
         ep_id_str = extra["endpoint"]
     if "cluster" in extra:
@@ -174,7 +171,7 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     if "write_if_equal" in extra:
         write_if_equal = u.str2bool(extra["write_if_equal"])==1
     else:
-        write_if_equal = True
+        write_if_equal = False
 
     if "state_attr" in extra:
         state_attr = extra["state_attr"]
@@ -244,6 +241,9 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
     attr_read_list.append(attr_id)  # Read before write list
 
+
+    compare_val=None
+
     # Type only needed for write
     if attr_type_str is not None:
         # Decode attribute type
@@ -254,28 +254,37 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         # If the attr_type is not set, then the attribute will be only read.
         attr_val = None
         if attr_type == 0x10:
-            attr_val = foundation.TypeValue(
-                attr_type, t.Bool(u.str2int(attr_val_str)))
+            compare_val=u.str2int(attr_val_str)
+            attr_val = f.TypeValue(
+                attr_type, t.Bool(compare_val))
         elif attr_type == 0x20:
-            attr_val = foundation.TypeValue(
-                attr_type, t.uint8_t(u.str2int(attr_val_str)))
+            compare_val=u.str2int(attr_val_str)
+            attr_val = f.TypeValue(
+                attr_type, t.uint8_t(compare_val))
         elif attr_type <= 0x31 and attr_type >= 0x08:
+            compare_val=u.str2int(attr_val_str)
             # uint, int, bool, bitmap and enum
-            attr_val = foundation.TypeValue(
-                attr_type, t.FixedIntType(u.str2int(attr_val_str)))
-        elif attr_type == 0x41:  # Octet string
+            attr_val = f.TypeValue(
+                attr_type, t.FixedIntType(compare_val))
+        elif attr_type in [ 0x41, 0x42 ]:  # Octet string
             # Octet string requires length -> LVBytes
+
+            compare_val=attr_val_str;
+
+            if type(attr_val_str) == str:
+                attr_val_str = bytes(attr_val_str,'utf-8')
     
             if isinstance(attr_val_str, list):
                 # Convert list to List of uint8_t
                 attr_val_str = t.List[t.uint8_t]([t.uint8_t(i) for i in attr_val_str])
     
-            attr_val = foundation.TypeValue(
+            attr_val = f.TypeValue(
                 attr_type, t.LVBytes(attr_val_str))
   
         if attr_val is not None:
-            attr = foundation.Attribute(attr_id, value=attr_val)
+            attr = f.Attribute(attr_id, value=attr_val)
             attr_write_list.append(attr)  # Write list
+        LOGGER.debug("ATTR TYPE %s, attr_val %s", attr_type, attr_val)
 
 
     result_read = None
@@ -286,14 +295,21 @@ async def attr_write(app, listener, ieee, cmd, data, service):
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
         success = (len(result_read[1]) == 0 and len(result_read[0]) == 1)
 
+    # True if value that should be written is the equal to the read one
+    write_is_equal = (
+            len(attr_write_list) != 0 
+            and ( attr_id in result_read[0] and result_read[0][attr_id] == compare_val)
+        )
+    write_is_equal = False # Test
+    LOGGER.debug("Write is equal '%s'=='%s' %s", result_read[0][attr_id], compare_val, write_is_equal)
 
     if ( len(attr_write_list) != 0  and
         ( 
              not(read_before_write)
              or write_if_equal
-             or ( not attr_id in result_read[0] or result_read[0][attr_id] == attr_val.serialize())
-        )
-        ) and cmd == 'attr_write':
+             or not(write_is_equal)
+        ) and cmd == 'attr_write'
+       ):
         if result_read is not None:
             event_data["read_before"] = result_read
             result_read is None
@@ -303,13 +319,27 @@ async def attr_write(app, listener, ieee, cmd, data, service):
             attr_write_list, manufacturer=manf)
         LOGGER.debug("Write attr status: %s", result_write)
         event_data["result_write"] = result_write
+        success = False
+        try:
+            #LOGGER.debug("Write attr status: %s", result_write[0][0].status)
+            success=(result_write[0][0].status==f.Status.SUCCESS)
+            LOGGER.debug("Write success: %s", success)
+        except e:
+            success = False
+
+        #success = (len(result_write[1])==0)
 
         if read_after_write:
             LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster.read_attributes(
                 attr_read_list, manufacturer=manf)
             LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
-            success = success and (len(result_read[1]) == 0 and len(result_read[0]) == 1) and (result_read == attr_val.serialize())
+            read_is_equal = (result_read[0][attr_id] == compare_val)
+            success = ( 
+                    success
+                    and (len(result_read[1]) == 0 and len(result_read[0]) == 1)
+                         and (result_read[0][attr_id] == compare_val)
+                )
 
     if result_read is not None:
         event_data["result_read"] = result_read

@@ -175,3 +175,7 @@ execute:
        description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
        selector:
          boolean:
+    expect_reply:
+       description: "Wait for/expect a reply (not used yet)"
+       selector:
+         boolean:
