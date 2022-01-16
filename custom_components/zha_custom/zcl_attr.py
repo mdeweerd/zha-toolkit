@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def conf_report(app, listener, ieee, cmd, data, service):
-    event_data={}
+    event_data = { "ieee": str(ieee), "command" : cmd, "start_time": dt_util.utcnow().isoformat() }
     # Decode parameters
     params = u.extractParams(service)
 
