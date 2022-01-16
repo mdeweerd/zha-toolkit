@@ -277,15 +277,8 @@ After succeeding the configuration, the minimum delay was actually 20s
 which is likely the measurement period itself.
 The changes were reported when they exceeded 0.10 degrees C.
 
-```yaml
-service: zha_custom.execute
-data:
-  ieee: 00:12:4b:00:23:b3:da:a5
-  command: conf_report
-  command_data: 1,0x0402,0x0000,5,300,10
-```
-
-Parameters as keys:
+For sleepy devices, you can add the parameter 'tries' which will retry
+until the devices confirms (with success or error)
 
 ```yaml
 service: zha_custom.execute
@@ -300,6 +293,13 @@ data:
   reportable_change: 10
   # Optional manufacturer 
   #manf: 0x1204
+  # Optional number of configuration attempts
+  tries: 3
+  # You can set the next events to use as a trigger.
+  # The event data has the result of the command (currently attr_read, attr_write)
+  event_success: my_read_success_trigger_event
+  event_fail: my_read_fail_trigger_event
+  event_done: my_read_done_trigger_event
 ```
 
 ## `zcl_cmd`: Send a Cluster command

@@ -172,6 +172,7 @@ def extractParams(service):
     params = {
         'cmd_id' : None,
         'endpoint_id' : None,
+        'cluster_id' : None,
         'attr_id' : None,
         'attr_type' : None,
         'attr_val' : None,
@@ -198,24 +199,24 @@ def extractParams(service):
 
     # Endpoint to send command to
     if 'endpoint' in rawParams:
-        params.ep_id = str2int(rawParams['endpoint'])
+        params['ep_id'] = str2int(rawParams['endpoint'])
 
     # Cluster to send command to
     if 'cluster' in rawParams:
-        params.cluster_id = str2int(rawParams['cluster'])
+        params['cluster_id'] = str2int(rawParams['cluster'])
 
     # Attribute to send command to
     if 'attribute' in rawParams:
-        params.attr_id = str2int(rawParams['attribute'])
+        params['attr_id'] = str2int(rawParams['attribute'])
 
     # The command to send
     if 'cmd' in rawParams:
-        params.cmd_id     = str2int(rawParams['cmd'])
+        params['cmd_id']     = str2int(rawParams['cmd'])
 
     # The direction (to in or out cluster)
     dir_int=0
     if 'dir' in rawParams:
-        params.dir = str2int(rawParams['dir'])
+        params['dir'] = str2int(rawParams['dir'])
 
     # Get manufacturer
     manf=None
@@ -225,7 +226,7 @@ def extractParams(service):
     # Get tries
     tries = 1
     if 'tries' in rawParams:
-        params.tries = str2int(rawParams['tries'])
+        params['tries'] = str2int(rawParams['tries'])
 
     # Get expect_reply
     if 'expect_reply' in rawParams:
@@ -244,47 +245,47 @@ def extractParams(service):
                 # lval = t.LVList(lval)
             cmd_args.append(lval)
             LOGGER.debug("cmd converted arg %s", lval)
-        params.args = cmd_args
+        params['args'] = cmd_args
 
 
     if "min_interval" in rawParams:
-        params.min_interval_str = rawParams["min_interval"]
-    if "max_interval" in extra:
-        params.max_interval_str = rawParams["max_interval"]
+        params['min_interval'] = str2int(rawParams["min_interval"])
+    if "max_interval" in rawParams:
+        params['max_interval'] = str2int(rawParams["max_interval"])
     if "reportable_change" in rawParams:
-        params.reportable_change_str = rawParams["reportable_change"]
+        params['reportable_change'] = str2int(rawParams["reportable_change"])
 
 
     if "state_id" in rawParams:
-        params.state_id = rawParams["state_id"]
+        params['state_id'] = rawParams["state_id"]
 
     if "state_attr" in rawParams:
-        params.state_attr = rawParams["state_attr"]
+        params['state_attr'] = rawParams["state_attr"]
 
     if "read_before_write" in rawParams:
-        params.read_before_write = str2bool(rawParams["read_before_write"])==1
+        params['read_before_write'] = str2bool(rawParams["read_before_write"])
 
     if "read_after_write" in rawParams:
-        params.read_after_write = str2bool(rawParams["read_after_write"])==1
+        params['read_after_write'] = str2bool(rawParams["read_after_write"])
 
     if "write_if_equal" in rawParams:
-        params.write_if_equal = str2bool(rawParams["write_if_equal"])==1
+        params['write_if_equal'] = str2bool(rawParams["write_if_equal"])
 
     if "state_attr" in rawParams:
-        params.state_attr = rawParams["state_attr"]
+        params['state_attr'] = rawParams["state_attr"]
 
     if "allow_create" in rawParams:
         allow = str2int(rawParams["allow_create"])
-        params.allow_create = ( allow is not None ) and ( (allow == True ) or (allow == 1) )
+        params['allow_create'] = ( allow is not None ) and ( (allow == True ) or (allow == 1) )
 
     if "event_done" in rawParams:
-        params.event_done = rawParams["event_done"]
+        params['event_done'] = rawParams["event_done"]
 
     if "event_fail" in rawParams:
-        params.event_fail = rawParams["event_fail"]
+        params['event_fail'] = rawParams["event_fail"]
 
     if "event_success" in rawParams:
-        params.event_success = rawParams["event_success"]
+        params['event_success'] = rawParams["event_success"]
 
     return params
 

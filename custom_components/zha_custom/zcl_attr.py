@@ -1,107 +1,103 @@
+import asyncio
 import logging
 
 from zigpy import types as t
 from zigpy.zcl import foundation as f
+from zigpy.exceptions import DeliveryError
 # import zigpy.zcl as zcl
 from . import utils as u
 from homeassistant.util import dt as dt_util
+
 
 LOGGER = logging.getLogger(__name__)
 
 
 async def conf_report(app, listener, ieee, cmd, data, service):
-    # Data format is endpoint, cluster_id, attr_id, min_interval,
-    #                 max_interval,reportable_change,manufacturer
-
-    # Default manf value
-    manf = None
-    ep_id_str = None
-
-    if data is not None:
-        # Split command_data and assign to string variables
-        params = data.split(',')
-        i = 0
-        # addr_str=params[i] ; i+=1
-        if i in params:
-            ep_id_str = params[i] ; i += 1
-        if i in params:
-            cluster_id_str = params[i] ; i += 1
-        if i in params:
-            attr_id_str = params[i] ; i += 1
-        if i in params:
-            min_interval_str = params[i] ; i += 1
-        if i in params:
-            max_interval_str = params[i] ; i += 1
-        if i in params:
-            reportable_change_str = params[i] ; i += 1
-        if i in params:
-            manf = u.str2int(params[i]) ; i += 1
-
-    # Get more parameters from "extra"
-    # extra = service.data.get('extra')
-    # Take extra parameters from "data" level
-    if "endpoint" in extra:
-        ep_id_str = extra["endpoint"]
-    if "cluster" in extra:
-        cluster_id_str = extra["cluster"]
-    if "attribute" in extra:
-        attr_id_str = extra["attribute"]
-    if "min_interval" in extra:
-        min_interval_str = extra["min_interval"]
-    if "max_interval" in extra:
-        max_interval_str = extra["max_interval"]
-    if "reportable_change" in extra:
-        reportable_change_str = extra["reportable_change"]
-    if "manf" in extra:
-        manf = u.str2int(extra["manf"])
-
-    # Decode the variables
-
-    # Decode cluster id
-    cluster_id = u.str2int(cluster_id_str)
-
+    event_data={}
+    # Decode parameters
+    params = u.extractParams(service)
 
     dev = app.get_device(ieee=ieee)
 
-    # Decode endpoint
-    if ep_id_str is None or ep_id_str == "":
-        ep_id = u.find_endpoint(dev, cluster_id)
-    else:
-        ep_id = u.str2int(ep_id_str)
+    # Get best endpoint
+    if params['endpoint_id'] is None or params['endpoint_id'] == "":
+        params['endpoint_id'] = u.find_endpoint(dev, params['cluster_id'])
 
+    if params['endpoint_id'] not in dev.endpoints:
+        LOGGER.error("Endpoint %s not found for '%s'", params['endpoint_id'], repr(ieee))
 
-    attr_id = u.str2int(attr_id_str)
-    min_interval = u.str2int(min_interval_str)
-    max_interval = u.str2int(max_interval_str)
-    reportable_change = u.str2int(reportable_change_str)
-
-
-    for key, value in dev.endpoints.items():
-        LOGGER.info("Endpoint %s" % (key))
-        if key == 0:
-            continue
-        for cl, v in value.in_clusters.items():
-            LOGGER.info("InCluster 0x%04X" % (cl))
-        for cl, v in value.out_clusters.items():
-            LOGGER.info("OutCluster 0x%04X" % (cl))
-    if ep_id not in dev.endpoints:
-        LOGGER.error("Endpoint %s not found for '%s'", ep_id, repr(ieee))
-
-    if cluster_id not in dev.endpoints[ep_id].in_clusters:
+    if params['cluster_id'] not in dev.endpoints[params['endpoint_id']].in_clusters:
         LOGGER.error("Cluster 0x%04X not found for '%s', endpoint %s",
-                      cluster_id, repr(ieee), ep_id)
+                      params['cluster_id'], repr(ieee), params['endpoint_id'])
 
-    cluster = dev.endpoints[ep_id].in_clusters[cluster_id]
+    cluster = dev.endpoints[params['endpoint_id']].in_clusters[params['cluster_id']]
 
     # await cluster.bind()   -> commented, not performing bind to coordinator
-    LOGGER.info("Configure report %u, %s, %u, %u, %u",
-                ep_id, attr_id, min_interval, max_interval, reportable_change)
-    result = await cluster.configure_reporting(
-        attr_id,
-        min_interval, max_interval,
-        reportable_change,
-        manufacturer=manf)
-    LOGGER.info("Configure report result: %s", result)
+
+    triesToGo=params['tries']
+    success=False
+    result_conf=None
+
+    while triesToGo>=1:
+        triesToGo=triesToGo-1
+        try:
+            LOGGER.debug('Try configure report(%s,%s,%s,%s,%s) Try %s/%s',
+                params['attr_id'],
+                params['min_interval'],
+                params['max_interval'],
+                params['reportable_change'],
+                params['manf'],
+                params['tries']-triesToGo,params['tries'])
+            result_conf = await cluster.configure_reporting(
+                params['attr_id'],
+                params['min_interval'],
+                params['max_interval'],
+                params['reportable_change'],
+                manufacturer=params['manf']
+            )
+            event_data["result_conf"]=result_conf
+            triesToGo=0 # Stop loop
+            LOGGER.info("Configure report result: %s", result)
+            success=True
+        except (DeliveryError, asyncio.TimeoutError) as e:
+            continue
+        except Exception as e:
+            triesToGo=0 # Stop loop
+            LOGGER.debug("Configure report exception %s,%s,%s,%s,%s,%s",
+                e,
+                params['attr_id'],
+                params['min_interval'],
+                params['max_interval'],
+                params['reportable_change'],
+                params['manf'])
+
+
+    # Write value to provided state or state attribute
+    if False and state_id is not None:
+        if len(result_conf[1]) == 0 and len(result_conf[0]) == 1:
+             # No error and one result
+             for id,val in result_conf[0].items():
+                 if state_attr is not None:
+                     LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", state_id, state_attr, val, id)
+                 else:
+                     LOGGER.debug("Set state %s -> %s from attr_id %s", state_id, val, id)
+                 u.set_state(listener._hass, state_id, val, key=state_attr, allow_create=allow_create) 
+                 LOGGER.debug("STATE is set")
+
+    # Fire events
+    if success: 
+        if params['event_success'] is not None:
+            LOGGER.debug("Fire %s -> %s", params['event_success'], event_data)
+            listener._hass.bus.fire(params['event_success'], event_data)
+    else:
+        if params['event_fail'] is not None:
+            LOGGER.debug("Fire %s -> %s", params['event_fail'], event_data)
+            listener._hass.bus.fire(params['event_fail'], event_data)
+    if params['event_done'] is not None:
+        LOGGER.debug("Fire %s -> %s", params['event_done'], event_data)
+        listener._hass.bus.fire(params['event_done'], event_data)
+
+    
 
 
 async def attr_read(app, listener, ieee, cmd, data, service):
