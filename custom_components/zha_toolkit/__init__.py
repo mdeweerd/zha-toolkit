@@ -17,12 +17,12 @@ ATTR_COMMAND_DATA = "command_data"
 ATTR_IEEE = "ieee"
 DATA_ZHAC = "zha-toolkit"
 
-SERVICE_CUSTOM = "execute"
+SERVICE_TOOLKIT = "execute"
 
 LOGGER = logging.getLogger(__name__)
 
 SERVICE_SCHEMAS = {
-    SERVICE_CUSTOM: vol.Schema(
+    SERVICE_TOOLKIT: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,  # was: t.EUI64.convert, - keeping ieee for compatibility
             vol.Optional(ATTR_COMMAND): cv.string,
@@ -44,9 +44,9 @@ async def async_setup(hass, config):
     except KeyError:
         return True
 
-    async def custom_service(service):
-        """Run command from custom module."""
-        LOGGER.info("Running custom service: %s", service)
+    async def toolkit_service(service):
+        """Run command from toolkit module."""
+        LOGGER.info("Running ZHA Toolkit service: %s", service)
 
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
@@ -79,7 +79,7 @@ async def async_setup(hass, config):
             )
 
     hass.services.async_register(
-        DOMAIN, SERVICE_CUSTOM, custom_service, schema=SERVICE_SCHEMAS[SERVICE_CUSTOM]
+        DOMAIN, SERVICE_TOOLKIT, toolkit_service, schema=SERVICE_SCHEMAS[SERVICE_TOOLKIT]
     )
     return True
 

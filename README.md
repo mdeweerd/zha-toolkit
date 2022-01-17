@@ -34,10 +34,10 @@ either manually or using [HACS](https://hacs.xyz/docs/setup/prerequisites)
 Then, the integration is only available in Home Assistant after adding 
 the next line to `configuration.yaml`, and restarting Home Assistant.
 ```yaml
-zha-toolkit:
+zha_toolkit:
 ```
 
-Before restarting, you may also want to enable debug verbosity.  `zha-toolkit`
+Before restarting, you may also want to enable debug verbosity.  `zha_toolkit`
 isn't verbose when you use it occasionnaly.  As it's a service, there is
 no really good way to inform the user about errors other than the log.
 
@@ -47,20 +47,20 @@ Add/update the logger configuration (in the `configuration.yaml` file):
 ```yaml
 logger:
   log:
-    custom_components.zha-toolkit: debug
+    custom_components.zha_toolkit: debug
 ```
 
 
 You can also change the log configuration dynamically by calling the
 `logger.setlevel` service.
-Example that sets the debug level for this `zha-toolkit` component and for
+Example that sets the debug level for this `zha_toolkit` component and for
 zigpy.zcl` (which helps to see some information about actual ZCL frames sent).
 This method allows you to enable debug logging only for a limited duration :
 
 ```yaml
 service: logger.set_level
 data: 
-    custom_components.zha-toolkit: debug
+    custom_components.zha_toolkit: debug
     zigpy.zcl: debug
 ```
 
@@ -68,12 +68,12 @@ data:
 
 This is a list (of 1) automation:
 
-* DAILY BACKUP OF ZNP DONGLE: [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml)
+* DAILY BACKUP OF ZNP DONGLE: [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha_toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml)
 
 
-# Using `zha-toolkit`
+# Using `zha_toolkit`
 
-This components provides a single service (`zha-toolkit.execute`) that
+This components provides a single service (`zha_toolkit.execute`) that
 provides several commands (`command` parameter) providing access
 to ZHA/Zigbee actions that are not otherwise available.
 
@@ -91,7 +91,7 @@ them to an automation.
 Go to Developer Tools > Services in your instance : 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
-Choose `zha-toolkit.execute` as the service.  
+Choose `zha_toolkit.execute` as the service.  
 Enable Yaml entry.  
 
 There are several examples below for different commands.  You can
@@ -126,7 +126,7 @@ in the configuration directory of Home Assistant (`config/scan/*_result.txt`).
 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 00:12:4b:00:22:08:ed:1a
   command: scan_device
@@ -135,7 +135,7 @@ data:
 Scan using the entity name:
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: scan_device
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
@@ -146,7 +146,7 @@ data:
 Runs `topology.scan()`. 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: zdo_scan_now
 ```
@@ -156,7 +156,7 @@ data:
 Binds all matching clusters (within the scope of the integrated list)
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 00:15:8d:00:04:7b:83:69
   command: bind_ieee
@@ -167,7 +167,7 @@ data:
 ## `handle_join`: Handle join - rediscover device
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   # Address of the device that joined
   ieee: 00:12:4b:00:22:08:ed:1a
@@ -182,7 +182,7 @@ data:
 Read a zigbee attribute value, optionnally write to a state.
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: attr_read
   ieee: sensor.zigbee_sensor
@@ -213,7 +213,7 @@ If debug logging is active, this will be visible in the `home_assistant.log`.
 The last read this can be written to a state.
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: attr_write
@@ -227,7 +227,7 @@ Alternate method, not using `command_data` but individual parameters.
 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: attr_write
   ieee: 5c:02:72:ff:fe:92:c2:5d
@@ -281,7 +281,7 @@ For sleepy devices, you can add the parameter 'tries' which will retry
 until the devices confirms (with success or error)
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: conf_report
   ieee: 00:12:4b:00:23:b3:da:a5
@@ -365,11 +365,11 @@ Also accepts command arguments.
 
 Note:  
 There is also the official core service `zha.issue_zigbee_cluster_command`.  You may want to use that instead if it suits your needs.  
-The `zha-toolkit` version allows lists of bytes as arg paramters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a `custom_component`.
+The `zha_toolkit` version allows lists of bytes as arg paramters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a `custom_component`.
 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   # Device IEEE address - mandatory
   ieee: 5c:02:72:ff:fe:92:c2:5d
@@ -398,7 +398,7 @@ data:
 ### `zcl_cmd` Example: Send `on` command to an OnOff Cluster.
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -411,7 +411,7 @@ data:
 ### `zcl_cmd` Example: Send `off` command to an OnOff Cluster:
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -423,7 +423,7 @@ data:
 ### `zcl_cmd` Example: "Store Scene"
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -435,7 +435,7 @@ data:
 
 ### `zcl_cmd` Example: "Recall Scene"
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -465,7 +465,7 @@ ZigBee Cluster Library Frame
 This example shows that you can provide a list of bytes for an argument:
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -512,7 +512,7 @@ Note: currently under test.
 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: znp_nvram_backup
   # Optional command_data, string added to the basename.
@@ -523,7 +523,7 @@ data:
 ## `znp_nvram_restore`: Restore ZNP NVRAM data
 
 Will restore ZNP NVRAM data from `local/nvram_backup.json` where `local`
-is a directory in the `zha-toolkit` directory.
+is a directory in the `zha_toolkit` directory.
 
 Note: currently under test.
 
@@ -532,7 +532,7 @@ For safety, a backup is made of the current network before restoring
 `local/nvram_backup_YYmmDD_HHMMSS.json`.
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: znp_nvram_restore
 ```
@@ -541,7 +541,7 @@ data:
 ## `znp_nvram_reset`: Reset ZNP NVRAM data
 
 Will reset ZNP NVRAM data from `local/nvram_backup.json` where `local`
-is a directory in the `zha-toolkit` directory.
+is a directory in the `zha_toolkit` directory.
 
 Note: currently under test.
 
@@ -551,7 +551,7 @@ For safety, a backup is made of the current network before restoring
 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: znp_nvram_reset
 ```
@@ -566,13 +566,13 @@ The output is written to the customisation directory as `local/nwk_backup.json`
 when `command_data` is empty or not provided.  When `command_data` is provided,
 it is added just after nwk_backup.
 
-You can use the blueprint to setup daily backup: [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml).
+You can use the blueprint to setup daily backup: [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha_toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml).
 
 
 The name of that backup is according to the format
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: znp_backup
   # Optional command_data, string added to the basename.
@@ -583,7 +583,7 @@ data:
 ## `znp_restore`: Restore ZNP network data
 
 Will restore network data from `local/nwk_backup.json` where `local`
-is a directory in the `zha-toolkit` directory.
+is a directory in the `zha_toolkit` directory.
 
 Note: currently under test.
 
@@ -595,7 +595,7 @@ For safety, a backup is made of the current network before restoring
 A typical use for this is when you migrate from one key to another.
 
 The procedure should be:
-1. Backup using the `znp_backup` command in the `zha-toolkit` service.
+1. Backup using the `znp_backup` command in the `zha_toolkit` service.
    Verify that the `nwk_backup.json` file is generated in the `local`
    directory.
 2. 
@@ -635,7 +635,7 @@ The procedure should be:
 
 
 ```yaml
-service: zha-toolkit.execute
+service: zha_toolkit.execute
 data:
   command: znp_restore
   # Optional:
