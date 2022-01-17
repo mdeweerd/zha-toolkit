@@ -21,13 +21,13 @@ jobs:
           python3 ${{ github.workspace }}/.github/scripts/update_hacs_manifest.py --version ${{ steps.version.outputs.version }}
       - name: Create zip
         run: |
-          cd custom_components/zha_custom
-          zip zha_custom.zip -r ./
+          cd custom_components/zha-toolkit
+          zip zha-toolkit.zip -r ./
       - name: Upload zip to release
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./custom_components/zha_custom/zha_custom.zip
-          asset_name: zha_custom.zip
+          file: ./custom_components/zha-toolkit/zha-toolkit.zip
+          asset_name: zha-toolkit.zip
           tag: ${{ github.ref }}
           overwrite: true

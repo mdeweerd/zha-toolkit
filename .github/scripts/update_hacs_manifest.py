@@ -1,4 +1,4 @@
-# Modified from : https://raw.githubusercontent.com/bramstroker/homeassistant-zha_custom/master/.github/scripts/update_hacs_manifest.py
+# Modified from : https://raw.githubusercontent.com/bramstroker/homeassistant-zha-toolkit/master/.github/scripts/update_hacs_manifest.py
 # 
 # MIT License
 # 
@@ -37,14 +37,14 @@ def update_manifest():
             version = sys.argv[index + 1]
 
     with open(
-        f"{os.getcwd()}/custom_components/zha_custom/manifest.json"
+        f"{os.getcwd()}/custom_components/zha-toolkit/manifest.json"
     ) as manifestfile:
         manifest = json.load(manifestfile)
 
     manifest["version"] = version
 
     with open(
-        f"{os.getcwd()}/custom_components/zha_custom/manifest.json", "w"
+        f"{os.getcwd()}/custom_components/zha-toolkit/manifest.json", "w"
     ) as manifestfile:
         manifestfile.write(json.dumps(manifest, indent=4, sort_keys=True))
 
