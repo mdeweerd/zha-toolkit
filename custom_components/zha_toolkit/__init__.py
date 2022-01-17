@@ -10,12 +10,12 @@ from . import utils as u
 
 DEPENDENCIES = ["zha"]
 
-DOMAIN = "zha-toolkit"
+DOMAIN = "zha_toolkit"
 
 ATTR_COMMAND = "command"
 ATTR_COMMAND_DATA = "command_data"
 ATTR_IEEE = "ieee"
-DATA_ZHAC = "zha-toolkit"
+DATA_ZHATK = "zha_toolkit"
 
 SERVICE_TOOLKIT = "execute"
 
