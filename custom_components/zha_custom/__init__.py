@@ -10,12 +10,12 @@ from . import utils as u
 
 DEPENDENCIES = ["zha"]
 
-DOMAIN = "zha_custom"
+DOMAIN = "zha-toolkit"
 
 ATTR_COMMAND = "command"
 ATTR_COMMAND_DATA = "command_data"
 ATTR_IEEE = "ieee"
-DATA_ZHAC = "zha_custom"
+DATA_ZHAC = "zha-toolkit"
 
 SERVICE_CUSTOM = "execute"
 
@@ -58,7 +58,7 @@ async def async_setup(hass, config):
 
         ieee = await u.get_ieee(app, zha_gw, service.data.get(ATTR_IEEE))
         if ieee is not None: 
-            LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", str(ieee_str), str(ieee))
+            LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
 
         mod_path = "custom_components.{}".format(DOMAIN)
         try:
@@ -272,6 +272,14 @@ def command_handler_sinope(*args, **kwargs):
     importlib.reload(sinope)
 
     return sinope.sinope_write_test(*args, **kwargs)
+
+
+def command_handler_attr_read(*args, **kwargs):
+    from . import zcl_attr
+
+    importlib.reload(zcl_attr)
+
+    return zcl_attr.attr_read(*args, **kwargs)
 
 
 def command_handler_attr_write(*args, **kwargs):

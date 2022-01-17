@@ -13,11 +13,11 @@ trigger:
     at: !input backup_time
 condition: []
 action:
-  - service: zha_custom.execute
+  - service: zha-toolkit.execute
     data:
       command: znp_backup
       command_data: '{{ now().strftime("_%d") }}'
-  - service: zha_custom.execute
+  - service: zha-toolkit.execute
     data:
       command: znp_nvram_backup
       command_data: '{{ now().strftime("_%d") }}'

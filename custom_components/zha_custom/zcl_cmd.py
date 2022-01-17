@@ -64,7 +64,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service):
     # Get expect_reply
     expect_reply = True
     if 'expect_reply' in extra:
-        expect_reply = u.str2int(extra['tries'])==0
+        expect_reply = u.str2int(extra['expect_reply'])==0
 
     cmd_args=[]
     if 'args' in extra:

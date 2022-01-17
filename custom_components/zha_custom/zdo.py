@@ -30,7 +30,8 @@ async def ieee_ping(app, listener, ieee, cmd, data, service):
         LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s", service)
         return
     
-    parent = app.get_device(ieee)
+    # The device is the parent device
+    dev = app.get_device(ieee)
 
     LOGGER.debug("running 'ieee_ping' command to 0x%s", dev.nwk)
 
