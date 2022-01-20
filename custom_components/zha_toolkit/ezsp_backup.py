@@ -7,6 +7,7 @@
 
 import logging
 
+import bellows
 import bellows.types as t
 import datetime
 

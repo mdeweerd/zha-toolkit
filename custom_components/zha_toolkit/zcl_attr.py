@@ -23,75 +23,52 @@ async def conf_report(app, listener, ieee, cmd, data, service, event_data={}, pa
         LOGGER.error("Endpoint %s not found for '%s'", params['endpoint_id'], repr(ieee))
 
     if params['cluster_id'] not in dev.endpoints[params['endpoint_id']].in_clusters:
-        LOGGER.error("Cluster 0x%04X not found for '%s', endpoint %s",
-                      params['cluster_id'], repr(ieee), params['endpoint_id'])
+        LOGGER.error(
+            "Cluster 0x%04X not found for '%s', endpoint %s",
+            params['cluster_id'], repr(ieee), params['endpoint_id'])
 
     cluster = dev.endpoints[params['endpoint_id']].in_clusters[params['cluster_id']]
 
     # await cluster.bind()  -> commented, not performing bind to coordinator
 
     triesToGo = params['tries']
-    success = False
+    event_data['success'] = False
     result_conf = None
 
     while triesToGo >= 1:
         triesToGo = triesToGo - 1
         try:
             LOGGER.debug('Try configure report(%s,%s,%s,%s,%s) Try %s/%s',
-                params['attr_id'],
-                params['min_interval'],
-                params['max_interval'],
-                params['reportable_change'],
-                params['manf'],
-                params['tries'] - triesToGo,
-                params['tries'])
+                         params['attr_id'],
+                         params['min_interval'],
+                         params['max_interval'],
+                         params['reportable_change'],
+                         params['manf'],
+                         params['tries'] - triesToGo,
+                         params['tries'])
             result_conf = await cluster.configure_reporting(
-                params['attr_id'],
-                params['min_interval'],
-                params['max_interval'],
-                params['reportable_change'],
-                manufacturer=params['manf']
-            )
+                            params['attr_id'],
+                            params['min_interval'],
+                            params['max_interval'],
+                            params['reportable_change'],
+                            manufacturer=params['manf']
+                        )
             event_data["params"] = params
             event_data["result_conf"] = result_conf
             triesToGo = 0  # Stop loop
             LOGGER.info("Configure report result: %s", result_conf)
-            success = (result_conf[0][0].status == f.Status.SUCCESS)
-        except (DeliveryError, asyncio.TimeoutError) as e:
+            event_data['success'] = (result_conf[0][0].status == f.Status.SUCCESS)
+        except (DeliveryError, asyncio.TimeoutError):
             continue
         except Exception as e:
             triesToGo = 0  # Stop loop
             LOGGER.debug("Configure report exception %s,%s,%s,%s,%s,%s",
-                e,
-                params['attr_id'],
-                params['min_interval'],
-                params['max_interval'],
-                params['reportable_change'],
-                params['manf'])
-
-    # Write value to provided state or state attribute
-    if False and params['state_id'] is not None:
-        if len(result_conf[1]) == 0 and len(result_conf[0]) == 1:
-            # No error and one result
-            for id, val in result_conf[0].items():
-                if params['state_attr'] is not None:
-                    LOGGER.debug("Set state %s[%s] -> %s from attr_id %s",
-                        params['state_id'],
-                        params['state_attr'],
-                        val, id
-                    )
-                else:
-                    LOGGER.debug("Set state %s -> %s from attr_id %s",
-                        params['state_id'],
-                        val, id
-                    )
-                    u.set_state(
-                        listener._hass, params['state_id'],
-                        val,
-                        key=params['state_attr'],
-                        allow_create=params['allow_create']
-                    )
-                LOGGER.debug("STATE is set")
+                         e,
+                         params['attr_id'],
+                         params['min_interval'],
+                         params['max_interval'],
+                         params['reportable_change'],
+                         params['manf'])
 
 
 async def attr_read(*args, **kwargs):
@@ -114,7 +91,7 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
 
     if params['cluster_id'] not in dev.endpoints[params['endpoint_id']].in_clusters:
         LOGGER.error("Cluster 0x%04X not found for '%s', endpoint %s",
-                      params['cluster_id'], repr(ieee), params['endpoint_id'])
+                     params['cluster_id'], repr(ieee), params['endpoint_id'])
 
     cluster = dev.endpoints[params['endpoint_id']].in_clusters[params['cluster_id']]
 
@@ -206,13 +183,16 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
     if write_is_equal and (cmd == 'attr_write'):
         event_data['info'] = "Data read is equal to data to write"
 
-    if (len(attr_write_list) != 0 and
+    if (len(attr_write_list) != 0
+        and
             (
             not(params['read_before_write'])
             or params['write_if_equal']
             or not(write_is_equal)
-            ) and cmd == 'attr_write'
-       ):
+            )
+        and cmd == 'attr_write'
+        ):
+
         if result_read is not None:
             event_data["read_before"] = result_read
             result_read is None
@@ -224,25 +204,25 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
         event_data["result_write"] = result_write
         success = False
         try:
-            #LOGGER.debug("Write attr status: %s", result_write[0][0].status)
+            # LOGGER.debug("Write attr status: %s", result_write[0][0].status)
             success = (result_write[0][0].status == f.Status.SUCCESS)
             LOGGER.debug("Write success: %s", success)
         except Exception as e:
             event_data['errors'].append(repr(e))
             success = False
 
-        #success = (len(result_write[1])==0)
+        # success = (len(result_write[1])==0)
 
         if params['read_after_write']:
             LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster.read_attributes(
                 attr_read_list, manufacturer=params['manf'])
             LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
-            read_is_equal = (result_read[0][attr_id] == compare_val)
+            # read_is_equal = (result_read[0][attr_id] == compare_val)
             success = (
                     success
                     and (len(result_read[1]) == 0 and len(result_read[0]) == 1)
-                         and (result_read[0][attr_id] == compare_val)
+                    and (result_read[0][attr_id] == compare_val)
                 )
 
     if result_read is not None:
@@ -257,7 +237,7 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
             for id, val in result_read[0].items():
                 if params['state_attr'] is not None:
                     LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", params['state_id'],
-                        params['state_attr'], val, id)
+                                 params['state_attr'], val, id)
                 else:
                     LOGGER.debug("Set state %s -> %s from attr_id %s", params['state_id'], val, id)
                 u.set_state(

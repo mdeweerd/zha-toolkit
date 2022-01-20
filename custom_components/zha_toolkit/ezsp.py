@@ -3,6 +3,7 @@ import logging
 
 from zigpy import types as t
 import zigpy.zdo.types
+import bellows
 import bellows.types
 
 from . import utils as u
