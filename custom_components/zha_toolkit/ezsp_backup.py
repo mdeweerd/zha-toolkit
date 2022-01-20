@@ -7,8 +7,7 @@
 
 import logging
 
-from zigpy import types as t
-import bellows.types
+import bellows.types as t
 import datetime
 
 LOGGER = logging.getLogger(__name__)

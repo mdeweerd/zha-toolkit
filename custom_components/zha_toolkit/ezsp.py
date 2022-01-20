@@ -245,10 +245,6 @@ async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={},
     f.close()
 
 
-# See https://github.com/zigpy/bellows/tree/dev/bellows/cli
-#
-# Code essentially from https://github.com/zigpy/bellows/blob/dev/bellows/cli/backup.py
-#
 async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
