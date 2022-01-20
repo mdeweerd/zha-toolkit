@@ -9,11 +9,13 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def znp_backup(app, listener, ieee, cmd, data, service):
+async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     """ Backup ZNP network information. """
 
+    LOGGER.error("ZNP_BACKUP")
+
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'{}' is only available for ZNP".format(cmd)
+        msg = "{} is only for ZNP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -39,12 +41,16 @@ async def znp_backup(app, listener, ieee, cmd, data, service):
 
     fname = out_dir + 'nwk_backup' + str(data) + '.json'
 
+    event_data['backup_file'] = fname
+
+    LOGGER.debug("Writing to %s", fname)
     f = open(fname, "w")
     f.write(json.dumps(backup_obj, indent=4))
     f.close()
 
 
-async def znp_restore(app, listener, ieee, cmd, data, service):
+
+async def znp_restore(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     """ Restore ZNP network information. """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
@@ -80,6 +86,8 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     fname = path.dirname(__file__) + '/local/nwk_backup.json'
     LOGGER.info("Restore from '%s'", fname)
 
+    event_data['restore_file'] = fname
+
     # Read backup file
     f = open(fname, "r")
     backup = json.load(f)
@@ -101,7 +109,7 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     LOGGER.info("Writing to device")
     await app._znp.write_network_info(network_info=network_info, node_info=node_info)
 
-    #LOGGER.debug("List of attributes/methods in app %s", dir(app))
+    # LOGGER.debug("List of attributes/methods in app %s", dir(app))
     LOGGER.debug("List of attributes/methods in znp %s", dir(app._znp))
 
     # Shutdown znp?
@@ -112,7 +120,7 @@ async def znp_restore(app, listener, ieee, cmd, data, service):
     # TODO: restart znp, HA?
 
 
-async def znp_nvram_backup(app, listener, ieee, cmd, data, service):
+async def znp_nvram_backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     """ Save ZNP NVRAM to file for backup """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
@@ -146,7 +154,7 @@ async def znp_nvram_backup(app, listener, ieee, cmd, data, service):
     LOGGER.info("NVRAM backup saved to '%s'", fname)
 
 
-async def znp_nvram_restore(app, listener, ieee, cmd, data, service):
+async def znp_nvram_restore(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     """ Restore ZNP NVRAM from file """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
@@ -186,7 +194,7 @@ async def znp_nvram_restore(app, listener, ieee, cmd, data, service):
     # TODO: restart znp, HA?
 
 
-async def znp_nvram_reset(app, listener, ieee, cmd, data, service):
+async def znp_nvram_reset(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     """ Reset ZNP NVRAM """
 
     if u.get_radiotype(app) != u.RadioType.ZNP:

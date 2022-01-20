@@ -11,7 +11,7 @@ from homeassistant.util.json import save_json
 LOGGER = logging.getLogger(__name__)
 
 
-async def notify(app, listener, ieee, cmd, data, service):
+async def notify(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     if ieee is None:
         LOGGER.error("missing ieee")
         return

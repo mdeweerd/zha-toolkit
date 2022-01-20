@@ -14,10 +14,12 @@ execute:
             - all_routes_and_neighbours
             - attr_read
             - attr_write
+            - backup
             - bind_group
             - bind_ieee
             - conf_report
             - ezsp_add_key
+            - ezsp_backup
             - ezsp_clear_keys
             - ezsp_get_config_value
             - ezsp_get_ieee_by_nwk

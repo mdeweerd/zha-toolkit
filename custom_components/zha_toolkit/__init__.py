@@ -5,6 +5,8 @@ import voluptuous as vol
 import zigpy.types as t
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.util import dt as dt_util
+
 
 from . import utils as u
 
@@ -56,7 +58,21 @@ async def async_setup(hass, config):
 
         app=zha_gw.application_controller
 
-        ieee = await u.get_ieee(app, zha_gw, service.data.get(ATTR_IEEE))
+        ieee = await u.get_ieee(app, zha_gw, ieee_str) 
+
+        # Decode parameters
+        params = u.extractParams(service)
+
+        # Preload event_data
+        event_data = {
+                "ieee_org":ieee_str,
+                "ieee": str(ieee),
+                "command" : cmd,
+                "start_time": dt_util.utcnow().isoformat(),
+                "errors": [],
+                "params": params
+            }
+
         if ieee is not None: 
             LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
 
@@ -66,17 +82,48 @@ async def async_setup(hass, config):
         except ImportError as err:
             LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
             return
+
         importlib.reload(module)
         LOGGER.debug("module is %s", module)
-        if cmd:
-            handler = getattr(module, "command_handler_{}".format(cmd))
-            await handler(
-                zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data, service
-            )
+
+        handler_exception = None
+        try:
+            if cmd:
+                handler = getattr(module, "command_handler_{}".format(cmd))
+                await handler(
+                    zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data, service,
+                    params=params, event_data=event_data
+                )
+            else:
+                await module.default_command(
+                    zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data, service,
+                    params=params, event_data=event_data
+                )
+        except Exception as e:
+            handler_exception = e
+            event_data['errors'].append(repr(e))
+            event_data['success'] = False
+
+        if 'success' not in event_data:
+            event_data['success'] = True
+
+        LOGGER.debug("event_data %s", event_data)
+        # Fire events
+        if event_data['success']: 
+            if params['event_success'] is not None:
+                LOGGER.debug("Fire %s -> %s", params['event_success'], event_data)
+                zha_gw._hass.bus.fire(params['event_success'], event_data)
         else:
-            await module.default_command(
-                zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data, service
-            )
+            if params['event_fail'] is not None:
+                LOGGER.debug("Fire %s -> %s", params['event_fail'], event_data)
+                zha_gw._hass.bus.fire(params['event_fail'], event_data)
+
+        if params['event_done'] is not None:
+            LOGGER.debug("Fire %s -> %s", params['event_done'], event_data)
+            zha_gw._hass.bus.fire(params['event_done'], event_data)
+
+        if handler_exception is not None:
+            raise handler_exception
 
     hass.services.async_register(
         DOMAIN, SERVICE_TOOLKIT, toolkit_service, schema=SERVICE_SCHEMAS[SERVICE_TOOLKIT]
@@ -84,11 +131,11 @@ async def async_setup(hass, config):
     return True
 
 
-async def default_command(app, listener, ieee, cmd, data, service):
+async def default_command(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     LOGGER.debug("running default command: %s", service)
 
 
-async def command_handler_handle_join(app, listener, ieee, cmd, data, service):
+async def command_handler_handle_join(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     """Rediscover a device.
     ieee -- ieee of the device
     data -- nwk of the device in decimal format
@@ -221,7 +268,7 @@ async def command_handler_unbind_coordinator(*args, **kwargs):
     await binds.unbind_coordinator(*args, **kwargs)
 
 
-async def command_handler_rejoin(app, listener, ieee, cmd, data, service):
+async def command_handler_rejoin(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     """Leave and rejoin command.
     data -- device ieee to allow joining through
     ieee -- ieee of the device to leave and rejoin
@@ -341,6 +388,15 @@ def command_handler_zigpy_deconz(*args, **kwargs):
     importlib.reload(zigpy_deconz)
 
     return zigpy_deconz.zigpy_deconz(*args, **kwargs)
+
+
+def command_handler_ezsp_backup(*args, **kwargs):
+    """ Backup BELLOWS (ezsp) network information. """
+    from . import ezsp
+
+    importlib.reload(ezsp)
+
+    return ezsp.ezsp_backup(*args, **kwargs)
 
 
 def command_handler_ezsp_set_channel(*args, **kwargs):
@@ -523,3 +579,14 @@ def command_handler_znp_nvram_reset(*args, **kwargs):
     importlib.reload(znp)
 
     return znp.znp_nvram_reset(*args, **kwargs)
+
+
+def command_handler_backup(*args, **kwargs):
+    """ Backup Coordinator information. """
+    from . import misc
+
+    importlib.reload(misc)
+
+    return misc.backup(*args, **kwargs)
+
+

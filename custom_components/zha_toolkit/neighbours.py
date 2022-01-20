@@ -19,7 +19,7 @@ def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 
 
-async def routes_and_neighbours(app, listener, ieee, cmd, data, service):
+async def routes_and_neighbours(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     if ieee is None:
         LOGGER.error("missing ieee")
         return
@@ -56,7 +56,7 @@ async def _routes_and_neighbours(device, listener):
     LOGGER.debug("Wrote scan results to '%s' and '%s'", routes_name, neighbours_name)
 
 
-async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service):
+async def all_routes_and_neighbours(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     LOGGER.debug("Getting routes and neighbours for all devices: %s", service)
 
     counter = 1

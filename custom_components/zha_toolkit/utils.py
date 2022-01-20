@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 from zigpy import types as t
+from homeassistant.util import dt as dt_util
 
 
 LOGGER = logging.getLogger(__name__)
@@ -39,10 +40,14 @@ def str2bool(s):
 class RadioType(Enum):
     UNKNOWN = 0
     ZNP = 1
+    EZSP = 2
+    BELLOWS = 2
 
 def get_radiotype(app):
-    if app._znp is not None:
+    if hasattr(app,'_znp'):
         return RadioType.ZNP
+    if hasattr(app,'_ezsp'):
+        return RadioType.EZSP
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
 
@@ -131,24 +136,24 @@ def set_state(hass, entity_id, value, key = None, allow_create=False, force_upda
 # Find endpoint matching in_cluster
 def find_endpoint(dev, cluster_id):
     cnt = 0
-    ep_id = None
+    endpoint_id = None
     
     for key, value in dev.endpoints.items():
         if key == 0:
             continue
         if cluster_id in value.in_clusters:
-            ep_id = key
+            endpoint_id = key
             cnt = cnt + 1
 
     if cnt == 0:
         LOGGER.error("No Endpoint found for cluster '%s'", cluster_id)
     if cnt > 1:
-        ep_id = None
+        endpoint_id = None
         LOGGER.error("More than one Endpoint found for cluster '%s'", cluster_id)
     if cnt == 1:
-        LOGGER.debug("Endpoint %s found for cluster '%s'", ep_id, cluster_id)
+        LOGGER.debug("Endpoint %s found for cluster '%s'", endpoint_id, cluster_id)
 
-    return ep_id
+    return endpoint_id
 
 
 # Common method to extract and convert parameters.
@@ -199,7 +204,7 @@ def extractParams(service):
 
     # Endpoint to send command to
     if 'endpoint' in rawParams:
-        params['ep_id'] = str2int(rawParams['endpoint'])
+        params['endpoint_id'] = str2int(rawParams['endpoint'])
 
     # Cluster to send command to
     if 'cluster' in rawParams:
@@ -209,9 +214,17 @@ def extractParams(service):
     if 'attribute' in rawParams:
         params['attr_id'] = str2int(rawParams['attribute'])
 
+    # Attribute to send command to
+    if 'attr_type' in rawParams:
+        params['attr_type'] = str2int(rawParams['attr_type'])
+
+    # Attribute to send command to
+    if 'attr_val' in rawParams:
+        params['attr_val'] = str2int(rawParams['attr_val'])
+
     # The command to send
     if 'cmd' in rawParams:
-        params['cmd_id']     = str2int(rawParams['cmd'])
+        params['cmd_id'] = str2int(rawParams['cmd'])
 
     # The direction (to in or out cluster)
     dir_int=0

@@ -11,7 +11,7 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def leave(app, listener, ieee, cmd, data, service):
+async def leave(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     if ieee is None or not data:
         LOGGER.warning("Incorrect parameters for 'zdo.leave' command: %s", service)
         return
@@ -25,7 +25,7 @@ async def leave(app, listener, ieee, cmd, data, service):
     LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", parent.nwk, res)
 
 
-async def ieee_ping(app, listener, ieee, cmd, data, service):
+async def ieee_ping(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     if ieee is None:
         LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s", service)
         return
@@ -39,7 +39,7 @@ async def ieee_ping(app, listener, ieee, cmd, data, service):
     LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)
 
 
-async def join_with_code(app, listener, ieee, cmd, data, service):
+async def join_with_code(app, listener, ieee, cmd, data, service, event_data={}, params={}):
 
     code = b"\xA8\x16\x92\x7F\xB1\x9B\x78\x55\xC1\xD7\x76\x0D\x5C\xAD\x63\x7F\x69\xCC"
     # res = await app.permit_with_key(node, code, 60)
@@ -52,7 +52,7 @@ async def join_with_code(app, listener, ieee, cmd, data, service):
     res = await app.permit(60)
 
 
-async def update_nwk_id(app, listener, ieee, cmd, data, service):
+async def update_nwk_id(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     """Update NWK id. data contains new NWK id."""
     if data is None:
         LOGGER.error("Need NWK update id in the data")
@@ -80,13 +80,13 @@ async def update_nwk_id(app, listener, ieee, cmd, data, service):
     LOGGER.debug("Network params: %s", res)
 
 
-async def topo_scan_now(app, listener, ieee, cmd, data, service):
+async def topo_scan_now(app, listener, ieee, cmd, data, service, event_data={}, params={}):
 
     LOGGER.debug("Scanning topology")
     asyncio.create_task(app.topology.scan())
 
 
-async def flood_parent_annce(app, listener, ieee, cmd, data, service):
+async def flood_parent_annce(app, listener, ieee, cmd, data, service, event_data={}, params={}):
 
     LOGGER.debug("flooding network with parent annce")
 

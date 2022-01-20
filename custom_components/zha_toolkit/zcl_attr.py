@@ -12,13 +12,10 @@ from homeassistant.util import dt as dt_util
 LOGGER = logging.getLogger(__name__)
 
 
-async def conf_report(app, listener, ieee, cmd, data, service):
-    event_data = { "ieee": str(ieee), "command" : cmd, "start_time": dt_util.utcnow().isoformat() }
-    # Decode parameters
-    params = u.extractParams(service)
-
+async def conf_report(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     dev = app.get_device(ieee=ieee)
 
+    LOGGER.debug(params)
     # Get best endpoint
     if params['endpoint_id'] is None or params['endpoint_id'] == "":
         params['endpoint_id'] = u.find_endpoint(dev, params['cluster_id'])
@@ -85,141 +82,29 @@ async def conf_report(app, listener, ieee, cmd, data, service):
                  u.set_state(listener._hass, state_id, val, key=state_attr, allow_create=allow_create) 
                  LOGGER.debug("STATE is set")
 
-    # Fire events
-    if success: 
-        if params['event_success'] is not None:
-            LOGGER.debug("Fire %s -> %s", params['event_success'], event_data)
-            listener._hass.bus.fire(params['event_success'], event_data)
-    else:
-        if params['event_fail'] is not None:
-            LOGGER.debug("Fire %s -> %s", params['event_fail'], event_data)
-            listener._hass.bus.fire(params['event_fail'], event_data)
-    if params['event_done'] is not None:
-        LOGGER.debug("Fire %s -> %s", params['event_done'], event_data)
-        listener._hass.bus.fire(params['event_done'], event_data)
 
-    
-
-
-async def attr_read(app, listener, ieee, cmd, data, service):
-    await attr_write(app, listener, ieee, cmd, data, service)
+async def attr_read(*args, **kwargs):
+    await attr_write(*args, **kwargs)
 
 # This code is shared with attr_read.
 # Can read and write 1 attribute
-async def attr_write(app, listener, ieee, cmd, data, service):
-    # Data format is endpoint,cluster_id,attr_id,attr_type,attr_value
-    event_data = { "ieee": str(ieee), "command" : cmd, "start_time": dt_util.utcnow().isoformat() }
-
-
-    # Default
-    manf = None
-    ep_id_str = None
-    attr_type_str = None
-
-    # Split command_data and assign to string variables
-    if data is not None:
-      params = data.split(',')
-      i = 0
-      if i in params:
-        ep_id_str = params[i] ; i += 1
-      if i in params:
-        cluster_id_str = params[i] ; i += 1
-      if i in params:
-        attr_id_str = params[i] ; i += 1
-      if i in params:
-        attr_type_str = params[i] ; i += 1
-      if i in params:
-        attr_val_str = params[i] ; i += 1
-      if i in params:
-        manf = u.str2int(params[i]) ; i += 1
-
-    # Get more parameters from "extra"
-    # extra = service.data.get('extra')
-    # Take extra parameters from "data" level
-    extra=service.data  #.get('extra')
-    if "endpoint" in extra:
-        ep_id_str = extra["endpoint"]
-    if "cluster" in extra:
-        cluster_id_str = extra["cluster"]
-    if "attribute" in extra:
-        attr_id_str = extra["attribute"]
-    if "attr_type" in extra:
-        attr_type_str = extra["attr_type"]
-    if "attr_val" in extra:
-        attr_val_str = extra["attr_val"]
-    if "manf" in extra:
-        manf = u.str2int(extra["manf"])
-
-    if "state_id" in extra:
-        state_id = extra["state_id"]
-    else:
-        state_id = None
-
-    if "read_before_write" in extra:
-        read_before_write = u.str2bool(extra["read_before_write"])==1
-    else:
-        read_before_write = True
-
-    if "read_after_write" in extra:
-        read_after_write = u.str2bool(extra["read_after_write"])==1
-    else:
-        read_after_write = True
-
-    if "write_if_equal" in extra:
-        write_if_equal = u.str2bool(extra["write_if_equal"])==1
-    else:
-        write_if_equal = False
-
-    if "state_attr" in extra:
-        state_attr = extra["state_attr"]
-    else:
-        state_attr = None
-
-    allow_create = False
-    if "allow_create" in extra:
-        allow = u.str2int(extra["allow_create"])
-        allow_create = ( allow is not None ) and ( (allow == True ) or (allow == 1) )
-
-    if "event_done" in extra:
-        event_done = extra["event_done"]
-    else:
-        event_done = None
-
-    if "event_fail" in extra:
-        event_fail = extra["event_fail"]
-    else:
-        event_fail = None
-
-    if "event_success" in extra:
-        event_success = extra["event_success"]
-    else:
-        event_success = None
-
+async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     success = True
-
-    # Decode the variables
-
-    # Decode cluster id
-    cluster_id = u.str2int(cluster_id_str)
 
     dev = app.get_device(ieee=ieee)
 
     # Decode endpoint
-    if ep_id_str is None or ep_id_str == "":
-        ep_id = u.find_endpoint(dev, cluster_id)
-    else:
-        ep_id = u.str2int(ep_id_str)
+    if params['endpoint_id'] is None or params['endpoint_id'] == "":
+        params['endpoint_id'] = u.find_endpoint(dev, params['cluster_id'])
 
+    if params['endpoint_id'] not in dev.endpoints:
+        LOGGER.error("Endpoint %s not found for '%s'", params['endpoint_id'], repr(ieee))
 
-
-    if ep_id not in dev.endpoints:
-        LOGGER.error("Endpoint %s not found for '%s'", ep_id, repr(ieee))
-
-    if cluster_id not in dev.endpoints[ep_id].in_clusters:
+    if params['cluster_id'] not in dev.endpoints[params['endpoint_id']].in_clusters:
         LOGGER.error("Cluster 0x%04X not found for '%s', endpoint %s",
-                      cluster_id, repr(ieee), ep_id)
+                      params['cluster_id'], repr(ieee), params['endpoint_id'])
 
-    cluster = dev.endpoints[ep_id].in_clusters[cluster_id]
+    cluster = dev.endpoints[params['endpoint_id']].in_clusters[params['cluster_id']]
 
     # Prepare read and write lists
     attr_write_list = []
@@ -234,61 +119,70 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
     # Decode attribute id
     # Could accept name for attribute, but extra code to check
-    attr_id = u.str2int(attr_id_str)
+    attr_id = params['attr_id']
 
     attr_read_list.append(attr_id)  # Read before write list
 
 
     compare_val=None
 
-    # Type only needed for write
-    if attr_type_str is not None:
-        # Decode attribute type
-        attr_type = u.str2int(attr_type_str)
-
-        # Convert attribute value (provided as a string) to appropriate
-        # attribute value
-        # If the attr_type is not set, then the attribute will be only read.
-        attr_val = None
-        if attr_type == 0x10:
-            compare_val=u.str2int(attr_val_str)
-            attr_val = f.TypeValue(
-                attr_type, t.Bool(compare_val))
-        elif attr_type == 0x20:
-            compare_val=u.str2int(attr_val_str)
-            attr_val = f.TypeValue(
-                attr_type, t.uint8_t(compare_val))
-        elif attr_type <= 0x31 and attr_type >= 0x08:
-            compare_val=u.str2int(attr_val_str)
-            # uint, int, bool, bitmap and enum
-            attr_val = f.TypeValue(
-                attr_type, t.FixedIntType(compare_val))
-        elif attr_type in [ 0x41, 0x42 ]:  # Octet string
-            # Octet string requires length -> LVBytes
-
-            compare_val=attr_val_str;
-
-            if type(attr_val_str) == str:
-                attr_val_str = bytes(attr_val_str,'utf-8')
+    if cmd == 'attr_write':
+        attr_type=params['attr_type']
+        attr_val_str=params['attr_val']
     
-            if isinstance(attr_val_str, list):
-                # Convert list to List of uint8_t
-                attr_val_str = t.List[t.uint8_t]([t.uint8_t(i) for i in attr_val_str])
+        # Type only needed for write
+        if attr_type is None or attr_val_str is None:
+            event_data['errors'].append('attr_type and attr_val must be set for attr_write')
+        else:
+            # Convert attribute value (provided as a string) to appropriate
+            # attribute value
+            # If the attr_type is not set, then the attribute will be only read.
+            attr_val = None
+            if attr_type == 0x10:
+                compare_val=u.str2int(attr_val_str)
+                attr_val = f.TypeValue(
+                    attr_type, t.Bool(compare_val))
+            elif attr_type == 0x20:
+                compare_val=u.str2int(attr_val_str)
+                attr_val = f.TypeValue(
+                    attr_type, t.uint8_t(compare_val))
+            elif attr_type <= 0x31 and attr_type >= 0x08:
+                compare_val=u.str2int(attr_val_str)
+                # uint, int, bool, bitmap and enum
+                attr_val = f.TypeValue(
+                    attr_type, t.FixedIntType(compare_val))
+            elif attr_type in [ 0x41, 0x42 ]:  # Octet string
+                # Octet string requires length -> LVBytes
+                compare_val=attr_val_str;
     
-            attr_val = f.TypeValue(
-                attr_type, t.LVBytes(attr_val_str))
-  
-        if attr_val is not None:
-            attr = f.Attribute(attr_id, value=attr_val)
-            attr_write_list.append(attr)  # Write list
-        LOGGER.debug("ATTR TYPE %s, attr_val %s", attr_type, attr_val)
+                event_data['str'] = attr_val_str
+
+                if type(attr_val_str) == str:
+                    attr_val_str = bytes(attr_val_str,'utf-8')
+        
+                if isinstance(attr_val_str, list):
+                    # Convert list to List of uint8_t
+                    attr_val_str = t.List[t.uint8_t]([t.uint8_t(i) for i in attr_val_str])
+        
+                attr_val = f.TypeValue(
+                    attr_type, t.LVBytes(attr_val_str))
+      
+            if attr_val is not None:
+                attr = f.Attribute(attr_id, value=attr_val)
+                attr_write_list.append(attr)  # Write list
+            else:
+                event_data[errors]=(
+                      'attr_type {} not supported, or incorrect parameters (attr_val={})'
+                      .format(params['attr_type'], params['attr_val'])
+                      )
+            LOGGER.debug("ATTR TYPE %s, attr_val %s", params['attr_type'], params['attr_val'])
 
 
     result_read = None
-    if read_before_write or (len(attr_write_list) == 0) or cmd != 'attr_write':
+    if params['read_before_write'] or (len(attr_write_list) == 0) or cmd != 'attr_write':
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
-            attr_read_list, manufacturer=manf)
+            attr_read_list, manufacturer=params['manf'])
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
         success = (len(result_read[1]) == 0 and len(result_read[0]) == 1)
 
@@ -297,13 +191,15 @@ async def attr_write(app, listener, ieee, cmd, data, service):
             len(attr_write_list) != 0 
             and ( attr_id in result_read[0] and result_read[0][attr_id] == compare_val)
         )
-    write_is_equal = False # Test
-    LOGGER.debug("Write is equal '%s'=='%s' %s", result_read[0][attr_id], compare_val, write_is_equal)
+
+    event_data['write_is_equal']=write_is_equal
+    if write_is_equal and cmd=='attr_write':
+        event_data['info'] = "Data read is equal to data to write"
 
     if ( len(attr_write_list) != 0  and
         ( 
-             not(read_before_write)
-             or write_if_equal
+             not(params['read_before_write'])
+             or params['write_if_equal']
              or not(write_is_equal)
         ) and cmd == 'attr_write'
        ):
@@ -313,7 +209,7 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
         LOGGER.debug("Request attr write %s", attr_write_list)
         result_write = await cluster._write_attributes(
-            attr_write_list, manufacturer=manf)
+            attr_write_list, manufacturer=params['manf'])
         LOGGER.debug("Write attr status: %s", result_write)
         event_data["result_write"] = result_write
         success = False
@@ -326,10 +222,10 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
         #success = (len(result_write[1])==0)
 
-        if read_after_write:
+        if params['read_after_write']:
             LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster.read_attributes(
-                attr_read_list, manufacturer=manf)
+                attr_read_list, manufacturer=params['manf'])
             LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
             read_is_equal = (result_read[0][attr_id] == compare_val)
             success = ( 
@@ -346,30 +242,18 @@ async def attr_write(app, listener, ieee, cmd, data, service):
 
 
     # Write value to provided state or state attribute
-    if state_id is not None:
+    if params['state_id'] is not None:
         if len(result_read[1]) == 0 and len(result_read[0]) == 1:
              # No error and one result
-             for id,val in result_read[0].items():
-                 if state_attr is not None:
-                     LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", state_id, state_attr, val, id)
+             for id, val in result_read[0].items():
+                 if params['state_attr'] is not None:
+                     LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", params['state_id'],
+                         params['state_attr'], val, id)
                  else:
-                     LOGGER.debug("Set state %s -> %s from attr_id %s", state_id, val, id)
-                 u.set_state(listener._hass, state_id, val, key=state_attr, allow_create=allow_create) 
+                     LOGGER.debug("Set state %s -> %s from attr_id %s", params['state_id'], val, id)
+                 u.set_state(listener._hass, params['state_id'], val,
+                     key=params['state_attr'], allow_create=params['allow_create']) 
                  LOGGER.debug("STATE is set")
-
-    # Fire events
-    if success: 
-        if type(event_success) == str:
-            LOGGER.debug("Fire %s -> %s", event_success, event_data)
-            listener._hass.bus.fire(event_success, event_data)
-    else:
-        if type(event_fail) == str:
-            LOGGER.debug("Fire %s -> %s", event_fail, event_data)
-            listener._hass.bus.fire(event_fail, event_data)
-    if type(event_done) == str:
-        LOGGER.debug("Fire %s -> %s", event_done, event_data)
-        listener._hass.bus.fire(event_done, event_data)
-
     
     # For internal use
     return result_read 
@@ -377,4 +261,4 @@ async def attr_write(app, listener, ieee, cmd, data, service):
     # Example where attributes are not types
     # (supposed typed by the internals):
     #   attrs = {0x0009: 0b00001000, 0x0012: 1400, 0x001C: 0xFF}
-    #   result = await cluster.write_attributes(attrs)
+    #   result = await cluster'.write_attributes(attrs)

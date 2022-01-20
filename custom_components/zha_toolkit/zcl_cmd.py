@@ -15,7 +15,7 @@ ERR005_NOT_OUT_CLUSTER = "Out cluster 0x%04X not found for '%s', endpoint %s",
 
 
 
-async def zcl_cmd(app, listener, ieee, cmd, data, service):
+async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     from zigpy import types as t
 
     # Verify parameter presence

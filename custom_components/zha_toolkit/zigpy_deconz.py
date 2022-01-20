@@ -12,7 +12,7 @@ from zigpy.util import retryable
 LOGGER = logging.getLogger(__name__)
 
 
-async def zigpy_deconz(app, listener, ieee, cmd, data, service):
+async def zigpy_deconz(app, listener, ieee, cmd, data, service, event_data={}, params={}):
     LOGGER.debug("Removing EZSP")
     res = await app._ezsp.setRadioChannel(20)
     LOGGER.debug("set channel %s", res)

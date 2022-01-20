@@ -1,0 +1,30 @@
+blueprint:
+  name: Daily Cooridnator Backup - Monthly rotation
+  description: Backup Zigbee Coordinator Configuration (ZNP/ezsp(bellows)), monthly rotation
+  domain: automation
+  input:
+    backup_time:
+      name: Backup time
+      description: Time at which the daily backup should be madeaction should start
+      selector:
+        time:
+trigger:
+  - platform: time
+    at: !input backup_time
+condition: []
+action:
+  - service: zha_toolkit.execute
+    data:
+      command: backup
+      command_data: '{{ now().strftime("_%d") }}'
+      event_success: zha_coordinator_backup_success
+      event_fail: zha_coordinator_backup_failed
+      event_done: zha_coordinator_backup_done
+  - service: zha_toolkit.execute
+    data:
+      command: zha_coordinator_nvram_backup
+      command_data: '{{ now().strftime("_%d") }}'
+      event_success: zha_coordinator_nvram_backup_success
+      event_fail: zha_coordinator_nvram_backup_failed
+      event_done: zha_coordinator_nvram_backup_done
+mode: restart

@@ -7,7 +7,7 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def bind_group(app, listener, ieee, cmd, data, service):
+async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
 
@@ -56,7 +56,7 @@ async def bind_group(app, listener, ieee, cmd, data, service):
         LOGGER.debug("0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res)
 
 
-async def unbind_group(app, listener, ieee, cmd, data, service):
+async def unbind_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
 
@@ -104,7 +104,7 @@ async def unbind_group(app, listener, ieee, cmd, data, service):
         LOGGER.debug("0x%04x: unbinding group 0x%04x: %s", src_dev.nwk, group_id, res)
 
 
-async def bind_ieee(app, listener, ieee, cmd, data, service):
+async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
 
@@ -231,7 +231,7 @@ async def bind_ieee(app, listener, ieee, cmd, data, service):
             )
 
 
-async def unbind_coordinator(app, listener, ieee, cmd, data, service):
+async def unbind_coordinator(app, listener, ieee, cmd, data, service, params={}, event_data={}):
 
     LOGGER.debug("running 'unbind coordinator' command: %s", service)
     if ieee is None or not data:

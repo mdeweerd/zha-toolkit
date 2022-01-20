@@ -68,12 +68,13 @@ data:
 
 This is a list (of 1) automation:
 
-* DAILY BACKUP OF ZNP DONGLE: [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha_toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml)
+* DAILY BACKUP OF ZNP DONGLE: [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml)
+* :warning: Under test DAILY BACKUP OF ZNP/EZSP(Bellows) DONGLE TYPE : [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup.yaml)
 
 
 # Using `zha_toolkit`
 
-This components provides a single service (`zha_toolkit.execute`) that
+This component provides a single service (`zha_toolkit.execute`) that
 provides several commands (`command` parameter) providing access
 to ZHA/Zigbee actions that are not otherwise available.
 
@@ -92,7 +93,7 @@ Go to Developer Tools > Services in your instance :
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
 Choose `zha_toolkit.execute` as the service.  
-Enable Yaml entry.  
+Most parameters can be set using the UI, there are some cases where you may want to enable Yaml entry - you'll have some more flexibility and all parameters fit in your browser view.  On the other hand, the UI interface makes it easier to select the entity.  You can switch back and forth!
 
 There are several examples below for different commands.  You can
 copy/paste them to start from.
@@ -115,6 +116,91 @@ The 'ieee' address can be the IEEE address, the short network address
 (0x1203 for instance), or the entity name (example: "light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off").  Be aware that the network address can change over
 time but it is shorter to enter if you know it.
 
+
+All commands support setting event names.
+When set, These events are generated at the end of the command execution.
+
+
+```yaml
+  # You can set the next events to use as a trigger.
+  # The event data has the result of the command
+  event_success: my_read_success_trigger_event
+  event_fail: my_read_fail_trigger_event
+  event_done: my_read_done_trigger_event
+```
+
+
+An example of event data is shown below.
+The data>errors field can be useful to understand what went wrong.
+The "ieee_org" fields take the original value of the "ieee" parameter,
+and the "ieee" field is the actual IEEE address found.
+
+```json
+{
+    "event_type": "my_write_done_trigger_event",
+    "data": {
+        "ieee_org": "sensor.test_smartenergy_metering",
+        "ieee": "00:12:4b:00:24:42:d1:dc",
+        "command": "attr_write",
+        "start_time": "2022-01-17T21:51:50.416725+00:00",
+        "errors": [ ],
+        "params": {
+            "cmd_id": null,
+            "endpoint_id": 1,
+            "cluster_id": 0,
+            "attr_id": 16,
+            "attr_type": 66,
+            "attr_val": "BureauTest",
+            "min_interval": 60,
+            "max_interval": 300,
+            "reportable_change": 1,
+            "dir": null,
+            "manf": null,
+            "tries": 1,
+            "expect_reply": true,
+            "args": [],
+            "state_id": "sensor.test",
+            "state_attr": null,
+            "allow_create": true,
+            "event_success": "my_write_success_trigger_event",
+            "event_fail": "my_write_fail_trigger_event",
+            "event_done": "my_write_done_trigger_event",
+            "read_before_write": true,
+            "read_after_write": true,
+            "write_if_equal": false
+        },
+        "str": "BureauTest",
+        "read_before": [
+            {
+                "16": "Bureau"
+            },
+            {}
+        ],
+        "result_write": [
+            [
+                {
+                    "status": 0,
+                    "attrid": null
+                }
+            ]
+        ],
+        "result_read": [
+            {
+                "16": "BureauTest"
+            },
+            {}
+        ],
+        "success": true
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-17T21:52:02.066310+00:00",
+    "context": {
+        "id": "c5d4d0d14f7801fda3b9ad471dcbd83b",
+        "parent_id": null,
+        "user_id": null
+    }
+}
+```
 
 ## `scan_device`: Scan a device/Read all attribute values
 
@@ -197,8 +283,7 @@ data:
   # Optional, when true, allows creating the state (if not the state must exist)
   allow_create: True
   # The manufacturer should be set only for manufacturer attributes
-  manf: 0x12
-
+  manf: 0x1212
 ```
 
 ## `attr_write`: Write(/Read) an attribute value
@@ -208,22 +293,9 @@ Write an attribute value to any endpoint/cluster/attribute.
 You can provide the numerical value of the attribute id,
 or the internal zigpy name (string).
 
-Before and after writing the value is read from the attribute.
+Before and after writing, the value is read from the attribute.
 If debug logging is active, this will be visible in the `home_assistant.log`.
 The last read this can be written to a state.
-
-```yaml
-service: zha_toolkit.execute
-data:
-  ieee: 5c:02:72:ff:fe:92:c2:5d
-  command: attr_write
-  # Data: Endpoint, Cluster ID, Attribute Id, Attribute Type, Attribute Value, Optional Manf
-  command_data: 11,0x0006,0x0000,0x10,
-```
-
-
-Alternate method, not using `command_data` but individual parameters.
-(In case `command_data` is used, the more specific paramters override the values)
 
 
 ```yaml
@@ -502,6 +574,29 @@ ZigBee Cluster Library Frame
 ```
 
 
+## `ezsp_backup`: Backup ezsp/bellows network data 
+
+:warning: Under test
+
+Used to transfer to another coordinator later, backup or simply get network key
+and other info.
+
+The output is written to '{custom_component_dir}/local/nwk_backup{command_data}.json`.
+
+You can use the blueprint to setup daily backup: [![Open your Home Assistant instance and show the blueprint import dialog with the Daily backup blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup.yaml).
+
+
+The name of that backup is according to the format
+
+```yaml
+service: zha_toolkit.execute
+data:
+  command: ezsp_backup
+  # Optional command_data, string added to the basename.
+  # With this example the backup is written to `nwk_backup_20220105.json`
+  command_data: _20220105
+```
+
 ## `znp_nvram_backup`: Backup ZNP NVRAM data
 
 The output is written to the customisation directory as `local/nvram_backup.json`
@@ -566,10 +661,10 @@ The output is written to the customisation directory as `local/nwk_backup.json`
 when `command_data` is empty or not provided.  When `command_data` is provided,
 it is added just after nwk_backup.
 
-You can use the blueprint to setup daily backup: [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha_toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml).
+You can use the blueprint to setup daily backup: [![Open your Home Assistant instance and show the blueprint import dialog with the ZNP Daily backup blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup_znp.yaml).
 
 
-The name of that backup is according to the format
+The name of that backup is according to the format `nwk_backup{command_data}.json`.
 
 ```yaml
 service: zha_toolkit.execute
@@ -651,6 +746,9 @@ This project was forked from [Adminiguaga/zha_custom](https://github.com/Adminiu
 where the "hard tricks" for providing services and accessing ZHA functions were
 implemented/demonstrated.  The original codeowners were "[dmulcahey](https://github.com/dmulcahey)"
 and "[Adminiuga](https://github.com/adminiuga)".
+
+The znp and ezsp backup core code is work originally created by @puddly either
+available in the official `zigpy/zigpy_znp` repository or the `pudly/bellows` fork.
 
 The initial purpose of this fork was mainly to add custom attribute writes,
 custom reporting and more binding possibilities.

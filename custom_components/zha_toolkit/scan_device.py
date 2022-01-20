@@ -266,7 +266,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
     return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
-async def scan_device(app, listener, ieee, cmd, data, service):
+async def scan_device(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     if ieee is None:
         LOGGER.error("missing ieee")
         return
