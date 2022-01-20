@@ -1,10 +1,12 @@
 # import asyncio
 # import enum
 import logging
+
 # import os
 # from random import uniform
 
 import zigpy.types as t
+
 # import zigpy.zdo.types as zdo_t
 # from zigpy.exceptions import DeliveryError
 # from zigpy.util import retryable
@@ -13,7 +15,9 @@ import zigpy.types as t
 LOGGER = logging.getLogger(__name__)
 
 
-async def zigpy_deconz(app, listener, ieee, cmd, data, service, event_data={}, params={}):
+async def zigpy_deconz(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
     LOGGER.debug("Removing EZSP")
     res = await app._ezsp.setRadioChannel(20)
     LOGGER.debug("set channel %s", res)

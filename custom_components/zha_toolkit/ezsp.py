@@ -11,7 +11,9 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def set_channel(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def set_channel(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     ch = t.uint8_t(data)
     assert 11 << ch << 26
     ch_mask = zigpy.types.Channels(1 << ch)
@@ -30,8 +32,8 @@ async def set_channel(app, listener, ieee, cmd, data, service, params={}, event_
 
     status, _, network_params = await app._ezsp.getNetworkParameters()
     if status != bellows.types.EmberStatus.SUCCESS:
-        msg = ("Couldn't get network parameters, abort channel change: %s" % (status))
-        event_data['errors'].append(msg)
+        msg = "Couldn't get network parameters, abort channel change: %s" % (status)
+        event_data["errors"].append(msg)
         LOGGER.error(msg)
         return
 
@@ -39,7 +41,11 @@ async def set_channel(app, listener, ieee, cmd, data, service, params={}, event_
     payload += network_params.nwkUpdateId.serialize()
 
     status, _ = await app._ezsp.sendBroadcast(
-        zigpy.types.BroadcastAddress.ALL_DEVICES, aps_frame, 0x00, 0x01, payload,
+        zigpy.types.BroadcastAddress.ALL_DEVICES,
+        aps_frame,
+        0x00,
+        0x01,
+        payload,
     )
     assert status == bellows.types.EmberStatus.SUCCESS
 
@@ -49,12 +55,12 @@ async def set_channel(app, listener, ieee, cmd, data, service, params={}, event_
 
 async def get_token(app, listener, ieee, cmd, data, service, params={}, event_data={}):
     token = t.uint8_t(data)
-    event_data['tokens_info'] = {}
+    event_data["tokens_info"] = {}
     for token in range(0, 31):
         LOGGER.info(f"Getting {token} token...")
         res = await app._ezsp.getToken(token)
         tkInfo = {"status": res[0], "data": binascii.hexlify(res[1].serialize())}
-        event_data['tokens_info'][token] = tkInfo
+        event_data["tokens_info"][token] = tkInfo
         LOGGER.info(f"Getting token {token} status: {res[0]}")
         LOGGER.info(f"Getting token {token} data: {res[1]}")
         LOGGER.info(
@@ -87,7 +93,10 @@ async def get_keys(app, listener, ieee, cmd, data, service, params={}, event_dat
         if status == app._ezsp.types.EmberStatus.SUCCESS:
             result[idx] = key_struct
             if key_struct.partnerEUI64 not in app.devices:
-                warn = ("Partner %s for key %s is not present" % (key_struct.partnerEUI64, idx))
+                warn = "Partner %s for key %s is not present" % (
+                    key_struct.partnerEUI64,
+                    idx,
+                )
                 warnings.append(warn)
                 LOGGER.warning(warn)
                 if erase:
@@ -95,38 +104,42 @@ async def get_keys(app, listener, ieee, cmd, data, service, params={}, event_dat
         elif status == app._ezsp.types.EmberStatus.INDEX_OUT_OF_RANGE:
             break
         else:
-            warn = ("No key at %s idx: %s" % (idx, status))
+            warn = "No key at %s idx: %s" % (idx, status)
             warnings.append(warn)
             LOGGER.warning(warn)
 
-    event_data['warnings'] = warnings
-    event_data['result'] = result
+    event_data["warnings"] = warnings
+    event_data["result"] = result
     for idx in result:
         LOGGER.info("EZSP %s key: %s", idx, result[idx])
     _, _, params = await app._ezsp.getNetworkParameters()
     LOGGER.info("Current network: %s", params)
-    event_data['network'] = params
+    event_data["network"] = params
 
 
-async def add_transient_key(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def add_transient_key(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.info("adding well known link key as transient key")
     if ieee is None:
         msg = "No ieee to install transient key for"
-        event_data['errors'].append(msg)
+        event_data["errors"].append(msg)
         LOGGER.error(msg)
 
     (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
     LOGGER.debug("Installed key for %s: %s", ieee, status)
 
 
-async def get_ieee_by_nwk(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_ieee_by_nwk(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.info("Lookup IEEE by nwk")
     nwk = u.str2int(data)
     status, eui64 = await app._ezsp.lookupEui64ByNodeId(nwk)
     LOGGER.debug("nwk: 0x%04x, ieee: %s, status: %s", nwk, eui64, status)
-    event_data['nwk'] = nwk
-    event_data['ieee'] = repr(eui64)
-    event_data['status'] = status
+    event_data["nwk"] = nwk
+    event_data["ieee"] = repr(eui64)
+    event_data["status"] = status
 
 
 async def get_policy(app, listener, ieee, cmd, data, service, params={}, event_data={}):
@@ -135,8 +148,8 @@ async def get_policy(app, listener, ieee, cmd, data, service, params={}, event_d
     LOGGER.info("Getting EZSP %s policy id", policy)
     status, value = await app._ezsp.getPolicy(policy)
     LOGGER.debug("policy: %s, value: %s", app._ezsp.types.EzspPolicyId(policy), value)
-    event_data['policy'] = repr(app._ezsp.types.EzspPolicyId(policy))
-    event_data['policy_value'] = repr(value)
+    event_data["policy"] = repr(app._ezsp.types.EzspPolicyId(policy))
+    event_data["policy_value"] = repr(value)
 
 
 async def clear_keys(app, listener, ieee, cmd, data, service, params={}, event_data={}):
@@ -145,7 +158,9 @@ async def clear_keys(app, listener, ieee, cmd, data, service, params={}, event_d
     LOGGER.info("Cleared key table: %s", status)
 
 
-async def get_config_value(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_config_value(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if data is None:
         LOGGER.error("Need EZSP config value")
         return
@@ -173,7 +188,7 @@ async def get_value(app, listener, ieee, cmd, data, service, params={}, event_da
         return
 
     LOGGER.info("%s = %s", value_id.name, value)
-    event_data['ezsp_'+value_id.name] = repr(value)
+    event_data["ezsp_" + value_id.name] = repr(value)
 
 
 # Legacy implementation
@@ -182,7 +197,9 @@ async def get_value(app, listener, ieee, cmd, data, service, params={}, event_da
 #
 # Code essentially from https://github.com/zigpy/bellows/blob/dev/bellows/cli/backup.py
 #
-async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def ezsp_backup_legacy(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
         LOGGER.debug(msg)
@@ -190,7 +207,22 @@ async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={},
 
     # Import stuff we need
     import bellows.types as bt
-    from bellows.cli.backup import ATTR_NODE_TYPE, ATTR_NODE_ID, ATTR_NODE_EUI64, ATTR_PAN_ID, ATTR_EXT_PAN_ID, ATTR_RADIO_CHANNEL, ATTR_RADIO_TX_PWR, ATTR_NWK_UPDATE_ID, ATTR_CHANNELS, ATTR_KEY_GLOBAL, ATTR_KEY_NWK, ATTR_KEY_PARTNER, ATTR_KEY_TABLE, _backup_keys
+    from bellows.cli.backup import (
+        ATTR_NODE_TYPE,
+        ATTR_NODE_ID,
+        ATTR_NODE_EUI64,
+        ATTR_PAN_ID,
+        ATTR_EXT_PAN_ID,
+        ATTR_RADIO_CHANNEL,
+        ATTR_RADIO_TX_PWR,
+        ATTR_NWK_UPDATE_ID,
+        ATTR_CHANNELS,
+        ATTR_KEY_GLOBAL,
+        ATTR_KEY_NWK,
+        ATTR_KEY_PARTNER,
+        ATTR_KEY_TABLE,
+        _backup_keys,
+    )
     import os
     import json
 
@@ -222,7 +254,7 @@ async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={},
         assert status == bt.EmberStatus.SUCCESS
         LOGGER.debug("%s key: %s", key_name, key)
         result[key_name] = key.as_dict()
-#
+        #
         result[key_name][ATTR_KEY_PARTNER] = str(key.partnerEUI64)
 
     keys = await _backup_keys(app._ezsp)
@@ -231,22 +263,24 @@ async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={},
     # Store backup information to file
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + '/local/'
+    out_dir = os.path.dirname(__file__) + "/local/"
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
     # Ensure that data is an empty string when not set
     if data is None:
-        data = ''
+        data = ""
 
-    fname = out_dir + 'nwk_backup' + str(data) + '.json'
+    fname = out_dir + "nwk_backup" + str(data) + ".json"
 
     f = open(fname, "w")
     f.write(json.dumps(result, indent=4))
     f.close()
 
 
-async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def ezsp_backup(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
         LOGGER.debug(msg)
@@ -262,15 +296,15 @@ async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_
     # Store backup information to file
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + '/local/'
+    out_dir = os.path.dirname(__file__) + "/local/"
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
     # Ensure that data is an empty string when not set
     if data is None:
-        data = ''
+        data = ""
 
-    fname = out_dir + 'nwk_backup' + str(data) + '.json'
+    fname = out_dir + "nwk_backup" + str(data) + ".json"
 
     f = open(fname, "w")
     f.write(json.dumps(result, indent=4))

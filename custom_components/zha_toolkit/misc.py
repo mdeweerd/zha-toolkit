@@ -1,5 +1,6 @@
 # import asyncio
 import logging
+
 # import os
 # from collections import OrderedDict
 
@@ -27,16 +28,45 @@ async def get_routes(app, listener, ieee, cmd, data, service, params={}, event_d
 
 
 async def backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
-    """ Backup Coordinator Configuration. """
+    """Backup Coordinator Configuration."""
 
     radio_type = u.get_radiotype(app)
 
     if radio_type == u.RadioType.ZNP:
         from . import znp
-        await znp.znp_backup(app, listener, ieee, cmd, data, service, event_data=event_data, params=params)
-        await znp.znp_nvram_backup(app, listener, ieee, cmd, data, service, event_data=event_data, params=params)
+
+        await znp.znp_backup(
+            app,
+            listener,
+            ieee,
+            cmd,
+            data,
+            service,
+            event_data=event_data,
+            params=params,
+        )
+        await znp.znp_nvram_backup(
+            app,
+            listener,
+            ieee,
+            cmd,
+            data,
+            service,
+            event_data=event_data,
+            params=params,
+        )
     elif radio_type == u.RadioType.EZSP:
         from . import ezsp
-        await ezsp.ezsp_backup(app, listener, ieee, cmd, data, service, event_data=event_data, params=params)
+
+        await ezsp.ezsp_backup(
+            app,
+            listener,
+            ieee,
+            cmd,
+            data,
+            service,
+            event_data=event_data,
+            params=params,
+        )
     else:
         raise Exception("Radio type %s not supported for backup" % (radio_type))

@@ -28,7 +28,7 @@ def str2int(s):
 
 # Convert string to best boolean representation
 def str2bool(s):
-    if s is None or s == '':
+    if s is None or s == "":
         return False
     if s is True or s is False:
         return s
@@ -43,9 +43,9 @@ class RadioType(Enum):
 
 
 def get_radiotype(app):
-    if hasattr(app, '_znp'):
+    if hasattr(app, "_znp"):
         return RadioType.ZNP
-    if hasattr(app, '_ezsp'):
+    if hasattr(app, "_ezsp"):
         return RadioType.EZSP
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
@@ -57,7 +57,7 @@ async def get_ieee(app, listener, ref):
     # LOGGER.debug("Type IEEE: %s", type(ref))
     if type(ref) == str:
         # Check if valid ref address
-        if (ref.count(':') == 7):
+        if ref.count(":") == 7:
             return t.EUI64.convert(ref)
 
         # Check if network address
@@ -71,7 +71,9 @@ async def get_ieee(app, listener, ref):
                 return device.ieee
 
         # Todo: check if NWK address
-        entity_registry = await listener._hass.helpers.entity_registry.async_get_registry()
+        entity_registry = (
+            await listener._hass.helpers.entity_registry.async_get_registry()
+        )
         # LOGGER.debug("registry %s",entity_registry)
         registry_entity = entity_registry.async_get(ref)
         LOGGER.debug("registry_entity %s", registry_entity)
@@ -81,11 +83,13 @@ async def get_ieee(app, listener, ref):
             LOGGER.error("Not a ZHA device : '%s'", ref)
             return None
 
-        device_registry = await listener._hass.helpers.device_registry.async_get_registry()
+        device_registry = (
+            await listener._hass.helpers.device_registry.async_get_registry()
+        )
         registry_device = device_registry.async_get(registry_entity.device_id)
         LOGGER.debug("registry_device %s", registry_device)
         for identifier in registry_device.identifiers:
-            if identifier[0] == 'zha':
+            if identifier[0] == "zha":
                 return t.EUI64.convert(identifier[1])
         return None
 
@@ -124,12 +128,12 @@ def set_state(hass, entity_id, value, key=None, allow_create=False, force_update
 
     # Store to DB_state
     hass.states.async_set(
-            entity_id=entity_id,
-            new_state=value,
-            attributes=stateAttrs,
-            force_update=force_update,
-            context=None
-        )
+        entity_id=entity_id,
+        new_state=value,
+        attributes=stateAttrs,
+        force_update=force_update,
+        context=None,
+    )
 
 
 # Find endpoint matching in_cluster
@@ -163,7 +167,7 @@ def find_endpoint(dev, cluster_id):
 def extractParams(service):
 
     # Get best parameter set, 'extra' is legacy.
-    rawParams = service.data.get('extra')
+    rawParams = service.data.get("extra")
 
     if not isinstance(rawParams, dict):
         # Fall back to paramters in 'data:' key
@@ -174,76 +178,76 @@ def extractParams(service):
     # Potential parameters, initialized to None
     # TODO: Not all paremeters are decode in this function yet
     params = {
-        'cmd_id': None,
-        'endpoint_id': None,
-        'cluster_id': None,
-        'attr_id': None,
-        'attr_type': None,
-        'attr_val': None,
-        'min_interval': None,
-        'max_interval': None,
-        'reportable_change': None,
-        'dir': None,
-        'manf': None,
-        'tries': 1,
-        'expect_reply': True,
-        'args': [],
-        'state_id': None,
-        'state_attr': None,
-        'allow_create': False,
-        'event_success': None,
-        'event_fail': None,
-        'event_done': None,
-        'read_before_write': True,
-        'read_after_write': True,
-        'write_if_equal': False,
+        "cmd_id": None,
+        "endpoint_id": None,
+        "cluster_id": None,
+        "attr_id": None,
+        "attr_type": None,
+        "attr_val": None,
+        "min_interval": None,
+        "max_interval": None,
+        "reportable_change": None,
+        "dir": None,
+        "manf": None,
+        "tries": 1,
+        "expect_reply": True,
+        "args": [],
+        "state_id": None,
+        "state_attr": None,
+        "allow_create": False,
+        "event_success": None,
+        "event_fail": None,
+        "event_done": None,
+        "read_before_write": True,
+        "read_after_write": True,
+        "write_if_equal": False,
     }
 
     # Extract parameters
 
     # Endpoint to send command to
-    if 'endpoint' in rawParams:
-        params['endpoint_id'] = str2int(rawParams['endpoint'])
+    if "endpoint" in rawParams:
+        params["endpoint_id"] = str2int(rawParams["endpoint"])
 
     # Cluster to send command to
-    if 'cluster' in rawParams:
-        params['cluster_id'] = str2int(rawParams['cluster'])
+    if "cluster" in rawParams:
+        params["cluster_id"] = str2int(rawParams["cluster"])
 
     # Attribute to send command to
-    if 'attribute' in rawParams:
-        params['attr_id'] = str2int(rawParams['attribute'])
+    if "attribute" in rawParams:
+        params["attr_id"] = str2int(rawParams["attribute"])
 
     # Attribute to send command to
-    if 'attr_type' in rawParams:
-        params['attr_type'] = str2int(rawParams['attr_type'])
+    if "attr_type" in rawParams:
+        params["attr_type"] = str2int(rawParams["attr_type"])
 
     # Attribute to send command to
-    if 'attr_val' in rawParams:
-        params['attr_val'] = str2int(rawParams['attr_val'])
+    if "attr_val" in rawParams:
+        params["attr_val"] = str2int(rawParams["attr_val"])
 
     # The command to send
-    if 'cmd' in rawParams:
-        params['cmd_id'] = str2int(rawParams['cmd'])
+    if "cmd" in rawParams:
+        params["cmd_id"] = str2int(rawParams["cmd"])
 
     # The direction (to in or out cluster)
-    if 'dir' in rawParams:
-        params['dir'] = str2int(rawParams['dir'])
+    if "dir" in rawParams:
+        params["dir"] = str2int(rawParams["dir"])
 
     # Get manufacturer
-    if 'manf' in rawParams:
-        params['manf'] = str2int(rawParams['manf'])
+    if "manf" in rawParams:
+        params["manf"] = str2int(rawParams["manf"])
 
     # Get tries
-    if 'tries' in rawParams:
-        params['tries'] = str2int(rawParams['tries'])
+    if "tries" in rawParams:
+        params["tries"] = str2int(rawParams["tries"])
 
     # Get expect_reply
-    if 'expect_reply' in rawParams:
-        params['expect_reply'] = (str2int(rawParams['expect_reply']) == 0)
+    if "expect_reply" in rawParams:
+        params["expect_reply"] = str2int(rawParams["expect_reply"]) == 0
 
-    if 'args' in rawParams:
+    if "args" in rawParams:
         cmd_args = []
-        for val in rawParams['args']:
+        for val in rawParams["args"]:
             LOGGER.debug("cmd arg %s", val)
             lval = str2int(val)
             if isinstance(lval, list):
@@ -253,44 +257,46 @@ def extractParams(service):
                 # lval = t.LVList(lval)
             cmd_args.append(lval)
             LOGGER.debug("cmd converted arg %s", lval)
-        params['args'] = cmd_args
+        params["args"] = cmd_args
 
     if "min_interval" in rawParams:
-        params['min_interval'] = str2int(rawParams["min_interval"])
+        params["min_interval"] = str2int(rawParams["min_interval"])
     if "max_interval" in rawParams:
-        params['max_interval'] = str2int(rawParams["max_interval"])
+        params["max_interval"] = str2int(rawParams["max_interval"])
     if "reportable_change" in rawParams:
-        params['reportable_change'] = str2int(rawParams["reportable_change"])
+        params["reportable_change"] = str2int(rawParams["reportable_change"])
 
     if "state_id" in rawParams:
-        params['state_id'] = rawParams["state_id"]
+        params["state_id"] = rawParams["state_id"]
 
     if "state_attr" in rawParams:
-        params['state_attr'] = rawParams["state_attr"]
+        params["state_attr"] = rawParams["state_attr"]
 
     if "read_before_write" in rawParams:
-        params['read_before_write'] = str2bool(rawParams["read_before_write"])
+        params["read_before_write"] = str2bool(rawParams["read_before_write"])
 
     if "read_after_write" in rawParams:
-        params['read_after_write'] = str2bool(rawParams["read_after_write"])
+        params["read_after_write"] = str2bool(rawParams["read_after_write"])
 
     if "write_if_equal" in rawParams:
-        params['write_if_equal'] = str2bool(rawParams["write_if_equal"])
+        params["write_if_equal"] = str2bool(rawParams["write_if_equal"])
 
     if "state_attr" in rawParams:
-        params['state_attr'] = rawParams["state_attr"]
+        params["state_attr"] = rawParams["state_attr"]
 
     if "allow_create" in rawParams:
         allow = str2int(rawParams["allow_create"])
-        params['allow_create'] = (allow is not None) and ((allow is True) or (allow == 1))
+        params["allow_create"] = (allow is not None) and (
+            (allow is True) or (allow == 1)
+        )
 
     if "event_done" in rawParams:
-        params['event_done'] = rawParams["event_done"]
+        params["event_done"] = rawParams["event_done"]
 
     if "event_fail" in rawParams:
-        params['event_fail'] = rawParams["event_fail"]
+        params["event_fail"] = rawParams["event_fail"]
 
     if "event_success" in rawParams:
-        params['event_success'] = rawParams["event_success"]
+        params["event_success"] = rawParams["event_success"]
 
     return params

@@ -45,7 +45,9 @@ async def add_group(app, listener, ieee, cmd, data, service, params={}, event_da
             LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
 
 
-async def remove_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def remove_group(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.debug("running 'remove group' command: %s", service)
     if ieee is None or not data:
         LOGGER.error("missing ieee")
@@ -67,7 +69,9 @@ async def remove_group(app, listener, ieee, cmd, data, service, params={}, event
             LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
 
 
-async def remove_all_groups(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def remove_all_groups(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.debug("running 'remove all group' command: %s", service)
     if ieee is None:
         return
@@ -84,7 +88,9 @@ async def remove_all_groups(app, listener, ieee, cmd, data, service, params={}, 
             LOGGER.debug("0x%04x: no group cluster on endpoint #%d", src_dev.nwk, ep_id)
 
 
-async def add_to_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def add_to_group(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if data is None or ieee is None:
         LOGGER.error("invalid arguments for subscribe_group()")
         return
@@ -97,7 +103,9 @@ async def add_to_group(app, listener, ieee, cmd, data, service, params={}, event
     LOGGER.info("Subscribed NCP to %s group: %s", grp_id, res)
 
 
-async def remove_from_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def remove_from_group(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if data is None or ieee is None:
         LOGGER.error("invalid arguments for unsubscribe_group()")
         return
@@ -110,7 +118,9 @@ async def remove_from_group(app, listener, ieee, cmd, data, service, params={}, 
     LOGGER.info("Unsubscribed NCP to %s group: %s", grp_id, res)
 
 
-async def get_zll_groups(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_zll_groups(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     from zigpy.zcl.clusters.lightlink import LightLink
 
     if ieee is None:

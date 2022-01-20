@@ -3,6 +3,7 @@ import logging
 from zigpy import types as t
 
 from . import utils as u
+
 # from zigpy.zcl import foundation
 # import zigpy.zcl as zcl
 
@@ -10,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
-    """ Backup ZNP network information. """
+    """Backup ZNP network information."""
 
     LOGGER.error("ZNP_BACKUP")
 
@@ -30,17 +31,17 @@ async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, par
     # Store backup information to file
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + '/local/'
+    out_dir = os.path.dirname(__file__) + "/local/"
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
     # Ensure that data is an empty string when not set
     if data is None:
-        data = ''
+        data = ""
 
-    fname = out_dir + 'nwk_backup' + str(data) + '.json'
+    fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    event_data['backup_file'] = fname
+    event_data["backup_file"] = fname
 
     LOGGER.debug("Writing to %s", fname)
     f = open(fname, "w")
@@ -48,8 +49,10 @@ async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, par
     f.close()
 
 
-async def znp_restore(app, listener, ieee, cmd, data, service, event_data={}, params={}):
-    """ Restore ZNP network information. """
+async def znp_restore(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
+    """Restore ZNP network information."""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = "'{}' is only available for ZNP".format(cmd)
@@ -69,7 +72,8 @@ async def znp_restore(app, listener, ieee, cmd, data, service, event_data={}, pa
     counter_increment = t.uint32_t(counter_increment)
 
     from datetime import datetime
-    current_datetime = datetime.now().strftime('_%Y%m%d_%H%M%S')
+
+    current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
     # Safety: backup current configuration
     await znp_backup(app, listener, ieee, cmd, current_datetime, service)
@@ -81,10 +85,10 @@ async def znp_restore(app, listener, ieee, cmd, data, service, event_data={}, pa
     import json
 
     # Set name with regards to local path
-    fname = path.dirname(__file__) + '/local/nwk_backup.json'
+    fname = path.dirname(__file__) + "/local/nwk_backup.json"
     LOGGER.info("Restore from '%s'", fname)
 
-    event_data['restore_file'] = fname
+    event_data["restore_file"] = fname
 
     # Read backup file
     f = open(fname, "r")
@@ -118,8 +122,10 @@ async def znp_restore(app, listener, ieee, cmd, data, service, event_data={}, pa
     # TODO: restart znp, HA?
 
 
-async def znp_nvram_backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
-    """ Save ZNP NVRAM to file for backup """
+async def znp_nvram_backup(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
+    """Save ZNP NVRAM to file for backup"""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = "'{}' is only available for ZNP".format(cmd)
@@ -132,7 +138,7 @@ async def znp_nvram_backup(app, listener, ieee, cmd, data, service, event_data={
     import json
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + '/local/'
+    out_dir = os.path.dirname(__file__) + "/local/"
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
@@ -141,9 +147,9 @@ async def znp_nvram_backup(app, listener, ieee, cmd, data, service, event_data={
 
     # Ensure that data is an empty string when not set
     if data is None:
-        data = ''
+        data = ""
 
-    fname = out_dir + 'nvram_backup' + str(data) + '.json'
+    fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Saving NVRAM to '%s'", fname)
     f = open(fname, "w")
@@ -152,8 +158,10 @@ async def znp_nvram_backup(app, listener, ieee, cmd, data, service, event_data={
     LOGGER.info("NVRAM backup saved to '%s'", fname)
 
 
-async def znp_nvram_restore(app, listener, ieee, cmd, data, service, event_data={}, params={}):
-    """ Restore ZNP NVRAM from file """
+async def znp_nvram_restore(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
+    """Restore ZNP NVRAM from file"""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = "'{}' is only available for ZNP".format(cmd)
@@ -162,7 +170,8 @@ async def znp_nvram_restore(app, listener, ieee, cmd, data, service, event_data=
 
     # Safety: backup current configuration
     from datetime import datetime
-    current_datetime = datetime.now().strftime('_%Y%m%d_%H%M%S')
+
+    current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
     await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)
 
     # Restore NVRAM backup from file
@@ -171,15 +180,15 @@ async def znp_nvram_restore(app, listener, ieee, cmd, data, service, event_data=
     import json
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + '/local/'
+    out_dir = os.path.dirname(__file__) + "/local/"
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
     # Ensure that data is an empty string when not set
     if data is None:
-        data = ''
+        data = ""
 
-    fname = out_dir + 'nvram_backup' + str(data) + '.json'
+    fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Restoring NVRAM from '%s'", fname)
     f = open(fname, "w")
@@ -192,8 +201,10 @@ async def znp_nvram_restore(app, listener, ieee, cmd, data, service, event_data=
     # TODO: restart znp, HA?
 
 
-async def znp_nvram_reset(app, listener, ieee, cmd, data, service, event_data={}, params={}):
-    """ Reset ZNP NVRAM """
+async def znp_nvram_reset(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
+    """Reset ZNP NVRAM"""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = "'{}' is only available for ZNP".format(cmd)
@@ -201,7 +212,8 @@ async def znp_nvram_reset(app, listener, ieee, cmd, data, service, event_data={}
         raise Exception(msg)
 
     from datetime import datetime
-    current_datetime = datetime.now().strftime('_%Y%m%d_%H%M%S')
+
+    current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
     # Safety: backup current configuration
     await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)

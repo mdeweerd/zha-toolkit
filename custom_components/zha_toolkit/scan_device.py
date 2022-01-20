@@ -107,13 +107,17 @@ async def discover_attributes_extended(cluster, manufacturer=None):
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover attributes extended starting 0x%04x/0x%04x. Error: %s",
-                cluster.cluster_id, attr_id, ex
+                cluster.cluster_id,
+                attr_id,
+                ex,
             )
             break
         if isinstance(rsp, foundation.Status):
             LOGGER.error(
                 "got %s status for discover_attribute starting 0x%04x/0x%04x",
-                rsp, cluster.cluster_id, attr_id
+                rsp,
+                cluster.cluster_id,
+                attr_id,
             )
             break
         for attr_rec in rsp:
@@ -146,10 +150,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
     while chunk:
         try:
             success, failed = await read_attr(cluster, chunk)
-            LOGGER.debug(
-                "Reading attr success: %s, failed %s",
-                success, failed
-            )
+            LOGGER.debug("Reading attr success: %s, failed %s", success, failed)
             for attr_id, value in success.items():
                 if isinstance(value, bytes):
                     try:
@@ -159,15 +160,12 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 result[attr_id]["attribute_value"] = value
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Couldn't read 0x%04x/0x%04x: %s",
-                cluster.cluster_id, attr_id, ex
+                "Couldn't read 0x%04x/0x%04x: %s", cluster.cluster_id, attr_id, ex
             )
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
 
-    return {
-        "0x{:04x}".format(a_id): result[a_id] for a_id in sorted(result)
-    }
+    return {"0x{:04x}".format(a_id): result[a_id] for a_id in sorted(result)}
 
 
 async def discover_commands_received(cluster, is_server, manufacturer=None):
@@ -190,15 +188,11 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.3)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover %s commands starting %s. Error: %s",
-                cmd_id, ex
+                "Failed to discover %s commands starting %s. Error: %s", cmd_id, ex
             )
             break
         if isinstance(rsp, Status):
-            LOGGER.error(
-                "got %s status for discover_commands starting %s",
-                rsp, cmd_id
-            )
+            LOGGER.error("got %s status for discover_commands starting %s", rsp, cmd_id)
             break
         for cmd_id in rsp:
             cmd_data = cluster.server_commands.get(
@@ -238,15 +232,11 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.3)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover commands starting %s. Error: %s",
-                cmd_id, ex
+                "Failed to discover commands starting %s. Error: %s", cmd_id, ex
             )
             break
         if isinstance(rsp, Status):
-            LOGGER.error(
-                "got %s status for discover_commands starting %s",
-                rsp, cmd_id
-            )
+            LOGGER.error("got %s status for discover_commands starting %s", rsp, cmd_id)
             break
         for cmd_id in rsp:
             cmd_data = cluster.client_commands.get(
@@ -266,7 +256,9 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
     return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
-async def scan_device(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def scan_device(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if ieee is None:
         LOGGER.error("missing ieee")
         return

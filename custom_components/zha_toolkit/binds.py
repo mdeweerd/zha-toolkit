@@ -56,7 +56,9 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
         LOGGER.debug("0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res)
 
 
-async def unbind_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def unbind_group(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
 
@@ -118,14 +120,14 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
 
     zdo = src_dev.zdo
     src_out_clusters = [
-            0x0006,  # OnOff
-            0x0008,  # Level
-            0x0300,  # Color Control
-        ]
+        0x0006,  # OnOff
+        0x0008,  # Level
+        0x0300,  # Color Control
+    ]
 
     src_in_clusters = [
-            0X0402,  # Temperature
-        ]
+        0x0402,  # Temperature
+    ]
 
     for src_out_cluster in src_out_clusters:
         src_endpoints = [
@@ -142,7 +144,9 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
 
         if not src_endpoints:
             LOGGER.debug(
-                "0x%04x: skipping %0x04X cluster as non present", src_dev.nwk, src_out_cluster
+                "0x%04x: skipping %0x04X cluster as non present",
+                src_dev.nwk,
+                src_out_cluster,
             )
             continue
         dst_addr = MultiAddress()
@@ -193,7 +197,9 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
 
         if not src_endpoints:
             LOGGER.debug(
-                "0x%04x: skipping %0x04X cluster as non present", src_dev.nwk, src_in_cluster
+                "0x%04x: skipping %0x04X cluster as non present",
+                src_dev.nwk,
+                src_in_cluster,
             )
             continue
         dst_addr = MultiAddress()
@@ -230,7 +236,9 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
             )
 
 
-async def unbind_coordinator(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def unbind_coordinator(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
 
     LOGGER.debug("running 'unbind coordinator' command: %s", service)
     if ieee is None or not data:

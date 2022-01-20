@@ -26,7 +26,7 @@ LOGGER = logging.getLogger(__name__)
 SERVICE_SCHEMAS = {
     SERVICE_TOOLKIT: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,  # was: t.EUI64.convert, - keeping ieee for compatibility
+            vol.Optional(ATTR_IEEE): cv.string,
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
         },
@@ -65,13 +65,13 @@ async def async_setup(hass, config):
 
         # Preload event_data
         event_data = {
-                "ieee_org": ieee_str,
-                "ieee": str(ieee),
-                "command": cmd,
-                "start_time": dt_util.utcnow().isoformat(),
-                "errors": [],
-                "params": params
-            }
+            "ieee_org": ieee_str,
+            "ieee": str(ieee),
+            "command": cmd,
+            "start_time": dt_util.utcnow().isoformat(),
+            "errors": [],
+            "params": params,
+        }
 
         if ieee is not None:
             LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
@@ -91,51 +91,70 @@ async def async_setup(hass, config):
             if cmd:
                 handler = getattr(module, "command_handler_{}".format(cmd))
                 await handler(
-                    zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data, service,
-                    params=params, event_data=event_data
+                    zha_gw.application_controller,
+                    zha_gw,
+                    ieee,
+                    cmd,
+                    cmd_data,
+                    service,
+                    params=params,
+                    event_data=event_data,
                 )
             else:
                 await module.default_command(
-                    zha_gw.application_controller, zha_gw, ieee, cmd, cmd_data, service,
-                    params=params, event_data=event_data
+                    zha_gw.application_controller,
+                    zha_gw,
+                    ieee,
+                    cmd,
+                    cmd_data,
+                    service,
+                    params=params,
+                    event_data=event_data,
                 )
         except Exception as e:
             handler_exception = e
-            event_data['errors'].append(repr(e))
-            event_data['success'] = False
+            event_data["errors"].append(repr(e))
+            event_data["success"] = False
 
-        if 'success' not in event_data:
-            event_data['success'] = True
+        if "success" not in event_data:
+            event_data["success"] = True
 
         LOGGER.debug("event_data %s", event_data)
         # Fire events
-        if event_data['success']:
-            if params['event_success'] is not None:
-                LOGGER.debug("Fire %s -> %s", params['event_success'], event_data)
-                zha_gw._hass.bus.fire(params['event_success'], event_data)
+        if event_data["success"]:
+            if params["event_success"] is not None:
+                LOGGER.debug("Fire %s -> %s", params["event_success"], event_data)
+                zha_gw._hass.bus.fire(params["event_success"], event_data)
         else:
-            if params['event_fail'] is not None:
-                LOGGER.debug("Fire %s -> %s", params['event_fail'], event_data)
-                zha_gw._hass.bus.fire(params['event_fail'], event_data)
+            if params["event_fail"] is not None:
+                LOGGER.debug("Fire %s -> %s", params["event_fail"], event_data)
+                zha_gw._hass.bus.fire(params["event_fail"], event_data)
 
-        if params['event_done'] is not None:
-            LOGGER.debug("Fire %s -> %s", params['event_done'], event_data)
-            zha_gw._hass.bus.fire(params['event_done'], event_data)
+        if params["event_done"] is not None:
+            LOGGER.debug("Fire %s -> %s", params["event_done"], event_data)
+            zha_gw._hass.bus.fire(params["event_done"], event_data)
 
         if handler_exception is not None:
             raise handler_exception
 
     hass.services.async_register(
-        DOMAIN, SERVICE_TOOLKIT, toolkit_service, schema=SERVICE_SCHEMAS[SERVICE_TOOLKIT]
+        DOMAIN,
+        SERVICE_TOOLKIT,
+        toolkit_service,
+        schema=SERVICE_SCHEMAS[SERVICE_TOOLKIT],
     )
     return True
 
 
-async def default_command(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def default_command(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.debug("running default command: %s", service)
 
 
-async def command_handler_handle_join(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def command_handler_handle_join(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     """Rediscover a device.
     ieee -- ieee of the device
     data -- nwk of the device in decimal format
@@ -153,7 +172,9 @@ async def command_handler_handle_join(app, listener, ieee, cmd, data, service, p
                 raise Exception("Missing NWK for device '{}'".format(ieee))
             LOGGER.debug("Using NWK '%s' for '%s'", data, ieee)
         except Exception as e:
-            LOGGER.debug("Device '%s' not found in device table, provide NWK address", ieee)
+            LOGGER.debug(
+                "Device '%s' not found in device table, provide NWK address", ieee
+            )
             raise e
 
     app.handle_join(u.str2int(data), ieee, 0)
@@ -268,7 +289,9 @@ async def command_handler_unbind_coordinator(*args, **kwargs):
     await binds.unbind_coordinator(*args, **kwargs)
 
 
-async def command_handler_rejoin(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def command_handler_rejoin(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     """Leave and rejoin command.
     data -- device ieee to allow joining through
     ieee -- ieee of the device to leave and rejoin
@@ -357,7 +380,7 @@ def command_handler_get_routes_and_neighbours(*args, **kwargs):
 
 
 def command_handler_all_routes_and_neighbours(*args, **kwargs):
-    """Scan all devices for neighbours and routes. """
+    """Scan all devices for neighbours and routes."""
     from . import neighbours
 
     importlib.reload(neighbours)
@@ -382,7 +405,7 @@ def command_handler_ieee_ping(*args, **kwargs):
 
 
 def command_handler_zigpy_deconz(*args, **kwargs):
-    """Zigpy deconz test. """
+    """Zigpy deconz test."""
     from . import zigpy_deconz
 
     importlib.reload(zigpy_deconz)
@@ -391,7 +414,7 @@ def command_handler_zigpy_deconz(*args, **kwargs):
 
 
 def command_handler_ezsp_backup(*args, **kwargs):
-    """ Backup BELLOWS (ezsp) network information. """
+    """Backup BELLOWS (ezsp) network information."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -400,7 +423,7 @@ def command_handler_ezsp_backup(*args, **kwargs):
 
 
 def command_handler_ezsp_set_channel(*args, **kwargs):
-    """Set EZSP radio channel. """
+    """Set EZSP radio channel."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -409,7 +432,7 @@ def command_handler_ezsp_set_channel(*args, **kwargs):
 
 
 def command_handler_ezsp_get_token(*args, **kwargs):
-    """Set EZSP radio channel. """
+    """Set EZSP radio channel."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -418,7 +441,7 @@ def command_handler_ezsp_get_token(*args, **kwargs):
 
 
 def command_handler_ezsp_start_mfg(*args, **kwargs):
-    """Set EZSP radio channel. """
+    """Set EZSP radio channel."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -427,7 +450,7 @@ def command_handler_ezsp_start_mfg(*args, **kwargs):
 
 
 def command_handler_ezsp_get_keys(*args, **kwargs):
-    """Get EZSP keys. """
+    """Get EZSP keys."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -436,7 +459,7 @@ def command_handler_ezsp_get_keys(*args, **kwargs):
 
 
 def command_handler_ezsp_add_key(*args, **kwargs):
-    """Add transient link key. """
+    """Add transient link key."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -444,7 +467,7 @@ def command_handler_ezsp_add_key(*args, **kwargs):
 
 
 def command_handler_ezsp_get_ieee_by_nwk(*args, **kwargs):
-    """Get EZSP keys. """
+    """Get EZSP keys."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -452,7 +475,7 @@ def command_handler_ezsp_get_ieee_by_nwk(*args, **kwargs):
 
 
 def command_handler_ezsp_get_policy(*args, **kwargs):
-    """Get EZSP keys. """
+    """Get EZSP keys."""
     from . import ezsp
 
     importlib.reload(ezsp)
@@ -487,7 +510,7 @@ def command_handler_ezsp_get_value(*args, **kwargs):
 
 
 def command_handler_ota_notify(*args, **kwargs):
-    """Set EZSP radio channel. """
+    """Set EZSP radio channel."""
     from . import ota
 
     importlib.reload(ota)
@@ -528,7 +551,7 @@ def command_handler_zdo_flood_parent_annce(*args, **kwargs):
 
 
 def command_handler_znp_backup(*args, **kwargs):
-    """ Backup ZNP network information. """
+    """Backup ZNP network information."""
     from . import znp
 
     importlib.reload(znp)
@@ -537,7 +560,7 @@ def command_handler_znp_backup(*args, **kwargs):
 
 
 def command_handler_znp_restore(*args, **kwargs):
-    """ Restore ZNP network information. """
+    """Restore ZNP network information."""
     from . import znp
 
     importlib.reload(znp)
@@ -546,7 +569,7 @@ def command_handler_znp_restore(*args, **kwargs):
 
 
 def command_handler_zcl_cmd(*args, **kwargs):
-    """ Perform scene command. """
+    """Perform scene command."""
     from . import zcl_cmd
 
     importlib.reload(zcl_cmd)
@@ -555,7 +578,7 @@ def command_handler_zcl_cmd(*args, **kwargs):
 
 
 def command_handler_znp_nvram_backup(*args, **kwargs):
-    """ Backup ZNP network information. """
+    """Backup ZNP network information."""
     from . import znp
 
     importlib.reload(znp)
@@ -564,7 +587,7 @@ def command_handler_znp_nvram_backup(*args, **kwargs):
 
 
 def command_handler_znp_nvram_restore(*args, **kwargs):
-    """ Restore ZNP network information. """
+    """Restore ZNP network information."""
     from . import znp
 
     importlib.reload(znp)
@@ -573,7 +596,7 @@ def command_handler_znp_nvram_restore(*args, **kwargs):
 
 
 def command_handler_znp_nvram_reset(*args, **kwargs):
-    """ Restore ZNP network information. """
+    """Restore ZNP network information."""
     from . import znp
 
     importlib.reload(znp)
@@ -582,7 +605,7 @@ def command_handler_znp_nvram_reset(*args, **kwargs):
 
 
 def command_handler_backup(*args, **kwargs):
-    """ Backup Coordinator information. """
+    """Backup Coordinator information."""
     from . import misc
 
     importlib.reload(misc)
