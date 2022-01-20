@@ -259,7 +259,7 @@ async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_
     import os
     import json
  
-    result = await ezsp_backup.ezsp_backup(app._ezsp) 
+    result = await ezsp_backup._backup(app._ezsp) 
 
     # Store backup information to file
 
