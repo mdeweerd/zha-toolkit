@@ -1,10 +1,9 @@
 import logging
 from enum import Enum
 from zigpy import types as t
-from homeassistant.util import dt as dt_util
-
 
 LOGGER = logging.getLogger(__name__)
+
 
 # Convert string to int if possible or return original string
 #  (Returning the original string is usefull for named attributes)
@@ -27,14 +26,13 @@ def str2int(s):
         return s
 
 
-
 # Convert string to best boolean representation
 def str2bool(s):
-    if s is None or s=='':
+    if s is None or s == '':
         return False
-    if s==True or s==False:
+    if s is True or s is False:
         return s
-    return u.str2int(s) != 0
+    return str2int(s) != 0
 
 
 class RadioType(Enum):
@@ -43,15 +41,16 @@ class RadioType(Enum):
     EZSP = 2
     BELLOWS = 2
 
+
 def get_radiotype(app):
-    if hasattr(app,'_znp'):
+    if hasattr(app, '_znp'):
         return RadioType.ZNP
-    if hasattr(app,'_ezsp'):
+    if hasattr(app, '_ezsp'):
         return RadioType.EZSP
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
 
-    
+
 # Get zigbee IEEE address (EUI64) for the reference.
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
@@ -62,20 +61,20 @@ async def get_ieee(app, listener, ref):
             return t.EUI64.convert(ref)
 
         # Check if network address
-        nwk=str2int(ref)
-        if (type(nwk) == int) and nwk>=0x0000 and nwk<=0xFFF7:
-            device=app.get_device(nwk=nwk)
+        nwk = str2int(ref)
+        if (type(nwk) == int) and nwk >= 0x0000 and nwk <= 0xFFF7:
+            device = app.get_device(nwk=nwk)
             if device is None:
                 return None
             else:
                 LOGGER.debug("NWK addr 0x04x -> %s", nwk, device.ieee)
                 return device.ieee
-      
+
         # Todo: check if NWK address
         entity_registry = await listener._hass.helpers.entity_registry.async_get_registry()
-        #LOGGER.debug("registry %s",entity_registry)
+        # LOGGER.debug("registry %s",entity_registry)
         registry_entity = entity_registry.async_get(ref)
-        LOGGER.debug("registry_entity %s",registry_entity)
+        LOGGER.debug("registry_entity %s", registry_entity)
         if registry_entity is None:
             return None
         if registry_entity.platform != "zha":
@@ -84,9 +83,9 @@ async def get_ieee(app, listener, ref):
 
         device_registry = await listener._hass.helpers.device_registry.async_get_registry()
         registry_device = device_registry.async_get(registry_entity.device_id)
-        LOGGER.debug("registry_device %s",registry_device)
+        LOGGER.debug("registry_device %s", registry_device)
         for identifier in registry_device.identifiers:
-            if identifier[0]=='zha':
+            if identifier[0] == 'zha':
                 return t.EUI64.convert(identifier[1])
         return None
 
@@ -97,16 +96,16 @@ async def get_ieee(app, listener, ref):
 # Get a zigbee device instance for the reference.
 #  Reference can be entity, device, or IEEE address
 async def get_device(app, listener, reference):
-    # Method is called get 
-    ieee=await get_ieee(app, listener, reference)
+    # Method is called get
+    ieee = await get_ieee(app, listener, reference)
     LOGGER.debug("IEEE for get_device: %s", ieee)
     return app.get_device(ieee)
 
 
 # Save state to db
-def set_state(hass, entity_id, value, key = None, allow_create=False, force_update=False):
-    stateObj = hass.states.get(entity_id) 
-    if stateObj is None and allow_create != True:
+def set_state(hass, entity_id, value, key=None, allow_create=False, force_update=False):
+    stateObj = hass.states.get(entity_id)
+    if stateObj is None and allow_create is not True:
         LOGGER.warning("Entity_id '%s' not found", entity_id)
         return
 
@@ -119,25 +118,25 @@ def set_state(hass, entity_id, value, key = None, allow_create=False, force_upda
     # LOGGER.debug("Before: entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
     if key is not None:
         stateAttrs[key] = value
-        value = None 
+        value = None
 
     # LOGGER.debug("entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
 
     # Store to DB_state
     hass.states.async_set(
-            entity_id = entity_id,
-            new_state = value,
-            attributes = stateAttrs,
-            force_update = force_update,
-            context = None
+            entity_id=entity_id,
+            new_state=value,
+            attributes=stateAttrs,
+            force_update=force_update,
+            context=None
         )
-    
+
 
 # Find endpoint matching in_cluster
 def find_endpoint(dev, cluster_id):
     cnt = 0
     endpoint_id = None
-    
+
     for key, value in dev.endpoints.items():
         if key == 0:
             continue
@@ -164,40 +163,40 @@ def find_endpoint(dev, cluster_id):
 def extractParams(service):
 
     # Get best parameter set, 'extra' is legacy.
-    rawParams=service.data.get('extra')
+    rawParams = service.data.get('extra')
 
     if not isinstance(rawParams, dict):
         # Fall back to paramters in 'data:' key
-        rawParams=service.data
+        rawParams = service.data
 
-    LOGGER.debug( "Parameters '%s'", rawParams ) 
+    LOGGER.debug("Parameters '%s'", rawParams)
 
     # Potential parameters, initialized to None
     # TODO: Not all paremeters are decode in this function yet
     params = {
-        'cmd_id' : None,
-        'endpoint_id' : None,
-        'cluster_id' : None,
-        'attr_id' : None,
-        'attr_type' : None,
-        'attr_val' : None,
-        'min_interval' : None,
-        'max_interval' : None,
-        'reportable_change' : None,
-        'dir' : None,
-        'manf' : None, 
-        'tries' : 1,
-        'expect_reply' : True,
-        'args' : [],
-        'state_id' : None,
-        'state_attr' : None,
-        'allow_create' : False,
-        'event_success' : None,
-        'event_fail' : None,
-        'event_done' : None,
-        'read_before_write' : True,
-        'read_after_write' : True,
-        'write_if_equal' : False,
+        'cmd_id': None,
+        'endpoint_id': None,
+        'cluster_id': None,
+        'attr_id': None,
+        'attr_type': None,
+        'attr_val': None,
+        'min_interval': None,
+        'max_interval': None,
+        'reportable_change': None,
+        'dir': None,
+        'manf': None,
+        'tries': 1,
+        'expect_reply': True,
+        'args': [],
+        'state_id': None,
+        'state_attr': None,
+        'allow_create': False,
+        'event_success': None,
+        'event_fail': None,
+        'event_done': None,
+        'read_before_write': True,
+        'read_after_write': True,
+        'write_if_equal': False,
     }
 
     # Extract parameters
@@ -227,30 +226,26 @@ def extractParams(service):
         params['cmd_id'] = str2int(rawParams['cmd'])
 
     # The direction (to in or out cluster)
-    dir_int=0
     if 'dir' in rawParams:
         params['dir'] = str2int(rawParams['dir'])
 
     # Get manufacturer
-    manf=None
     if 'manf' in rawParams:
-        anf = str2int(rawParams['manf'])
+        params['manf'] = str2int(rawParams['manf'])
 
     # Get tries
-    tries = 1
     if 'tries' in rawParams:
         params['tries'] = str2int(rawParams['tries'])
 
     # Get expect_reply
     if 'expect_reply' in rawParams:
-        expect_reply = str2int(rawParams['expect_reply'])==0
-
+        params['expect_reply'] = (str2int(rawParams['expect_reply']) == 0)
 
     if 'args' in rawParams:
-        cmd_args=[]
+        cmd_args = []
         for val in rawParams['args']:
-            LOGGER.debug("cmd arg %s",val)
-            lval=str2int(val)
+            LOGGER.debug("cmd arg %s", val)
+            lval = str2int(val)
             if isinstance(lval, list):
                 # Convert list to List of uint8_t
                 lval = t.List[t.uint8_t]([t.uint8_t(i) for i in lval])
@@ -260,14 +255,12 @@ def extractParams(service):
             LOGGER.debug("cmd converted arg %s", lval)
         params['args'] = cmd_args
 
-
     if "min_interval" in rawParams:
         params['min_interval'] = str2int(rawParams["min_interval"])
     if "max_interval" in rawParams:
         params['max_interval'] = str2int(rawParams["max_interval"])
     if "reportable_change" in rawParams:
         params['reportable_change'] = str2int(rawParams["reportable_change"])
-
 
     if "state_id" in rawParams:
         params['state_id'] = rawParams["state_id"]
@@ -289,7 +282,7 @@ def extractParams(service):
 
     if "allow_create" in rawParams:
         allow = str2int(rawParams["allow_create"])
-        params['allow_create'] = ( allow is not None ) and ( (allow == True ) or (allow == 1) )
+        params['allow_create'] = (allow is not None) and ((allow is True) or (allow == 1))
 
     if "event_done" in rawParams:
         params['event_done'] = rawParams["event_done"]
@@ -301,4 +294,3 @@ def extractParams(service):
         params['event_success'] = rawParams["event_success"]
 
     return params
-

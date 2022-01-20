@@ -56,24 +56,24 @@ async def async_setup(hass, config):
 
         importlib.reload(u)
 
-        app=zha_gw.application_controller
+        app = zha_gw.application_controller
 
-        ieee = await u.get_ieee(app, zha_gw, ieee_str) 
+        ieee = await u.get_ieee(app, zha_gw, ieee_str)
 
         # Decode parameters
         params = u.extractParams(service)
 
         # Preload event_data
         event_data = {
-                "ieee_org":ieee_str,
+                "ieee_org": ieee_str,
                 "ieee": str(ieee),
-                "command" : cmd,
+                "command": cmd,
                 "start_time": dt_util.utcnow().isoformat(),
                 "errors": [],
                 "params": params
             }
 
-        if ieee is not None: 
+        if ieee is not None:
             LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
 
         mod_path = "custom_components.{}".format(DOMAIN)
@@ -109,7 +109,7 @@ async def async_setup(hass, config):
 
         LOGGER.debug("event_data %s", event_data)
         # Fire events
-        if event_data['success']: 
+        if event_data['success']:
             if params['event_success'] is not None:
                 LOGGER.debug("Fire %s -> %s", params['event_success'], event_data)
                 zha_gw._hass.bus.fire(params['event_success'], event_data)
@@ -282,7 +282,7 @@ async def command_handler_rejoin(app, listener, ieee, cmd, data, service, params
     if data is None:
         await app.permit()
     else:
-        await app.permit(node=convert_ieee(data))
+        await app.permit(node=t.EUI64.convert_ieee(data))
     res = await src.zdo.request(0x0034, src.ieee, 0x01)
     LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
 
@@ -588,5 +588,3 @@ def command_handler_backup(*args, **kwargs):
     importlib.reload(misc)
 
     return misc.backup(*args, **kwargs)
-
-

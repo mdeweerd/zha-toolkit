@@ -19,7 +19,6 @@ async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, par
         LOGGER.debug(msg)
         raise Exception(msg)
 
-
     # Import stuff we need
     from zigpy_znp.tools.network_backup import backup_network as backup_network
     import os
@@ -47,7 +46,6 @@ async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, par
     f = open(fname, "w")
     f.write(json.dumps(backup_obj, indent=4))
     f.close()
-
 
 
 async def znp_restore(app, listener, ieee, cmd, data, service, event_data={}, params={}):

@@ -10,7 +10,7 @@ async def get_groups(app, listener, ieee, cmd, data, service, params={}, event_d
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-   
+
     src_dev = app.get_device(ieee=ieee)
 
     for ep_id, ep in src_dev.endpoints.items():
@@ -33,7 +33,7 @@ async def add_group(app, listener, ieee, cmd, data, service, params={}, event_da
 
     src_dev = app.get_device(ieee=ieee)
 
-    group_id = str2int(data)
+    group_id = u.str2int(data)
 
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0:

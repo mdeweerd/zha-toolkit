@@ -15,8 +15,8 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-   
-    dev = app.get_device(ieee=ieee)
+
+    src_dev = app.get_device(ieee=ieee)
 
     if not data:
         LOGGER.error("missing cmd_data")
@@ -108,7 +108,6 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
     from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
 
-
     if ieee is None or not data:
         LOGGER.error("missing ieee")
         return
@@ -119,9 +118,9 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
 
     zdo = src_dev.zdo
     src_out_clusters = [
-            0x0006, # OnOff
-            0x0008, # Level
-            0x0300, # Color Control
+            0x0006,  # OnOff
+            0x0008,  # Level
+            0x0300,  # Color Control
         ]
 
     src_in_clusters = [

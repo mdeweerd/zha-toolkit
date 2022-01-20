@@ -6,7 +6,6 @@ from zigpy.zcl import foundation as f
 from zigpy.exceptions import DeliveryError
 # import zigpy.zcl as zcl
 from . import utils as u
-from homeassistant.util import dt as dt_util
 
 
 LOGGER = logging.getLogger(__name__)
@@ -29,14 +28,14 @@ async def conf_report(app, listener, ieee, cmd, data, service, event_data={}, pa
 
     cluster = dev.endpoints[params['endpoint_id']].in_clusters[params['cluster_id']]
 
-    # await cluster.bind()   -> commented, not performing bind to coordinator
+    # await cluster.bind()  -> commented, not performing bind to coordinator
 
-    triesToGo=params['tries']
-    success=False
-    result_conf=None
+    triesToGo = params['tries']
+    success = False
+    result_conf = None
 
-    while triesToGo>=1:
-        triesToGo=triesToGo-1
+    while triesToGo >= 1:
+        triesToGo = triesToGo - 1
         try:
             LOGGER.debug('Try configure report(%s,%s,%s,%s,%s) Try %s/%s',
                 params['attr_id'],
@@ -44,7 +43,8 @@ async def conf_report(app, listener, ieee, cmd, data, service, event_data={}, pa
                 params['max_interval'],
                 params['reportable_change'],
                 params['manf'],
-                params['tries']-triesToGo,params['tries'])
+                params['tries'] - triesToGo,
+                params['tries'])
             result_conf = await cluster.configure_reporting(
                 params['attr_id'],
                 params['min_interval'],
@@ -52,15 +52,15 @@ async def conf_report(app, listener, ieee, cmd, data, service, event_data={}, pa
                 params['reportable_change'],
                 manufacturer=params['manf']
             )
-            event_data["params"]=params
-            event_data["result_conf"]=result_conf
-            triesToGo=0 # Stop loop
+            event_data["params"] = params
+            event_data["result_conf"] = result_conf
+            triesToGo = 0  # Stop loop
             LOGGER.info("Configure report result: %s", result_conf)
-            success=(result_conf[0][0].status==f.Status.SUCCESS)
+            success = (result_conf[0][0].status == f.Status.SUCCESS)
         except (DeliveryError, asyncio.TimeoutError) as e:
             continue
         except Exception as e:
-            triesToGo=0 # Stop loop
+            triesToGo = 0  # Stop loop
             LOGGER.debug("Configure report exception %s,%s,%s,%s,%s,%s",
                 e,
                 params['attr_id'],
@@ -69,22 +69,34 @@ async def conf_report(app, listener, ieee, cmd, data, service, event_data={}, pa
                 params['reportable_change'],
                 params['manf'])
 
-
     # Write value to provided state or state attribute
-    if False and state_id is not None:
+    if False and params['state_id'] is not None:
         if len(result_conf[1]) == 0 and len(result_conf[0]) == 1:
-             # No error and one result
-             for id,val in result_conf[0].items():
-                 if state_attr is not None:
-                     LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", state_id, state_attr, val, id)
-                 else:
-                     LOGGER.debug("Set state %s -> %s from attr_id %s", state_id, val, id)
-                 u.set_state(listener._hass, state_id, val, key=state_attr, allow_create=allow_create) 
-                 LOGGER.debug("STATE is set")
+            # No error and one result
+            for id, val in result_conf[0].items():
+                if params['state_attr'] is not None:
+                    LOGGER.debug("Set state %s[%s] -> %s from attr_id %s",
+                        params['state_id'],
+                        params['state_attr'],
+                        val, id
+                    )
+                else:
+                    LOGGER.debug("Set state %s -> %s from attr_id %s",
+                        params['state_id'],
+                        val, id
+                    )
+                    u.set_state(
+                        listener._hass, params['state_id'],
+                        val,
+                        key=params['state_attr'],
+                        allow_create=params['allow_create']
+                    )
+                LOGGER.debug("STATE is set")
 
 
 async def attr_read(*args, **kwargs):
     await attr_write(*args, **kwargs)
+
 
 # This code is shared with attr_read.
 # Can read and write 1 attribute
@@ -123,13 +135,12 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
 
     attr_read_list.append(attr_id)  # Read before write list
 
-
-    compare_val=None
+    compare_val = None
 
     if cmd == 'attr_write':
-        attr_type=params['attr_type']
-        attr_val_str=params['attr_val']
-    
+        attr_type = params['attr_type']
+        attr_val_str = params['attr_val']
+
         # Type only needed for write
         if attr_type is None or attr_val_str is None:
             event_data['errors'].append('attr_type and attr_val must be set for attr_write')
@@ -139,69 +150,68 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
             # If the attr_type is not set, then the attribute will be only read.
             attr_val = None
             if attr_type == 0x10:
-                compare_val=u.str2int(attr_val_str)
+                compare_val = u.str2int(attr_val_str)
                 attr_val = f.TypeValue(
                     attr_type, t.Bool(compare_val))
             elif attr_type == 0x20:
-                compare_val=u.str2int(attr_val_str)
+                compare_val = u.str2int(attr_val_str)
                 attr_val = f.TypeValue(
                     attr_type, t.uint8_t(compare_val))
             elif attr_type <= 0x31 and attr_type >= 0x08:
-                compare_val=u.str2int(attr_val_str)
+                compare_val = u.str2int(attr_val_str)
                 # uint, int, bool, bitmap and enum
                 attr_val = f.TypeValue(
                     attr_type, t.FixedIntType(compare_val))
-            elif attr_type in [ 0x41, 0x42 ]:  # Octet string
+            elif attr_type in [0x41, 0x42]:  # Octet string
                 # Octet string requires length -> LVBytes
-                compare_val=attr_val_str;
-    
+                compare_val = attr_val_str
+
                 event_data['str'] = attr_val_str
 
                 if type(attr_val_str) == str:
-                    attr_val_str = bytes(attr_val_str,'utf-8')
-        
+                    attr_val_str = bytes(attr_val_str, 'utf-8')
+
                 if isinstance(attr_val_str, list):
                     # Convert list to List of uint8_t
                     attr_val_str = t.List[t.uint8_t]([t.uint8_t(i) for i in attr_val_str])
-        
+
                 attr_val = f.TypeValue(
                     attr_type, t.LVBytes(attr_val_str))
-      
+
             if attr_val is not None:
                 attr = f.Attribute(attr_id, value=attr_val)
                 attr_write_list.append(attr)  # Write list
             else:
-                event_data[errors]=(
+                event_data['errors'] = (
                       'attr_type {} not supported, or incorrect parameters (attr_val={})'
                       .format(params['attr_type'], params['attr_val'])
                       )
             LOGGER.debug("ATTR TYPE %s, attr_val %s", params['attr_type'], params['attr_val'])
 
-
     result_read = None
-    if params['read_before_write'] or (len(attr_write_list) == 0) or cmd != 'attr_write':
+    if params['read_before_write'] or (len(attr_write_list) == 0) or (cmd != 'attr_write'):
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
             attr_read_list, manufacturer=params['manf'])
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
-        success = (len(result_read[1]) == 0 and len(result_read[0]) == 1)
+        success = ((len(result_read[1]) == 0) and (len(result_read[0]) == 1))
 
     # True if value that should be written is the equal to the read one
     write_is_equal = (
-            len(attr_write_list) != 0 
-            and ( attr_id in result_read[0] and result_read[0][attr_id] == compare_val)
+            len(attr_write_list) != 0
+            and (attr_id in result_read[0] and result_read[0][attr_id] == compare_val)
         )
 
-    event_data['write_is_equal']=write_is_equal
-    if write_is_equal and cmd=='attr_write':
+    event_data['write_is_equal'] = write_is_equal
+    if write_is_equal and (cmd == 'attr_write'):
         event_data['info'] = "Data read is equal to data to write"
 
-    if ( len(attr_write_list) != 0  and
-        ( 
-             not(params['read_before_write'])
-             or params['write_if_equal']
-             or not(write_is_equal)
-        ) and cmd == 'attr_write'
+    if (len(attr_write_list) != 0 and
+            (
+            not(params['read_before_write'])
+            or params['write_if_equal']
+            or not(write_is_equal)
+            ) and cmd == 'attr_write'
        ):
         if result_read is not None:
             event_data["read_before"] = result_read
@@ -215,9 +225,10 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
         success = False
         try:
             #LOGGER.debug("Write attr status: %s", result_write[0][0].status)
-            success=(result_write[0][0].status==f.Status.SUCCESS)
+            success = (result_write[0][0].status == f.Status.SUCCESS)
             LOGGER.debug("Write success: %s", success)
-        except e:
+        except Exception as e:
+            event_data['errors'].append(repr(e))
             success = False
 
         #success = (len(result_write[1])==0)
@@ -228,7 +239,7 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
                 attr_read_list, manufacturer=params['manf'])
             LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
             read_is_equal = (result_read[0][attr_id] == compare_val)
-            success = ( 
+            success = (
                     success
                     and (len(result_read[1]) == 0 and len(result_read[0]) == 1)
                          and (result_read[0][attr_id] == compare_val)
@@ -237,26 +248,26 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
     if result_read is not None:
         event_data["result_read"] = result_read
 
-
     event_data["success"] = success
-
 
     # Write value to provided state or state attribute
     if params['state_id'] is not None:
         if len(result_read[1]) == 0 and len(result_read[0]) == 1:
-             # No error and one result
-             for id, val in result_read[0].items():
-                 if params['state_attr'] is not None:
-                     LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", params['state_id'],
-                         params['state_attr'], val, id)
-                 else:
-                     LOGGER.debug("Set state %s -> %s from attr_id %s", params['state_id'], val, id)
-                 u.set_state(listener._hass, params['state_id'], val,
-                     key=params['state_attr'], allow_create=params['allow_create']) 
-                 LOGGER.debug("STATE is set")
-    
+            # No error and one result
+            for id, val in result_read[0].items():
+                if params['state_attr'] is not None:
+                    LOGGER.debug("Set state %s[%s] -> %s from attr_id %s", params['state_id'],
+                        params['state_attr'], val, id)
+                else:
+                    LOGGER.debug("Set state %s -> %s from attr_id %s", params['state_id'], val, id)
+                u.set_state(
+                        listener._hass, params['state_id'], val,
+                        key=params['state_attr'], allow_create=params['allow_create']
+                    )
+                LOGGER.debug("STATE is set")
+
     # For internal use
-    return result_read 
+    return result_read
 
     # Example where attributes are not types
     # (supposed typed by the internals):

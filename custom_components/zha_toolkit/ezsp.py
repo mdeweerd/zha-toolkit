@@ -244,6 +244,7 @@ async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={},
     f.write(json.dumps(result, indent=4))
     f.close()
 
+
 # See https://github.com/zigpy/bellows/tree/dev/bellows/cli
 #
 # Code essentially from https://github.com/zigpy/bellows/blob/dev/bellows/cli/backup.py
@@ -258,8 +259,8 @@ async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_
     from . import ezsp_backup
     import os
     import json
- 
-    result = await ezsp_backup._backup(app._ezsp) 
+
+    result = await ezsp_backup._backup(app._ezsp)
 
     # Store backup information to file
 
