@@ -121,10 +121,7 @@ execute:
       selector:
         number:
           min: 0
-<<<<<<< HEAD
-=======
           max: 65535
->>>>>>> 93de0999e87b7032ee568e374ab9cbd9f214d91f
     dir:
       description: Direction indicator, according to commmand
       selector:
@@ -136,8 +133,6 @@ execute:
       selector:
         number:
           min: 0 
-<<<<<<< HEAD
-=======
           max: 255
     state_id:
       description: When defined, name of state to write the read attribute value to
@@ -184,4 +179,3 @@ execute:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
->>>>>>> 93de0999e87b7032ee568e374ab9cbd9f214d91f
