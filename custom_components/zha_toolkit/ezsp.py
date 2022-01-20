@@ -1,5 +1,6 @@
 import binascii
 import logging
+import importlib
 
 from zigpy import types as t
 import zigpy.zdo.types
@@ -247,7 +248,7 @@ async def ezsp_backup_legacy(app, listener, ieee, cmd, data, service, params={},
 
 
 async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_data={}):
-    if u.get_radiotype(app) != u.RadioType.EZSP:
+    if False and u.get_radiotype(app) != u.RadioType.EZSP:
         msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
         LOGGER.debug(msg)
         raise Exception(msg)
@@ -256,6 +257,8 @@ async def ezsp_backup(app, listener, ieee, cmd, data, service, params={}, event_
     from . import ezsp_backup
     import os
     import json
+
+    importlib.reload(ezsp_backup)
 
     result = await ezsp_backup._backup(app._ezsp)
 
