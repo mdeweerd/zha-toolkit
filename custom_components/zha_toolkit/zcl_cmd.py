@@ -20,7 +20,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
     extra = service.data.get("extra")
     # LOGGER.info( "Extra '%s'", extra )
     if not isinstance(extra, dict):
-        # Fall back to paramters in 'data:' key
+        # Fall back to parameters in 'data:' key
         extra = service.data
 
     if ieee is None:
@@ -90,9 +90,9 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
 
     org_cluster_cmd_defs = dict()
 
-    # Exception catched in the try/catch below to throw after
+    # Exception caught in the try/catch below to throw after
     #   restoring cluster definitions
-    catched_e = None
+    caught_e = None
 
     try:
         if is_in_cluster:
@@ -134,7 +134,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
             # Note: client_command not tested
             await cluster.client_command(cmd_id, *cmd_args, manufacturer=manf)
     except Exception as e:
-        catched_e = e
+        caught_e = e
     finally:
         # Restore replaced cluster command definitions
         # LOGGER.debug("replaced %s", org_cluster_cmd_defs)
@@ -143,7 +143,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
                 cluster.server_commands[key] = org_cluster_cmd_defs[key]
             else:
                 cluster.client_commands[key] = org_cluster_cmd_defs[key]
-        if catched_e is not None:
-            raise catched_e
+        if caught_e is not None:
+            raise caught_e
 
     # Could check cluster.client_command, cluster_server commands

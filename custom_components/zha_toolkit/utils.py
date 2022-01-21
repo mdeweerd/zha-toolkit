@@ -6,7 +6,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 # Convert string to int if possible or return original string
-#  (Returning the original string is usefull for named attributes)
+#  (Returning the original string is useful for named attributes)
 def str2int(s):
     if not type(s) == str:
         return s
@@ -179,13 +179,13 @@ def extractParams(service):
     rawParams = service.data.get("extra")
 
     if not isinstance(rawParams, dict):
-        # Fall back to paramters in 'data:' key
+        # Fall back to parameters in 'data:' key
         rawParams = service.data
 
     LOGGER.debug("Parameters '%s'", rawParams)
 
     # Potential parameters, initialized to None
-    # TODO: Not all paremeters are decode in this function yet
+    # TODO: Not all parameters are decoded in this function yet
     params = {
         "cmd_id": None,
         "endpoint_id": None,

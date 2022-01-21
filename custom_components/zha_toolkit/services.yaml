@@ -125,7 +125,7 @@ execute:
           min: 0
           max: 65535
     dir:
-      description: Direction indicator, according to commmand
+      description: Direction indicator, according to command
       selector:
         number:
           min: 0

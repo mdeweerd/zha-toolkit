@@ -67,7 +67,7 @@ async def all_routes_and_neighbours(
     devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
     for device in devs:
         LOGGER.debug(
-            "%s: Quering routes and neighbours: %s out of %s",
+            "%s: Querying routes and neighbours: %s out of %s",
             device.ieee,
             counter,
             len(devs),

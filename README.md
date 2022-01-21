@@ -107,7 +107,7 @@ Feel free to propose documentation updates.
 
 # Examples
 
-Examples are work in progress and may not be functionnal.
+Examples are work in progress and may not be functional.
 
 For sleepy devices (on a battery) you may need to wake them up
 just after sending the command so that they can receive it.
@@ -375,7 +375,7 @@ data:
   event_done: my_conf_done_trigger_event
 ```
 
-Exemple of data available in the event report.
+Example of data available in the event report.
 
 ```json
 {
