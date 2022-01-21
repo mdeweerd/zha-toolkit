@@ -282,6 +282,17 @@ async def ezsp_backup_legacy(
 async def ezsp_backup(
     app, listener, ieee, cmd, data, service, params={}, event_data={}
 ):
+    # Add debug information to see if we can get the device info for the backup
+    radio=u.get_radio(app)
+    network_info=radio.network_info
+    LOGGER.debug("network_info: %s", network_info)
+    if hasattr(network_info,'nwk_addresses'):
+        LOGGER.debug("nwk_addresses: %s", network_info.nwk_addresses)
+    if hasattr(network_info,'key_table'):
+        LOGGER.debug("key_table: %s", network_info.key_table)
+    if hasattr(network_info,'children'):
+        LOGGER.debug("children: %s", network_info.children)
+
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
         LOGGER.debug(msg)
