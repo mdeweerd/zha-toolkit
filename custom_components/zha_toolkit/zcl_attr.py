@@ -220,7 +220,7 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
 
         if result_read is not None:
             event_data["read_before"] = result_read
-            result_read is None
+            result_read = None
 
         LOGGER.debug("Request attr write %s", attr_write_list)
         result_write = await cluster._write_attributes(

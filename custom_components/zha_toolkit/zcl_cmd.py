@@ -88,7 +88,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
 
     endpoint = dev.endpoints[ep_id]
 
-    org_cluster_cmd_defs = dict()
+    org_cluster_cmd_defs = {}
 
     # Exception caught in the try/catch below to throw after
     #   restoring cluster definitions
@@ -138,7 +138,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
     finally:
         # Restore replaced cluster command definitions
         # LOGGER.debug("replaced %s", org_cluster_cmd_defs)
-        for key, value in org_cluster_cmd_defs.items():
+        for key, _value in org_cluster_cmd_defs.items():
             if is_in_cluster:
                 cluster.server_commands[key] = org_cluster_cmd_defs[key]
             else:

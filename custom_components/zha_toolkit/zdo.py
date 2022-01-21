@@ -107,7 +107,7 @@ async def flood_parent_annce(
     if flooder_task and not flooder_task.done():
         flooder_task.cancel()
         LOGGER.debug("Stop flooding network with parent annce messages")
-        setattr(app, "flooder_task", None)
+        app.flooder_task = None
         event_data["task"] = None
         return
 
