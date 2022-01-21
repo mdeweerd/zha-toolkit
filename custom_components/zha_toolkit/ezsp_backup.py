@@ -19,6 +19,7 @@ EMBER_DISCOVERY_ACTIVE_NODE_ID = 0xFFFC
 async def _backup(ezsp):
     # (status,) = await ezsp.networkInit()
     # assert status == t.EmberStatus.SUCCESS
+    LOGGER.warning("INFO! t.EmberStatus.SUCCESS=%s",t.EmberStatus.SUCCESS)
 
     (status, node_type, network) = await ezsp.getNetworkParameters()
     assert status == t.EmberStatus.SUCCESS
