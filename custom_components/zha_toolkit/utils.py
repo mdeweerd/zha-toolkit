@@ -51,6 +51,15 @@ def get_radiotype(app):
     return RadioType.UNKNOWN
 
 
+def get_radio(app):
+    if hasattr(app, "_znp"):
+        return app._znp
+    if hasattr(app, "_ezsp"):
+        return app._ezsp
+    LOGGER.debug("Type recognition for '%s' not implemented", type(app))
+    return RadioType.UNKNOWN
+
+
 # Get zigbee IEEE address (EUI64) for the reference.
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
