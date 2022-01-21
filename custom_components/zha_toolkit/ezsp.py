@@ -113,9 +113,9 @@ async def get_keys(app, listener, ieee, cmd, data, service, params={}, event_dat
     event_data["result"] = result
     for idx in result:
         LOGGER.info("EZSP %s key: %s", idx, result[idx])
-    _, _, params = await app._ezsp.getNetworkParameters()
-    LOGGER.info("Current network: %s", params)
-    event_data["network"] = params
+    _, _, nwkParams = await app._ezsp.getNetworkParameters()
+    LOGGER.info("Current network: %s", nwkParams)
+    event_data["network"] = nwkParams
 
 
 async def add_transient_key(
