@@ -113,7 +113,7 @@ async def flood_parent_annce(
 
     flooder_task = asyncio.create_task(_flood_with_parent_annce(app))
     event_data["task"] = flooder_task
-    setattr(app, "flooder_task", flooder_task)
+    app.flooder_task = flooder_task
 
 
 async def _flood_with_parent_annce(app):
