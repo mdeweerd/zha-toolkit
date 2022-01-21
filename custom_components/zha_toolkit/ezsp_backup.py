@@ -1,9 +1,6 @@
 # Code from https://raw.githubusercontent.com/puddly/bellows/puddly/open-coordinator-backup/bellows/cli/backup.py
 # slightly adapted
 #
-# License for this part of the code:
-#
-#   GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 
 import logging
 
@@ -61,8 +58,10 @@ async def _backup(ezsp):
     keys = {}
 
     for idx in range(0, 192):
-        LOGGER.debug("Getting key index %s", idx)
         (status, key_struct) = await ezsp.getKeyTableEntry(idx)
+        LOGGER.debug(
+            "Got key at index %s status: %s key_struct: %s", idx, status, key_struct
+        )
 
         if status == t.EmberStatus.SUCCESS:
             keys[key_struct.partnerEUI64] = key_struct
