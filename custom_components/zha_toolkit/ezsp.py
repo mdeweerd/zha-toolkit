@@ -1,5 +1,6 @@
 import binascii
 import logging
+import importlib
 
 from zigpy import types as t
 import zigpy.zdo.types
@@ -290,6 +291,8 @@ async def ezsp_backup(
     from . import ezsp_backup
     import os
     import json
+
+    importlib.reload(ezsp_backup)
 
     result = await ezsp_backup._backup(app._ezsp)
 
