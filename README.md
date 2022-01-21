@@ -437,7 +437,7 @@ Also accepts command arguments.
 
 Note:  
 There is also the official core service `zha.issue_zigbee_cluster_command`.  You may want to use that instead if it suits your needs.  
-The `zha_toolkit` version allows lists of bytes as arg paramters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a `custom_component`.
+The `zha_toolkit` version allows lists of bytes as arg parameters, and has a hack to allow "Add Scene".  It is also easier to adapt than the core that has though release procedures and is not as easily modifiable as a `custom_component`.
 
 
 ```yaml
