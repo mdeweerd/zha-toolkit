@@ -11,5 +11,5 @@
     "issue_tracker": "https://github.com/mdeweerd/zha-toolkit/issues",
     "name": "ZHA Toolkit Service",
     "requirements": [],
-    "version": "dev"
+    "version": "0.0.0"
 }
