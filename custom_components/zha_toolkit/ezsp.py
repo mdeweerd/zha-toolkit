@@ -65,7 +65,7 @@ async def get_token(app, listener, ieee, cmd, data, service, params={}, event_da
         LOGGER.info(f"Getting token {token} status: {res[0]}")
         LOGGER.info(f"Getting token {token} data: {res[1]}")
         LOGGER.info(
-            (f"Getting token {token} data: " "{binascii.hexlify(res[1].serialize())}")
+            f"Getting token {token} data: " "{binascii.hexlify(res[1].serialize())}"
         )
 
 
@@ -94,7 +94,7 @@ async def get_keys(app, listener, ieee, cmd, data, service, params={}, event_dat
         if status == app._ezsp.types.EmberStatus.SUCCESS:
             result[idx] = key_struct
             if key_struct.partnerEUI64 not in app.devices:
-                warn = "Partner %s for key %s is not present" % (
+                warn = "Partner {} for key {} is not present".format(
                     key_struct.partnerEUI64,
                     idx,
                 )
@@ -105,7 +105,7 @@ async def get_keys(app, listener, ieee, cmd, data, service, params={}, event_dat
         elif status == app._ezsp.types.EmberStatus.INDEX_OUT_OF_RANGE:
             break
         else:
-            warn = "No key at %s idx: %s" % (idx, status)
+            warn = f"No key at {idx} idx: {status}"
             warnings.append(warn)
             LOGGER.warning(warn)
 
@@ -202,7 +202,7 @@ async def ezsp_backup_legacy(
     app, listener, ieee, cmd, data, service, params={}, event_data={}
 ):
     if u.get_radiotype(app) != u.RadioType.EZSP:
-        msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
+        msg = f"'{cmd}' is only available for BELLOWS/EZSP"
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -283,7 +283,7 @@ async def ezsp_backup(
     app, listener, ieee, cmd, data, service, params={}, event_data={}
 ):
     if u.get_radiotype(app) != u.RadioType.EZSP:
-        msg = "'{}' is only available for BELLOWS/EZSP".format(cmd)
+        msg = f"'{cmd}' is only available for BELLOWS/EZSP"
         LOGGER.debug(msg)
         raise Exception(msg)
 

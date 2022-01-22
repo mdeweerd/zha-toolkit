@@ -39,7 +39,7 @@ async def add_group(app, listener, ieee, cmd, data, service, params={}, event_da
         if ep_id == 0:
             continue
         try:
-            res = await ep.groups.add(group_id, "group {}".format(group_id))
+            res = await ep.groups.add(group_id, f"group {group_id}")
             LOGGER.debug("0x%04x: Setting group 0x%04x: %s", src_dev.nwk, group_id, res)
         except AttributeError:
             LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
@@ -99,7 +99,7 @@ async def add_to_group(
 
     grp_id = u.str2int(data)
     LOGGER.debug("Subscribing EZSP to %s group: %s", grp_id, service)
-    res = await dev.add_to_group(grp_id, "Group {}".format(data))
+    res = await dev.add_to_group(grp_id, f"Group {data}")
     LOGGER.info("Subscribed NCP to %s group: %s", grp_id, res)
 
 

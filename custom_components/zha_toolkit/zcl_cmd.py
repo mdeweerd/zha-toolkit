@@ -82,7 +82,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
     dev = app.get_device(ieee=ieee)
 
     if ep_id not in dev.endpoints:
-        msg = "Endpoint %s not found for '%s'" % (ep_id, repr(ieee))
+        msg = f"Endpoint {ep_id} not found for '{repr(ieee)}'"
         LOGGER.error(msg)
         raise Exception(msg)
 

@@ -16,7 +16,7 @@ async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, par
     LOGGER.error("ZNP_BACKUP")
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "{} is only for ZNP".format(cmd)
+        msg = f"{cmd} is only for ZNP"
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -55,7 +55,7 @@ async def znp_restore(
     """Restore ZNP network information."""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'{}' is only available for ZNP".format(cmd)
+        msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -91,7 +91,7 @@ async def znp_restore(
     event_data["restore_file"] = fname
 
     # Read backup file
-    f = open(fname, "r")
+    f = open(fname)
     backup = json.load(f)
     f.close()
 
@@ -128,7 +128,7 @@ async def znp_nvram_backup(
     """Save ZNP NVRAM to file for backup"""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'{}' is only available for ZNP".format(cmd)
+        msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -164,7 +164,7 @@ async def znp_nvram_restore(
     """Restore ZNP NVRAM from file"""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'{}' is only available for ZNP".format(cmd)
+        msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise Exception(msg)
 
@@ -207,7 +207,7 @@ async def znp_nvram_reset(
     """Reset ZNP NVRAM"""
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
-        msg = "'{}' is only available for ZNP".format(cmd)
+        msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise Exception(msg)
 

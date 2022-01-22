@@ -76,7 +76,7 @@ async def async_setup(hass, config):
         if ieee is not None:
             LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
 
-        mod_path = "custom_components.{}".format(DOMAIN)
+        mod_path = f"custom_components.{DOMAIN}"
         try:
             module = importlib.import_module(mod_path)
         except ImportError as err:
@@ -89,7 +89,7 @@ async def async_setup(hass, config):
         handler_exception = None
         try:
             if cmd:
-                handler = getattr(module, "command_handler_{}".format(cmd))
+                handler = getattr(module, f"command_handler_{cmd}")
                 await handler(
                     zha_gw.application_controller,
                     zha_gw,
@@ -169,7 +169,7 @@ async def command_handler_handle_join(
             dev = app.get_device(ieee=ieee)
             data = dev.nwk
             if data is None:
-                raise Exception("Missing NWK for device '{}'".format(ieee))
+                raise Exception(f"Missing NWK for device '{ieee}'")
             LOGGER.debug("Using NWK '%s' for '%s'", data, ieee)
         except Exception as e:
             LOGGER.debug(

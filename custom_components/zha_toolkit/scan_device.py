@@ -21,7 +21,7 @@ def wrapper(cmd, *args, **kwargs):
 
 
 async def scan_results(device):
-    result = {"ieee": str(device.ieee), "nwk": "0x{:04x}".format(device.nwk)}
+    result = {"ieee": str(device.ieee), "nwk": f"0x{device.nwk:04x}"}
 
     LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
 
@@ -34,8 +34,8 @@ async def scan_results(device):
         result["manufacturer"] = ep.manufacturer
         endpoint = {
             "id": epid,
-            "device_type": "0x{:04x}".format(ep.device_type),
-            "profile": "0x{:04x}".format(ep.profile_id),
+            "device_type": f"0x{ep.device_type:04x}",
+            "profile": f"0x{ep.profile_id:04x}",
         }
         if epid != 242:
             endpoint.update(await scan_endpoint(ep))
@@ -54,7 +54,7 @@ async def scan_endpoint(ep):
                 cluster.cluster_id, cluster.ep_attribute
             )
         )
-        key = "0x{:04x}".format(cluster.cluster_id)
+        key = f"0x{cluster.cluster_id:04x}"
         clusters[key] = await scan_cluster(cluster, is_server=True)
     result["in_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
 
@@ -65,7 +65,7 @@ async def scan_endpoint(ep):
                 cluster.cluster_id, cluster.ep_attribute
             )
         )
-        key = "0x{:04x}".format(cluster.cluster_id)
+        key = f"0x{cluster.cluster_id:04x}"
         clusters[key] = await scan_cluster(cluster, is_server=True)
     result["out_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
     return result
@@ -79,7 +79,7 @@ async def scan_cluster(cluster, is_server=True):
         cmds_rec = "commands_generated"
         cmds_gen = "commands_received"
     return {
-        "cluster_id": "0x{:04x}".format(cluster.cluster_id),
+        "cluster_id": f"0x{cluster.cluster_id:04x}",
         "name": cluster.ep_attribute,
         "attributes": await discover_attributes_extended(cluster),
         cmds_rec: await discover_commands_received(cluster, is_server),
@@ -129,14 +129,14 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             if attr_type:
                 attr_type = [attr_type[1].__name__, attr_type[2].__name__]
             else:
-                attr_type = "0x{:02x}".format(attr_rec.datatype)
+                attr_type = f"0x{attr_rec.datatype:02x}"
             try:
                 access = foundation.AttributeAccessControl(attr_rec.acl).name
             except ValueError:
                 access = "undefined"
 
             result[attr_id] = {
-                "attribute_id": "0x{:04x}".format(attr_id),
+                "attribute_id": f"0x{attr_id:04x}",
                 "attribute_name": attr_name,
                 "value_type": attr_type,
                 "access": access,
@@ -165,7 +165,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
 
-    return {"0x{:04x}".format(a_id): result[a_id] for a_id in sorted(result)}
+    return {f"0x{a_id:04x}": result[a_id] for a_id in sorted(result)}
 
 
 async def discover_commands_received(cluster, is_server, manufacturer=None):
@@ -201,9 +201,9 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             cmd_name, cmd_args, _ = cmd_data
             if not isinstance(cmd_args, str):
                 cmd_args = [arg.__name__ for arg in cmd_args]
-            key = "0x{:02x}".format(cmd_id)
+            key = f"0x{cmd_id:02x}"
             result[key] = {
-                "command_id": "0x{:02x}".format(cmd_id),
+                "command_id": f"0x{cmd_id:02x}",
                 "command_name": cmd_name,
                 "command_arguments": cmd_args,
             }
@@ -245,9 +245,9 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             cmd_name, cmd_args, _ = cmd_data
             if not isinstance(cmd_args, str):
                 cmd_args = [arg.__name__ for arg in cmd_args]
-            key = "0x{:02x}".format(cmd_id)
+            key = f"0x{cmd_id:02x}"
             result[key] = {
-                "command_id": "0x{:02x}".format(cmd_id),
+                "command_id": f"0x{cmd_id:02x}",
                 "command_Name": cmd_name,
                 "command_args": cmd_args,
             }
@@ -272,11 +272,11 @@ async def scan_device(
     model = scan.get("model")
     manufacturer = scan.get("manufacturer")
     if model is not None and manufacturer is not None:
-        ieee_tail = "".join(["%02x" % (o,) for o in ieee[-4:]])
-        file_name = "{}_{}_{}_scan_results.txt".format(model, manufacturer, ieee_tail)
+        ieee_tail = "".join([f"{o:02x}" for o in ieee[-4:]])
+        file_name = f"{model}_{manufacturer}_{ieee_tail}_scan_results.txt"
     else:
-        ieee_tail = "".join(["%02x" % (o,) for o in ieee])
-        file_name = "{}_scan_results.txt".format(ieee_tail)
+        ieee_tail = "".join([f"{o:02x}" for o in ieee])
+        file_name = f"{ieee_tail}_scan_results.txt"
 
     conf_dir = listener._hass.config.config_dir
     scan_dir = os.path.join(conf_dir, "scans")

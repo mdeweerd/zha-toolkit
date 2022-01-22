@@ -42,8 +42,8 @@ async def _routes_and_neighbours(device, listener):
     except asyncio.TimeoutError:
         nbns = []
 
-    ieee_tail = "".join(["%02x" % (o,) for o in device.ieee])
-    file_suffix = "_{}.txt".format(ieee_tail)
+    ieee_tail = "".join([f"{o:02x}" for o in device.ieee])
+    file_suffix = f"_{ieee_tail}.txt"
 
     routes_name = os.path.join(
         listener._hass.config.config_dir, "scans", "routes" + file_suffix
@@ -115,28 +115,28 @@ async def async_get_neighbours(device):
         try:
             nei_type = NeighbourType(raw).name
         except ValueError:
-            nei_type = "undefined_0x{:02x}".format(raw)
+            nei_type = f"undefined_0x{raw:02x}"
         res["device_type"] = nei_type
 
         raw = (nbg.NeighborType >> 2) & 0x03
         try:
             rx_on = RxOnIdle(raw).name
         except ValueError:
-            rx_on = "undefined_0x{:02x}".format(raw)
+            rx_on = f"undefined_0x{raw:02x}"
         res["rx_on_when_idle"] = rx_on
 
         raw = (nbg.NeighborType >> 4) & 0x07
         try:
             relation = Relation(raw).name
         except ValueError:
-            relation = "undefined_0x{:02x}".format(raw)
+            relation = f"undefined_0x{raw:02x}"
         res["relationship"] = relation
 
         raw = nbg.PermitJoining & 0x02
         try:
             joins = PermitJoins(raw).name
         except ValueError:
-            joins = "undefined_0x{:02x}".format(raw)
+            joins = f"undefined_0x{raw:02x}"
         res["new_joins_accepted"] = joins
 
         res["depth"] = nbg.Depth
@@ -180,13 +180,13 @@ async def async_get_routes(device):
             Validation_Underway = 0x4
 
         res = {}
-        res["destination"] = "0x{:04x}".format(route.DstNWK)
-        res["next_hop"] = "0x{:04x}".format(route.NextHop)
+        res["destination"] = f"0x{route.DstNWK:04x}"
+        res["next_hop"] = f"0x{route.NextHop:04x}"
         raw = route.RouteStatus & 0x07
         try:
             cooked = RouteStatus(raw).name
         except ValueError:
-            cooked = "reserved_{:02x}".format(raw)
+            cooked = f"reserved_{raw:02x}"
         res["status"] = cooked
         res["memory_constrained"] = bool((route.RouteStatus >> 3) & 0x01)
         res["many_to_one"] = bool((route.RouteStatus >> 4) & 0x01)
