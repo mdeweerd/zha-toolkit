@@ -214,7 +214,7 @@ def extractParams(service):
         "min_interval": None,
         "max_interval": None,
         "reportable_change": None,
-        "dir": None,
+        "dir": 0,
         "manf": None,
         "tries": 1,
         "expect_reply": True,

@@ -6,10 +6,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 ERR001_PARAMETERS = "Expecting parameters for 'extra'"
-ERR002_DATA_MISSING = "Expecting 'extra' parameter '{}'"
+ERR002_DATA_MISSING = "Expecting parameter '{}'"
 ERR003_PARAMETER_MISSING = "Expecting parameter '{}'"
-ERR004_NOT_IN_CLUSTER = ("In cluster 0x%04X not found for '%s', endpoint %s",)
-ERR005_NOT_OUT_CLUSTER = ("Out cluster 0x%04X not found for '%s', endpoint %s",)
+ERR004_NOT_IN_CLUSTER = "In cluster 0x%04X not found for '%s', endpoint %s"
+ERR005_NOT_OUT_CLUSTER = "Out cluster 0x%04X not found for '%s', endpoint %s"
 
 
 async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params={}):
@@ -17,69 +17,58 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
 
     # Verify parameter presence
 
-    extra = service.data.get("extra")
-    # LOGGER.info( "Extra '%s'", extra )
-    if not isinstance(extra, dict):
-        # Fall back to parameters in 'data:' key
-        extra = service.data
-
     if ieee is None:
         msg = ERR003_PARAMETER_MISSING.format("ieee")
         LOGGER.error(msg)
         raise Exception(msg)
 
-    required_options = ["cmd", "cluster", "endpoint"]
-    for key in required_options:
-        if key not in extra:
-            msg = ERR002_DATA_MISSING.format(key)
-            LOGGER.error(msg)
-            raise Exception(msg)
+    dev = app.get_device(ieee=ieee)
+
+    # Decode endpoint
+    if params["endpoint_id"] is None or params["endpoint_id"] == "":
+        params["endpoint_id"] = u.find_endpoint(dev, params["cluster_id"])
+
+    if params["endpoint_id"] not in dev.endpoints:
+        LOGGER.error(
+            "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
+        )
+
+    if params["cluster_id"] not in dev.endpoints[params["endpoint_id"]].in_clusters:
+        LOGGER.error(
+            "Cluster 0x%04X not found for '%s', endpoint %s",
+            params["cluster_id"],
+            repr(ieee),
+            params["endpoint_id"],
+        )
 
     # Extract parameters
 
     # Endpoint to send command to
-    ep_id = u.str2int(extra["endpoint"])
+    ep_id = params["endpoint_id"]
     # Cluster to send command to
-    cluster_id = u.str2int(extra["cluster"])
+    cluster_id = params["cluster_id"]
     # The command to send
-    cmd_id = u.str2int(extra["cmd"])
+    cmd_id = params["cmd_id"]
+    if cmd_id is None:
+        raise Exception(ERR003_PARAMETER_MISSING, "cmd")
+
     # The direction (to in or out cluster)
-    dir_int = 0
-    if "dir" in extra:
-        dir_int = u.str2int(extra["dir"])
+    dir_int = params["dir"]
 
     # Get manufacturer
-    manf = None
-    if "manf" in extra:
-        manf = u.str2int(extra["manf"])
+    manf = params["manf"]
 
     # Get tries
-    tries = 1
-    if "tries" in extra:
-        tries = u.str2int(extra["tries"])
+    tries = params["tries"]
 
     # Get expect_reply
-    expect_reply = True
-    if "expect_reply" in extra:
-        expect_reply = u.str2int(extra["expect_reply"]) == 0
+    expect_reply = params["expect_reply"]
 
-    cmd_args = []
-    if "args" in extra:
-        for val in extra["args"]:
-            LOGGER.debug("cmd arg %s", val)
-            lval = u.str2int(val)
-            if isinstance(lval, list):
-                # Convert list to List of uint8_t
-                lval = t.List[t.uint8_t]([t.uint8_t(i) for i in lval])
-                # Convert list to LVList structure
-                # lval = t.LVList(lval)
-            cmd_args.append(lval)
-            LOGGER.debug("cmd converted arg %s", lval)
+    cmd_args = params["args"]
 
     # Direction 0 = Client to Server, as in protocol bit
     is_in_cluster = dir_int == 0
 
-    dev = app.get_device(ieee=ieee)
 
     if ep_id not in dev.endpoints:
         msg = f"Endpoint {ep_id} not found for '{repr(ieee)}'"
