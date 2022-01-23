@@ -69,7 +69,6 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
     # Direction 0 = Client to Server, as in protocol bit
     is_in_cluster = dir_int == 0
 
-
     if ep_id not in dev.endpoints:
         msg = f"Endpoint {ep_id} not found for '{repr(ieee)}'"
         LOGGER.error(msg)
