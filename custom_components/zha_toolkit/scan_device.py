@@ -32,7 +32,7 @@ async def scan_results(device, endpoints=None):
 
     if endpoints is None or not isinstance(endpoints, list):
         endpoints = []
-        for epid, ep in device.endpoints.items():
+        for epid, _ep in device.endpoints.items():
             endpoints.append(epid)
 
     LOGGER.debug("Endpoints %s", endpoints)
