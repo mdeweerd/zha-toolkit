@@ -204,11 +204,14 @@ and the "ieee" field is the actual IEEE address found.
 
 ## `scan_device`: Scan a device/Read all attribute values
 
-This operation will get all values for the attributes discovered
-on the device.
+This operation will discover the device attributes and read their values.
+Some values are excluded from reading, for instance Arrays as their length
+depends on the specification.
 
 The result of the scan is written to the `scan` directory located
 in the configuration directory of Home Assistant (`config/scan/*_result.txt`).
+
+The result is also added to the event data in the event['data']['scan'] field
 
 
 ```yaml
