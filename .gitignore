@@ -1,2 +1,3 @@
 __pycache__
 nwk_backup.json
+.mypy_cache
