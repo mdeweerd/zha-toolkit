@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-python@v2
       - run: pip install --upgrade pip wheel
       - run: pip install bandit black codespell flake8 flake8-2020 flake8-bugbear
@@ -25,7 +27,7 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "[Bot] lint_python - formatting updates!"
-          commit_user_name: MDW
-          commit_user_email: ian@example.com
-          commit_author: MDW - lint_python bot <mdeweerd@users.noreply.github.com>
+          # commit_user_name: MDW
+          # commit_user_email: mdeweerd@users.noreply.github.com
+          # commit_author: MDW - lint_python bot <mdeweerd@users.noreply.github.com>
 
