@@ -1,7 +1,7 @@
 {
   "name": "ZHA Toolkit - Service for advanced Zigbee Usage",
   "content_in_root": false,
-  "zip_release": false,
+  "zip_release": true,
   "render_readme": true,
   "domains": ["zha"],
   "persistent_directory": "local",
