@@ -294,5 +294,5 @@ async def scan_device(
         file_name = f"{ieee_tail}_scan_results.txt"
 
     u.write_json_to_file(
-        data, subdir="scans", fname=file_name, desc="scan results", listener=listener
+        scan, subdir="scans", fname=file_name, desc="scan results", listener=listener
     )
