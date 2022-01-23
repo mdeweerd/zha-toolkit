@@ -55,7 +55,7 @@ async def scan_results(device, endpoints=None):
                 endpoint.update(await scan_endpoint(ep))
         ep_result.append(endpoint)
 
-    result["ep_result"] = ep_result
+    result["endpoints"] = ep_result
     return result
 
 
