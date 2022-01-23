@@ -1,6 +1,9 @@
 import logging
+import os
 from enum import Enum
 from zigpy import types as t
+from homeassistant.util.json import save_json
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -166,6 +169,21 @@ def find_endpoint(dev, cluster_id):
         LOGGER.debug("Endpoint %s found for cluster '%s'", endpoint_id, cluster_id)
 
     return endpoint_id
+
+
+def write_json_to_file(data, subdir, fname, desc, listener=None):
+    if listener is None or subdir == "local":
+        base_dir = os.path.dirname(__file__)
+    else:
+        base_dir = listener._hass.config.config_dir
+
+    out_dir = os.path.join(base_dir, subdir)
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
+
+    file_name = os.path.join(out_dir, fname)
+    save_json(file_name, data)
+    LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
 
 
 # Common method to extract and convert parameters.

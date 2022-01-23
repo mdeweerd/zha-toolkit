@@ -1,11 +1,12 @@
 import asyncio
 import logging
-import os
+import re
 
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
+from zigpy import types as t
 
-from homeassistant.util.json import save_json
+from . import utils as u
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ def wrapper(cmd, *args, **kwargs):
 
 
 async def scan_results(device):
+    """Construct scan results from information available in device"""
     result = {"ieee": str(device.ieee), "nwk": f"0x{device.nwk:04x}"}
 
     LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
@@ -92,15 +94,16 @@ async def discover_attributes_extended(cluster, manufacturer=None):
 
     LOGGER.debug("Discovering attributes extended")
     result = {}
-    attr_id = 0
+    to_read = []
+    attr_id = 0  # Start discovery at attr_id 0
     done = False
 
-    while not done:
+    while not done:  # Repeat until all attributes are discovered or timeout
         try:
             done, rsp = await wrapper(
                 cluster.discover_attributes_extended,
-                attr_id,
-                16,
+                attr_id,  # Start attribute identifier
+                16,       # Number of attributes to discover in this request
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.4)
@@ -120,18 +123,23 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 attr_id,
             )
             break
-        for attr_rec in rsp:
+        LOGGER.debug("Cluster %s attr_rec: %s", cluster.cluster_id, rsp)
+        for attr_rec in rsp:  # Get attribute information from response
             attr_id = attr_rec.attrid
             attr_name = cluster.attributes.get(
                 attr_rec.attrid, (str(attr_rec.attrid), None)
             )[0]
             attr_type = foundation.DATA_TYPES.get(attr_rec.datatype)
+            access_acl = t.uint8_t(attr_rec.acl)
+
+            if attr_rec.datatype not in [ 0x48 ] and (access_acl & foundation.AttributeAccessControl.READ!=0):
+                to_read.append(attr_id)
             if attr_type:
                 attr_type = [attr_type[1].__name__, attr_type[2].__name__]
             else:
                 attr_type = f"0x{attr_rec.datatype:02x}"
             try:
-                access = foundation.AttributeAccessControl(attr_rec.acl).name
+                access = re.sub('^.*\.', "", str(foundation.AttributeAccessControl(access_acl)))
             except ValueError:
                 access = "undefined"
 
@@ -140,15 +148,16 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 "attribute_name": attr_name,
                 "value_type": attr_type,
                 "access": access,
+                "access_acl": access_acl,
             }
             attr_id += 1
         await asyncio.sleep(0.2)
 
-    to_read = list(result.keys())
     LOGGER.debug("Reading attrs: %s", to_read)
     chunk, to_read = to_read[:4], to_read[4:]
     while chunk:
         try:
+            chunk = sorted(chunk)
             success, failed = await read_attr(cluster, chunk)
             LOGGER.debug("Reading attr success: %s, failed %s", success, failed)
             for attr_id, value in success.items():
@@ -174,15 +183,15 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
     LOGGER.debug("Discovering commands received")
     direction = "received" if is_server else "generated"
     result = {}
-    cmd_id = 0
+    cmd_id = 0  # Discover commands starting from 0
     done = False
 
     while not done:
         try:
             done, rsp = await wrapper(
                 cluster.discover_commands_received,
-                cmd_id,
-                16,
+                cmd_id,  # Start index of commands to discover
+                16,      # Number of commands to discover
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
@@ -218,15 +227,15 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
     LOGGER.debug("Discovering commands generated")
     direction = "generated" if is_server else "received"
     result = {}
-    cmd_id = 0
+    cmd_id = 0   # Initial index of commands to discover
     done = False
 
     while not done:
         try:
             done, rsp = await wrapper(
                 cluster.discover_commands_generated,
-                cmd_id,
-                16,
+                cmd_id,  # Start index of commands to discover
+                16,      # Number of commands to discover this run
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
@@ -248,7 +257,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             key = f"0x{cmd_id:02x}"
             result[key] = {
                 "command_id": f"0x{cmd_id:02x}",
-                "command_Name": cmd_name,
+                "command_name": cmd_name,
                 "command_args": cmd_args,
             }
             cmd_id += 1
@@ -269,6 +278,8 @@ async def scan_device(
 
     scan = await scan_results(device)
 
+    event_data['scan'] = scan
+
     model = scan.get("model")
     manufacturer = scan.get("manufacturer")
     if model is not None and manufacturer is not None:
@@ -278,10 +289,5 @@ async def scan_device(
         ieee_tail = "".join([f"{o:02x}" for o in ieee])
         file_name = f"{ieee_tail}_scan_results.txt"
 
-    conf_dir = listener._hass.config.config_dir
-    scan_dir = os.path.join(conf_dir, "scans")
-    if not os.path.isdir(scan_dir):
-        os.mkdir(scan_dir)
-    file_name = os.path.join(scan_dir, file_name)
-    save_json(file_name, scan)
-    LOGGER.debug("Finished writing scan results in '%s'", file_name)
+    u.write_json_to_file(data, subdir="scans", fname=file_name, desc="scan results",
+                       listener=listener)

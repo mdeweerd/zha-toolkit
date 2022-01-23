@@ -7,8 +7,6 @@ import logging
 # from zigpy.exceptions import DeliveryError
 # from zigpy.util import retryable
 
-# from homeassistant.util.json import save_json
-
 from . import utils as u
 
 LOGGER = logging.getLogger(__name__)
