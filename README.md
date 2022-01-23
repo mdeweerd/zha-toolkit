@@ -219,6 +219,10 @@ service: zha_toolkit.execute
 data:
   ieee: 00:12:4b:00:22:08:ed:1a
   command: scan_device
+  # Optional: endpoint to scan, when missing: all known endpoints
+  # endpoint: 1
+  # Optional: endpoints to scan, when missing: all known endpoints
+  endpoint: [1,2]
 ```
 
 Scan using the entity name:

@@ -21,14 +21,20 @@ def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 
 
-async def scan_results(device):
+async def scan_results(device, endpoints=None):
     """Construct scan results from information available in device"""
     result = {"ieee": str(device.ieee), "nwk": f"0x{device.nwk:04x}"}
 
     LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
 
-    endpoints = []
-    for epid, ep in device.endpoints.items():
+    if endpoints is not None and endpoint.isnumeric():
+       endpoints=[endpoint] 
+
+    if endpoints is None or not isinstance(endpoints,list):
+        endpoints = device.endpoints.items()
+
+    ep_result = []
+    for epid, ep in endpoints:
         if epid == 0:
             continue
         LOGGER.debug("scanning endpoint #%i", epid)
@@ -41,9 +47,9 @@ async def scan_results(device):
         }
         if epid != 242:
             endpoint.update(await scan_endpoint(ep))
-        endpoints.append(endpoint)
+        ep_result.append(endpoint)
 
-    result["endpoints"] = endpoints
+    result["ep_result"] = ep_result
     return result
 
 
