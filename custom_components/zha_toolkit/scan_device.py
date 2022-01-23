@@ -103,7 +103,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             done, rsp = await wrapper(
                 cluster.discover_attributes_extended,
                 attr_id,  # Start attribute identifier
-                16,       # Number of attributes to discover in this request
+                16,  # Number of attributes to discover in this request
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.4)
@@ -132,14 +132,18 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             attr_type = foundation.DATA_TYPES.get(attr_rec.datatype)
             access_acl = t.uint8_t(attr_rec.acl)
 
-            if attr_rec.datatype not in [ 0x48 ] and (access_acl & foundation.AttributeAccessControl.READ!=0):
+            if attr_rec.datatype not in [0x48] and (
+                access_acl & foundation.AttributeAccessControl.READ != 0
+            ):
                 to_read.append(attr_id)
             if attr_type:
                 attr_type = [attr_type[1].__name__, attr_type[2].__name__]
             else:
                 attr_type = f"0x{attr_rec.datatype:02x}"
             try:
-                access = re.sub('^.*\.', "", str(foundation.AttributeAccessControl(access_acl)))
+                access = re.sub(
+                    "^.*\.", "", str(foundation.AttributeAccessControl(access_acl))
+                )
             except ValueError:
                 access = "undefined"
 
@@ -191,7 +195,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             done, rsp = await wrapper(
                 cluster.discover_commands_received,
                 cmd_id,  # Start index of commands to discover
-                16,      # Number of commands to discover
+                16,  # Number of commands to discover
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
@@ -227,7 +231,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
     LOGGER.debug("Discovering commands generated")
     direction = "generated" if is_server else "received"
     result = {}
-    cmd_id = 0   # Initial index of commands to discover
+    cmd_id = 0  # Initial index of commands to discover
     done = False
 
     while not done:
@@ -235,7 +239,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             done, rsp = await wrapper(
                 cluster.discover_commands_generated,
                 cmd_id,  # Start index of commands to discover
-                16,      # Number of commands to discover this run
+                16,  # Number of commands to discover this run
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.3)
@@ -278,7 +282,7 @@ async def scan_device(
 
     scan = await scan_results(device)
 
-    event_data['scan'] = scan
+    event_data["scan"] = scan
 
     model = scan.get("model")
     manufacturer = scan.get("manufacturer")
@@ -289,5 +293,6 @@ async def scan_device(
         ieee_tail = "".join([f"{o:02x}" for o in ieee])
         file_name = f"{ieee_tail}_scan_results.txt"
 
-    u.write_json_to_file(data, subdir="scans", fname=file_name, desc="scan results",
-                       listener=listener)
+    u.write_json_to_file(
+        data, subdir="scans", fname=file_name, desc="scan results", listener=listener
+    )

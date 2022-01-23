@@ -121,7 +121,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
                 *cmd_args,
                 manufacturer=manf,
                 expect_reply=expect_reply,
-                tries=tries
+                tries=tries,
             )
         else:
             if cluster_id not in endpoint.out_clusters:
