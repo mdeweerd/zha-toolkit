@@ -27,26 +27,32 @@ async def scan_results(device, endpoints=None):
 
     LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
 
-    if endpoints is not None and endpoint.isnumeric():
-       endpoints=[endpoint] 
+    if endpoints is not None and isinstance(endpoints, int):
+        endpoints=[endpoints] 
 
-    if endpoints is None or not isinstance(endpoints,list):
-        endpoints = device.endpoints.items()
+    if endpoints is None or not isinstance(endpoints, list):
+        endpoints = []
+        for epid, ep in device.endpoints.items():
+            endpoints.append(epid)
+
+    LOGGER.debug("Endpoints %s", endpoints)
 
     ep_result = []
-    for epid, ep in endpoints:
+    for epid in endpoints:
         if epid == 0:
             continue
         LOGGER.debug("scanning endpoint #%i", epid)
-        result["model"] = ep.model
-        result["manufacturer"] = ep.manufacturer
-        endpoint = {
-            "id": epid,
-            "device_type": f"0x{ep.device_type:04x}",
-            "profile": f"0x{ep.profile_id:04x}",
-        }
-        if epid != 242:
-            endpoint.update(await scan_endpoint(ep))
+        if epid in device.endpoints:
+            ep = device.endpoints[epid]
+            result["model"] = ep.model
+            result["manufacturer"] = ep.manufacturer
+            endpoint = {
+                "id": epid,
+                "device_type": f"0x{ep.device_type:04x}",
+                "profile": f"0x{ep.profile_id:04x}",
+            }
+            if epid != 242:
+                endpoint.update(await scan_endpoint(ep))
         ep_result.append(endpoint)
 
     result["ep_result"] = ep_result
@@ -286,7 +292,7 @@ async def scan_device(
 
     device = app.get_device(ieee)
 
-    scan = await scan_results(device)
+    scan = await scan_results(device, params["endpoint_id"])
 
     event_data["scan"] = scan
 
