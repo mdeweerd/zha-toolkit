@@ -142,7 +142,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 attr_type = f"0x{attr_rec.datatype:02x}"
             try:
                 access = re.sub(
-                    "^.*\.", "", str(foundation.AttributeAccessControl(access_acl))
+                    "^.*\\.", "", str(foundation.AttributeAccessControl(access_acl))
                 )
             except ValueError:
                 access = "undefined"
