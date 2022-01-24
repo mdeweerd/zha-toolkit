@@ -1,4 +1,5 @@
 import logging
+import inspect
 
 from . import utils as u
 
@@ -104,13 +105,21 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
                     ),
                     False,
                 )
-            await cluster.command(
-                cmd_id,
-                *cmd_args,
-                manufacturer=manf,
-                expect_reply=expect_reply,
-                tries=tries,
-            )
+            if "tries" in inspect.getfullargspec(cluster.command)[0]:
+                await cluster.command(
+                    cmd_id,
+                    *cmd_args,
+                    manufacturer=manf,
+                    expect_reply=expect_reply,
+                    tries=tries,
+                )
+            else:
+                await cluster.command(
+                    cmd_id,
+                    *cmd_args,
+                    manufacturer=manf,
+                    expect_reply=expect_reply,
+                )
         else:
             if cluster_id not in endpoint.out_clusters:
                 msg = ERR005_NOT_OUT_CLUSTER.format(cluster_id, repr(ieee), ep_id)
