@@ -309,9 +309,9 @@ async def command_handler_rejoin(
 
     # Next method is not working - rejoin is 0:
     # res = await src.zdo.request(0x0034, src.ieee, 0x01)
-    res = await src.zdo.Mgmt_Leave_req(remove_children=False, rejoin=True)
+    res = await src.zdo.leave(remove_children=False, rejoin=True)
     event_data['result'] = res
-    LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
+    LOGGER.debug("%s: leave and rejoin result: %s", src, ieee, res)
 
 
 def command_handler_get_zll_groups(*args, **kwargs):
