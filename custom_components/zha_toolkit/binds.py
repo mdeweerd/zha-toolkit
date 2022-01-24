@@ -30,6 +30,7 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
+    results = {}
     for src_cluster in src_cls:
         src_epid = None
         for ep_id, ep in src_dev.endpoints.items():
@@ -43,6 +44,8 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
                 "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
             )
             continue
+        if src_epid not in results:
+            results[src_epid] = []
         LOGGER.debug(
             "0x%04x: binding %s, ep: %s, cluster: %s",
             src_dev.nwk,
@@ -50,10 +53,16 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
             src_epid,
             src_cluster,
         )
+        bind_result = {"endpoint_id": src_epid, "cluster_id": src_cluster}
+
         res = await zdo.request(
             ZDOCmd.Bind_req, src_dev.ieee, src_epid, src_cluster, dst_addr
         )
+        bind_result["result"] = res
+        results[src_epid].append(bind_result)
         LOGGER.debug("0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res)
+
+    event_data["result"] = results
 
 
 async def unbind_group(
@@ -80,6 +89,7 @@ async def unbind_group(
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
+    results = {}
     for src_cluster in src_cls:
         src_ep = None
         for ep_id, ep in src_dev.endpoints.items():
@@ -93,6 +103,10 @@ async def unbind_group(
                 "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
             )
             continue
+
+        if src_ep not in results:
+            results[src_ep] = []
+
         LOGGER.debug(
             "0x%04x: unbinding %s, ep: %s, cluster: %s",
             src_dev.nwk,
@@ -100,10 +114,16 @@ async def unbind_group(
             src_ep,
             src_cluster,
         )
+
+        unbind_result = {"endpoint_id": src_ep, "cluster_id": src_cluster}
         res = await zdo.request(
             ZDOCmd.Unbind_req, src_dev.ieee, src_ep, src_cluster, dst_addr
         )
+        unbind_result["result"] = res
+        results[src_ep].append(unbind_result)
         LOGGER.debug("0x%04x: unbinding group 0x%04x: %s", src_dev.nwk, group_id, res)
+
+    event_data["result"] = results
 
 
 async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_data={}):
@@ -128,6 +148,8 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
     src_in_clusters = [
         0x0402,  # Temperature
     ]
+
+    results = {}
 
     for src_out_cluster in src_out_clusters:
         src_endpoints = [
@@ -228,12 +250,24 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
                 str(dst_dev.ieee),
                 dst_epid,
             )
+            if src_ep not in results:
+                results[src_ep] = []
+
+            bind_result = {
+                "src_endpoint_id": src_ep,
+                "dst_endpoint_id": dst_epid,
+                "cluster_id": src_in_cluster,
+            }
             res = await zdo.request(
                 ZDOCmd.Bind_req, src_dev.ieee, src_ep, src_in_cluster, dst_addr
             )
+            bind_result["result"] = res
+            results[src_ep] = bind_result
             LOGGER.debug(
                 "0x%04x: binding ieee %s: %s", src_dev.nwk, str(dst_dev.ieee), res
             )
+
+    event_data["result"] = results
 
 
 async def unbind_coordinator(

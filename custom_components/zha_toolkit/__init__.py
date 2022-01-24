@@ -177,7 +177,7 @@ async def command_handler_handle_join(
             )
             raise e
 
-    app.handle_join(u.str2int(data), ieee, 0)
+    event_data["result"] = app.handle_join(u.str2int(data), ieee, 0)
 
 
 async def command_handler_scan_device(*args, **kwargs):
