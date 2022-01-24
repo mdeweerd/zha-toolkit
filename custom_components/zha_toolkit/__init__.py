@@ -306,7 +306,11 @@ async def command_handler_rejoin(
         await app.permit()
     else:
         await app.permit(node=t.EUI64.convert_ieee(data))
-    res = await src.zdo.request(0x0034, src.ieee, 0x01)
+
+    # Next method is not working - rejoin is 0:
+    # res = await src.zdo.request(0x0034, src.ieee, 0x01)
+    res = await src.zdo.Mgmt_Leave_req(remove_children=False, rejoin=True)
+    event_data['result'] = res
     LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
 
 
