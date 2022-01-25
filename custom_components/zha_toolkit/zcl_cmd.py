@@ -12,7 +12,9 @@ ERR004_NOT_IN_CLUSTER = "In cluster 0x%04X not found for '%s', endpoint %s"
 ERR005_NOT_OUT_CLUSTER = "Out cluster 0x%04X not found for '%s', endpoint %s"
 
 
-async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params={}):
+async def zcl_cmd(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
     from zigpy import types as t
 
     # Verify parameter presence
@@ -33,7 +35,10 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
             "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
         )
 
-    if params["cluster_id"] not in dev.endpoints[params["endpoint_id"]].in_clusters:
+    if (
+        params["cluster_id"]
+        not in dev.endpoints[params["endpoint_id"]].in_clusters
+    ):
         LOGGER.error(
             "Cluster 0x%04X not found for '%s', endpoint %s",
             params["cluster_id"],
@@ -85,7 +90,9 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
     try:
         if is_in_cluster:
             if cluster_id not in endpoint.in_clusters:
-                msg = ERR004_NOT_IN_CLUSTER.format(cluster_id, repr(ieee), ep_id)
+                msg = ERR004_NOT_IN_CLUSTER.format(
+                    cluster_id, repr(ieee), ep_id
+                )
                 LOGGER.error(msg)
                 raise Exception(msg)
             else:
@@ -113,7 +120,9 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data={}, params
             )
         else:
             if cluster_id not in endpoint.out_clusters:
-                msg = ERR005_NOT_OUT_CLUSTER.format(cluster_id, repr(ieee), ep_id)
+                msg = ERR005_NOT_OUT_CLUSTER.format(
+                    cluster_id, repr(ieee), ep_id
+                )
                 LOGGER.error(msg)
                 raise Exception(msg)
             else:

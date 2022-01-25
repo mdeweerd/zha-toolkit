@@ -5,7 +5,9 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def get_groups(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_groups(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.debug("running 'get_groups' command: %s", service)
     if ieee is None:
         LOGGER.error("missing ieee")
@@ -18,7 +20,9 @@ async def get_groups(app, listener, ieee, cmd, data, service, params={}, event_d
             continue
         try:
             name_support = await ep.groups.read_attributes(["name_support"])
-            LOGGER.debug("Group on 0x%04x name support: %s", src_dev.nwk, name_support)
+            LOGGER.debug(
+                "Group on 0x%04x name support: %s", src_dev.nwk, name_support
+            )
 
             all_groups = await ep.groups.get_membership([])
             LOGGER.debug("Groups on 0x%04x : %s", src_dev.nwk, all_groups)
@@ -26,7 +30,9 @@ async def get_groups(app, listener, ieee, cmd, data, service, params={}, event_d
             LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
 
 
-async def add_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def add_group(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.debug("running 'add group' command: %s", service)
     if ieee is None or not data:
         return
@@ -40,7 +46,9 @@ async def add_group(app, listener, ieee, cmd, data, service, params={}, event_da
             continue
         try:
             res = await ep.groups.add(group_id, f"group {group_id}")
-            LOGGER.debug("0x%04x: Setting group 0x%04x: %s", src_dev.nwk, group_id, res)
+            LOGGER.debug(
+                "0x%04x: Setting group 0x%04x: %s", src_dev.nwk, group_id, res
+            )
         except AttributeError:
             LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
 
@@ -85,7 +93,9 @@ async def remove_all_groups(
             res = await ep.groups.remove_all()
             LOGGER.debug("0x%04x: Removing all groups: %s", src_dev.nwk, res)
         except AttributeError:
-            LOGGER.debug("0x%04x: no group cluster on endpoint #%d", src_dev.nwk, ep_id)
+            LOGGER.debug(
+                "0x%04x: no group cluster on endpoint #%d", src_dev.nwk, ep_id
+            )
 
 
 async def add_to_group(
@@ -136,9 +146,13 @@ async def get_zll_groups(
     ]
     zll_cluster = next(iter(clusters))
     if not zll_cluster:
-        LOGGER.warning("Couldn't find ZLL Commissioning cluster on %s", dev.ieee)
+        LOGGER.warning(
+            "Couldn't find ZLL Commissioning cluster on %s", dev.ieee
+        )
         return
 
     res = await zll_cluster.get_group_identifiers(0)
     groups = res[2]
-    LOGGER.debug("Get group identifiers response: %s", [g.group_id for g in groups])
+    LOGGER.debug(
+        "Get group identifiers response: %s", [g.group_id for g in groups]
+    )

@@ -10,7 +10,9 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def znp_backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
+async def znp_backup(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
     """Backup ZNP network information."""
 
     LOGGER.error("ZNP_BACKUP")
@@ -109,13 +111,17 @@ async def znp_restore(
 
     # Write back information from backup
     LOGGER.info("Writing to device")
-    await app._znp.write_network_info(network_info=network_info, node_info=node_info)
+    await app._znp.write_network_info(
+        network_info=network_info, node_info=node_info
+    )
 
     # LOGGER.debug("List of attributes/methods in app %s", dir(app))
     LOGGER.debug("List of attributes/methods in znp %s", dir(app._znp))
 
     # Shutdown znp?
-    LOGGER.info("Write done, call pre_shutdown().  Restart the device/HA after this.")
+    LOGGER.info(
+        "Write done, call pre_shutdown().  Restart the device/HA after this."
+    )
     await app._znp.pre_shutdown()
     LOGGER.info("pre_shutdown() Done.")
 
@@ -226,7 +232,7 @@ async def znp_nvram_reset(
     await nvram_reset(app._znp)
 
     # Shutdown znp?
-    # LOGGER.info("Write done, call pre_shutdown(). Restart the device/HA after this.")
+    # LOGGER.info("Call pre_shutdown(). Restart the device/HA after this.")
     # await app._znp.pre_shutdown()
     # LOGGER.info("pre_shutdown() Done.")
 

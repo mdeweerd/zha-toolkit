@@ -7,7 +7,9 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def bind_group(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
 
@@ -41,7 +43,9 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
                 break
         if not src_epid:
             LOGGER.debug(
-                "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
+                "0x%04x: skipping %s cluster as non present",
+                src_dev.nwk,
+                src_cluster,
             )
             continue
         if src_epid not in results:
@@ -60,7 +64,9 @@ async def bind_group(app, listener, ieee, cmd, data, service, params={}, event_d
         )
         bind_result["result"] = res
         results[src_epid].append(bind_result)
-        LOGGER.debug("0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res)
+        LOGGER.debug(
+            "0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res
+        )
 
     event_data["result"] = results
 
@@ -100,7 +106,9 @@ async def unbind_group(
                 break
         if not src_ep:
             LOGGER.debug(
-                "0x%04x: skipping %s cluster as non present", src_dev.nwk, src_cluster
+                "0x%04x: skipping %s cluster as non present",
+                src_dev.nwk,
+                src_cluster,
             )
             continue
 
@@ -121,12 +129,16 @@ async def unbind_group(
         )
         unbind_result["result"] = res
         results[src_ep].append(unbind_result)
-        LOGGER.debug("0x%04x: unbinding group 0x%04x: %s", src_dev.nwk, group_id, res)
+        LOGGER.debug(
+            "0x%04x: unbinding group 0x%04x: %s", src_dev.nwk, group_id, res
+        )
 
     event_data["result"] = results
 
 
-async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def bind_ieee(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
 
@@ -198,10 +210,17 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
                 dst_epid,
             )
             res = await zdo.request(
-                ZDOCmd.Bind_req, src_dev.ieee, src_ep, src_out_cluster, dst_addr
+                ZDOCmd.Bind_req,
+                src_dev.ieee,
+                src_ep,
+                src_out_cluster,
+                dst_addr,
             )
             LOGGER.debug(
-                "0x%04x: binding ieee %s: %s", src_dev.nwk, str(dst_dev.ieee), res
+                "0x%04x: binding ieee %s: %s",
+                src_dev.nwk,
+                str(dst_dev.ieee),
+                res,
             )
 
     for src_in_cluster in src_in_clusters:
@@ -264,7 +283,10 @@ async def bind_ieee(app, listener, ieee, cmd, data, service, params={}, event_da
             bind_result["result"] = res
             results[src_ep] = bind_result
             LOGGER.debug(
-                "0x%04x: binding ieee %s: %s", src_dev.nwk, str(dst_dev.ieee), res
+                "0x%04x: binding ieee %s: %s",
+                src_dev.nwk,
+                str(dst_dev.ieee),
+                res,
             )
 
     event_data["result"] = results
@@ -285,7 +307,12 @@ async def unbind_coordinator(
         if not ep_id or cluster_id not in ep.out_clusters:
             continue
         LOGGER.debug(
-            "0x%04x: unbinding ep: %s, cluster: %s", src_dev.nwk, ep_id, cluster_id
+            "0x%04x: unbinding ep: %s, cluster: %s",
+            src_dev.nwk,
+            ep_id,
+            cluster_id,
         )
         res = await ep.out_clusters[cluster_id].unbind()
-        LOGGER.debug("0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res)
+        LOGGER.debug(
+            "0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res
+        )

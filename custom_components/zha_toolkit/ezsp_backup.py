@@ -1,4 +1,5 @@
-# Code from https://raw.githubusercontent.com/puddly/bellows/puddly/open-coordinator-backup/bellows/cli/backup.py
+# Code from
+# https://raw.githubusercontent.com/puddly/bellows/puddly/open-coordinator-backup/bellows/cli/backup.py
 # slightly adapted
 #
 
@@ -26,7 +27,9 @@ async def _backup(ezsp):
 
     (ieee,) = await ezsp.getEui64()
 
-    (status, nwk_key) = await ezsp.getKey(ezsp.types.EmberKeyType.CURRENT_NETWORK_KEY)
+    (status, nwk_key) = await ezsp.getKey(
+        ezsp.types.EmberKeyType.CURRENT_NETWORK_KEY
+    )
     assert status == t.EmberStatus.SUCCESS
 
     (status, security_level) = await ezsp.getConfigurationValue(
@@ -34,7 +37,9 @@ async def _backup(ezsp):
     )
     assert status == t.EmberStatus.SUCCESS
 
-    (status, tclk) = await ezsp.getKey(ezsp.types.EmberKeyType.TRUST_CENTER_LINK_KEY)
+    (status, tclk) = await ezsp.getKey(
+        ezsp.types.EmberKeyType.TRUST_CENTER_LINK_KEY
+    )
     assert status == t.EmberStatus.SUCCESS
 
     addresses = {}
@@ -49,7 +54,9 @@ async def _backup(ezsp):
             LOGGER.warning("NWK address for %s is unknown!", eui64)
             continue
         elif nwk == EMBER_DISCOVERY_ACTIVE_NODE_ID:
-            LOGGER.warning("NWK address discovery for %s is currently ongoing", eui64)
+            LOGGER.warning(
+                "NWK address discovery for %s is currently ongoing", eui64
+            )
             continue
 
         LOGGER.debug("NWK for %s is %s", eui64, nwk)
@@ -60,7 +67,10 @@ async def _backup(ezsp):
     for idx in range(0, 192):
         (status, key_struct) = await ezsp.getKeyTableEntry(idx)
         LOGGER.debug(
-            "Got key at index %s status: %s key_struct: %s", idx, status, key_struct
+            "Got key at index %s status: %s key_struct: %s",
+            idx,
+            status,
+            key_struct,
         )
 
         if status == t.EmberStatus.SUCCESS:

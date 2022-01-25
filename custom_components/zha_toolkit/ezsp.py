@@ -33,7 +33,9 @@ async def set_channel(
 
     status, _, network_params = await app._ezsp.getNetworkParameters()
     if status != bellows.types.EmberStatus.SUCCESS:
-        msg = "Couldn't get network parameters, abort channel change: %s" % (status)
+        msg = "Couldn't get network parameters, abort channel change: %s" % (
+            status
+        )
         event_data["errors"].append(msg)
         LOGGER.error(msg)
         return
@@ -54,22 +56,30 @@ async def set_channel(
     LOGGER.info("Set channel status: %s", res)
 
 
-async def get_token(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_token(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     token = t.uint8_t(data)
     event_data["tokens_info"] = {}
     for token in range(0, 31):
         LOGGER.info(f"Getting {token} token...")
         res = await app._ezsp.getToken(token)
-        tkInfo = {"status": res[0], "data": binascii.hexlify(res[1].serialize())}
+        tkInfo = {
+            "status": res[0],
+            "data": binascii.hexlify(res[1].serialize()),
+        }
         event_data["tokens_info"][token] = tkInfo
         LOGGER.info(f"Getting token {token} status: {res[0]}")
         LOGGER.info(f"Getting token {token} data: {res[1]}")
         LOGGER.info(
-            f"Getting token {token} data: " "{binascii.hexlify(res[1].serialize())}"
+            f"Getting token {token} data: "
+            "{binascii.hexlify(res[1].serialize())}"
         )
 
 
-async def start_mfg(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def start_mfg(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.info("Starting mfg lib")
     res = await app._ezsp.mfglibStart(True)
     LOGGER.info("starting mfg lib result: %s", res)
@@ -82,7 +92,9 @@ async def start_mfg(app, listener, ieee, cmd, data, service, params={}, event_da
     LOGGER.info("mfg lib change channel: %s", res)
 
 
-async def get_keys(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_keys(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.info("getting all keys")
     result = {}
     erase = True if data is not None and data else False
@@ -143,17 +155,23 @@ async def get_ieee_by_nwk(
     event_data["status"] = status
 
 
-async def get_policy(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_policy(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     policy = int(data)
 
     LOGGER.info("Getting EZSP %s policy id", policy)
     status, value = await app._ezsp.getPolicy(policy)
-    LOGGER.debug("policy: %s, value: %s", app._ezsp.types.EzspPolicyId(policy), value)
+    LOGGER.debug(
+        "policy: %s, value: %s", app._ezsp.types.EzspPolicyId(policy), value
+    )
     event_data["policy"] = repr(app._ezsp.types.EzspPolicyId(policy))
     event_data["policy_value"] = repr(value)
 
 
-async def clear_keys(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def clear_keys(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.info("Clear key table")
     (status,) = await app._ezsp.clearKeyTable()
     LOGGER.info("Cleared key table: %s", status)
@@ -176,7 +194,9 @@ async def get_config_value(
     LOGGER.info("%s = %s", cfg_id.name, value)
 
 
-async def get_value(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_value(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     if data is None:
         LOGGER.error("Need EZSP value id")
         return
@@ -196,7 +216,8 @@ async def get_value(app, listener, ieee, cmd, data, service, params={}, event_da
 #
 # See https://github.com/zigpy/bellows/tree/dev/bellows/cli
 #
-# Code essentially from https://github.com/zigpy/bellows/blob/dev/bellows/cli/backup.py
+# Code essentially from
+# https://github.com/zigpy/bellows/blob/dev/bellows/cli/backup.py
 #
 async def ezsp_backup_legacy(
     app, listener, ieee, cmd, data, service, params={}, event_data={}

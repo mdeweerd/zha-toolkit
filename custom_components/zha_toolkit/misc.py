@@ -8,7 +8,9 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def get_routes(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def get_routes(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     LOGGER.debug("getting routes command: %s", service)
 
     for dev in app.devices.values():
@@ -21,7 +23,9 @@ async def get_routes(app, listener, ieee, cmd, data, service, params={}, event_d
     LOGGER.debug("finished device get_routes")
 
 
-async def backup(app, listener, ieee, cmd, data, service, event_data={}, params={}):
+async def backup(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
     """Backup Coordinator Configuration."""
 
     radio_type = u.get_radiotype(app)
@@ -63,7 +67,9 @@ async def backup(app, listener, ieee, cmd, data, service, event_data={}, params=
             params=params,
         )
     else:
-        raise Exception("Radio type %s not supported for backup" % (radio_type))
+        raise Exception(
+            "Radio type %s not supported for backup" % (radio_type)
+        )
 
 
 async def handle_join(
@@ -87,7 +93,8 @@ async def handle_join(
             LOGGER.debug("Using NWK '%s' for '%s'", data, ieee)
         except Exception as e:
             LOGGER.debug(
-                "Device '%s' not found in device table, provide NWK address", ieee
+                "Device '%s' not found in device table, provide NWK address",
+                ieee,
             )
             raise e
 

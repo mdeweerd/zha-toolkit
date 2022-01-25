@@ -11,12 +11,19 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def leave(app, listener, ieee, cmd, data, service, event_data={}, params={}):
+async def leave(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
     if ieee is None or not data:
-        LOGGER.warning("Incorrect parameters for 'zdo.leave' command: %s", service)
+        LOGGER.warning(
+            "Incorrect parameters for 'zdo.leave' command: %s", service
+        )
         return
     LOGGER.debug(
-        "running 'leave' command. Telling 0x%s to remove %s: %s", data, ieee, service
+        "running 'leave' command. Telling 0x%s to remove %s: %s",
+        data,
+        ieee,
+        service,
     )
 
     parent = await u.get_device(app, listener, data)
@@ -26,9 +33,13 @@ async def leave(app, listener, ieee, cmd, data, service, event_data={}, params={
     LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", parent.nwk, res)
 
 
-async def ieee_ping(app, listener, ieee, cmd, data, service, event_data={}, params={}):
+async def ieee_ping(
+    app, listener, ieee, cmd, data, service, event_data={}, params={}
+):
     if ieee is None:
-        LOGGER.warning("Incorrect parameters for 'ieee_ping' command: %s", service)
+        LOGGER.warning(
+            "Incorrect parameters for 'ieee_ping' command: %s", service
+        )
         return
 
     # The device is the parent device
@@ -36,7 +47,9 @@ async def ieee_ping(app, listener, ieee, cmd, data, service, event_data={}, para
 
     LOGGER.debug("running 'ieee_ping' command to 0x%s", dev.nwk)
 
-    res = await dev.zdo.request(zdo_t.ZDOCmd.IEEE_addr_req, dev.nwk, 0x00, 0x00)
+    res = await dev.zdo.request(
+        zdo_t.ZDOCmd.IEEE_addr_req, dev.nwk, 0x00, 0x00
+    )
     event_data["result_ping"] = res
     LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)
 
@@ -48,8 +61,13 @@ async def join_with_code(
 
     node = ieee  # Was: t.EUI64.convert("04:cf:8c:df:3c:75:e1:e7")
 
-    # TODO: add 'code' to parameters
-    code = b"\xA8\x16\x92\x7F\xB1\x9B\x78\x55\xC1\xD7\x76\x0D\x5C\xAD\x63\x7F\x69\xCC"
+    # Original code:
+    #
+    # code = (
+    #   b"\xA8\x16\x92\x7F\xB1\x9B\x78\x55\xC1"
+    #    + b"\xD7\x76\x0D\x5C\xAD\x63\x7F\x69\xCC"
+    # )
+    code = params["code"]
     res = await app.permit_with_key(node, code, 60)
     link_key = bt.EmberKeyData(b"ZigBeeAlliance09")
     res = await app._ezsp.addTransientLinkKey(node, link_key)

@@ -55,7 +55,9 @@ async def _routes_and_neighbours(device, listener):
     )
     save_json(neighbours_name, nbns)
 
-    LOGGER.debug("Wrote scan results to '%s' and '%s'", routes_name, neighbours_name)
+    LOGGER.debug(
+        "Wrote scan results to '%s' and '%s'", routes_name, neighbours_name
+    )
 
 
 async def all_routes_and_neighbours(
@@ -149,10 +151,15 @@ async def async_get_neighbours(device):
     while True:
         status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Lqi_req, idx)
         LOGGER.debug(
-            "%s: neighbor request Status: %s. Response: %r", device.ieee, status, val
+            "%s: neighbor request Status: %s. Response: %r",
+            device.ieee,
+            status,
+            val,
         )
         if zdo_t.Status.SUCCESS != status:
-            LOGGER.debug("%s: device oes not support 'Mgmt_Lqi_req'", device.ieee)
+            LOGGER.debug(
+                "%s: device oes not support 'Mgmt_Lqi_req'", device.ieee
+            )
             break
 
         neighbors = val.NeighborTableList
@@ -201,7 +208,9 @@ async def async_get_routes(device):
             "%s: route request Status:%s. Routes: %r", device.ieee, status, val
         )
         if zdo_t.Status.SUCCESS != status:
-            LOGGER.debug("%s: Does not support 'Mgmt_rtg_req': %s", device.ieee, status)
+            LOGGER.debug(
+                "%s: Does not support 'Mgmt_rtg_req': %s", device.ieee, status
+            )
             break
 
         for route in val.RoutingTableList:

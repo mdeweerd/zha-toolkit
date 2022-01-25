@@ -73,7 +73,9 @@ async def async_setup(hass, config):
         }
 
         if ieee is not None:
-            LOGGER.debug("'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee)
+            LOGGER.debug(
+                "'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee
+            )
 
         mod_path = f"custom_components.{DOMAIN}"
         try:
@@ -122,7 +124,9 @@ async def async_setup(hass, config):
         # Fire events
         if event_data["success"]:
             if params["event_success"] is not None:
-                LOGGER.debug("Fire %s -> %s", params["event_success"], event_data)
+                LOGGER.debug(
+                    "Fire %s -> %s", params["event_success"], event_data
+                )
                 zha_gw._hass.bus.fire(params["event_success"], event_data)
         else:
             if params["event_fail"] is not None:

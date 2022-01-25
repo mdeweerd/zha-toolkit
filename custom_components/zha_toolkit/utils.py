@@ -119,7 +119,9 @@ async def get_device(app, listener, reference):
 
 
 # Save state to db
-def set_state(hass, entity_id, value, key=None, allow_create=False, force_update=False):
+def set_state(
+    hass, entity_id, value, key=None, allow_create=False, force_update=False
+):
     stateObj = hass.states.get(entity_id)
     if stateObj is None and allow_create is not True:
         LOGGER.warning("Entity_id '%s' not found", entity_id)
@@ -131,12 +133,14 @@ def set_state(hass, entity_id, value, key=None, allow_create=False, force_update
     else:
         stateAttrs = {}
 
-    # LOGGER.debug("Before: entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
+    # LOGGER.debug("Before: entity:%s key:%s value:%s attrs:%s",
+    #              entity_id, key, value, stateAttrs)
     if key is not None:
         stateAttrs[key] = value
         value = None
 
-    # LOGGER.debug("entity:%s key:%s value:%s attrs:%s", entity_id, key, value, stateAttrs)
+    # LOGGER.debug("entity:%s key:%s value:%s attrs:%s",
+    #              entity_id, key, value, stateAttrs)
 
     # Store to DB_state
     hass.states.async_set(
@@ -164,9 +168,13 @@ def find_endpoint(dev, cluster_id):
         LOGGER.error("No Endpoint found for cluster '%s'", cluster_id)
     if cnt > 1:
         endpoint_id = None
-        LOGGER.error("More than one Endpoint found for cluster '%s'", cluster_id)
+        LOGGER.error(
+            "More than one Endpoint found for cluster '%s'", cluster_id
+        )
     if cnt == 1:
-        LOGGER.debug("Endpoint %s found for cluster '%s'", endpoint_id, cluster_id)
+        LOGGER.debug(
+            "Endpoint %s found for cluster '%s'", endpoint_id, cluster_id
+        )
 
     return endpoint_id
 
@@ -211,6 +219,7 @@ def extractParams(service):
         "attr_id": None,
         "attr_type": None,
         "attr_val": None,
+        "code": None,  # Install code (join with code)
         "min_interval": None,
         "max_interval": None,
         "reportable_change": None,
@@ -251,6 +260,10 @@ def extractParams(service):
     # Attribute to send command to
     if "attr_val" in rawParams:
         params["attr_val"] = str2int(rawParams["attr_val"])
+
+    # Install code
+    if "code" in rawParams:
+        params["code"] = str2int(rawParams["code"])
 
     # The command to send
     if "cmd" in rawParams:

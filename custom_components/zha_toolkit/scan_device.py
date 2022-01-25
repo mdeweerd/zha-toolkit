@@ -121,7 +121,10 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             await asyncio.sleep(0.4)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover attributes extended starting 0x%04x/0x%04x. Error: %s",
+                (
+                    "Failed to discover attributes extended starting 0x%04x/0x%04x."
+                    + "Error: %s"
+                ),
                 cluster.cluster_id,
                 attr_id,
                 ex,
@@ -154,7 +157,9 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 attr_type = f"0x{attr_rec.datatype:02x}"
             try:
                 access = re.sub(
-                    "^.*\\.", "", str(foundation.AttributeAccessControl(access_acl))
+                    "^.*\\.",
+                    "",
+                    str(foundation.AttributeAccessControl(access_acl)),
                 )
             except ValueError:
                 access = "undefined"
@@ -175,7 +180,9 @@ async def discover_attributes_extended(cluster, manufacturer=None):
         try:
             chunk = sorted(chunk)
             success, failed = await read_attr(cluster, chunk)
-            LOGGER.debug("Reading attr success: %s, failed %s", success, failed)
+            LOGGER.debug(
+                "Reading attr success: %s, failed %s", success, failed
+            )
             for attr_id, value in success.items():
                 if isinstance(value, bytes):
                     try:
@@ -185,7 +192,10 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 result[attr_id]["attribute_value"] = value
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Couldn't read 0x%04x/0x%04x: %s", cluster.cluster_id, attr_id, ex
+                "Couldn't read 0x%04x/0x%04x: %s",
+                cluster.cluster_id,
+                attr_id,
+                ex,
             )
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.3)
@@ -213,11 +223,15 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.3)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover %s commands starting %s. Error: %s", cmd_id, ex
+                "Failed to discover %s commands starting %s. Error: %s",
+                cmd_id,
+                ex,
             )
             break
         if isinstance(rsp, Status):
-            LOGGER.error("got %s status for discover_commands starting %s", rsp, cmd_id)
+            LOGGER.error(
+                "got %s status for discover_commands starting %s", rsp, cmd_id
+            )
             break
         for cmd_id in rsp:
             cmd_data = cluster.server_commands.get(
@@ -257,11 +271,15 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.3)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover commands starting %s. Error: %s", cmd_id, ex
+                "Failed to discover commands starting %s. Error: %s",
+                cmd_id,
+                ex,
             )
             break
         if isinstance(rsp, Status):
-            LOGGER.error("got %s status for discover_commands starting %s", rsp, cmd_id)
+            LOGGER.error(
+                "got %s status for discover_commands starting %s", rsp, cmd_id
+            )
             break
         for cmd_id in rsp:
             cmd_data = cluster.client_commands.get(
@@ -306,5 +324,9 @@ async def scan_device(
         file_name = f"{ieee_tail}_scan_results.txt"
 
     u.write_json_to_file(
-        scan, subdir="scans", fname=file_name, desc="scan results", listener=listener
+        scan,
+        subdir="scans",
+        fname=file_name,
+        desc="scan results",
+        listener=listener,
     )

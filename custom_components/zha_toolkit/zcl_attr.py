@@ -27,7 +27,10 @@ async def conf_report(
             "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
         )
 
-    if params["cluster_id"] not in dev.endpoints[params["endpoint_id"]].in_clusters:
+    if (
+        params["cluster_id"]
+        not in dev.endpoints[params["endpoint_id"]].in_clusters
+    ):
         LOGGER.error(
             "Cluster 0x%04X not found for '%s', endpoint %s",
             params["cluster_id"],
@@ -35,7 +38,9 @@ async def conf_report(
             params["endpoint_id"],
         )
 
-    cluster = dev.endpoints[params["endpoint_id"]].in_clusters[params["cluster_id"]]
+    cluster = dev.endpoints[params["endpoint_id"]].in_clusters[
+        params["cluster_id"]
+    ]
 
     # await cluster.bind()  -> commented, not performing bind to coordinator
 
@@ -67,7 +72,9 @@ async def conf_report(
             event_data["result_conf"] = result_conf
             triesToGo = 0  # Stop loop
             LOGGER.info("Configure report result: %s", result_conf)
-            event_data["success"] = result_conf[0][0].status == f.Status.SUCCESS
+            event_data["success"] = (
+                result_conf[0][0].status == f.Status.SUCCESS
+            )
         except (DeliveryError, asyncio.TimeoutError):
             continue
         except Exception as e:
@@ -89,7 +96,9 @@ async def attr_read(*args, **kwargs):
 
 # This code is shared with attr_read.
 # Can read and write 1 attribute
-async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_data={}):
+async def attr_write(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
     success = True
 
     dev = app.get_device(ieee=ieee)
@@ -103,7 +112,10 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
             "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
         )
 
-    if params["cluster_id"] not in dev.endpoints[params["endpoint_id"]].in_clusters:
+    if (
+        params["cluster_id"]
+        not in dev.endpoints[params["endpoint_id"]].in_clusters
+    ):
         LOGGER.error(
             "Cluster 0x%04X not found for '%s', endpoint %s",
             params["cluster_id"],
@@ -111,7 +123,9 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
             params["endpoint_id"],
         )
 
-    cluster = dev.endpoints[params["endpoint_id"]].in_clusters[params["cluster_id"]]
+    cluster = dev.endpoints[params["endpoint_id"]].in_clusters[
+        params["cluster_id"]
+    ]
 
     # Prepare read and write lists
     attr_write_list = []
@@ -142,9 +156,9 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
                 "attr_type and attr_val must be set for attr_write"
             )
         else:
-            # Convert attribute value (provided as a string) to appropriate
-            # attribute value
-            # If the attr_type is not set, then the attribute will be only read.
+            # Convert attribute value (provided as a string)
+            # to appropriate attribute value.
+            # If the attr_type is not set, only read the attribute.
             attr_val = None
             if attr_type == 0x10:
                 compare_val = u.str2int(attr_val_str)
@@ -177,13 +191,15 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
                 attr = f.Attribute(attr_id, value=attr_val)
                 attr_write_list.append(attr)  # Write list
             else:
-                event_data[
-                    "errors"
-                ] = "attr_type {} not supported, or incorrect parameters (attr_val={})".format(
-                    params["attr_type"], params["attr_val"]
-                )
+                msg = (
+                    "attr_type {} not supported, "
+                    + "or incorrect parameters (attr_val={})"
+                ).format(params["attr_type"], params["attr_val"])
+            event_data["errors"] = msg
             LOGGER.debug(
-                "ATTR TYPE %s, attr_val %s", params["attr_type"], params["attr_val"]
+                "ATTR TYPE %s, attr_val %s",
+                params["attr_type"],
+                params["attr_val"],
             )
 
     result_read = None
@@ -244,7 +260,9 @@ async def attr_write(app, listener, ieee, cmd, data, service, params={}, event_d
             result_read = await cluster.read_attributes(
                 attr_read_list, manufacturer=params["manf"]
             )
-            LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
+            LOGGER.debug(
+                "Reading attr result (attrs, status): %s", result_read
+            )
             # read_is_equal = (result_read[0][attr_id] == compare_val)
             success = (
                 success

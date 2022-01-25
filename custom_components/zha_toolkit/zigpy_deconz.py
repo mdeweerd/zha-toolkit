@@ -28,5 +28,7 @@ async def zigpy_deconz(
     dev = app.get_device(ieee=ieee)
 
     cluster = dev.endpoints[2].basic
-    res = await cluster.read_attributes(["model", "manufacturer"], allow_cache=False)
+    res = await cluster.read_attributes(
+        ["model", "manufacturer"], allow_cache=False
+    )
     LOGGER.info("Iris 2nd ep attr read: %s", res)
