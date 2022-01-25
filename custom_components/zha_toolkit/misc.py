@@ -101,7 +101,7 @@ async def handle_join(
     event_data["result"] = app.handle_join(u.str2int(data), ieee, 0)
 
 
-async def command_handler_rejoin(
+async def rejoin(
     app, listener, ieee, cmd, data, service, params={}, event_data={}
 ):
     """Leave and rejoin command.
