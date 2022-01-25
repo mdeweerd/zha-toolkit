@@ -1,11 +1,7 @@
 # import asyncio
 import logging
 
-# import os
-# from collections import OrderedDict
-
-# from zigpy.exceptions import DeliveryError
-# from zigpy.util import retryable
+import zigpy.types as t
 
 from . import utils as u
 
@@ -68,3 +64,56 @@ async def backup(app, listener, ieee, cmd, data, service, event_data={}, params=
         )
     else:
         raise Exception("Radio type %s not supported for backup" % (radio_type))
+
+
+async def handle_join(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
+    """Rediscover a device.
+    ieee -- ieee of the device
+    data -- nwk of the device in decimal format
+    """
+    LOGGER.debug("running 'handle_join' command: %s", service)
+    if ieee is None:
+        LOGGER.debug("Provide 'ieee' parameter for %s", cmd)
+        raise Exception("ieee parameter missing")
+    if data is None:
+        dev = None
+        try:
+            dev = app.get_device(ieee=ieee)
+            data = dev.nwk
+            if data is None:
+                raise Exception(f"Missing NWK for device '{ieee}'")
+            LOGGER.debug("Using NWK '%s' for '%s'", data, ieee)
+        except Exception as e:
+            LOGGER.debug(
+                "Device '%s' not found in device table, provide NWK address", ieee
+            )
+            raise e
+
+    event_data["result"] = app.handle_join(u.str2int(data), ieee, 0)
+
+
+async def command_handler_rejoin(
+    app, listener, ieee, cmd, data, service, params={}, event_data={}
+):
+    """Leave and rejoin command.
+    data -- device ieee to allow joining through
+    ieee -- ieee of the device to leave and rejoin
+    """
+    if ieee is None:
+        LOGGER.error("missing ieee")
+        return
+    LOGGER.debug("running 'rejoin' command: %s", service)
+    src = app.get_device(ieee=ieee)
+
+    if data is None:
+        await app.permit()
+    else:
+        await app.permit(node=t.EUI64.convert_ieee(data))
+
+    # Next method is not working - rejoin is 0:
+    # res = await src.zdo.request(0x0034, src.ieee, 0x01)
+    res = await src.zdo.Mgmt_Leave_req(remove_children=False, rejoin=True)
+    event_data["result"] = res
+    LOGGER("%s: leave and rejoin result: %s", src, ieee, res)
