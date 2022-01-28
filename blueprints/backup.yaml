@@ -1,5 +1,5 @@
 blueprint:
-  name: Daily Cooridnator Backup - Monthly rotation
+  name: Daily Coordinator Backup - Monthly rotation
   description: Backup Zigbee Coordinator Configuration (ZNP/ezsp(bellows)), monthly rotation
   domain: automation
   input:
