@@ -115,8 +115,26 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     else:
         await app.permit(node=t.EUI64.convert_ieee(data))
 
-    # Next method is not working - rejoin is 0:
-    # res = await src.zdo.request(0x0034, src.ieee, 0x01)
-    res = await src.zdo.leave(remove_children=False, rejoin=True)
+    method=1
+    res = "Not executed, no valid 'method' defined in code"
+    if method==0:
+        # Works on HA 2021.12.10 & ZNP - rejoin is 1:
+        res = await src.zdo.request(0x0034, src.ieee, 0x01)
+    elif method==1:
+        # Works on ZNP but apparently not on bellows:
+        res = await src.zdo.leave(remove_children=False, rejoin=True)
+    elif method==2:
+        # Results in rejoin bit 0 on ZNP
+        LOGGER.debug("Using Method 2 for Leave")
+        res = await src.zdo.request(0x0034, src.ieee, 0x80)
+    elif method==3:
+        # Results in rejoin and leave children bit set on ZNP
+        LOGGER.debug("Using Method 3 for Leave")
+        res = await src.zdo.request(0x0034, src.ieee, 0xFF)
+    elif method==4:
+        # Results in rejoin and leave children bit set on ZNP
+        LOGGER.debug("Using Method 4 for Leave")
+        res = await src.zdo.request(0x0034, src.ieee, 0x83)
+
     event_data["result"] = res
     LOGGER.debug("%s: leave and rejoin result: %s", src, ieee, res)
