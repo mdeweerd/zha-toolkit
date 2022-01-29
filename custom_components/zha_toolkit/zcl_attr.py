@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def conf_report(
-    app, listener, ieee, cmd, data, service, event_data={}, params={}
+    app, listener, ieee, cmd, data, service, event_data, params
 ):
     dev = app.get_device(ieee=ieee)
 
@@ -97,7 +97,7 @@ async def attr_read(*args, **kwargs):
 # This code is shared with attr_read.
 # Can read and write 1 attribute
 async def attr_write(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     success = True
 

@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def set_channel(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     ch = t.uint8_t(data)
     assert 11 << ch << 26
@@ -57,7 +57,7 @@ async def set_channel(
 
 
 async def get_token(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     token = t.uint8_t(data)
     event_data["tokens_info"] = {}
@@ -78,7 +78,7 @@ async def get_token(
 
 
 async def start_mfg(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("Starting mfg lib")
     res = await app._ezsp.mfglibStart(True)
@@ -93,7 +93,7 @@ async def start_mfg(
 
 
 async def get_keys(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("getting all keys")
     result = {}
@@ -131,7 +131,7 @@ async def get_keys(
 
 
 async def add_transient_key(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("adding well known link key as transient key")
     if ieee is None:
@@ -144,7 +144,7 @@ async def add_transient_key(
 
 
 async def get_ieee_by_nwk(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("Lookup IEEE by nwk")
     nwk = u.str2int(data)
@@ -156,7 +156,7 @@ async def get_ieee_by_nwk(
 
 
 async def get_policy(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     policy = int(data)
 
@@ -170,7 +170,7 @@ async def get_policy(
 
 
 async def clear_keys(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("Clear key table")
     (status,) = await app._ezsp.clearKeyTable()
@@ -178,7 +178,7 @@ async def clear_keys(
 
 
 async def get_config_value(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None:
         LOGGER.error("Need EZSP config value")
@@ -195,7 +195,7 @@ async def get_config_value(
 
 
 async def get_value(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None:
         LOGGER.error("Need EZSP value id")
@@ -220,7 +220,7 @@ async def get_value(
 # https://github.com/zigpy/bellows/blob/dev/bellows/cli/backup.py
 #
 async def ezsp_backup_legacy(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = f"'{cmd}' is only available for BELLOWS/EZSP"
@@ -301,7 +301,7 @@ async def ezsp_backup_legacy(
 
 
 async def ezsp_backup(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = f"'{cmd}' is only available for BELLOWS/EZSP"

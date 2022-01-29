@@ -3,7 +3,7 @@
 # Takes --version X.Y.Z or -V X.Y.Z option and sets version in manifest.json.
 # Must be launched from the root of the repository.
 #
-# Modified from : https://raw.githubusercontent.com/bramstroker/homeassistant-zha-toolkit/master/.github/scripts/update_hacs_manifest.py
+# Modified from : https://raw.githubusercontent.com/bramstroker/homeassistant-zha-toolkit/master/.github/scripts/update_hacs_manifest.py  # noqa: E501
 #
 # MIT License
 #
@@ -17,8 +17,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

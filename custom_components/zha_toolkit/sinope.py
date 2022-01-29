@@ -6,7 +6,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def sinope_write_test(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     ieee = t.EUI64.deserialize(b"\xae\x09\x01\x00\x40\x91\x0b\x50")[0]
 

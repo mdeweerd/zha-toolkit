@@ -122,8 +122,9 @@ async def discover_attributes_extended(cluster, manufacturer=None):
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 (
-                    "Failed to discover attributes extended starting 0x%04x/0x%04x."
-                    + "Error: %s"
+                    "Failed 'discover_attributes_extended'"
+                    + " starting 0x%04x/0x%04x."
+                    + " Error: %s"
                 ),
                 cluster.cluster_id,
                 attr_id,
@@ -300,7 +301,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
 
 
 async def scan_device(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if ieee is None:
         LOGGER.error("missing ieee")

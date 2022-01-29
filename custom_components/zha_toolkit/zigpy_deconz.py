@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def zigpy_deconz(
-    app, listener, ieee, cmd, data, service, event_data={}, params={}
+    app, listener, ieee, cmd, data, service, event_data, params
 ):
     LOGGER.debug("Removing EZSP")
     res = await app._ezsp.setRadioChannel(20)

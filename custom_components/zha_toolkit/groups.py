@@ -6,7 +6,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def get_groups(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("running 'get_groups' command: %s", service)
     if ieee is None:
@@ -31,7 +31,7 @@ async def get_groups(
 
 
 async def add_group(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("running 'add group' command: %s", service)
     if ieee is None or not data:
@@ -54,7 +54,7 @@ async def add_group(
 
 
 async def remove_group(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("running 'remove group' command: %s", service)
     if ieee is None or not data:
@@ -78,7 +78,7 @@ async def remove_group(
 
 
 async def remove_all_groups(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("running 'remove all group' command: %s", service)
     if ieee is None:
@@ -99,7 +99,7 @@ async def remove_all_groups(
 
 
 async def add_to_group(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None or ieee is None:
         LOGGER.error("invalid arguments for subscribe_group()")
@@ -114,7 +114,7 @@ async def add_to_group(
 
 
 async def remove_from_group(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None or ieee is None:
         LOGGER.error("invalid arguments for unsubscribe_group()")
@@ -129,7 +129,7 @@ async def remove_from_group(
 
 
 async def get_zll_groups(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     from zigpy.zcl.clusters.lightlink import LightLink
 

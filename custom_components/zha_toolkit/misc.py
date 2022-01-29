@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def get_routes(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("getting routes command: %s", service)
 
@@ -23,9 +23,7 @@ async def get_routes(
     LOGGER.debug("finished device get_routes")
 
 
-async def backup(
-    app, listener, ieee, cmd, data, service, event_data={}, params={}
-):
+async def backup(app, listener, ieee, cmd, data, service, event_data, params):
     """Backup Coordinator Configuration."""
 
     radio_type = u.get_radiotype(app)
@@ -73,7 +71,7 @@ async def backup(
 
 
 async def handle_join(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Rediscover a device.
     ieee -- ieee of the device
@@ -101,9 +99,7 @@ async def handle_join(
     event_data["result"] = app.handle_join(u.str2int(data), ieee, 0)
 
 
-async def rejoin(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
-):
+async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     """Leave and rejoin command.
     data -- device ieee to allow joining through
     ieee -- ieee of the device to leave and rejoin

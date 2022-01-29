@@ -150,7 +150,7 @@ async def async_setup(hass, config):
 
 
 async def default_command(
-    app, listener, ieee, cmd, data, service, params={}, event_data={}
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("running default command: %s", service)
 
