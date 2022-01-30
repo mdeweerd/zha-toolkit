@@ -15,7 +15,7 @@ async def znp_backup(
 ):
     """Backup ZNP network information."""
 
-    LOGGER.error("ZNP_BACKUP")
+    LOGGER.debug("ZNP_BACKUP")
 
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = f"{cmd} is only for ZNP"
