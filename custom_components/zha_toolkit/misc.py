@@ -1,7 +1,9 @@
 # import asyncio
 import logging
+import asyncio
 
 import zigpy.types as t
+from zigpy.exceptions import DeliveryError
 
 from . import utils as u
 
@@ -119,22 +121,35 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     res = "Not executed, no valid 'method' defined in code"
     if method == 0:
         # Works on HA 2021.12.10 & ZNP - rejoin is 1:
-        res = await src.zdo.request(0x0034, src.ieee, 0x01, params['tries'])
+        res = await src.zdo.request(0x0034, src.ieee, 0x01, params["tries"])
     elif method == 1:
         # Works on ZNP but apparently not on bellows:
-        res = await src.zdo.leave(remove_children=False, rejoin=True)
+        triesToGo = params["tries"]
+        while triesToGo >= 1:
+            triesToGo = triesToGo - 1
+            try:
+                res = await src.zdo.leave(remove_children=False, rejoin=True)
+                triesToGo = 0  # Stop loop
+                # event_data["success"] = (
+                #     resf[0][0].status == f.Status.SUCCESS
+                # )
+            except (DeliveryError, asyncio.TimeoutError):
+                continue
+            except Exception as e:
+                triesToGo = 0  # Stop loop
+                LOGGER.debug("Leave with rejoin exception %s", e)
     elif method == 2:
         # Results in rejoin bit 0 on ZNP
         LOGGER.debug("Using Method 2 for Leave")
-        res = await src.zdo.request(0x0034, src.ieee, 0x80, params['tries'])
+        res = await src.zdo.request(0x0034, src.ieee, 0x80, params["tries"])
     elif method == 3:
         # Results in rejoin and leave children bit set on ZNP
         LOGGER.debug("Using Method 3 for Leave")
-        res = await src.zdo.request(0x0034, src.ieee, 0xFF, params['tries'])
+        res = await src.zdo.request(0x0034, src.ieee, 0xFF, params["tries"])
     elif method == 4:
         # Results in rejoin and leave children bit set on ZNP
         LOGGER.debug("Using Method 4 for Leave")
-        res = await src.zdo.request(0x0034, src.ieee, 0x83, params['tries'])
+        res = await src.zdo.request(0x0034, src.ieee, 0x83, params["tries"])
 
     event_data["result"] = res
     LOGGER.debug("%s: leave and rejoin result: %s", src, ieee, res)
