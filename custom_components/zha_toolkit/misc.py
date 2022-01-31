@@ -118,7 +118,8 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
         await app.permit(node=t.EUI64.convert_ieee(data))
 
     method = 1
-    res = "Not executed, no valid 'method' defined in code"
+    res = None
+
     if method == 0:
         # Works on HA 2021.12.10 & ZNP - rejoin is 1:
         res = await src.zdo.request(0x0034, src.ieee, 0x01, params["tries"])
@@ -138,6 +139,8 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
             except Exception as e:
                 triesToGo = 0  # Stop loop
                 LOGGER.debug("Leave with rejoin exception %s", e)
+                event_data["errors"].append(repr(e))
+
     elif method == 2:
         # Results in rejoin bit 0 on ZNP
         LOGGER.debug("Using Method 2 for Leave")
@@ -150,6 +153,8 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
         # Results in rejoin and leave children bit set on ZNP
         LOGGER.debug("Using Method 4 for Leave")
         res = await src.zdo.request(0x0034, src.ieee, 0x83, params["tries"])
+    else:
+        res = "Not executed, no valid 'method' defined in code"
 
     event_data["result"] = res
     LOGGER.debug("%s: leave and rejoin result: %s", src, ieee, res)
