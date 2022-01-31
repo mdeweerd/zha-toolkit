@@ -14,6 +14,7 @@ from .params import (
     CLUSTER_ID,
     CMD_ID,
     CODE,
+    CSV_FILE,
     DIR,
     EP_ID,
     EVT_DONE,
@@ -47,6 +48,7 @@ from .params import (
     P_STATE_ID,
     P_TRIES,
     P_WRITE_IF_EQUAL,
+    P_OUTCSV,
     READ_AFTER_WRITE,
     READ_BEFORE_WRITE,
     REPORTABLE_CHANGE,
@@ -389,5 +391,8 @@ def extractParams(service):
 
     if P_EVENT_SUCCESS in rawParams:
         params[EVT_SUCCESS] = rawParams[P_EVENT_SUCCESS]
+
+    if P_OUTCSV in rawParams:
+        params[CSV_FILE] = rawParams[P_OUTCSV]
 
     return params
