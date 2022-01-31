@@ -126,19 +126,23 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     elif method == 1:
         # Works on ZNP but apparently not on bellows:
         triesToGo = params["tries"]
+        tryIdx = 0
         event_data["success"] = False
         while triesToGo >= 1:
             triesToGo = triesToGo - 1
+            tryIdx += 1
             try:
+                LOGGER.debug(f"Leave with rejoin - try {tryIdx}")
                 res = await src.zdo.leave(remove_children=False, rejoin=True)
                 event_data["success"] = True
                 triesToGo = 0  # Stop loop
                 # event_data["success"] = (
                 #     resf[0][0].status == f.Status.SUCCESS
                 # )
-            except (DeliveryError, asyncio.TimeoutError):
+            except (DeliveryError, asyncio.TimeoutError) as d:
+                event_data["errors"].append(repr(d))
                 continue
-            except Exception as e:
+            except (ValueError, Exception) as e:
                 triesToGo = 0  # Stop loop
                 LOGGER.debug("Leave with rejoin exception %s", e)
                 event_data["errors"].append(repr(e))
