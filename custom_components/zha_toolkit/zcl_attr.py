@@ -195,7 +195,8 @@ async def attr_write(
                     "attr_type {} not supported, "
                     + "or incorrect parameters (attr_val={})"
                 ).format(params["attr_type"], params["attr_val"])
-            event_data["errors"] = msg
+                event_data["errors"].append(msg)
+                LOGGER.debug(msg)
             LOGGER.debug(
                 "ATTR TYPE %s, attr_val %s",
                 params["attr_type"],
