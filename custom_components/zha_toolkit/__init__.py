@@ -8,6 +8,7 @@ from homeassistant.util import dt as dt_util
 
 
 from . import utils as u
+from .params import EVT_DONE, EVT_FAIL, EVT_SUCCESS
 
 DEPENDENCIES = ["zha"]
 
@@ -123,19 +124,17 @@ async def async_setup(hass, config):
         LOGGER.debug("event_data %s", event_data)
         # Fire events
         if event_data["success"]:
-            if params["event_success"] is not None:
-                LOGGER.debug(
-                    "Fire %s -> %s", params["event_success"], event_data
-                )
-                zha_gw._hass.bus.fire(params["event_success"], event_data)
+            if params[EVT_SUCCESS] is not None:
+                LOGGER.debug("Fire %s -> %s", params[EVT_SUCCESS], event_data)
+                zha_gw._hass.bus.fire(params[EVT_SUCCESS], event_data)
         else:
-            if params["event_fail"] is not None:
-                LOGGER.debug("Fire %s -> %s", params["event_fail"], event_data)
-                zha_gw._hass.bus.fire(params["event_fail"], event_data)
+            if params[EVT_FAIL] is not None:
+                LOGGER.debug("Fire %s -> %s", params[EVT_FAIL], event_data)
+                zha_gw._hass.bus.fire(params[EVT_FAIL], event_data)
 
-        if params["event_done"] is not None:
-            LOGGER.debug("Fire %s -> %s", params["event_done"], event_data)
-            zha_gw._hass.bus.fire(params["event_done"], event_data)
+        if params[EVT_DONE] is not None:
+            LOGGER.debug("Fire %s -> %s", params[EVT_DONE], event_data)
+            zha_gw._hass.bus.fire(params[EVT_DONE], event_data)
 
         if handler_exception is not None:
             raise handler_exception

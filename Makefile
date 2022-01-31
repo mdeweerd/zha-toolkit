@@ -3,7 +3,7 @@ lint_python:
 	bandit --recursive --skip B101,B311 .
 	black -l 79 .
 	codespell --ignore-words-list="hass" custom_components
-	autoflake8 -i -r custom_components
+	-autoflake8 -i -r --expand-star-imports custom_components
 	flake8 . --count --ignore F841,C901,W503,B006 \
                  --max-complexity=1 --max-line-length=79 \
                  --show-source --statistics

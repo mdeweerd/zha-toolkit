@@ -2,6 +2,16 @@ import logging
 import inspect
 
 from . import utils as u
+from .params import (
+    ARGS,
+    CLUSTER_ID,
+    CMD_ID,
+    DIR,
+    EP_ID,
+    EXPECT_REPLY,
+    MANF,
+    TRIES,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,49 +36,46 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data, params):
     dev = app.get_device(ieee=ieee)
 
     # Decode endpoint
-    if params["endpoint_id"] is None or params["endpoint_id"] == "":
-        params["endpoint_id"] = u.find_endpoint(dev, params["cluster_id"])
+    if params[EP_ID] is None or params["endpoint_id"] == "":
+        params[EP_ID] = u.find_endpoint(dev, params[CLUSTER_ID])
 
-    if params["endpoint_id"] not in dev.endpoints:
+    if params[EP_ID] not in dev.endpoints:
         LOGGER.error(
-            "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
+            "Endpoint %s not found for '%s'", params[EP_ID], repr(ieee)
         )
 
-    if (
-        params["cluster_id"]
-        not in dev.endpoints[params["endpoint_id"]].in_clusters
-    ):
+    if params[CLUSTER_ID] not in dev.endpoints[params[EP_ID]].in_clusters:
         LOGGER.error(
             "Cluster 0x%04X not found for '%s', endpoint %s",
-            params["cluster_id"],
+            params[CLUSTER_ID],
             repr(ieee),
-            params["endpoint_id"],
+            params[EP_ID],
         )
 
     # Extract parameters
 
     # Endpoint to send command to
-    ep_id = params["endpoint_id"]
+    ep_id = params[EP_ID]
     # Cluster to send command to
-    cluster_id = params["cluster_id"]
+    cluster_id = params[CLUSTER_ID]
     # The command to send
-    cmd_id = params["cmd_id"]
+    cmd_id = params[CMD_ID]
     if cmd_id is None:
         raise Exception(ERR003_PARAMETER_MISSING, "cmd")
 
     # The direction (to in or out cluster)
-    dir_int = params["dir"]
+    dir_int = params[DIR]
 
     # Get manufacturer
-    manf = params["manf"]
+    manf = params[MANF]
 
     # Get tries
-    tries = params["tries"]
+    tries = params[TRIES]
 
     # Get expect_reply
-    expect_reply = params["expect_reply"]
+    expect_reply = params[EXPECT_REPLY]
 
-    cmd_args = params["args"]
+    cmd_args = params[ARGS]
 
     # Direction 0 = Client to Server, as in protocol bit
     is_in_cluster = dir_int == 0

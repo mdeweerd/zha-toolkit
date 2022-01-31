@@ -7,6 +7,24 @@ from zigpy.exceptions import DeliveryError
 
 # import zigpy.zcl as zcl
 from . import utils as u
+from .params import (
+    ALLOW_CREATE,
+    ATTR_ID,
+    ATTR_TYPE,
+    ATTR_VAL,
+    CLUSTER_ID,
+    EP_ID,
+    MANF,
+    MAX_INTERVAL,
+    MIN_INTERVAL,
+    READ_AFTER_WRITE,
+    READ_BEFORE_WRITE,
+    REPORTABLE_CHANGE,
+    STATE_ATTR,
+    STATE_ID,
+    TRIES,
+    WRITE_IF_EQUAL,
+)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -19,32 +37,27 @@ async def conf_report(
 
     LOGGER.debug(params)
     # Get best endpoint
-    if params["endpoint_id"] is None or params["endpoint_id"] == "":
-        params["endpoint_id"] = u.find_endpoint(dev, params["cluster_id"])
+    if params[EP_ID] is None or params["endpoint_id"] == "":
+        params[EP_ID] = u.find_endpoint(dev, params[CLUSTER_ID])
 
-    if params["endpoint_id"] not in dev.endpoints:
+    if params[EP_ID] not in dev.endpoints:
         LOGGER.error(
-            "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
+            "Endpoint %s not found for '%s'", params[EP_ID], repr(ieee)
         )
 
-    if (
-        params["cluster_id"]
-        not in dev.endpoints[params["endpoint_id"]].in_clusters
-    ):
+    if params[CLUSTER_ID] not in dev.endpoints[params[EP_ID]].in_clusters:
         LOGGER.error(
             "Cluster 0x%04X not found for '%s', endpoint %s",
-            params["cluster_id"],
+            params[CLUSTER_ID],
             repr(ieee),
-            params["endpoint_id"],
+            params[EP_ID],
         )
 
-    cluster = dev.endpoints[params["endpoint_id"]].in_clusters[
-        params["cluster_id"]
-    ]
+    cluster = dev.endpoints[params[EP_ID]].in_clusters[params[CLUSTER_ID]]
 
     # await cluster.bind()  -> commented, not performing bind to coordinator
 
-    triesToGo = params["tries"]
+    triesToGo = params[TRIES]
     event_data["success"] = False
     result_conf = None
 
@@ -53,20 +66,20 @@ async def conf_report(
         try:
             LOGGER.debug(
                 "Try configure report(%s,%s,%s,%s,%s) Try %s/%s",
-                params["attr_id"],
-                params["min_interval"],
-                params["max_interval"],
-                params["reportable_change"],
-                params["manf"],
-                params["tries"] - triesToGo,
-                params["tries"],
+                params[ATTR_ID],
+                params[MIN_INTERVAL],
+                params[MAX_INTERVAL],
+                params[REPORTABLE_CHANGE],
+                params[MANF],
+                params[TRIES] - triesToGo,
+                params[TRIES],
             )
             result_conf = await cluster.configure_reporting(
-                params["attr_id"],
-                params["min_interval"],
-                params["max_interval"],
-                params["reportable_change"],
-                manufacturer=params["manf"],
+                params[ATTR_ID],
+                params[MIN_INTERVAL],
+                params[MAX_INTERVAL],
+                params[REPORTABLE_CHANGE],
+                manufacturer=params[MANF],
             )
             event_data["params"] = params
             event_data["result_conf"] = result_conf
@@ -82,11 +95,11 @@ async def conf_report(
             LOGGER.debug(
                 "Configure report exception %s,%s,%s,%s,%s,%s",
                 e,
-                params["attr_id"],
-                params["min_interval"],
-                params["max_interval"],
-                params["reportable_change"],
-                params["manf"],
+                params[ATTR_ID],
+                params[MIN_INTERVAL],
+                params[MAX_INTERVAL],
+                params[REPORTABLE_CHANGE],
+                params[MANF],
             )
 
 
@@ -104,28 +117,23 @@ async def attr_write(
     dev = app.get_device(ieee=ieee)
 
     # Decode endpoint
-    if params["endpoint_id"] is None or params["endpoint_id"] == "":
-        params["endpoint_id"] = u.find_endpoint(dev, params["cluster_id"])
+    if params[EP_ID] is None or params["endpoint_id"] == "":
+        params[EP_ID] = u.find_endpoint(dev, params[CLUSTER_ID])
 
-    if params["endpoint_id"] not in dev.endpoints:
+    if params[EP_ID] not in dev.endpoints:
         LOGGER.error(
-            "Endpoint %s not found for '%s'", params["endpoint_id"], repr(ieee)
+            "Endpoint %s not found for '%s'", params[EP_ID], repr(ieee)
         )
 
-    if (
-        params["cluster_id"]
-        not in dev.endpoints[params["endpoint_id"]].in_clusters
-    ):
+    if params[CLUSTER_ID] not in dev.endpoints[params[EP_ID]].in_clusters:
         LOGGER.error(
             "Cluster 0x%04X not found for '%s', endpoint %s",
-            params["cluster_id"],
+            params[CLUSTER_ID],
             repr(ieee),
-            params["endpoint_id"],
+            params[EP_ID],
         )
 
-    cluster = dev.endpoints[params["endpoint_id"]].in_clusters[
-        params["cluster_id"]
-    ]
+    cluster = dev.endpoints[params[EP_ID]].in_clusters[params[CLUSTER_ID]]
 
     # Prepare read and write lists
     attr_write_list = []
@@ -140,15 +148,15 @@ async def attr_write(
 
     # Decode attribute id
     # Could accept name for attribute, but extra code to check
-    attr_id = params["attr_id"]
+    attr_id = params[ATTR_ID]
 
     attr_read_list.append(attr_id)  # Read before write list
 
     compare_val = None
 
     if cmd == "attr_write":
-        attr_type = params["attr_type"]
-        attr_val_str = params["attr_val"]
+        attr_type = params[ATTR_TYPE]
+        attr_val_str = params[ATTR_VAL]
 
         # Type only needed for write
         if attr_type is None or attr_val_str is None:
@@ -194,24 +202,24 @@ async def attr_write(
                 msg = (
                     "attr_type {} not supported, "
                     + "or incorrect parameters (attr_val={})"
-                ).format(params["attr_type"], params["attr_val"])
+                ).format(params[ATTR_TYPE], params[ATTR_VAL])
                 event_data["errors"].append(msg)
                 LOGGER.debug(msg)
             LOGGER.debug(
                 "ATTR TYPE %s, attr_val %s",
-                params["attr_type"],
-                params["attr_val"],
+                params[ATTR_TYPE],
+                params[ATTR_VAL],
             )
 
     result_read = None
     if (
-        params["read_before_write"]
+        params[READ_BEFORE_WRITE]
         or (len(attr_write_list) == 0)
         or (cmd != "attr_write")
     ):
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
-            attr_read_list, manufacturer=params["manf"]
+            attr_read_list, manufacturer=params[MANF]
         )
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
         success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
@@ -228,8 +236,8 @@ async def attr_write(
     if (
         len(attr_write_list) != 0
         and (
-            not (params["read_before_write"])
-            or params["write_if_equal"]
+            not (params[READ_BEFORE_WRITE])
+            or params[WRITE_IF_EQUAL]
             or not (write_is_equal)
         )
         and cmd == "attr_write"
@@ -241,7 +249,7 @@ async def attr_write(
 
         LOGGER.debug("Request attr write %s", attr_write_list)
         result_write = await cluster._write_attributes(
-            attr_write_list, manufacturer=params["manf"]
+            attr_write_list, manufacturer=params[MANF]
         )
         LOGGER.debug("Write attr status: %s", result_write)
         event_data["result_write"] = result_write
@@ -256,10 +264,10 @@ async def attr_write(
 
         # success = (len(result_write[1])==0)
 
-        if params["read_after_write"]:
+        if params[READ_AFTER_WRITE]:
             LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster.read_attributes(
-                attr_read_list, manufacturer=params["manf"]
+                attr_read_list, manufacturer=params[MANF]
             )
             LOGGER.debug(
                 "Reading attr result (attrs, status): %s", result_read
@@ -277,31 +285,31 @@ async def attr_write(
     event_data["success"] = success
 
     # Write value to provided state or state attribute
-    if params["state_id"] is not None:
+    if params[STATE_ID] is not None:
         if len(result_read[1]) == 0 and len(result_read[0]) == 1:
             # No error and one result
             for id, val in result_read[0].items():
-                if params["state_attr"] is not None:
+                if params[STATE_ATTR] is not None:
                     LOGGER.debug(
                         "Set state %s[%s] -> %s from attr_id %s",
-                        params["state_id"],
-                        params["state_attr"],
+                        params[STATE_ID],
+                        params[STATE_ATTR],
                         val,
                         id,
                     )
                 else:
                     LOGGER.debug(
                         "Set state %s -> %s from attr_id %s",
-                        params["state_id"],
+                        params[STATE_ID],
                         val,
                         id,
                     )
                 u.set_state(
                     listener._hass,
-                    params["state_id"],
+                    params[STATE_ID],
                     val,
-                    key=params["state_attr"],
-                    allow_create=params["allow_create"],
+                    key=params[STATE_ATTR],
+                    allow_create=params[ALLOW_CREATE],
                 )
                 LOGGER.debug("STATE is set")
 

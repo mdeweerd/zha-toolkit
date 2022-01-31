@@ -1,9 +1,60 @@
 import logging
 import os
+
 from enum import Enum
 from zigpy import types as t
 from homeassistant.util.json import save_json
 
+from .params import (
+    ALLOW_CREATE,
+    ARGS,
+    ATTR_ID,
+    ATTR_TYPE,
+    ATTR_VAL,
+    CLUSTER_ID,
+    CMD_ID,
+    CODE,
+    DIR,
+    EP_ID,
+    EVT_DONE,
+    EVT_FAIL,
+    EVT_SUCCESS,
+    EXPECT_REPLY,
+    MANF,
+    MAX_INTERVAL,
+    MIN_INTERVAL,
+    P_ALLOW_CREATE,
+    P_ARGS,
+    P_ATTRIBUTE,
+    P_ATTR_TYPE,
+    P_ATTR_VAL,
+    P_CLUSTER,
+    P_CMD,
+    P_CODE,
+    P_DIR,
+    P_ENDPOINT,
+    P_EVENT_DONE,
+    P_EVENT_FAIL,
+    P_EVENT_SUCCESS,
+    P_EXPECT_REPLY,
+    P_MANF,
+    P_MAX_INTRVL,
+    P_MIN_INTRVL,
+    P_READ_AFTER_WRITE,
+    P_READ_BEFORE_WRITE,
+    P_REPTBLE_CHG,
+    P_STATE_ATTR,
+    P_STATE_ID,
+    P_TRIES,
+    P_WRITE_IF_EQUAL,
+    READ_AFTER_WRITE,
+    READ_BEFORE_WRITE,
+    REPORTABLE_CHANGE,
+    STATE_ATTR,
+    STATE_ID,
+    TRIES,
+    WRITE_IF_EQUAL,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -213,81 +264,81 @@ def extractParams(service):
     # Potential parameters, initialized to None
     # TODO: Not all parameters are decoded in this function yet
     params = {
-        "cmd_id": None,
-        "endpoint_id": None,
-        "cluster_id": None,
-        "attr_id": None,
-        "attr_type": None,
-        "attr_val": None,
-        "code": None,  # Install code (join with code)
-        "min_interval": None,
-        "max_interval": None,
-        "reportable_change": None,
-        "dir": 0,
-        "manf": None,
-        "tries": 1,
-        "expect_reply": True,
-        "args": [],
-        "state_id": None,
-        "state_attr": None,
-        "allow_create": False,
-        "event_success": None,
-        "event_fail": None,
-        "event_done": None,
-        "read_before_write": True,
-        "read_after_write": True,
-        "write_if_equal": False,
+        CMD_ID: None,
+        EP_ID: None,
+        CLUSTER_ID: None,
+        ATTR_ID: None,
+        ATTR_TYPE: None,
+        ATTR_VAL: None,
+        CODE: None,  # Install code (join with code)
+        MIN_INTERVAL: None,
+        MAX_INTERVAL: None,
+        REPORTABLE_CHANGE: None,
+        DIR: 0,
+        MANF: None,
+        TRIES: 1,
+        EXPECT_REPLY: True,
+        ARGS: [],
+        STATE_ID: None,
+        STATE_ATTR: None,
+        ALLOW_CREATE: False,
+        EVT_SUCCESS: None,
+        EVT_FAIL: None,
+        EVT_DONE: None,
+        READ_BEFORE_WRITE: True,
+        READ_AFTER_WRITE: True,
+        WRITE_IF_EQUAL: False,
     }
 
     # Extract parameters
 
     # Endpoint to send command to
-    if "endpoint" in rawParams:
-        params["endpoint_id"] = str2int(rawParams["endpoint"])
+    if P_ENDPOINT in rawParams:
+        params[EP_ID] = str2int(rawParams[P_ENDPOINT])
 
     # Cluster to send command to
-    if "cluster" in rawParams:
-        params["cluster_id"] = str2int(rawParams["cluster"])
+    if P_CLUSTER in rawParams:
+        params[CLUSTER_ID] = str2int(rawParams[P_CLUSTER])
 
     # Attribute to send command to
-    if "attribute" in rawParams:
-        params["attr_id"] = str2int(rawParams["attribute"])
+    if P_ATTRIBUTE in rawParams:
+        params[ATTR_ID] = str2int(rawParams[P_ATTRIBUTE])
 
     # Attribute to send command to
-    if "attr_type" in rawParams:
-        params["attr_type"] = str2int(rawParams["attr_type"])
+    if P_ATTR_TYPE in rawParams:
+        params[ATTR_TYPE] = str2int(rawParams[P_ATTR_TYPE])
 
     # Attribute to send command to
-    if "attr_val" in rawParams:
-        params["attr_val"] = str2int(rawParams["attr_val"])
+    if P_ATTR_VAL in rawParams:
+        params[ATTR_VAL] = str2int(rawParams[P_ATTR_VAL])
 
     # Install code
-    if "code" in rawParams:
-        params["code"] = str2int(rawParams["code"])
+    if P_CODE in rawParams:
+        params[CODE] = str2int(rawParams[P_CODE])
 
     # The command to send
-    if "cmd" in rawParams:
-        params["cmd_id"] = str2int(rawParams["cmd"])
+    if P_CMD in rawParams:
+        params[CMD_ID] = str2int(rawParams[P_CMD])
 
     # The direction (to in or out cluster)
-    if "dir" in rawParams:
-        params["dir"] = str2int(rawParams["dir"])
+    if P_DIR in rawParams:
+        params[DIR] = str2int(rawParams[P_DIR])
 
     # Get manufacturer
-    if "manf" in rawParams:
-        params["manf"] = str2int(rawParams["manf"])
+    if P_MANF in rawParams:
+        params[MANF] = str2int(rawParams[P_MANF])
 
     # Get tries
-    if "tries" in rawParams:
-        params["tries"] = str2int(rawParams["tries"])
+    if P_TRIES in rawParams:
+        params[TRIES] = str2int(rawParams[P_TRIES])
 
     # Get expect_reply
-    if "expect_reply" in rawParams:
-        params["expect_reply"] = str2int(rawParams["expect_reply"]) == 0
+    if P_EXPECT_REPLY in rawParams:
+        params[EXPECT_REPLY] = str2int(rawParams[P_EXPECT_REPLY]) == 0
 
-    if "args" in rawParams:
+    if P_ARGS in rawParams:
         cmd_args = []
-        for val in rawParams["args"]:
+        for val in rawParams[P_ARGS]:
             LOGGER.debug("cmd arg %s", val)
             lval = str2int(val)
             if isinstance(lval, list):
@@ -297,46 +348,46 @@ def extractParams(service):
                 # lval = t.LVList(lval)
             cmd_args.append(lval)
             LOGGER.debug("cmd converted arg %s", lval)
-        params["args"] = cmd_args
+        params[ARGS] = cmd_args
 
-    if "min_interval" in rawParams:
-        params["min_interval"] = str2int(rawParams["min_interval"])
-    if "max_interval" in rawParams:
-        params["max_interval"] = str2int(rawParams["max_interval"])
-    if "reportable_change" in rawParams:
-        params["reportable_change"] = str2int(rawParams["reportable_change"])
+    if P_MIN_INTRVL in rawParams:
+        params[MIN_INTERVAL] = str2int(rawParams[P_MIN_INTRVL])
+    if P_MAX_INTRVL in rawParams:
+        params[MAX_INTERVAL] = str2int(rawParams[P_MAX_INTRVL])
+    if P_REPTBLE_CHG in rawParams:
+        params[REPORTABLE_CHANGE] = str2int(rawParams[P_REPTBLE_CHG])
 
-    if "state_id" in rawParams:
-        params["state_id"] = rawParams["state_id"]
+    if P_STATE_ID in rawParams:
+        params[STATE_ID] = rawParams[P_STATE_ID]
 
-    if "state_attr" in rawParams:
-        params["state_attr"] = rawParams["state_attr"]
+    if P_STATE_ATTR in rawParams:
+        params[STATE_ATTR] = rawParams[P_STATE_ATTR]
 
-    if "read_before_write" in rawParams:
-        params["read_before_write"] = str2bool(rawParams["read_before_write"])
+    if P_READ_BEFORE_WRITE in rawParams:
+        params[READ_BEFORE_WRITE] = str2bool(rawParams[P_READ_BEFORE_WRITE])
 
-    if "read_after_write" in rawParams:
-        params["read_after_write"] = str2bool(rawParams["read_after_write"])
+    if P_READ_AFTER_WRITE in rawParams:
+        params[READ_AFTER_WRITE] = str2bool(rawParams[P_READ_AFTER_WRITE])
 
-    if "write_if_equal" in rawParams:
-        params["write_if_equal"] = str2bool(rawParams["write_if_equal"])
+    if P_WRITE_IF_EQUAL in rawParams:
+        params[WRITE_IF_EQUAL] = str2bool(rawParams[P_WRITE_IF_EQUAL])
 
-    if "state_attr" in rawParams:
-        params["state_attr"] = rawParams["state_attr"]
+    if P_STATE_ATTR in rawParams:
+        params[STATE_ATTR] = rawParams[P_STATE_ATTR]
 
-    if "allow_create" in rawParams:
-        allow = str2int(rawParams["allow_create"])
-        params["allow_create"] = (allow is not None) and (
+    if P_ALLOW_CREATE in rawParams:
+        allow = str2int(rawParams[P_ALLOW_CREATE])
+        params[ALLOW_CREATE] = (allow is not None) and (
             (allow is True) or (allow == 1)
         )
 
-    if "event_done" in rawParams:
-        params["event_done"] = rawParams["event_done"]
+    if P_EVENT_DONE in rawParams:
+        params[EVT_DONE] = rawParams[P_EVENT_DONE]
 
-    if "event_fail" in rawParams:
-        params["event_fail"] = rawParams["event_fail"]
+    if P_EVENT_FAIL in rawParams:
+        params[EVT_FAIL] = rawParams[P_EVENT_FAIL]
 
-    if "event_success" in rawParams:
-        params["event_success"] = rawParams["event_success"]
+    if P_EVENT_SUCCESS in rawParams:
+        params[EVT_SUCCESS] = rawParams[P_EVENT_SUCCESS]
 
     return params

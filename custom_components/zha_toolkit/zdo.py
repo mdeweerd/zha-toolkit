@@ -7,6 +7,7 @@ import zigpy.device
 import zigpy.zdo
 
 from . import utils as u
+from .params import CODE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ async def join_with_code(
     #   b"\xA8\x16\x92\x7F\xB1\x9B\x78\x55\xC1"
     #    + b"\xD7\x76\x0D\x5C\xAD\x63\x7F\x69\xCC"
     # )
-    code = params["code"]
+    code = params[CODE]
     res = await app.permit_with_key(node, code, 60)
     link_key = bt.EmberKeyData(b"ZigBeeAlliance09")
     res = await app._ezsp.addTransientLinkKey(node, link_key)

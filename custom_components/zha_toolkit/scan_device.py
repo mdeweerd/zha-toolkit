@@ -7,6 +7,7 @@ from zigpy.util import retryable
 from zigpy import types as t
 
 from . import utils as u
+from .params import EP_ID
 
 LOGGER = logging.getLogger(__name__)
 
@@ -311,7 +312,7 @@ async def scan_device(
 
     device = app.get_device(ieee)
 
-    scan = await scan_results(device, params["endpoint_id"])
+    scan = await scan_results(device, params[EP_ID])
 
     event_data["scan"] = scan
 
