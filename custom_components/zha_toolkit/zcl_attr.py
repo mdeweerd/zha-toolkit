@@ -5,7 +5,6 @@ from zigpy import types as t
 from zigpy.zcl import foundation as f
 from zigpy.exceptions import DeliveryError
 
-# import zigpy.zcl as zcl
 from . import utils as u
 from .params import (
     ALLOW_CREATE,
@@ -13,6 +12,8 @@ from .params import (
     ATTR_TYPE,
     ATTR_VAL,
     CLUSTER_ID,
+    CSV_FILE,
+    CSV_LABEL,
     EP_ID,
     MANF,
     MAX_INTERVAL,
@@ -312,6 +313,33 @@ async def attr_write(
                     allow_create=params[ALLOW_CREATE],
                 )
                 LOGGER.debug("STATE is set")
+
+    if success and params[CSV_FILE] is not None:
+        fields = []
+        if params[CSV_LABEL] is not None:
+            attr_name = params[CSV_LABEL]
+        else:
+            try:
+                attr_name = cluster.attributes.get(
+                    attr_id, (str(attr_id), None)
+                )[0]
+            except Exception:
+                attr_name = attr_id
+
+        fields.append(attr_name)
+        fields.append(val)
+        fields.append(f"0x{cluster.attr_id:%04X}"),
+        fields.append("0x%04X" % (cluster.cluster_id)),
+        fields.append(str(cluster.endpoint().endpoint_id()))
+        fields.append(str(cluster.endpoint().device.ieee))
+        fields.append("0x%04X" % (params[MANF]))
+        u.append_to_csvfile(
+            fields,
+            "csv",
+            params[CSV_FILE],
+            f"{attr_name}={val}",
+            listener=None,
+        )
 
     # For internal use
     return result_read

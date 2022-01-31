@@ -27,7 +27,7 @@ P_READ_BEFORE_WRITE = "read_before_write"
 P_READ_AFTER_WRITE = "read_after_write"
 P_WRITE_IF_EQUAL = "write_if_equal"
 P_OUTCSV = "out_csv"
-
+P_CSVLABEL = "csvlabel"
 
 # Constants representing internal parameters keys
 ALLOW_CREATE = "allow_create"
@@ -55,3 +55,4 @@ STATE_ID = "state_id"
 TRIES = "tries"
 WRITE_IF_EQUAL = "write_if_equal"
 CSV_FILE = "csvfile"
+CSV_LABEL = "csvlabel"
