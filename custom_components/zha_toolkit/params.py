@@ -26,7 +26,7 @@ P_EVENT_DONE = "event_done"
 P_READ_BEFORE_WRITE = "read_before_write"
 P_READ_AFTER_WRITE = "read_after_write"
 P_WRITE_IF_EQUAL = "write_if_equal"
-P_OUTCSV = "out_csv"
+P_OUTCSV = "csvout"
 P_CSVLABEL = "csvlabel"
 
 # Constants representing internal parameters keys

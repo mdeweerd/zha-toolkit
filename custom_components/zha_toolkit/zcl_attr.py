@@ -1,6 +1,8 @@
 import asyncio
 import logging
 
+from homeassistant.util import dt as dt_util
+
 from zigpy import types as t
 from zigpy.zcl import foundation as f
 from zigpy.exceptions import DeliveryError
@@ -282,6 +284,9 @@ async def attr_write(
 
     if result_read is not None:
         event_data["result_read"] = result_read
+        read_val = result_read[0][attr_id]
+    else:
+        read_val = None
 
     event_data["success"] = success
 
@@ -326,18 +331,19 @@ async def attr_write(
             except Exception:
                 attr_name = attr_id
 
+        fields.append(dt_util.utcnow().isoformat())
         fields.append(attr_name)
-        fields.append(val)
-        fields.append(f"0x{cluster.attr_id:%04X}"),
+        fields.append(read_val)
+        fields.append("0x%04X" % (attr_id) ),
         fields.append("0x%04X" % (cluster.cluster_id)),
-        fields.append(str(cluster.endpoint().endpoint_id()))
-        fields.append(str(cluster.endpoint().device.ieee))
-        fields.append("0x%04X" % (params[MANF]))
+        fields.append(cluster.endpoint.endpoint_id)
+        fields.append(str(cluster.endpoint.device.ieee))
+        fields.append(("0x%04X" % (params[MANF])) if params[MANF] is not None else "")
         u.append_to_csvfile(
             fields,
             "csv",
             params[CSV_FILE],
-            f"{attr_name}={val}",
+            f"{attr_name}={read_val}",
             listener=None,
         )
 

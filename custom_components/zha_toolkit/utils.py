@@ -15,6 +15,7 @@ from .params import (
     CMD_ID,
     CODE,
     CSV_FILE,
+    CSV_LABEL,
     DIR,
     EP_ID,
     EVT_DONE,
@@ -32,6 +33,7 @@ from .params import (
     P_CLUSTER,
     P_CMD,
     P_CODE,
+    P_CSVLABEL,
     P_DIR,
     P_ENDPOINT,
     P_EVENT_DONE,
@@ -262,7 +264,7 @@ def append_to_csvfile(fields, subdir, fname, desc, listener=None):
     import csv
 
     with open(file_name, "a") as f:
-        writer = csv.writer
+        writer = csv.writer(f)
         writer.writerow(fields)
 
     LOGGER.debug(f"Appended {desc} to '{file_name}'")
@@ -311,6 +313,8 @@ def extractParams(service):
         READ_BEFORE_WRITE: True,
         READ_AFTER_WRITE: True,
         WRITE_IF_EQUAL: False,
+        CSV_FILE: None,
+        CSV_LABEL: None,
     }
 
     # Extract parameters
@@ -412,8 +416,11 @@ def extractParams(service):
 
     if P_EVENT_SUCCESS in rawParams:
         params[EVT_SUCCESS] = rawParams[P_EVENT_SUCCESS]
-
+    LOGGER.debug("OUT %s", P_OUTCSV)
     if P_OUTCSV in rawParams:
         params[CSV_FILE] = rawParams[P_OUTCSV]
+
+    if P_CSVLABEL in rawParams:
+        params[CSV_LABEL] = rawParams[P_CSVLABEL]
 
     return params
