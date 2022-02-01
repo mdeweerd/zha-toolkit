@@ -276,13 +276,7 @@ def append_to_csvfile(fields, subdir, fname, desc, listener=None):
 # code.
 #
 def extractParams(service):  # noqa: C901
-
-    # Get best parameter set, 'extra' is legacy.
-    rawParams = service.data.get("extra")
-
-    if not isinstance(rawParams, dict):
-        # Fall back to parameters in 'data:' key
-        rawParams = service.data
+    rawParams = service.data
 
     LOGGER.debug("Parameters '%s'", rawParams)
 

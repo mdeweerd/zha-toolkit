@@ -16,8 +16,6 @@ from .params import (
 LOGGER = logging.getLogger(__name__)
 
 
-ERR001_PARAMETERS = "Expecting parameters for 'extra'"
-ERR002_DATA_MISSING = "Expecting parameter '{}'"
 ERR003_PARAMETER_MISSING = "Expecting parameter '{}'"
 ERR004_NOT_IN_CLUSTER = "In cluster 0x%04X not found for '%s', endpoint %s"
 ERR005_NOT_OUT_CLUSTER = "Out cluster 0x%04X not found for '%s', endpoint %s"
