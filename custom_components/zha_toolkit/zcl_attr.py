@@ -344,7 +344,7 @@ async def attr_write(
             "csv",
             params[CSV_FILE],
             f"{attr_name}={read_val}",
-            listener=None,
+            listener=listener,
         )
 
     # For internal use
