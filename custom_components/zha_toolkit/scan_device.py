@@ -209,7 +209,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
     from zigpy.zcl.foundation import Status
 
     LOGGER.debug("Discovering commands received")
-    direction = "received" if is_server else "generated"
+    direction = "received" if is_server else "generated"  # noqa: F841
     result = {}
     cmd_id = 0  # Discover commands starting from 0
     done = False
@@ -257,7 +257,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
     from zigpy.zcl.foundation import Status
 
     LOGGER.debug("Discovering commands generated")
-    direction = "generated" if is_server else "received"
+    direction = "generated" if is_server else "received"  # noqa: F841
     result = {}
     cmd_id = 0  # Initial index of commands to discover
     done = False

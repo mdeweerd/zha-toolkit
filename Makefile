@@ -4,8 +4,8 @@ lint_python:
 	black -l 79 .
 	codespell --ignore-words-list="hass" custom_components
 	-autoflake8 -i -r --expand-star-imports custom_components
-	flake8 . --count --ignore F841,C901,W503,B006 \
-                 --max-complexity=1 --max-line-length=79 \
+	flake8 . --count --ignore W503 \
+                 --max-complexity=20 --max-line-length=79 \
                  --show-source --statistics
 	mypy --ignore-missing-imports --install-types --non-interactive . 
 	safety check

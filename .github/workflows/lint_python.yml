@@ -14,8 +14,8 @@ jobs:
       - run: bandit --recursive --skip B101,B311 .
       - run: black --check . || true
       - run: codespell --ignore-words-list="hass"
-      - run: flake8 . --count --ignore F841,C901,W503,B006
-                      --max-complexity=21 --max-line-length=184 --show-source --statistics
+      - run: flake8 . --count --ignore W503
+                      --max-complexity=20 --max-line-length=184 --show-source --statistics
       - run: isort --check-only --profile black . || true
       - run: pip install -r requirements.txt || pip install --editable . || true
       - run: mkdir --parents --verbose .mypy_cache

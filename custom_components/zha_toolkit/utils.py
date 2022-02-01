@@ -275,7 +275,7 @@ def append_to_csvfile(fields, subdir, fname, desc, listener=None):
 # Most parameters are similar, this avoids repeating
 # code.
 #
-def extractParams(service):
+def extractParams(service):  # noqa: C901
 
     # Get best parameter set, 'extra' is legacy.
     rawParams = service.data.get("extra")
