@@ -9,6 +9,7 @@ from .params import (
     DIR,
     EP_ID,
     EXPECT_REPLY,
+    P_CMD,
     MANF,
     TRIES,
 )
@@ -34,7 +35,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data, params):
     dev = app.get_device(ieee=ieee)
 
     # Decode endpoint
-    if params[EP_ID] is None or params["endpoint_id"] == "":
+    if params[EP_ID] is None or params[EP_ID] == "":
         params[EP_ID] = u.find_endpoint(dev, params[CLUSTER_ID])
 
     if params[EP_ID] not in dev.endpoints:
@@ -59,7 +60,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data, params):
     # The command to send
     cmd_id = params[CMD_ID]
     if cmd_id is None:
-        raise Exception(ERR003_PARAMETER_MISSING, "cmd")
+        raise Exception(ERR003_PARAMETER_MISSING, P_CMD)
 
     # The direction (to in or out cluster)
     dir_int = params[DIR]

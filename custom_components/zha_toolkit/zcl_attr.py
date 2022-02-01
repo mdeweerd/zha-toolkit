@@ -40,7 +40,7 @@ async def conf_report(
 
     LOGGER.debug(params)
     # Get best endpoint
-    if params[EP_ID] is None or params["endpoint_id"] == "":
+    if params[EP_ID] is None or params[EP_ID] == "":
         params[EP_ID] = u.find_endpoint(dev, params[CLUSTER_ID])
 
     if params[EP_ID] not in dev.endpoints:
@@ -120,7 +120,7 @@ async def attr_write(  # noqa: C901
     dev = app.get_device(ieee=ieee)
 
     # Decode endpoint
-    if params[EP_ID] is None or params["endpoint_id"] == "":
+    if params[EP_ID] is None or params[EP_ID] == "":
         params[EP_ID] = u.find_endpoint(dev, params[CLUSTER_ID])
 
     if params[EP_ID] not in dev.endpoints:
