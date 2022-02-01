@@ -334,11 +334,13 @@ async def attr_write(
         fields.append(dt_util.utcnow().isoformat())
         fields.append(attr_name)
         fields.append(read_val)
-        fields.append("0x%04X" % (attr_id) ),
+        fields.append("0x%04X" % (attr_id)),
         fields.append("0x%04X" % (cluster.cluster_id)),
         fields.append(cluster.endpoint.endpoint_id)
         fields.append(str(cluster.endpoint.device.ieee))
-        fields.append(("0x%04X" % (params[MANF])) if params[MANF] is not None else "")
+        fields.append(
+            ("0x%04X" % (params[MANF])) if params[MANF] is not None else ""
+        )
         u.append_to_csvfile(
             fields,
             "csv",

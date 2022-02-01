@@ -290,7 +290,35 @@ data:
   allow_create: True
   # The manufacturer should be set only for manufacturer attributes
   manf: 0x1212
+  # Write read value to CSV file
+  # Can be useful in automation/script
+  # Format: <timestamp>,<name|attr_id>,<value>,<attr_id>,<cluster_id>,<ep_id>,<ieee>,<manf_id>
+  # Optional: CSV file to write attribute to - located in /config/csv/...
+  csvout: testcsv.csv
+  # optional: csvlabel (default label = name from zigpy or attribute id)
+  csvlabel: MyAttributeLabel
 ```
+
+
+Example: read with write to CSV file
+```yaml
+service: zha_toolkit.execute
+data:
+  command: attr_read
+  ieee: light.texasinstruments_ti_samplelight_d77add01_level_light_color_on_off
+  event_done: zha_done
+  attribute: 0
+  cluster: 0
+  csvout: testcsv.csv
+```
+
+Example of CSV output in /config/csv/testcsv.csv (header may be added in the future)
+```csv
+2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,
+```
+
+
+
 
 ## `attr_write`: Write(/Read) an attribute value
 
