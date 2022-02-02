@@ -9,7 +9,7 @@ from .params import (
     DIR,
     EP_ID,
     EXPECT_REPLY,
-    P_CMD,
+    USER_PARAMS as P,
     MANF,
     TRIES,
 )
@@ -60,7 +60,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, event_data, params):
     # The command to send
     cmd_id = params[CMD_ID]
     if cmd_id is None:
-        raise Exception(ERR003_PARAMETER_MISSING, P_CMD)
+        raise Exception(ERR003_PARAMETER_MISSING, P.CMD)
 
     # The direction (to in or out cluster)
     dir_int = params[DIR]
