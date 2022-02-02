@@ -6,34 +6,7 @@ from zigpy import types as t
 from homeassistant.util.json import save_json
 
 from .params import USER_PARAMS as P
-from .params import (
-    ALLOW_CREATE,
-    ARGS,
-    ATTR_ID,
-    ATTR_TYPE,
-    ATTR_VAL,
-    CLUSTER_ID,
-    CMD_ID,
-    CODE,
-    CSV_FILE,
-    CSV_LABEL,
-    DIR,
-    EP_ID,
-    EVT_DONE,
-    EVT_FAIL,
-    EVT_SUCCESS,
-    EXPECT_REPLY,
-    MANF,
-    MAX_INTERVAL,
-    MIN_INTERVAL,
-    READ_AFTER_WRITE,
-    READ_BEFORE_WRITE,
-    REPORTABLE_CHANGE,
-    STATE_ATTR,
-    STATE_ID,
-    TRIES,
-    WRITE_IF_EQUAL,
-)
+from .params import INTERNAL_PARAMS as p
 
 LOGGER = logging.getLogger(__name__)
 
@@ -258,79 +231,79 @@ def extractParams(service):  # noqa: C901
     # Potential parameters, initialized to None
     # TODO: Not all parameters are decoded in this function yet
     params = {
-        CMD_ID: None,
-        EP_ID: None,
-        CLUSTER_ID: None,
-        ATTR_ID: None,
-        ATTR_TYPE: None,
-        ATTR_VAL: None,
-        CODE: None,  # Install code (join with code)
-        MIN_INTERVAL: None,
-        MAX_INTERVAL: None,
-        REPORTABLE_CHANGE: None,
-        DIR: 0,
-        MANF: None,
-        TRIES: 1,
-        EXPECT_REPLY: True,
-        ARGS: [],
-        STATE_ID: None,
-        STATE_ATTR: None,
-        ALLOW_CREATE: False,
-        EVT_SUCCESS: None,
-        EVT_FAIL: None,
-        EVT_DONE: None,
-        READ_BEFORE_WRITE: True,
-        READ_AFTER_WRITE: True,
-        WRITE_IF_EQUAL: False,
-        CSV_FILE: None,
-        CSV_LABEL: None,
+        p.CMD_ID: None,
+        p.EP_ID: None,
+        p.CLUSTER_ID: None,
+        p.ATTR_ID: None,
+        p.ATTR_TYPE: None,
+        p.ATTR_VAL: None,
+        p.CODE: None,  # Install code (join with code)
+        p.MIN_INTERVAL: None,
+        p.MAX_INTERVAL: None,
+        p.REPORTABLE_CHANGE: None,
+        p.DIR: 0,
+        p.MANF: None,
+        p.TRIES: 1,
+        p.EXPECT_REPLY: True,
+        p.ARGS: [],
+        p.STATE_ID: None,
+        p.STATE_ATTR: None,
+        p.ALLOW_CREATE: False,
+        p.EVT_SUCCESS: None,
+        p.EVT_FAIL: None,
+        p.EVT_DONE: None,
+        p.READ_BEFORE_WRITE: True,
+        p.READ_AFTER_WRITE: True,
+        p.WRITE_IF_EQUAL: False,
+        p.CSV_FILE: None,
+        p.CSV_LABEL: None,
     }
 
     # Extract parameters
 
     # Endpoint to send command to
     if P.ENDPOINT in rawParams:
-        params[EP_ID] = str2int(rawParams[P.ENDPOINT])
+        params[p.EP_ID] = str2int(rawParams[P.ENDPOINT])
 
     # Cluster to send command to
     if P.CLUSTER in rawParams:
-        params[CLUSTER_ID] = str2int(rawParams[P.CLUSTER])
+        params[p.CLUSTER_ID] = str2int(rawParams[P.CLUSTER])
 
     # Attribute to send command to
     if P.ATTRIBUTE in rawParams:
-        params[ATTR_ID] = str2int(rawParams[P.ATTRIBUTE])
+        params[p.ATTR_ID] = str2int(rawParams[P.ATTRIBUTE])
 
     # Attribute to send command to
     if P.ATTR_TYPE in rawParams:
-        params[ATTR_TYPE] = str2int(rawParams[P.ATTR_TYPE])
+        params[p.ATTR_TYPE] = str2int(rawParams[P.ATTR_TYPE])
 
     # Attribute to send command to
     if P.ATTR_VAL in rawParams:
-        params[ATTR_VAL] = str2int(rawParams[P.ATTR_VAL])
+        params[p.ATTR_VAL] = str2int(rawParams[P.ATTR_VAL])
 
     # Install code
     if P.CODE in rawParams:
-        params[CODE] = str2int(rawParams[P.CODE])
+        params[p.CODE] = str2int(rawParams[P.CODE])
 
     # The command to send
     if P.CMD in rawParams:
-        params[CMD_ID] = str2int(rawParams[P.CMD])
+        params[p.CMD_ID] = str2int(rawParams[P.CMD])
 
     # The direction (to in or out cluster)
     if P.DIR in rawParams:
-        params[DIR] = str2int(rawParams[P.DIR])
+        params[p.DIR] = str2int(rawParams[P.DIR])
 
     # Get manufacturer
     if P.MANF in rawParams:
-        params[MANF] = str2int(rawParams[P.MANF])
+        params[p.MANF] = str2int(rawParams[P.MANF])
 
     # Get tries
     if P.TRIES in rawParams:
-        params[TRIES] = str2int(rawParams[P.TRIES])
+        params[p.TRIES] = str2int(rawParams[P.TRIES])
 
     # Get expect_reply
     if P.EXPECT_REPLY in rawParams:
-        params[EXPECT_REPLY] = str2int(rawParams[P.EXPECT_REPLY]) == 0
+        params[p.EXPECT_REPLY] = str2int(rawParams[P.EXPECT_REPLY]) == 0
 
     if P.ARGS in rawParams:
         cmd_args = []
@@ -344,52 +317,52 @@ def extractParams(service):  # noqa: C901
                 # lval = t.LVList(lval)
             cmd_args.append(lval)
             LOGGER.debug("cmd converted arg %s", lval)
-        params[ARGS] = cmd_args
+        params[p.ARGS] = cmd_args
 
     if P.MIN_INTRVL in rawParams:
-        params[MIN_INTERVAL] = str2int(rawParams[P.MIN_INTRVL])
+        params[p.MIN_INTERVAL] = str2int(rawParams[P.MIN_INTRVL])
     if P.MAX_INTRVL in rawParams:
-        params[MAX_INTERVAL] = str2int(rawParams[P.MAX_INTRVL])
+        params[p.MAX_INTERVAL] = str2int(rawParams[P.MAX_INTRVL])
     if P.REPTBLE_CHG in rawParams:
-        params[REPORTABLE_CHANGE] = str2int(rawParams[P.REPTBLE_CHG])
+        params[p.REPORTABLE_CHANGE] = str2int(rawParams[P.REPTBLE_CHG])
 
     if P.STATE_ID in rawParams:
-        params[STATE_ID] = rawParams[P.STATE_ID]
+        params[p.STATE_ID] = rawParams[P.STATE_ID]
 
     if P.STATE_ATTR in rawParams:
-        params[STATE_ATTR] = rawParams[P.STATE_ATTR]
+        params[p.STATE_ATTR] = rawParams[P.STATE_ATTR]
 
     if P.READ_BEFORE_WRITE in rawParams:
-        params[READ_BEFORE_WRITE] = str2bool(rawParams[P.READ_BEFORE_WRITE])
+        params[p.READ_BEFORE_WRITE] = str2bool(rawParams[P.READ_BEFORE_WRITE])
 
     if P.READ_AFTER_WRITE in rawParams:
-        params[READ_AFTER_WRITE] = str2bool(rawParams[P.READ_AFTER_WRITE])
+        params[p.READ_AFTER_WRITE] = str2bool(rawParams[P.READ_AFTER_WRITE])
 
     if P.WRITE_IF_EQUAL in rawParams:
-        params[WRITE_IF_EQUAL] = str2bool(rawParams[P.WRITE_IF_EQUAL])
+        params[p.WRITE_IF_EQUAL] = str2bool(rawParams[P.WRITE_IF_EQUAL])
 
     if P.STATE_ATTR in rawParams:
-        params[STATE_ATTR] = rawParams[P.STATE_ATTR]
+        params[p.STATE_ATTR] = rawParams[P.STATE_ATTR]
 
     if P.ALLOW_CREATE in rawParams:
         allow = str2int(rawParams[P.ALLOW_CREATE])
-        params[ALLOW_CREATE] = (allow is not None) and (
+        params[p.ALLOW_CREATE] = (allow is not None) and (
             (allow is True) or (allow == 1)
         )
 
     if P.EVENT_DONE in rawParams:
-        params[EVT_DONE] = rawParams[P.EVENT_DONE]
+        params[p.EVT_DONE] = rawParams[P.EVENT_DONE]
 
     if P.EVENT_FAIL in rawParams:
-        params[EVT_FAIL] = rawParams[P.EVENT_FAIL]
+        params[p.EVT_FAIL] = rawParams[P.EVENT_FAIL]
 
     if P.EVENT_SUCCESS in rawParams:
-        params[EVT_SUCCESS] = rawParams[P.EVENT_SUCCESS]
+        params[p.EVT_SUCCESS] = rawParams[P.EVENT_SUCCESS]
     LOGGER.debug("OUT %s", P.OUTCSV)
     if P.OUTCSV in rawParams:
-        params[CSV_FILE] = rawParams[P.OUTCSV]
+        params[p.CSV_FILE] = rawParams[P.OUTCSV]
 
     if P.CSVLABEL in rawParams:
-        params[CSV_LABEL] = rawParams[P.CSVLABEL]
+        params[p.CSV_LABEL] = rawParams[P.CSVLABEL]
 
     return params

@@ -6,7 +6,7 @@ import zigpy.types as t
 from zigpy.exceptions import DeliveryError
 
 from . import utils as u
-from .params import TRIES
+from .params import INTERNAL_PARAMS as p
 
 LOGGER = logging.getLogger(__name__)
 
@@ -123,10 +123,10 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
 
     if method == 0:
         # Works on HA 2021.12.10 & ZNP - rejoin is 1:
-        res = await src.zdo.request(0x0034, src.ieee, 0x01, params[TRIES])
+        res = await src.zdo.request(0x0034, src.ieee, 0x01, params[p.TRIES])
     elif method == 1:
         # Works on ZNP but apparently not on bellows:
-        triesToGo = params[TRIES]
+        triesToGo = params[p.TRIES]
         tryIdx = 0
         event_data["success"] = False
         while triesToGo >= 1:
@@ -151,15 +151,15 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     elif method == 2:
         # Results in rejoin bit 0 on ZNP
         LOGGER.debug("Using Method 2 for Leave")
-        res = await src.zdo.request(0x0034, src.ieee, 0x80, params[TRIES])
+        res = await src.zdo.request(0x0034, src.ieee, 0x80, params[p.TRIES])
     elif method == 3:
         # Results in rejoin and leave children bit set on ZNP
         LOGGER.debug("Using Method 3 for Leave")
-        res = await src.zdo.request(0x0034, src.ieee, 0xFF, params[TRIES])
+        res = await src.zdo.request(0x0034, src.ieee, 0xFF, params[p.TRIES])
     elif method == 4:
         # Results in rejoin and leave children bit set on ZNP
         LOGGER.debug("Using Method 4 for Leave")
-        res = await src.zdo.request(0x0034, src.ieee, 0x83, params[TRIES])
+        res = await src.zdo.request(0x0034, src.ieee, 0x83, params[p.TRIES])
     else:
         res = "Not executed, no valid 'method' defined in code"
 
