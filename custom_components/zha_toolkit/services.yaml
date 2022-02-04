@@ -181,3 +181,98 @@ execute:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
+
+write_attr:
+  description: Write Attribute (ZHA-Toolkit)
+  fields:
+    ieee:
+      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
+      example: "00:0d:6f:00:05:7d:2d:34"
+      selector:
+        entity:
+          integration: zha
+    manf:
+      description: Manufacturer id
+      selector:
+        number:
+          min: 1
+          max: 0xFFFF
+    endpoint:
+      description: target endpoint
+      selector:
+        number:
+          min: 1
+          max: 255 
+    cluster:
+      description: target cluster
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    attribute:
+      description: target attribute id (or name, accepted in most cases)
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    attr_type:
+      description: Attribute type (to write, ...)
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+    attr_val:
+      description: Attribute value to write
+      selector:
+        text:
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0 
+          max: 255
+    state_id:
+      description: When defined, name of state to write the read attribute value to
+      example: sensor.example
+      selector:
+        text:
+    state_attr:
+      description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
+      example: other_attr 
+      selector:
+        text:
+    event_success:
+      description: Event name in case of success (currently for attr_read, attr_write).  Has event data with relevant attributes.
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure (currently for attr_read, attr_write).  Has event data with relevant attributes.
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    allow_create:
+       description: Allow state creation (given by state_id) if it does not exist
+       selector:
+         boolean:
+    read_before_write:
+       description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
+       selector:
+         boolean:
+    read_after_write:
+       description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+       selector:
+         boolean:
+    write_if_equal:
+       description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+       selector:
+         boolean:
+    expect_reply:
+       description: "Wait for/expect a reply (not used yet)"
+       selector:
+         boolean:
