@@ -774,6 +774,45 @@ data:
 ```
 
 
+## User method
+
+You can add your own Python commands in `local/user.py`.
+Your file is reloaded on each call and will survive updates because
+it's inside the `local` directory.
+
+
+Example of `user_test` that has the expected method signature, 
+but just prints that it's executed:
+
+```python
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
+
+async def user_test(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    LOGGER.debug(f"User test called")
+```
+
+The service call to execute it looks like this:
+```yaml
+service: zha_toolkit.execute
+data:
+  command: user_test
+```
+
+You're free to reuse the parameters already available for the other commands.
+If you add your own you'll need to parse them yourself from `service.data`.
+You can checkout `utils.py/extractParams` to look for ideas, and you can
+examine the other methods to see how you can use ZHA.
+
+This is a powerfull tool to develop your own custom tool, and propose
+it for inclusion in the zha-toolkit when it's ready and of potential use
+to others.
+
+
 # Credits/Motivation
 
 This project was forked from [Adminiguaga/zha_custom](https://github.com/Adminiuga/zha_custom)
