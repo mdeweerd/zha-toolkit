@@ -302,8 +302,8 @@ write_attr:
           max: 0xFFFF
     attr_val:
       description: Attribute value to write
-      selector:
       required: true
+      selector:
         text:
     tries:
       description: Number of times the zigbee packet should be attempted

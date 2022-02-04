@@ -35,255 +35,255 @@ SERVICE_SCHEMAS = {
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CMD): cv.string,
-            vol.Optional(P.ENDPOINT): cv.Range(0, 255),
-            vol.Optional(P.CLUSTER): cv.Range(0, 0xFFFF),
-            vol.Optional(P.ATTRIBUTE): cv.Any(cv.string, cv.Range(0, 0xFFFF)),
-            vol.Optional(P.ATTR_TYPE): cv.Any(
-                cv.string, cv.int
+            vol.Optional(P.ENDPOINT): cv.byte,
+            vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Optional(P.ATTRIBUTE): vol.Any(cv.string, vol.Range(0, 0xFFFF)),
+            vol.Optional(P.ATTR_TYPE): vol.Any(
+                cv.string, int
             ),  # String is for later
-            vol.Optional(P.ATTR_VAL): cv.Any(cv.string, cv.int, cv.list),
-            vol.Optional(P.CODE): cv.Any(
-                cv.string, cv.list
+            vol.Optional(P.ATTR_VAL): vol.Any(cv.string, int, list),
+            vol.Optional(P.CODE): vol.Any(
+                cv.string, list
             ),  # list is for later
-            vol.Optional(P.MIN_INTRVL): cv.int,
-            vol.Optional(P.MAX_INTRVL): cv.int,
-            vol.Optional(P.REPTBLE_CHG): cv.int,
-            vol.Optional(P.DIR): cv.Boolean,
-            vol.Optional(P.MANF): cv.Range(0, 0xFFFF),
-            vol.Optional(P.EXPECT_REPLY): cv.Bool,
-            vol.Optional(P.ARGS): cv.Any(
-                cv.int, cv.string, cv.list
+            vol.Optional(P.MIN_INTRVL): int,
+            vol.Optional(P.MAX_INTRVL): int,
+            vol.Optional(P.REPTBLE_CHG): int,
+            vol.Optional(P.DIR): cv.boolean,
+            vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+            vol.Optional(P.EXPECT_REPLY): cv.boolean,
+            vol.Optional(P.ARGS): vol.Any(
+                int, cv.string, list
             ),  # Arguments to command
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
-            vol.Optional(P.ALLOW_CREATE): cv.bool,
-            vol.Optional(P.READ_BEFORE_WRITE): cv.bool,
-            vol.Optional(P.READ_AFTER_WRITE): cv.bool,
-            vol.Optional(P.WRITE_IF_EQUAL): cv.bool,
+            vol.Optional(P.ALLOW_CREATE): cv.boolean,
+            vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
+            vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
+            vol.Optional(P.WRITE_IF_EQUAL): cv.boolean,
             vol.Optional(P.OUTCSV): cv.string,
             vol.Optional(P.CSVLABEL): cv.string,
         },
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     # All services with their specific parameters (List being completed)
     S.ADD_GROUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ADD_TO_GROUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ALL_ROUTES_AND_NEIGHBOURS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ATTR_READ: vol.Schema(
         {
-            vol.Optional(P.ENDPOINT): cv.Range(0, 255),
-            vol.Required(P.CLUSTER): cv.Range(0, 0xFFFF),
-            vol.Required(P.ATTRIBUTE): cv.Any(cv.string, cv.Range(0, 0xFFFF)),
-            vol.Optional(P.MANF): cv.Range(0, 0xFFFF),
-            vol.Optional(P.EXPECT_REPLY): cv.Bool,
+            vol.Optional(P.ENDPOINT): vol.Range(0, 255),
+            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Required(P.ATTRIBUTE): vol.Any(cv.string, vol.Range(0, 0xFFFF)),
+            vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+            vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
-            vol.Optional(P.ALLOW_CREATE): cv.bool,
+            vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.OUTCSV): cv.string,
             vol.Optional(P.CSVLABEL): cv.string,
         },
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ATTR_WRITE: vol.Schema(
         {
-            vol.Optional(P.ENDPOINT): cv.Range(0, 255),
-            vol.Required(P.CLUSTER): cv.Range(0, 0xFFFF),
-            vol.Required(P.ATTRIBUTE): cv.Any(cv.string, cv.Range(0, 0xFFFF)),
-            vol.Required(P.ATTR_TYPE): cv.Any(
-                cv.string, cv.int
+            vol.Optional(P.ENDPOINT): vol.Range(0, 255),
+            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Required(P.ATTRIBUTE): vol.Any(cv.string, vol.Range(0, 0xFFFF)),
+            vol.Required(P.ATTR_TYPE): vol.Any(
+                cv.string, int
             ),  # String is for later
-            vol.Required(P.ATTR_VAL): cv.Any(cv.string, cv.int, cv.list),
-            vol.Optional(P.MANF): cv.Range(0, 0xFFFF),
-            vol.Optional(P.EXPECT_REPLY): cv.Bool,
+            vol.Required(P.ATTR_VAL): vol.Any(cv.string, vol.Coerce(int), list),
+            vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+            vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
-            vol.Optional(P.ALLOW_CREATE): cv.bool,
-            vol.Optional(P.READ_BEFORE_WRITE): cv.bool,
-            vol.Optional(P.READ_AFTER_WRITE): cv.bool,
-            vol.Optional(P.WRITE_IF_EQUAL): cv.bool,
+            vol.Optional(P.ALLOW_CREATE): cv.boolean,
+            vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
+            vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
+            vol.Optional(P.WRITE_IF_EQUAL): cv.boolean,
             vol.Optional(P.OUTCSV): cv.string,
             vol.Optional(P.CSVLABEL): cv.string,
         },
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.BACKUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.BIND_GROUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.BIND_IEEE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.CONF_REPORT: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_ADD_KEY: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_BACKUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_CLEAR_KEYS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_GET_CONFIG_VALUE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_GET_IEEE_BY_NWK: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_GET_KEYS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_GET_POLICY: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_GET_TOKEN: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_GET_VALUE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_SET_CHANNEL: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_START_MFG: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.GET_GROUPS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.GET_ROUTES_AND_NEIGHBOURS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.GET_ZLL_GROUPS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.HANDLE_JOIN: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.IEEE_PING: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.LEAVE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.OTA_NOTIFY: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.REJOIN: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_ALL_GROUPS: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_FROM_GROUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_GROUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.SCAN_DEVICE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.SINOPE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.UNBIND_COORDINATOR: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.UNBIND_GROUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZCL_CMD: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_FLOOD_PARENT_ANNCE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_JOIN_WITH_CODE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_SCAN_NOW: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_UPDATE_NWK_ID: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZIGPY_DECONZ: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_BACKUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_NVRAM_BACKUP: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_NVRAM_RESET: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_NVRAM_RESTORE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_RESTORE: vol.Schema(
         {},
-        extra=cv.ALLOW_EXTRA,
+        extra=vol.ALLOW_EXTRA,
     ),
 }
 
 
 COMMON_SCHEMA = {
-    vol.Optional(P.TRIES): cv.int,
+    vol.Optional(P.TRIES): cv.positive_int,
     vol.Optional(P.EVENT_SUCCESS): cv.string,
     vol.Optional(P.EVENT_FAIL): cv.string,
     vol.Optional(P.EVENT_DONE): cv.string,
@@ -405,7 +405,7 @@ async def async_setup(hass, config):  # noqa: C901
             raise handler_exception
 
     # Set up all service schemas
-    for key, value in SERVICE_SCHEMAS:
+    for key, value in SERVICE_SCHEMAS.items():
         value.extend(COMMON_SCHEMA)
         hass.services.async_register(
             DOMAIN,
