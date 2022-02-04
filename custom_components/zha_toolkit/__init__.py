@@ -34,526 +34,263 @@ SERVICE_SCHEMAS = {
             vol.Optional(ATTR_IEEE): cv.string,
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
-            vol.Optional(P.CMD) : cv.int,
-            vol.Optional(P.ENDPOINT) : cv.int,
-            vol.Optional(P.CLUSTER) : cv.int,
-            vol.Optional(P.ATTRIBUTE) : cv.int,
-            vol.Optional(P.ATTR_TYPE) : cv.int,
-            vol.Optional(P.ATTR_VAL) : cv.int,
-            vol.Optional(P.CODE) : cv.int,
-            vol.Optional(P.MIN_INTRVL) : cv.int,
-            vol.Optional(P.MAX_INTRVL) : cv.int,
-            vol.Optional(P.REPTBLE_CHG) : cv.int,
-            vol.Optional(P.DIR) : cv.int,
-            vol.Optional(P.MANF) : cv.int,
-            vol.Optional(P.TRIES) : cv.int,
-            vol.Optional(P.EXPECT_REPLY) : cv.int,
-            vol.Optional(P.ARGS) : cv.int,
-            vol.Optional(P.STATE_ID) : cv.int,
-            vol.Optional(P.STATE_ATTR) : cv.int,
-            vol.Optional(P.ALLOW_CREATE) : cv.int,
-            vol.Optional(P.EVENT_SUCCESS) : cv.int,
-            vol.Optional(P.EVENT_FAIL) : cv.int,
-            vol.Optional(P.EVENT_DONE) : cv.int,
-            vol.Optional(P.READ_BEFORE_WRITE) : cv.int,
-            vol.Optional(P.READ_AFTER_WRITE) : cv.int,
-            vol.Optional(P.WRITE_IF_EQUAL) : cv.int,
-            vol.Optional(P.OUTCSV) : cv.int,
-            vol.Optional(P.CSVLABEL) : cv.int,
+            vol.Optional(P.CMD): cv.string,
+            vol.Optional(P.ENDPOINT): cv.Range(0, 255),
+            vol.Optional(P.CLUSTER): cv.Range(0, 0xFFFF),
+            vol.Optional(P.ATTRIBUTE): cv.Any(cv.string, cv.Range(0, 0xFFFF)),
+            vol.Optional(P.ATTR_TYPE): cv.Any(
+                cv.string, cv.int
+            ),  # String is for later
+            vol.Optional(P.ATTR_VAL): cv.Any(cv.string, cv.int, cv.list),
+            vol.Optional(P.CODE): cv.Any(
+                cv.string, cv.list
+            ),  # list is for later
+            vol.Optional(P.MIN_INTRVL): cv.int,
+            vol.Optional(P.MAX_INTRVL): cv.int,
+            vol.Optional(P.REPTBLE_CHG): cv.int,
+            vol.Optional(P.DIR): cv.Boolean,
+            vol.Optional(P.MANF): cv.Range(0, 0xFFFF),
+            vol.Optional(P.EXPECT_REPLY): cv.Bool,
+            vol.Optional(P.ARGS): cv.Any(
+                cv.int, cv.string, cv.list
+            ),  # Arguments to command
+            vol.Optional(P.STATE_ID): cv.string,
+            vol.Optional(P.STATE_ATTR): cv.string,
+            vol.Optional(P.ALLOW_CREATE): cv.bool,
+            vol.Optional(P.READ_BEFORE_WRITE): cv.bool,
+            vol.Optional(P.READ_AFTER_WRITE): cv.bool,
+            vol.Optional(P.WRITE_IF_EQUAL): cv.bool,
+            vol.Optional(P.OUTCSV): cv.string,
+            vol.Optional(P.CSVLABEL): cv.string,
         },
+        extra=cv.ALLOW_EXTRA,
+    ),
+    # All services with their specific parameters (List being completed)
     S.ADD_GROUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
     S.ADD_TO_GROUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
     S.ALL_ROUTES_AND_NEIGHBOURS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
     S.ATTR_READ: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ATTR_WRITE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.BACKUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.BIND_GROUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.BIND_IEEE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.CONF_REPORT: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_ADD_KEY: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_BACKUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_CLEAR_KEYS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_GET_CONFIG_VALUE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_GET_IEEE_BY_NWK: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_GET_KEYS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_GET_POLICY: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_GET_TOKEN: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_GET_VALUE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_SET_CHANNEL: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.EZSP_START_MFG: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.GET_GROUPS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.GET_ROUTES_AND_NEIGHBOURS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.GET_ZLL_GROUPS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.HANDLE_JOIN: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.IEEE_PING: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.LEAVE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.OTA_NOTIFY: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.REJOIN: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.REMOVE_ALL_GROUPS: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.REMOVE_FROM_GROUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.REMOVE_GROUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.SCAN_DEVICE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.SINOPE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.UNBIND_COORDINATOR: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.UNBIND_GROUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZCL_CMD: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZDO_FLOOD_PARENT_ANNCE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZDO_JOIN_WITH_CODE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZDO_SCAN_NOW: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZDO_UPDATE_NWK_ID: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZIGPY_DECONZ: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZNP_BACKUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZNP_NVRAM_BACKUP: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZNP_NVRAM_RESET: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZNP_NVRAM_RESTORE: vol.Schema(
-            {
-            },
-            extra=vol.ALLOW_EXTRA,
-        ),
-    S.ZNP_RESTORE: vol.Schema(
         {
+            vol.Optional(P.ENDPOINT): cv.Range(0, 255),
+            vol.Required(P.CLUSTER): cv.Range(0, 0xFFFF),
+            vol.Required(P.ATTRIBUTE): cv.Any(cv.string, cv.Range(0, 0xFFFF)),
+            vol.Optional(P.MANF): cv.Range(0, 0xFFFF),
+            vol.Optional(P.EXPECT_REPLY): cv.Bool,
+            vol.Optional(P.STATE_ID): cv.string,
+            vol.Optional(P.STATE_ATTR): cv.string,
+            vol.Optional(P.ALLOW_CREATE): cv.bool,
+            vol.Optional(P.OUTCSV): cv.string,
+            vol.Optional(P.CSVLABEL): cv.string,
         },
-        extra=vol.ALLOW_EXTRA,
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ATTR_WRITE: vol.Schema(
+        {
+            vol.Optional(P.ENDPOINT): cv.Range(0, 255),
+            vol.Required(P.CLUSTER): cv.Range(0, 0xFFFF),
+            vol.Required(P.ATTRIBUTE): cv.Any(cv.string, cv.Range(0, 0xFFFF)),
+            vol.Required(P.ATTR_TYPE): cv.Any(
+                cv.string, cv.int
+            ),  # String is for later
+            vol.Required(P.ATTR_VAL): cv.Any(cv.string, cv.int, cv.list),
+            vol.Optional(P.MANF): cv.Range(0, 0xFFFF),
+            vol.Optional(P.EXPECT_REPLY): cv.Bool,
+            vol.Optional(P.STATE_ID): cv.string,
+            vol.Optional(P.STATE_ATTR): cv.string,
+            vol.Optional(P.ALLOW_CREATE): cv.bool,
+            vol.Optional(P.READ_BEFORE_WRITE): cv.bool,
+            vol.Optional(P.READ_AFTER_WRITE): cv.bool,
+            vol.Optional(P.WRITE_IF_EQUAL): cv.bool,
+            vol.Optional(P.OUTCSV): cv.string,
+            vol.Optional(P.CSVLABEL): cv.string,
+        },
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.BACKUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.BIND_GROUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.BIND_IEEE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.CONF_REPORT: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_ADD_KEY: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_BACKUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_CLEAR_KEYS: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_GET_CONFIG_VALUE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_GET_IEEE_BY_NWK: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_GET_KEYS: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_GET_POLICY: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_GET_TOKEN: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_GET_VALUE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_SET_CHANNEL: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.EZSP_START_MFG: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.GET_GROUPS: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.GET_ROUTES_AND_NEIGHBOURS: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.GET_ZLL_GROUPS: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.HANDLE_JOIN: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.IEEE_PING: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.LEAVE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.OTA_NOTIFY: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.REJOIN: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.REMOVE_ALL_GROUPS: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.REMOVE_FROM_GROUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.REMOVE_GROUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.SCAN_DEVICE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.SINOPE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.UNBIND_COORDINATOR: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.UNBIND_GROUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZCL_CMD: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZDO_FLOOD_PARENT_ANNCE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZDO_JOIN_WITH_CODE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZDO_SCAN_NOW: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZDO_UPDATE_NWK_ID: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZIGPY_DECONZ: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZNP_BACKUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZNP_NVRAM_BACKUP: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZNP_NVRAM_RESET: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZNP_NVRAM_RESTORE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
+    ),
+    S.ZNP_RESTORE: vol.Schema(
+        {},
+        extra=cv.ALLOW_EXTRA,
     ),
 }
 
-# Constants representing internal parameters keys
-class INTERNAL_PARAMS_consts:
-    __slots__ = ()
-    ALLOW_CREATE = "allow_create"
-    ARGS = "args"
-    ATTR_ID = "attr_id"
-    ATTR_TYPE = "attr_type"
-    ATTR_VAL = "attr_val"
-    CLUSTER_ID = "cluster_id"
-    CMD_ID = "cmd_id"
-    CODE = "code"
-    DIR = "dir"
-    EP_ID = "endpoint_id"
-    EVT_DONE = "event_done"
-    EVT_FAIL = "event_fail"
-    EVT_SUCCESS = "event_success"
-    EXPECT_REPLY = "expect_reply"
-    MANF = "manf"
-    MAX_INTERVAL = "max_interval"
-    MIN_INTERVAL = "min_interval"
-    READ_AFTER_WRITE = "read_after_write"
-    READ_BEFORE_WRITE = "read_before_write"
-    REPORTABLE_CHANGE = "reportable_change"
-    STATE_ATTR = "state_attr"
-    STATE_ID = "state_id"
-    TRIES = "tries"
-    WRITE_IF_EQUAL = "write_if_equal"
-    CSV_FILE = "csvfile"
-    CSV_LABEL = "csvlabel"
 
-
-INTERNAL_PARAMS = INTERNAL_PARAMS_consts()
-USER_PARAMS = USER_PARAMS_consts()
-SERVICES = SERVICE_consts()
-        },
-        extra=ALLOW_EXTRA
-    ),
-    # All services with their specific parameters (List being extended)
+COMMON_SCHEMA = {
+    vol.Optional(P.TRIES): cv.int,
+    vol.Optional(P.EVENT_SUCCESS): cv.string,
+    vol.Optional(P.EVENT_FAIL): cv.string,
+    vol.Optional(P.EVENT_DONE): cv.string,
 }
 
-#:Any(xx,yy)
-#SCHEMA.extend
 
-COMMON_SCHEMA = vol.Schema(
-    manf:
-      description: Manufacturer id
-      selector:
-        number:
-          min: 1
-          max: 0xFFFF
-    cmd:
-      description: Command Id (zcl_cmd)
-      selector:
-        number:
-          min: 0
-          max: 255 
-    endpoint:
-      description: target endpoint
-      selector:
-        number:
-          min: 1
-          max: 255 
-    cluster:
-      description: target cluster
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    attribute:
-      description: target attribute id (or name, accepted in most cases)
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    attr_type:
-      description: Attribute type (to write, ...)
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    attr_val:
-      description: Attribute value to write
-      selector:
-        text:
-    min_interval:
-      description: Minimum report interval (seconds)
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    max_interval:
-      description: Maximum report interval (seconds)
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    reportable_change:
-      description: Minimum change before reporting
-      selector:
-        number:
-          min: 0
-          max: 65535
-    dir:
-      description: Direction indicator, according to command
-      selector:
-        number:
-          min: 0
-          max: 1  
-    tries:
-      description: Number of times the zigbee packet should be attempted
-      selector:
-        number:
-          min: 0 
-          max: 255
-    state_id:
-      description: When defined, name of state to write the read attribute value to
-      example: sensor.example
-      selector:
-        text:
-    state_attr:
-      description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
-      example: other_attr 
-      selector:
-        text:
-    event_success:
-      description: Event name in case of success (currently for attr_read, attr_write).  Has event data with relevant attributes.
-      example: my_read_success_trigger_event
-      selector:
-        text:
-    event_fail:
-      description: Event name in case of failure (currently for attr_read, attr_write).  Has event data with relevant attributes.
-      example: my_read_fail_trigger_event
-      selector:
-        text:
-    event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
-      example: my_read_done_trigger_event
-      selector:
-        text:
-    allow_create:
-       description: Allow state creation (given by state_id) if it does not exist
-       selector:
-         boolean:
-    read_before_write:
-       description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
-       selector:
-         boolean:
-    read_after_write:
-       description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
-       selector:
-         boolean:
-    write_if_equal:
-       description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
-       selector:
-         boolean:
-    expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
-
-write_attr:
-  description: Write Attribute (ZHA-Toolkit)
-  fields:
-    ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
-      selector:
-        entity:
-          integration: zha
-    manf:
-      description: Manufacturer id
-      selector:
-        number:
-          min: 1
-          max: 0xFFFF
-    endpoint:
-      description: target endpoint
-      selector:
-        number:
-          min: 1
-          max: 255 
-    cluster:
-      description: target cluster
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    attribute:
-      description: target attribute id (or name, accepted in most cases)
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    attr_type:
-      description: Attribute type (to write, ...)
-      selector:
-        number:
-          min: 0
-          max: 0xFFFF
-    attr_val:
-      description: Attribute value to write
-      selector:
-        text:
-    tries:
-      description: Number of times the zigbee packet should be attempted
-      selector:
-        number:
-          min: 0 
-          max: 255
-    state_id:
-      description: When defined, name of state to write the read attribute value to
-      example: sensor.example
-      selector:
-        text:
-    state_attr:
-      description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
-      example: other_attr 
-      selector:
-        text:
-    event_success:
-      description: Event name in case of success (currently for attr_read, attr_write).  Has event data with relevant attributes.
-      example: my_read_success_trigger_event
-      selector:
-        text:
-    event_fail:
-      description: Event name in case of failure (currently for attr_read, attr_write).  Has event data with relevant attributes.
-      example: my_read_fail_trigger_event
-      selector:
-        text:
-    event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
-      example: my_read_done_trigger_event
-      selector:
-        text:
-    allow_create:
-       description: Allow state creation (given by state_id) if it does not exist
-       selector:
-         boolean:
-    read_before_write:
-       description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
-       selector:
-         boolean:
-    read_after_write:
-       description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
-       selector:
-         boolean:
-    write_if_equal:
-       description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
-       selector:
-         boolean:
-    expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
-        }
-);
-
-
-
-
-async def async_setup(hass, config):
+async def async_setup(hass, config):  # noqa: C901
     """Set up ZHA from config."""
 
     if DOMAIN not in config:
@@ -579,7 +316,6 @@ async def async_setup(hass, config):
         app = zha_gw.application_controller
 
         ieee = await u.get_ieee(app, zha_gw, ieee_str)
-
 
         # Preload event_data
         event_data = {
@@ -612,38 +348,34 @@ async def async_setup(hass, config):
         # with the specific service
         if cmd is None:
             cmd = service_cmd
+
+        handler = None
         try:
-            handler = getattr(module, f"command_handler_{cmd}") 
+            # Check if existing local handler
+            handler = getattr(module, f"command_handler_{cmd}")
         except AttributeError:
+            # Not an existing local handler, replace with the service command
             if service_cmd != "execute":
-                cmd = service_cmd  # Actual service name
-            
+                # Actual service name (exists, defined in services.yaml)
+                cmd = service_cmd
+                handler = getattr(module, f"command_handler_{cmd}")
+
+        if handler is None:
+            handler = module.default_command
 
         handler_exception = None
         try:
-            if cmd:
-                handler = getattr(module, f"command_handler_{cmd}")
-                await handler(
-                    zha_gw.application_controller,
-                    zha_gw,
-                    ieee,
-                    cmd,
-                    cmd_data,
-                    service,
-                    params=params,
-                    event_data=event_data,
-                )
-            else:
-                await module.default_command(
-                    zha_gw.application_controller,
-                    zha_gw,
-                    ieee,
-                    cmd,
-                    cmd_data,
-                    service,
-                    params=params,
-                    event_data=event_data,
-                )
+            handler = getattr(module, f"command_handler_{cmd}")
+            await handler(
+                zha_gw.application_controller,
+                zha_gw,
+                ieee,
+                cmd,
+                cmd_data,
+                service,
+                params=params,
+                event_data=event_data,
+            )
         except Exception as e:
             handler_exception = e
             event_data["errors"].append(repr(e))
@@ -672,12 +404,16 @@ async def async_setup(hass, config):
         if handler_exception is not None:
             raise handler_exception
 
-    hass.services.async_register(
-        DOMAIN,
-        SERVICE_EXECUTE,
-        toolkit_service,
-        schema=SERVICE_SCHEMAS[SERVICE_EXECUTE],
-    )
+    # Set up all service schemas
+    for key, value in SERVICE_SCHEMAS:
+        value.extend(COMMON_SCHEMA)
+        hass.services.async_register(
+            DOMAIN,
+            key,
+            toolkit_service,
+            schema=value,
+        )
+
     return True
 
 
@@ -686,7 +422,25 @@ async def default_command(
 ):
     LOGGER.debug("running default command: %s", service)
 
-    await user.default(*args, **kwargs)
+    if service.service.startswith("user"):
+        # User library in 'local' directory
+
+        from .local import user
+
+        importlib.reload(user)
+
+        handler = getattr(user, cmd)
+        await handler(
+            app, listener, ieee, cmd, data, service, params, event_data
+        )
+    else:
+        from . import default
+
+        importlib.reload(default)
+
+        await default.default(
+            app, listener, ieee, cmd, data, service, params, event_data
+        )
 
 
 async def command_handler_handle_join(*args, **kwargs):
