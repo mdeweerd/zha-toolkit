@@ -181,8 +181,7 @@ execute:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
-
-read_attr:
+attr_read:
   description: Write Attribute (ZHA-Toolkit)
   fields:
     ieee:
@@ -257,7 +256,7 @@ read_attr:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
-write_attr:
+attr_write:
   description: Write Attribute (ZHA-Toolkit)
   fields:
     ieee:
