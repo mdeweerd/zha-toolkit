@@ -361,11 +361,13 @@ async def async_setup(hass, config):  # noqa: C901
                 handler = getattr(module, f"command_handler_{cmd}")
 
         if handler is None:
-            handler = module.default_command
+            LOGGER.debug(f"Default handler for {cmd}")
+            handler = module.command_handler_default
+
+        LOGGER.debug("Handler: %s", handler)
 
         handler_exception = None
         try:
-            handler = getattr(module, f"command_handler_{cmd}")
             await handler(
                 zha_gw.application_controller,
                 zha_gw,
@@ -417,14 +419,15 @@ async def async_setup(hass, config):  # noqa: C901
     return True
 
 
-async def default_command(
+async def command_handler_default(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.debug("running default command: %s", service)
 
-    if service.service.startswith("user"):
-        # User library in 'local' directory
+    if cmd.startswith("user_"):
+        # User library in 'local' directory (user.py)
 
+        LOGGER.debug("Import user path")
         from .local import user
 
         importlib.reload(user)
