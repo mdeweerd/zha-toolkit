@@ -37,7 +37,9 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.CMD): cv.string,
             vol.Optional(P.ENDPOINT): cv.byte,
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
-            vol.Optional(P.ATTRIBUTE): vol.Any(cv.string, vol.Range(0, 0xFFFF)),
+            vol.Optional(P.ATTRIBUTE): vol.Any(
+                cv.string, vol.Range(0, 0xFFFF)
+            ),
             vol.Optional(P.ATTR_TYPE): vol.Any(
                 cv.string, int
             ),  # String is for later
@@ -82,7 +84,9 @@ SERVICE_SCHEMAS = {
         {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
-            vol.Required(P.ATTRIBUTE): vol.Any(cv.string, vol.Range(0, 0xFFFF)),
+            vol.Required(P.ATTRIBUTE): vol.Any(
+                cv.string, vol.Range(0, 0xFFFF)
+            ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.STATE_ID): cv.string,
@@ -97,11 +101,15 @@ SERVICE_SCHEMAS = {
         {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
-            vol.Required(P.ATTRIBUTE): vol.Any(cv.string, vol.Range(0, 0xFFFF)),
+            vol.Required(P.ATTRIBUTE): vol.Any(
+                cv.string, vol.Range(0, 0xFFFF)
+            ),
             vol.Required(P.ATTR_TYPE): vol.Any(
                 cv.string, int
             ),  # String is for later
-            vol.Required(P.ATTR_VAL): vol.Any(cv.string, vol.Coerce(int), list),
+            vol.Required(P.ATTR_VAL): vol.Any(
+                cv.string, vol.Coerce(int), list
+            ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.STATE_ID): cv.string,

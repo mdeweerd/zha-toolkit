@@ -2,7 +2,7 @@ lint_python:
 	-shopt -s globstar && pyupgrade --py36-plus **/*.py
 	bandit --recursive --skip B101,B311 .
 	black -l 79 .
-	codespell --ignore-words-list="hass" custom_components
+	codespell --ignore-words-list="hass" custom_components README.md
 	-autoflake8 -i -r --expand-star-imports custom_components
 	flake8 . --count --ignore W503 \
                  --max-complexity=20 --max-line-length=79 \

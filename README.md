@@ -808,7 +808,7 @@ If you add your own you'll need to parse them yourself from `service.data`.
 You can checkout `utils.py/extractParams` to look for ideas, and you can
 examine the other methods to see how you can use ZHA.
 
-This is a powerfull tool to develop your own custom tool, and propose
+This is a powerful tool to develop your own custom tool, and propose
 it for inclusion in the zha-toolkit when it's ready and of potential use
 to others.
 
