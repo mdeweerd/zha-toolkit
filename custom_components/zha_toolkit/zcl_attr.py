@@ -9,6 +9,7 @@ from zigpy.exceptions import DeliveryError
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
+from .params import SERVICES as S
 
 
 LOGGER = logging.getLogger(__name__)
@@ -199,7 +200,7 @@ async def attr_write(  # noqa: C901
     if (
         params[p.READ_BEFORE_WRITE]
         or (len(attr_write_list) == 0)
-        or (cmd != "attr_write")
+        or (cmd != S.ATTR_WRITE)
     ):
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster.read_attributes(
@@ -209,8 +210,13 @@ async def attr_write(  # noqa: C901
         success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
 
     # True if value that should be written is the equal to the read one
-    write_is_equal = len(attr_write_list) != 0 and (
-        attr_id in result_read[0] and result_read[0][attr_id] == compare_val
+    write_is_equal = (
+        (params[p.READ_BEFORE_WRITE])
+        and (len(attr_write_list) != 0)
+        and (
+            (attr_id in result_read[0])
+            and (result_read[0][attr_id] == compare_val)
+        )
     )
 
     event_data["write_is_equal"] = write_is_equal
