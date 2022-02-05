@@ -5,7 +5,7 @@ from homeassistant.util import dt as dt_util
 
 from zigpy import types as t
 from zigpy.zcl import foundation as f
-from zigpy.exceptions import DeliveryError, CancelledError
+from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
 
 from . import utils as u
@@ -74,7 +74,7 @@ async def conf_report(
             event_data["success"] = (
                 result_conf[0][0].status == f.Status.SUCCESS
             )
-        except (DeliveryError, CancelledError, asyncio.TimeoutError):
+        except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
             continue
         except Exception as e:
             triesToGo = 0  # Stop loop

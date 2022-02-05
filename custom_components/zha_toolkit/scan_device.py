@@ -2,7 +2,7 @@ import asyncio
 import logging
 import re
 
-from zigpy.exceptions import DeliveryError, CancelledError
+from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
 from zigpy import types as t
 
@@ -12,7 +12,7 @@ from .params import INTERNAL_PARAMS as p
 LOGGER = logging.getLogger(__name__)
 
 
-@retryable((DeliveryError, CancelledError, asyncio.TimeoutError), tries=3)
+@retryable((DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3)
 async def read_attr(cluster, attrs):
     return await cluster.read_attributes(attrs, allow_cache=False)
 
