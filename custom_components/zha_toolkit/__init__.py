@@ -52,7 +52,6 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.REPTBLE_CHG): int,
             vol.Optional(P.DIR): cv.boolean,
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
-            vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.ARGS): vol.Any(
                 int, cv.string, list
             ),  # Arguments to command
@@ -196,7 +195,10 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.HANDLE_JOIN: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Optional(ATTR_DATA): vol.Range(0, 0xFFFF),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.IEEE_PING: vol.Schema(
@@ -295,6 +297,7 @@ COMMON_SCHEMA = {
     vol.Optional(P.EVENT_SUCCESS): cv.string,
     vol.Optional(P.EVENT_FAIL): cv.string,
     vol.Optional(P.EVENT_DONE): cv.string,
+    vol.Optional(P.EXPECT_REPLY): cv.boolean,  # May be called 'wait' later? 
 }
 
 
