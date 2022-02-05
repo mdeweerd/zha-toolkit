@@ -5,7 +5,7 @@ from homeassistant.util import dt as dt_util
 
 from zigpy import types as t
 from zigpy.zcl import foundation as f
-from zigpy.exceptions import DeliveryError, CanceledError
+from zigpy.exceptions import DeliveryError, CancelledError
 from zigpy.util import retryable
 
 from . import utils as u
@@ -74,7 +74,7 @@ async def conf_report(
             event_data["success"] = (
                 result_conf[0][0].status == f.Status.SUCCESS
             )
-        except (DeliveryError, CanceledError, asyncio.TimeoutError):
+        except (DeliveryError, CancelledError, asyncio.TimeoutError):
             continue
         except Exception as e:
             triesToGo = 0  # Stop loop
@@ -91,7 +91,7 @@ async def conf_report(
 
 # The zigpy library does not offer retryable on read_attributes.
 # Add it ourselves
-@retryable((DeliveryError, CanceledError, asyncio.TimeoutError), tries=1)
+@retryable((DeliveryError, CancelledError, asyncio.TimeoutError), tries=1)
 async def cluster_read_attributes(cluster, attrs, manufacturer=None):
     """Read attributes from cluster, retryable"""
     return await cluster.read_attributes(attrs, manufacturer)
@@ -99,7 +99,7 @@ async def cluster_read_attributes(cluster, attrs, manufacturer=None):
 
 # The zigpy library does not offer retryable on read_attributes.
 # Add it ourselves
-@retryable((DeliveryError, CanceledError, asyncio.TimeoutError), tries=1)
+@retryable((DeliveryError, CancelledError, asyncio.TimeoutError), tries=1)
 async def cluster__write_attributes(cluster, attrs, manufacturer=None):
     """Write cluster attributes from cluster, retryable"""
     return await cluster._write_attributes(
