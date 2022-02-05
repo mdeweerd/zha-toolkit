@@ -5,7 +5,8 @@ from homeassistant.util import dt as dt_util
 
 from zigpy import types as t
 from zigpy.zcl import foundation as f
-from zigpy.exceptions import DeliveryError
+from zigpy.exceptions import DeliveryError, CanceledError
+from zigpy.util import retryable
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
@@ -50,14 +51,14 @@ async def conf_report(
         triesToGo = triesToGo - 1
         try:
             LOGGER.debug(
-                "Try configure report(%s,%s,%s,%s,%s) Try %s/%s",
+                "Try %s/%s: configure report(%s,%s,%s,%s,%s)",
+                params[p.TRIES] - triesToGo,
+                params[p.TRIES],
                 params[p.ATTR_ID],
                 params[p.MIN_INTERVAL],
                 params[p.MAX_INTERVAL],
                 params[p.REPORTABLE_CHANGE],
                 params[p.MANF],
-                params[p.TRIES] - triesToGo,
-                params[p.TRIES],
             )
             result_conf = await cluster.configure_reporting(
                 params[p.ATTR_ID],
@@ -73,7 +74,7 @@ async def conf_report(
             event_data["success"] = (
                 result_conf[0][0].status == f.Status.SUCCESS
             )
-        except (DeliveryError, asyncio.TimeoutError):
+        except (DeliveryError, CanceledError, asyncio.TimeoutError):
             continue
         except Exception as e:
             triesToGo = 0  # Stop loop
@@ -88,7 +89,26 @@ async def conf_report(
             )
 
 
+# The zigpy library does not offer retryable on read_attributes.
+# Add it ourselves
+@retryable((DeliveryError, CanceledError, asyncio.TimeoutError), tries=1)
+async def cluster_read_attributes(cluster, attrs, manufacturer=None):
+    """Read attributes from cluster, retryable"""
+    return await cluster.read_attributes(attrs, manufacturer)
+
+
+# The zigpy library does not offer retryable on read_attributes.
+# Add it ourselves
+@retryable((DeliveryError, CanceledError, asyncio.TimeoutError), tries=1)
+async def cluster__write_attributes(cluster, attrs, manufacturer=None):
+    """Write cluster attributes from cluster, retryable"""
+    return await cluster._write_attributes(
+        cluster, attrs, manufacturer=manufacturer
+    )
+
+
 async def attr_read(*args, **kwargs):
+    # Delegate to attr_write which also handles the read command.
     await attr_write(*args, **kwargs)
 
 
@@ -106,17 +126,16 @@ async def attr_write(  # noqa: C901
         params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
 
     if params[p.EP_ID] not in dev.endpoints:
-        LOGGER.error(
-            "Endpoint %s not found for '%s'", params[p.EP_ID], repr(ieee)
-        )
+        msg = f"Endpoint {params[p.EP_ID]} not found for '{ieee!r}"
+        LOGGER.error(msg)
+        raise Exception(msg)
 
     if params[p.CLUSTER_ID] not in dev.endpoints[params[p.EP_ID]].in_clusters:
-        LOGGER.error(
-            "Cluster 0x%04X not found for '%s', endpoint %s",
-            params[p.CLUSTER_ID],
-            repr(ieee),
-            params[p.EP_ID],
+        msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
+            params[p.CLUSTER_ID], repr(ieee), params[p.EP_ID]
         )
+        LOGGER.error(msg)
+        raise Exception(msg)
 
     cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
 
@@ -203,8 +222,8 @@ async def attr_write(  # noqa: C901
         or (cmd != S.ATTR_WRITE)
     ):
         LOGGER.debug("Request attr read %s", attr_read_list)
-        result_read = await cluster.read_attributes(
-            attr_read_list, manufacturer=params[p.MANF]
+        result_read = await cluster_read_attributes(
+            attr_read_list, manufacturer=params[p.MANF], tries=params[p.TRIES]
         )
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
         success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
@@ -238,8 +257,8 @@ async def attr_write(  # noqa: C901
             result_read = None
 
         LOGGER.debug("Request attr write %s", attr_write_list)
-        result_write = await cluster._write_attributes(
-            attr_write_list, manufacturer=params[p.MANF]
+        result_write = await cluster__write_attributes(
+            attr_write_list, manufacturer=params[p.MANF], tries=params[p.TRIES]
         )
         LOGGER.debug("Write attr status: %s", result_write)
         event_data["result_write"] = result_write
@@ -256,8 +275,10 @@ async def attr_write(  # noqa: C901
 
         if params[p.READ_AFTER_WRITE]:
             LOGGER.debug("Request attr read %s", attr_read_list)
-            result_read = await cluster.read_attributes(
-                attr_read_list, manufacturer=params[p.MANF]
+            result_read = await cluster_read_attributes(
+                attr_read_list,
+                manufacturer=params[p.MANF],
+                tries=params[p.TRIES],
             )
             LOGGER.debug(
                 "Reading attr result (attrs, status): %s", result_read
