@@ -106,9 +106,7 @@ async def cluster_read_attributes(cluster, attrs, manufacturer=None):
 )
 async def cluster__write_attributes(cluster, attrs, manufacturer=None):
     """Write cluster attributes from cluster, retryable"""
-    return await cluster._write_attributes(
-        cluster, attrs, manufacturer=manufacturer
-    )
+    return await cluster._write_attributes(attrs, manufacturer=manufacturer)
 
 
 async def attr_read(*args, **kwargs):
@@ -227,7 +225,10 @@ async def attr_write(  # noqa: C901
     ):
         LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster_read_attributes(
-            attr_read_list, manufacturer=params[p.MANF], tries=params[p.TRIES]
+            cluster,
+            attr_read_list,
+            manufacturer=params[p.MANF],
+            tries=params[p.TRIES],
         )
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
         success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
@@ -262,7 +263,10 @@ async def attr_write(  # noqa: C901
 
         LOGGER.debug("Request attr write %s", attr_write_list)
         result_write = await cluster__write_attributes(
-            attr_write_list, manufacturer=params[p.MANF], tries=params[p.TRIES]
+            cluster,
+            attr_write_list,
+            manufacturer=params[p.MANF],
+            tries=params[p.TRIES],
         )
         LOGGER.debug("Write attr status: %s", result_write)
         event_data["result_write"] = result_write
@@ -280,6 +284,7 @@ async def attr_write(  # noqa: C901
         if params[p.READ_AFTER_WRITE]:
             LOGGER.debug("Request attr read %s", attr_read_list)
             result_read = await cluster_read_attributes(
+                cluster,
                 attr_read_list,
                 manufacturer=params[p.MANF],
                 tries=params[p.TRIES],
