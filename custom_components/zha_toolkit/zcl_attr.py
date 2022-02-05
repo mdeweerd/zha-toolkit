@@ -136,8 +136,15 @@ async def attr_write(  # noqa: C901
         msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
             params[p.CLUSTER_ID], repr(ieee), params[p.EP_ID]
         )
-        LOGGER.error(msg)
-        raise Exception(msg)
+        if params[p.CLUSTER_ID] in dev.endpoints[params[p.EP_ID]].out_clusters:
+            msg = f'{cmd}: "Using" OutCluster. {msg}'
+            LOGGER.warning(msg)
+            if "warnings" not in event_data:
+                event_data["warnings"] = []
+            event_data["warnings"].append(msg)
+        else:
+            LOGGER.error(msg)
+            raise Exception(msg)
 
     cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
 
