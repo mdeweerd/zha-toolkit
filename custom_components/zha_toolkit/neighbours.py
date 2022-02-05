@@ -13,7 +13,9 @@ from homeassistant.util.json import save_json
 LOGGER = logging.getLogger(__name__)
 
 
-@retryable((DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=5)
+@retryable(
+    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=5
+)
 def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)
 

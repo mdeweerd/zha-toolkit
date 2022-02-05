@@ -91,7 +91,7 @@ async def conf_report(
 
 # The zigpy library does not offer retryable on read_attributes.
 # Add it ourselves
-@retryable((DeliveryError, CancelledError, asyncio.TimeoutError), tries=1)
+@retryable((DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1)
 async def cluster_read_attributes(cluster, attrs, manufacturer=None):
     """Read attributes from cluster, retryable"""
     return await cluster.read_attributes(attrs, manufacturer)

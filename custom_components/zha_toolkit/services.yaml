@@ -365,7 +365,7 @@ handle_join:
       selector:
         entity:
           integration: zha
-    data:
+    command_data:
       description: Short network address of the device (optional, if known in ZHA)
       selector:
         number:

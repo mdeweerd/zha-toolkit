@@ -197,7 +197,7 @@ SERVICE_SCHEMAS = {
     S.HANDLE_JOIN: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
-            vol.Optional(ATTR_DATA): vol.Range(0, 0xFFFF),
+            vol.Optional(ATTR_COMMAND_DATA): vol.Range(0, 0xFFFF),
         },
         extra=vol.ALLOW_EXTRA,
     ),
@@ -297,7 +297,7 @@ COMMON_SCHEMA = {
     vol.Optional(P.EVENT_SUCCESS): cv.string,
     vol.Optional(P.EVENT_FAIL): cv.string,
     vol.Optional(P.EVENT_DONE): cv.string,
-    vol.Optional(P.EXPECT_REPLY): cv.boolean,  # May be called 'wait' later? 
+    vol.Optional(P.EXPECT_REPLY): cv.boolean,  # May be called 'wait' later?
 }
 
 
