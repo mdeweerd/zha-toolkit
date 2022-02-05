@@ -35,7 +35,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CMD): cv.string,
-            vol.Optional(P.ENDPOINT): cv.byte,
+            vol.Optional(P.ENDPOINT): vol.All(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Optional(P.ATTRIBUTE): vol.Any(
                 cv.string, vol.Range(0, 0xFFFF)
@@ -81,6 +81,7 @@ SERVICE_SCHEMAS = {
     ),
     S.ATTR_READ: vol.Schema(
         {
+            vol.Required(ATTR_IEEE): cv.string,
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
@@ -98,6 +99,7 @@ SERVICE_SCHEMAS = {
     ),
     S.ATTR_WRITE: vol.Schema(
         {
+            vol.Required(ATTR_IEEE): cv.string,
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
@@ -123,7 +125,9 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.BACKUP: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_COMMAND_DATA): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.BIND_GROUP: vol.Schema(
@@ -131,7 +135,13 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.BIND_IEEE: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_COMMAND_DATA): cv.string,
+            vol.Optional(P.CLUSTER): vol.Any(
+                vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
+            ),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.CONF_REPORT: vol.Schema(
@@ -143,7 +153,9 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_BACKUP: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_COMMAND_DATA): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_CLEAR_KEYS: vol.Schema(
@@ -202,11 +214,15 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.IEEE_PING: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.LEAVE: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.OTA_NOTIFY: vol.Schema(
@@ -214,11 +230,15 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.REJOIN: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_ALL_GROUPS: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_FROM_GROUP: vol.Schema(
@@ -230,7 +250,10 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.SCAN_DEVICE: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Optional(P.ENDPOINT): vol.All(cv.byte, [cv.byte]),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.SINOPE: vol.Schema(
@@ -258,7 +281,7 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_SCAN_NOW: vol.Schema(
-        {},
+        {},  # No parameters
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_UPDATE_NWK_ID: vol.Schema(
@@ -270,23 +293,29 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_BACKUP: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_COMMAND_DATA): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_NVRAM_BACKUP: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_COMMAND_DATA): cv.string,
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_NVRAM_RESET: vol.Schema(
-        {},
+        {},  # No specific options
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_NVRAM_RESTORE: vol.Schema(
-        {},
+        {},  # No specific options
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZNP_RESTORE: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_COMMAND_DATA): int,  # counter_increment
+        },
         extra=vol.ALLOW_EXTRA,
     ),
 }
@@ -304,6 +333,7 @@ COMMON_SCHEMA = {
 DENY_COMMAND_SCHEMA = {
     vol.Optional(ATTR_COMMAND): None,
 }
+
 
 async def async_setup(hass, config):  # noqa: C901
     """Set up ZHA from config."""

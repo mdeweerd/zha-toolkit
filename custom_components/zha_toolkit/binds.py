@@ -161,6 +161,8 @@ async def bind_ieee(
         0x0402,  # Temperature
     ]
 
+    # TODO: Filter according to params[p.CLUSTER_ID]
+
     results = {}
 
     for src_out_cluster in src_out_clusters:
