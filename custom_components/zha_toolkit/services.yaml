@@ -181,6 +181,16 @@ execute:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
+    csvout:
+      description: Filename of CSV to write read data to.  Written to 'csv' directory
+      example: '../web/mycsv.csv'
+      selector:
+        text:
+    csvlabel:
+      description: Label to use for read value (in CSV file)
+      example: SecretAttributeName
+      selector:
+        text:
 attr_read:
   description: Read Attribute (ZHA-Toolkit)
   fields:
@@ -256,6 +266,16 @@ attr_read:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
+    csvout:
+      description: Filename of CSV to write read data to.  Written to 'csv' directory
+      example: '../web/mycsv.csv'
+      selector:
+        text:
+    csvlabel:
+      description: Label to use for read value (in CSV file)
+      example: SecretAttributeName
+      selector:
+        text:
 attr_write:
   description: Write Attribute (ZHA-Toolkit)
   fields:
@@ -390,3 +410,13 @@ handle_join:
        description: "Wait for/expect a reply (not used yet)"
        selector:
          boolean:
+    csvout:
+      description: Filename of CSV to write read data to.  Written to 'csv' directory
+      example: '../web/mycsv.csv'
+      selector:
+        text:
+    csvlabel:
+      description: Label to use for read value (in CSV file)
+      example: SecretAttributeName
+      selector:
+        text:
