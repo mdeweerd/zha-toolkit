@@ -182,7 +182,7 @@ execute:
        selector:
          boolean:
 attr_read:
-  description: Write Attribute (ZHA-Toolkit)
+  description: Read Attribute (ZHA-Toolkit)
   fields:
     ieee:
       description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"

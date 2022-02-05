@@ -301,6 +301,10 @@ COMMON_SCHEMA = {
 }
 
 
+DENY_COMMAND_SCHEMA = {
+    vol.Optional(ATTR_COMMAND): None,
+}
+
 async def async_setup(hass, config):  # noqa: C901
     """Set up ZHA from config."""
 
@@ -420,6 +424,10 @@ async def async_setup(hass, config):  # noqa: C901
     # Set up all service schemas
     for key, value in SERVICE_SCHEMAS.items():
         value.extend(COMMON_SCHEMA)
+        if key != S.EXECUTE:
+            # command key is only for general "execute" - avoid confusion
+            # by denying this option
+            value.extend(DENY_COMMAND_SCHEMA)
         hass.services.async_register(
             DOMAIN,
             key,
