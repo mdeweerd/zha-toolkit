@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import importlib
 
 from homeassistant.util import dt as dt_util
 
@@ -380,6 +381,10 @@ async def attr_write(  # noqa: C901
             f"{attr_name}={read_val}",
             listener=listener,
         )
+
+    importlib.reload(u)
+    if "result_read" in event_data and not u.isJsonable(event_data['result_read']):
+        event_data['result_read']=repr(event_data['result_read'])
 
     # For internal use
     return result_read

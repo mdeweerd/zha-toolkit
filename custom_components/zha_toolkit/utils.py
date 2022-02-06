@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 from enum import Enum
 from zigpy import types as t
@@ -46,6 +47,14 @@ class RadioType(Enum):
     ZNP = 1
     EZSP = 2
     BELLOWS = 2
+
+
+def isJsonable(x):
+    try:
+        json.dumps(x)
+        return True
+    except (TypeError, OverflowError):
+        return False
 
 
 def get_radiotype(app):
