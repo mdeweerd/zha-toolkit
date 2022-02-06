@@ -225,6 +225,12 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
+    S.MISC_REINITIALIZE: vol.Schema(
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.OTA_NOTIFY: vol.Schema(
         {},
         extra=vol.ALLOW_EXTRA,
@@ -458,6 +464,7 @@ async def async_setup(hass, config):  # noqa: C901
             # command key is only for general "execute" - avoid confusion
             # by denying this option
             value.extend(DENY_COMMAND_SCHEMA)
+        LOGGER.debug(f"Add service {DOMAIN}.{key}")
         hass.services.async_register(
             DOMAIN,
             key,

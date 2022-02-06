@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import importlib
 
 from homeassistant.util import dt as dt_util
 
@@ -96,7 +97,7 @@ async def conf_report(
 )
 async def cluster_read_attributes(cluster, attrs, manufacturer=None):
     """Read attributes from cluster, retryable"""
-    return await cluster.read_attributes(attrs, manufacturer)
+    return await cluster.read_attributes(attrs, manufacturer=manufacturer)
 
 
 # The zigpy library does not offer retryable on read_attributes.
@@ -281,7 +282,7 @@ async def attr_write(  # noqa: C901
         try:
             # LOGGER.debug("Write attr status: %s", result_write[0][0].status)
             success = result_write[0][0].status == f.Status.SUCCESS
-            LOGGER.debug("Write success: %s", success)
+            LOGGER.debug(f"Write success: {success}")
         except Exception as e:
             event_data["errors"].append(repr(e))
             success = False
@@ -289,7 +290,7 @@ async def attr_write(  # noqa: C901
         # success = (len(result_write[1])==0)
 
         if params[p.READ_AFTER_WRITE]:
-            LOGGER.debug("Request attr read %s", attr_read_list)
+            LOGGER.debug(f"Request attr read {attr_read_list!r}")
             result_read = await cluster_read_attributes(
                 cluster,
                 attr_read_list,
@@ -297,7 +298,7 @@ async def attr_write(  # noqa: C901
                 tries=params[p.TRIES],
             )
             LOGGER.debug(
-                "Reading attr result (attrs, status): %s", result_read
+                f"Reading attr result (attrs, status): {result_read!r}"
             )
             # read_is_equal = (result_read[0][attr_id] == compare_val)
             success = (
@@ -308,7 +309,18 @@ async def attr_write(  # noqa: C901
 
     if result_read is not None:
         event_data["result_read"] = result_read
-        read_val = result_read[0][attr_id]
+        if len(result_read[1]) == 0:
+            read_val = result_read[0][attr_id]
+        else:
+            msg = (
+                f"Result: {result_read[1]}"
+                + f" - Attribute {attr_id} not in read {result_read!r}"
+            )
+            LOGGER.warning(msg)
+            if "warnings" not in event_data:
+                event_data["warnings"] = []
+            event_data["warnings"].append(msg)
+            success = False
     else:
         read_val = None
 
@@ -372,6 +384,12 @@ async def attr_write(  # noqa: C901
             f"{attr_name}={read_val}",
             listener=listener,
         )
+
+    importlib.reload(u)
+    if "result_read" in event_data and not u.isJsonable(
+        event_data["result_read"]
+    ):
+        event_data["result_read"] = repr(event_data["result_read"])
 
     # For internal use
     return result_read

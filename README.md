@@ -201,73 +201,6 @@ and the "ieee" field is the actual IEEE address found.
 }
 ```
 
-## `scan_device`: Scan a device/Read all attribute values
-
-This operation will discover the device attributes and read their values.
-Some values are excluded from reading, for instance Arrays as their length
-depends on the specification.
-
-The result of the scan is written to the `scan` directory located
-in the configuration directory of Home Assistant (`config/scan/*_result.txt`).
-
-The result is also added to the event data in the event['data']['scan'] field
-
-
-```yaml
-service: zha_toolkit.execute
-data:
-  ieee: 00:12:4b:00:22:08:ed:1a
-  command: scan_device
-  # Optional: endpoint to scan, when missing: all known endpoints
-  # endpoint: 1
-  # Optional: endpoints to scan, when missing: all known endpoints
-  endpoint: [1,2]
-```
-
-Scan using the entity name:
-
-```yaml
-service: zha_toolkit.execute
-data:
-  command: scan_device
-  ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
-```
-
-## `zdo_scan_now`: Do a topology scan
-
-Runs `topology.scan()`. 
-
-```yaml
-service: zha_toolkit.execute
-data:
-  command: zdo_scan_now
-```
-
-## `bind_ieee`: Bind matching cluster to another device
-
-Binds all matching clusters (within the scope of the integrated list)
-
-```yaml
-service: zha_toolkit.execute
-data:
-  ieee: 00:15:8d:00:04:7b:83:69
-  command: bind_ieee
-  command_data: 00:12:4b:00:22:08:ed:1a
-
-```
-
-## `handle_join`: Handle join - rediscover device
-
-```yaml
-service: zha_toolkit.execute
-data:
-  # Address of the device that joined
-  ieee: 00:12:4b:00:22:08:ed:1a
-  command: handle_join
-  # NWK address of device that joined (must be exact)
-  command_data: 0x604e
-
-```
 
 ## `attr_read`: Read an attribute value
 
@@ -316,9 +249,6 @@ Example of CSV output in /config/csv/testcsv.csv (header may be added in the fut
 ```csv
 2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,
 ```
-
-
-
 
 ## `attr_write`: Write(/Read) an attribute value
 
@@ -464,6 +394,89 @@ Example of data available in the event report.
 ```
 
 
+## `scan_device`: Scan a device/Read all attribute values
+
+This operation will discover the device attributes and read their values.
+Some values are excluded from reading, for instance Arrays as their length
+depends on the specification.
+
+The result of the scan is written to the `scan` directory located
+in the configuration directory of Home Assistant (`config/scan/*_result.txt`).
+
+The result is also added to the event data in the event['data']['scan'] field
+
+
+```yaml
+service: zha_toolkit.execute
+data:
+  ieee: 00:12:4b:00:22:08:ed:1a
+  command: scan_device
+  # Optional: endpoint to scan, when missing: all known endpoints
+  # endpoint: 1
+  # Optional: endpoints to scan, when missing: all known endpoints
+  endpoint: [1,2]
+```
+
+Scan using the entity name:
+
+```yaml
+service: zha_toolkit.execute
+data:
+  command: scan_device
+  ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
+```
+
+
+## `zdo_scan_now`: Do a topology scan
+
+Runs `topology.scan()`. 
+
+```yaml
+service: zha_toolkit.execute
+data:
+  command: zdo_scan_now
+```
+
+
+## `bind_ieee`: Bind matching cluster to another device
+
+Binds all matching clusters (within the scope of the integrated list)
+
+```yaml
+service: zha_toolkit.execute
+data:
+  ieee: 00:15:8d:00:04:7b:83:69
+  command: bind_ieee
+  command_data: 00:12:4b:00:22:08:ed:1a
+
+```
+
+## `handle_join`: Handle join - rediscover device
+
+```yaml
+service: zha_toolkit.execute
+data:
+  # Address of the device that joined
+  ieee: 00:12:4b:00:22:08:ed:1a
+  command: handle_join
+  # NWK address of device that joined (must be exact)
+  command_data: 0x604e
+```
+
+
+## `handle_join`: Handle join - rediscover device
+
+```yaml
+service: zha_toolkit.execute
+data:
+  # Address of the device that joined
+  ieee: 00:12:4b:00:22:08:ed:1a
+  command: handle_join
+  # NWK address of device that joined (must be exact)
+  command_data: 0x604e
+```
+
+
 ## `zcl_cmd`: Send a Cluster command
 
 Allows you to send a cluster command.
@@ -498,6 +511,16 @@ data:
   # Optional (only add when the command requires it): arguments (default=empty)
   args: [ 1, 3, [ 1, 2, 3] ] 
 
+```
+
+
+## `misc_reinitialize`: Reinitialize device
+
+```yaml
+service: zha_toolkit.misc_reinitialize
+data:
+  # Reference of the device that should be reinitialized
+  ieee: 00:12:4b:00:22:08:ed:1a
 ```
 
 
