@@ -83,7 +83,7 @@ async def handle_join(
     LOGGER.debug("running 'handle_join' command: %s", service)
     if ieee is None:
         LOGGER.debug("Provide 'ieee' parameter for %s", cmd)
-        raise Exception("ieee parameter missing")
+        raise ValueError("ieee parameter missing")
     if data is None:
         dev = None
         try:
@@ -91,15 +91,34 @@ async def handle_join(
             data = dev.nwk
             if data is None:
                 raise Exception(f"Missing NWK for device '{ieee}'")
-            LOGGER.debug("Using NWK '%s' for '%s'", data, ieee)
+            LOGGER.debug(f"Using NWK '{data}' for '{ieee!r}'")
         except Exception as e:
             LOGGER.debug(
-                "Device '%s' not found in device table, provide NWK address",
-                ieee,
+                f"Device {ieee!r} not found in device table, provide NWK address"
             )
             raise e
 
-    event_data["result"] = app.handle_join(u.str2int(data), ieee, 0)
+    event_data["result"] = app.handle_join(u.str2int(data), ieee, None)
+
+
+async def misc_reinitialize(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    """Reinitialize a device, rediscover endpoints
+    ieee -- ieee of the device
+    """
+    if ieee is None:
+        msg = f"Provide 'ieee' parameter for {cmd}"
+        LOGGER.debug(msg)
+        raise ValueError(ieee)
+
+    LOGGER.debug(f"{ieee!r} - Set initialisations=False, call handle_join")
+    dev.node_desc = None  # Force rescan
+    dev.has_non_zdo_endpoint = False  # Force rescan
+    dev.all_endpoint_init = False  # Force rescan
+    dev.model = None  # Force rescan
+    dev.manufacturer = None  # Force rescan
+    event_data["result"] = dev.schedule_initialize()
 
 
 async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):

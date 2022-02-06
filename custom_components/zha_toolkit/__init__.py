@@ -225,6 +225,12 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
+    S.MISC_REINITIALIZE: vol.Schema(
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.OTA_NOTIFY: vol.Schema(
         {},
         extra=vol.ALLOW_EXTRA,

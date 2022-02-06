@@ -63,6 +63,7 @@ class SERVICE_consts:
     HANDLE_JOIN = "handle_join"
     IEEE_PING = "ieee_ping"
     LEAVE = "leave"
+    MISC_REINITIALIZE = "misc_reinitialize"
     OTA_NOTIFY = "ota_notify"
     REJOIN = "rejoin"
     REMOVE_ALL_GROUPS = "remove_all_groups"
