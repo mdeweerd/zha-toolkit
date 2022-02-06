@@ -458,6 +458,7 @@ async def async_setup(hass, config):  # noqa: C901
             # command key is only for general "execute" - avoid confusion
             # by denying this option
             value.extend(DENY_COMMAND_SCHEMA)
+        LOGGER.debug(f"Add service {DOMAIN}.{key}")
         hass.services.async_register(
             DOMAIN,
             key,
