@@ -312,7 +312,10 @@ async def attr_write(  # noqa: C901
         if len(result_read[1]) == 0:
             read_val = result_read[0][attr_id]
         else:
-            msg = f"Result: {result_read[1]} - Attribute {attr_id} not in read {result_read!r}"
+            msg = (
+                f"Result: {result_read[1]}"
+                + f" - Attribute {attr_id} not in read {result_read!r}"
+            )
             LOGGER.warning(msg)
             if "warnings" not in event_data:
                 event_data["warnings"] = []
@@ -383,8 +386,10 @@ async def attr_write(  # noqa: C901
         )
 
     importlib.reload(u)
-    if "result_read" in event_data and not u.isJsonable(event_data['result_read']):
-        event_data['result_read']=repr(event_data['result_read'])
+    if "result_read" in event_data and not u.isJsonable(
+        event_data["result_read"]
+    ):
+        event_data["result_read"] = repr(event_data["result_read"])
 
     # For internal use
     return result_read

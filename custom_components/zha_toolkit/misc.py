@@ -94,9 +94,13 @@ async def handle_join(
             LOGGER.debug(f"Using NWK '{data}' for '{ieee!r}'")
         except Exception as e:
             LOGGER.debug(
-                f"Device {ieee!r} not found in device table, provide NWK address"
+                f"Device {ieee!r} missing in device table, provide NWK address"
             )
             raise e
+
+    # Handle join will initialize the device if it isn't yet, otherwise
+    # only scan groups
+    # misc_reinitialise is more complete
 
     event_data["result"] = app.handle_join(u.str2int(data), ieee, None)
 
@@ -112,6 +116,7 @@ async def misc_reinitialize(
         LOGGER.debug(msg)
         raise ValueError(ieee)
 
+    dev = app.get_device(ieee=ieee)
     LOGGER.debug(f"{ieee!r} - Set initialisations=False, call handle_join")
     dev.node_desc = None  # Force rescan
     dev.has_non_zdo_endpoint = False  # Force rescan
