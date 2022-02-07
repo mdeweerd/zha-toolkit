@@ -31,7 +31,7 @@ SERVICE_SCHEMAS = {
     # This service provides access to all other services
     S.EXECUTE: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): vol.Any(vol.cv.string, cv.entity_id_or_uuid, t.EUI64.convert),
+            vol.Optional(ATTR_IEEE): vol.Any(cv.string, cv.entity_id_or_uuid, t.EUI64.convert),
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CMD): cv.string,
