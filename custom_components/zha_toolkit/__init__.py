@@ -109,7 +109,7 @@ SERVICE_SCHEMAS = {
                 cv.string, int
             ),  # String is for later
             vol.Required(P.ATTR_VAL): vol.Any(
-                cv.string, vol.Coerce(int), list
+                list, vol.Coerce(int), cv.string,
             ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
@@ -352,6 +352,15 @@ async def async_setup(hass, config):  # noqa: C901
     except KeyError:
         return True
 
+    register_services(hass)
+    return True
+
+
+def register_services(
+    hass
+):
+    zha_gw = hass.data["zha"]["zha_gateway"]
+
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
@@ -457,6 +466,9 @@ async def async_setup(hass, config):  # noqa: C901
         if handler_exception is not None:
             raise handler_exception
 
+        if not event_data["expect_reply"] and params[p.EXPECT_SUCCESS]:
+            raise Exception("Success expected, but failed")
+
     # Set up all service schemas
     for key, value in SERVICE_SCHEMAS.items():
         value.extend(COMMON_SCHEMA)
@@ -471,8 +483,6 @@ async def async_setup(hass, config):  # noqa: C901
             toolkit_service,
             schema=value,
         )
-
-    return True
 
 
 async def command_handler_default(
@@ -500,6 +510,15 @@ async def command_handler_default(
         await default.default(
             app, listener, ieee, cmd, data, service, params, event_data
         )
+
+
+#
+# To register services when modifying while system is online
+#
+async def command_handler_register_services(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    register_services(listener._hass)
 
 
 async def command_handler_handle_join(*args, **kwargs):
