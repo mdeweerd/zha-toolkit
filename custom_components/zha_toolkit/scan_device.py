@@ -99,7 +99,7 @@ async def scan_cluster(cluster, is_server=True):
         cmds_gen = "commands_received"
     return {
         "cluster_id": f"0x{cluster.cluster_id:04x}",
-        "title":  cluster.name,
+        "title": cluster.name,
         "name": cluster.ep_attribute,
         "attributes": await discover_attributes_extended(cluster),
         cmds_rec: await discover_commands_received(cluster, is_server),
