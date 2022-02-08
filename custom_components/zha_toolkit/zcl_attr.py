@@ -413,6 +413,7 @@ async def attr_write(  # noqa: C901
                 attr_name = attr_id
 
         fields.append(dt_util.utcnow().isoformat())
+        fields.append(cluster.name)
         fields.append(attr_name)
         fields.append(read_val)
         fields.append("0x%04X" % (attr_id)),
