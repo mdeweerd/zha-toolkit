@@ -367,7 +367,7 @@ def extractParams(service):  # noqa: C901
 
     if P.EVENT_SUCCESS in rawParams:
         params[p.EVT_SUCCESS] = rawParams[P.EVENT_SUCCESS]
-    LOGGER.debug("OUT %s", P.OUTCSV)
+
     if P.OUTCSV in rawParams:
         params[p.CSV_FILE] = rawParams[P.OUTCSV]
 

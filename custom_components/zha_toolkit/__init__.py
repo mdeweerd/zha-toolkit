@@ -6,6 +6,7 @@ import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import dt as dt_util
 
+from zigpy import types as t
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
