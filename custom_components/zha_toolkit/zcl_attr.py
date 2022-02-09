@@ -188,6 +188,51 @@ async def attr_write(  # noqa: C901
             elif attr_type == 0x20:
                 compare_val = u.str2int(attr_val_str)
                 attr_val = f.TypeValue(attr_type, t.uint8_t(compare_val))
+            elif attr_type == 0x21:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint16_t(compare_val))
+            elif attr_type == 0x22:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint24_t(compare_val))
+            elif attr_type == 0x23:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint32_t(compare_val))
+            elif attr_type == 0x24:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint32_t(compare_val))
+            elif attr_type == 0x25:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint48_t(compare_val))
+            elif attr_type == 0x26:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint56_t(compare_val))
+            elif attr_type == 0x27:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.uint64_t(compare_val))
+            elif attr_type == 0x28:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int8_t(compare_val))
+            elif attr_type == 0x29:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int16_t(compare_val))
+            elif attr_type == 0x2A:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int24_t(compare_val))
+            elif attr_type == 0x2B:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int32_t(compare_val))
+            elif attr_type == 0x2C:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int32_t(compare_val))
+            elif attr_type == 0x2D:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int48_t(compare_val))
+            elif attr_type == 0x2E:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int56_t(compare_val))
+            elif attr_type == 0x2F:
+                compare_val = u.str2int(attr_val_str)
+                attr_val = f.TypeValue(attr_type, t.int64_t(compare_val))
             elif attr_type <= 0x31 and attr_type >= 0x08:
                 compare_val = u.str2int(attr_val_str)
                 # uint, int, bool, bitmap and enum

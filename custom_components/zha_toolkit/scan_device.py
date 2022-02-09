@@ -99,6 +99,7 @@ async def scan_cluster(cluster, is_server=True):
         cmds_gen = "commands_received"
     return {
         "cluster_id": f"0x{cluster.cluster_id:04x}",
+        "title": cluster.name,
         "name": cluster.ep_attribute,
         "attributes": await discover_attributes_extended(cluster),
         cmds_rec: await discover_commands_received(cluster, is_server),
@@ -157,10 +158,12 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 access_acl & foundation.AttributeAccessControl.READ != 0
             ):
                 to_read.append(attr_id)
+
+            attr_type_hex = f"0x{attr_rec.datatype:02x}"
             if attr_type:
-                attr_type = [attr_type[1].__name__, attr_type[2].__name__]
+                attr_type = [attr_type_hex, attr_type[1].__name__, attr_type[2].__name__]
             else:
-                attr_type = f"0x{attr_rec.datatype:02x}"
+                attr_type = attr_type_hex
             try:
                 access = re.sub(
                     "^.*\\.",

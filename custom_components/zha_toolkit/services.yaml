@@ -35,6 +35,7 @@ execute:
             - handle_join
             - ieee_ping
             - leave
+            - misc_reinitialize
             - ota_notify
             - rejoin
             - remove_all_groups
@@ -72,36 +73,42 @@ execute:
         number:
           min: 1
           max: 0xFFFF
+          mode: box
     cmd:
       description: Command Id (zcl_cmd)
       selector:
         number:
           min: 0
           max: 255 
+          mode: box
     endpoint:
       description: target endpoint
       selector:
         number:
           min: 1
           max: 255 
+          mode: box
     cluster:
       description: target cluster
       selector:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attribute:
       description: target attribute id (or name, accepted in most cases)
       selector:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attr_type:
       description: Attribute type (to write, ...)
       selector:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attr_val:
       description: Attribute value to write
       selector:
@@ -112,30 +119,35 @@ execute:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     max_interval:
       description: Maximum report interval (seconds)
       selector:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     reportable_change:
       description: Minimum change before reporting
       selector:
         number:
           min: 0
           max: 65535
+          mode: box
     dir:
       description: Direction indicator, according to command
       selector:
         number:
           min: 0
           max: 1  
+          mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
           min: 0 
           max: 255
+          mode: box
     state_id:
       description: When defined, name of state to write the read attribute value to
       example: sensor.example
@@ -207,12 +219,14 @@ attr_read:
         number:
           min: 1
           max: 0xFFFF
+          mode: box
     endpoint:
       description: target endpoint
       selector:
         number:
           min: 1
           max: 255 
+          mode: box
     cluster:
       description: target cluster
       required: true
@@ -220,6 +234,7 @@ attr_read:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attribute:
       description: target attribute id (or name, accepted in most cases)
       required: true
@@ -227,12 +242,14 @@ attr_read:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
           min: 0 
           max: 255
+          mode: box
     state_id:
       description: When defined, name of state to write the read attribute value to
       example: sensor.example
@@ -292,12 +309,14 @@ attr_write:
         number:
           min: 1
           max: 0xFFFF
+          mode: box
     endpoint:
       description: target endpoint
       selector:
         number:
           min: 1
           max: 255 
+          mode: box
     cluster:
       description: target cluster
       required: true
@@ -305,6 +324,7 @@ attr_write:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attribute:
       description: target attribute id (or name, accepted in most cases)
       required: true
@@ -312,6 +332,7 @@ attr_write:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attr_type:
       description: Attribute type (to write, ...)
       required: true
@@ -319,6 +340,7 @@ attr_write:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     attr_val:
       description: Attribute value to write
       required: true
@@ -330,6 +352,7 @@ attr_write:
         number:
           min: 0 
           max: 255
+          mode: box
     state_id:
       description: When defined, name of state to write the read attribute value to
       example: sensor.example
@@ -435,12 +458,104 @@ bind_ieee:
         number:
           min: 0
           max: 0xFFFF
+          mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
           min: 0 
           max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    expect_reply:
+       description: "Wait for/expect a reply (not used yet)"
+       selector:
+         boolean:
+conf_report:
+  description: "Configure attribute reporting\nYou can set a high value for tries (100 or more) for sleepy devices."
+  fields:
+    ieee:
+      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
+      example: "00:0d:6f:00:05:7d:2d:34"
+      required: true
+      selector:
+        entity:
+          integration: zha
+    manf:
+      description: Manufacturer id
+      selector:
+        number:
+          min: 1
+          max: 0xFFFF
+          mode: box
+    endpoint:
+      description: target endpoint
+      selector:
+        number:
+          min: 1
+          max: 255 
+          mode: box
+    cluster:
+      description: target cluster
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    attribute:
+      description: target attribute id (or name, accepted in most cases)
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    min_interval:
+      description: Minimum report interval (seconds)
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    max_interval:
+      description: Maximum report interval (seconds)
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    reportable_change:
+      description: Minimum change before reporting
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 65535
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0 
+          max: 255
+          mode: box
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
@@ -503,6 +618,7 @@ handle_join:
         number:
           min: 1
           max: 0xFFFF
+          mode: box
 misc_reinitialize:
   description: Reinitialize device
   fields:
@@ -513,6 +629,35 @@ misc_reinitialize:
       selector:
         entity:
           integration: zha
+scan_device:
+  description: Scan device (result written to file in /config/scans)
+  fields:
+    ieee:
+      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
+      example: "00:0d:6f:00:05:7d:2d:34"
+      required: true
+      selector:
+        entity:
+          integration: zha
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    expect_reply:
+       description: "Wait for/expect a reply (not used yet)"
+       selector:
+         boolean:
 znp_backup:
   description: Backup coordinator data (znp, bellows/ezsp)
   fields:
