@@ -523,6 +523,29 @@ async def command_handler_default(
         )
 
 
+def reload_services_yaml(hass):
+    import os
+    from homeassistant.util.yaml.loader import load_yaml
+    from homeassistant.helpers.service import async_set_service_schema
+    from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
+
+    CONF_FIELDS = "fields"
+
+    for s in hass.services.services.get(DOMAIN, {}).keys():
+        hass.services.remove(DOMAIN, s)
+
+    services_yaml = os.path.join(os.path.dirname(__file__), "services.yaml")
+    s_defs = load_yaml(services_yaml)
+
+    for s in s_defs:
+        s_desc = {
+            CONF_NAME: s_defs.get(s, {}).get("name", s),
+            CONF_DESCRIPTION: s_defs.get(s, {}).get("description", ""),
+            CONF_FIELDS: s_defs.get(s, {}).get("fields", {}),
+        }
+        async_set_service_schema(hass, DOMAIN, s, s_desc)
+
+
 #
 # To register services when modifying while system is online
 #
