@@ -335,7 +335,6 @@ attr_write:
           mode: box
     attr_type:
       description: Attribute type (to write, ...)
-      required: true
       selector:
         number:
           min: 0

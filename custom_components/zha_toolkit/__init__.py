@@ -41,14 +41,14 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Optional(P.ATTRIBUTE): vol.Any(
-                cv.string, vol.Range(0, 0xFFFF)
+                vol.Range(0, 0xFFFF), cv.string
             ),
             vol.Optional(P.ATTR_TYPE): vol.Any(
-                cv.string, int
+                int, cv.string
             ),  # String is for later
             vol.Optional(P.ATTR_VAL): vol.Any(cv.string, int, list),
             vol.Optional(P.CODE): vol.Any(
-                cv.string, list
+                list, cv.string
             ),  # list is for later
             vol.Optional(P.MIN_INTRVL): int,
             vol.Optional(P.MAX_INTRVL): int,
@@ -56,7 +56,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.DIR): cv.boolean,
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.ARGS): vol.Any(
-                int, cv.string, list
+                int, list, cv.string
             ),  # Arguments to command
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
@@ -88,7 +88,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
-                cv.string, vol.Range(0, 0xFFFF)
+                vol.Range(0, 0xFFFF), cv.string
             ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
@@ -106,10 +106,10 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
-                cv.string, vol.Range(0, 0xFFFF)
+                vol.Range(0, 0xFFFF), cv.string 
             ),
-            vol.Required(P.ATTR_TYPE): vol.Any(
-                cv.string, int
+            vol.Optional(P.ATTR_TYPE): vol.Any(
+                int, cv.string
             ),  # String is for later
             vol.Required(P.ATTR_VAL): vol.Any(
                 list,
