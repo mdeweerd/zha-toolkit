@@ -49,8 +49,8 @@ async def ieee_ping(
     res = await dev.zdo.request(
         zdo_t.ZDOCmd.IEEE_addr_req,
         dev.nwk,  # nwk_addr_of_interest
-        0x00,     # request_type (0=single device response)
-        0x00      # Start index
+        0x00,  # request_type (0=single device response)
+        0x00,  # Start index
     )
     event_data["result_ping"] = res
     LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)

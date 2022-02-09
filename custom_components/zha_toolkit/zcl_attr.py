@@ -4,7 +4,6 @@ import importlib
 
 from homeassistant.util import dt as dt_util
 
-from zigpy import types as t
 from zigpy.zcl import foundation as f
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
@@ -161,7 +160,7 @@ async def attr_write(  # noqa: C901
     # Then the match should be in a loop
 
     attr_id = u.get_attr_id(cluster, params[p.ATTR_ID])
-    if attr_id == None:
+    if attr_id is None:
         msg = f"Could not determine attribute id for '{params[p.ATTR_ID]}'"
         event_data["errors"].append(msg)
         raise ValueError(msg)

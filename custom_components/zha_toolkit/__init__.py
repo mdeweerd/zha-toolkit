@@ -106,7 +106,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
-                vol.Range(0, 0xFFFF), cv.string 
+                vol.Range(0, 0xFFFF), cv.string
             ),
             vol.Optional(P.ATTR_TYPE): vol.Any(
                 int, cv.string

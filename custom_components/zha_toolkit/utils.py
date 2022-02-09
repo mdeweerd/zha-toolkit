@@ -234,7 +234,7 @@ def get_attr_id(cluster, attribute):
     try:
         if isinstance(attribute, str):
             return cluster.attridx.get(attribute)
-    except:
+    except Exception:
         return None
 
     # By default, just try to convert it to an int
@@ -247,13 +247,13 @@ def get_attr_type(cluster, attr_id):
         return f.DATA_TYPES.pytype_to_datatype_id(
             cluster.attributes.get(attr_id, (None, f.Unknown))[1]
         )
-    except:
+    except Exception:  # nosec
         pass
 
     return None
 
 
-def attr_encode(attr_val_in, attr_type):
+def attr_encode(attr_val_in, attr_type):  # noqa C901
     # Convert attribute value (provided as a string)
     # to appropriate attribute value.
     # If the attr_type is not set, only read the attribute.
