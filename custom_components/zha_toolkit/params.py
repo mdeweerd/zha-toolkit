@@ -66,6 +66,7 @@ class SERVICE_consts:
     MISC_REINITIALIZE = "misc_reinitialize"
     OTA_NOTIFY = "ota_notify"
     REJOIN = "rejoin"
+    REGISTER_SERVICES = "register_services"
     REMOVE_ALL_GROUPS = "remove_all_groups"
     REMOVE_FROM_GROUP = "remove_from_group"
     REMOVE_GROUP = "remove_group"

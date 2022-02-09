@@ -629,6 +629,8 @@ misc_reinitialize:
       selector:
         entity:
           integration: zha
+register_services:
+  description: "Reregister zha-toolkit services\nUsefull during development when they are updated in __init__.py"
 scan_device:
   description: Scan device (result written to file in /config/scans)
   fields:
