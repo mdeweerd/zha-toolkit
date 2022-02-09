@@ -242,6 +242,13 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
+    # TODO: Update next string to S.REGISTER_SERVICES
+    "register_services": vol.Schema(
+        {
+            vol.Optional(ATTR_IEEE): cv.string,
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.REMOVE_ALL_GROUPS: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
@@ -467,7 +474,7 @@ def register_services(
         if handler_exception is not None:
             raise handler_exception
 
-        if not event_data["expect_reply"] and params[p.EXPECT_SUCCESS]:
+        if not event_data["success"] and params[p.EXPECT_REPLY]:
             raise Exception("Success expected, but failed")
 
     # Set up all service schemas
