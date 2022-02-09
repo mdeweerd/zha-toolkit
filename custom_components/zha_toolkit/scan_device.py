@@ -161,7 +161,11 @@ async def discover_attributes_extended(cluster, manufacturer=None):
 
             attr_type_hex = f"0x{attr_rec.datatype:02x}"
             if attr_type:
-                attr_type = [attr_type_hex, attr_type[1].__name__, attr_type[2].__name__]
+                attr_type = [
+                    attr_type_hex,
+                    attr_type[1].__name__,
+                    attr_type[2].__name__,
+                ]
             else:
                 attr_type = attr_type_hex
             try:

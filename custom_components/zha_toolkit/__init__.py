@@ -32,7 +32,9 @@ SERVICE_SCHEMAS = {
     # This service provides access to all other services
     S.EXECUTE: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): vol.Any(cv.string, cv.entity_id_or_uuid, t.EUI64.convert),
+            vol.Optional(ATTR_IEEE): vol.Any(
+                cv.string, cv.entity_id_or_uuid, t.EUI64.convert
+            ),
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CMD): cv.string,
@@ -110,7 +112,9 @@ SERVICE_SCHEMAS = {
                 cv.string, int
             ),  # String is for later
             vol.Required(P.ATTR_VAL): vol.Any(
-                list, vol.Coerce(int), cv.string,
+                list,
+                vol.Coerce(int),
+                cv.string,
             ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
@@ -349,14 +353,15 @@ DENY_COMMAND_SCHEMA = {
 }
 
 
-async def async_setup(hass, config):  # noqa: C901
+async def async_setup(hass, config):
     """Set up ZHA from config."""
 
     if DOMAIN not in config:
         return True
 
     try:
-        zha_gw = hass.data["zha"]["zha_gateway"]
+        if hass.data["zha"]["zha_gateway"] is None:
+            return True
     except KeyError:
         return True
 
@@ -364,9 +369,7 @@ async def async_setup(hass, config):  # noqa: C901
     return True
 
 
-def register_services(
-    hass
-):
+def register_services(hass):  # noqa: C901
     zha_gw = hass.data["zha"]["zha_gateway"]
 
     async def toolkit_service(service):
