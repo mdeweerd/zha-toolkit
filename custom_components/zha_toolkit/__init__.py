@@ -6,6 +6,7 @@ import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import dt as dt_util
 
+from zigpy import types as t
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
@@ -31,11 +32,11 @@ SERVICE_SCHEMAS = {
     # This service provides access to all other services
     S.EXECUTE: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Optional(ATTR_IEEE): vol.Any(cv.string, cv.entity_id_or_uuid, t.EUI64.convert),
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CMD): cv.string,
-            vol.Optional(P.ENDPOINT): vol.All(cv.byte, [cv.byte]),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Optional(P.ATTRIBUTE): vol.Any(
                 cv.string, vol.Range(0, 0xFFFF)
@@ -258,7 +259,7 @@ SERVICE_SCHEMAS = {
     S.SCAN_DEVICE: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
-            vol.Optional(P.ENDPOINT): vol.All(cv.byte, [cv.byte]),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
         },
         extra=vol.ALLOW_EXTRA,
     ),
