@@ -523,7 +523,7 @@ async def command_handler_default(
         )
 
 
-def reload_services_yaml(hass):
+async def reload_services_yaml(hass):
     import os
     from homeassistant.util.yaml.loader import load_yaml
     from homeassistant.helpers.service import async_set_service_schema
@@ -531,13 +531,11 @@ def reload_services_yaml(hass):
 
     CONF_FIELDS = "fields"
 
-    for s in hass.services.services.get(DOMAIN, {}).keys():
-        hass.services.remove(DOMAIN, s)
-
     services_yaml = os.path.join(os.path.dirname(__file__), "services.yaml")
     s_defs = load_yaml(services_yaml)
 
     for s in s_defs:
+        # await hass.services.remove(DOMAIN, s)
         s_desc = {
             CONF_NAME: s_defs.get(s, {}).get("name", s),
             CONF_DESCRIPTION: s_defs.get(s, {}).get("description", ""),
@@ -553,6 +551,7 @@ async def command_handler_register_services(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     register_services(listener._hass)
+    await reload_services_yaml(listener._hass)
 
 
 async def command_handler_handle_join(*args, **kwargs):
