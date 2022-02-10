@@ -9,9 +9,7 @@ from homeassistant.util import dt as dt_util
 from zigpy import types as t
 
 from . import utils as u
-from .params import INTERNAL_PARAMS as p
-from .params import USER_PARAMS as P
-from .params import SERVICES as S
+from . import params as PARDEFS
 
 DEPENDENCIES = ["zha"]
 
@@ -28,6 +26,11 @@ DATA_ZHATK = "zha_toolkit"
 
 LOGGER = logging.getLogger(__name__)
 
+importlib.reload(PARDEFS)
+p = PARDEFS.INTERNAL_PARAMS
+P = PARDEFS.USER_PARAMS
+S = PARDEFS.SERVICES
+
 SERVICE_SCHEMAS = {
     # This service provides access to all other services
     S.EXECUTE: vol.Schema(
@@ -36,19 +39,19 @@ SERVICE_SCHEMAS = {
                 cv.string, cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(ATTR_COMMAND): cv.string,
-            vol.Optional(ATTR_COMMAND_DATA): cv.string,
+            vol.Optional(ATTR_COMMAND_DATA): vol.Any(list, cv.string),
             vol.Optional(P.CMD): cv.string,
             vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Optional(P.ATTRIBUTE): vol.Any(
-                cv.string, vol.Range(0, 0xFFFF)
+                vol.Range(0, 0xFFFF), cv.string
             ),
             vol.Optional(P.ATTR_TYPE): vol.Any(
-                cv.string, int
+                int, cv.string
             ),  # String is for later
             vol.Optional(P.ATTR_VAL): vol.Any(cv.string, int, list),
             vol.Optional(P.CODE): vol.Any(
-                cv.string, list
+                list, cv.string
             ),  # list is for later
             vol.Optional(P.MIN_INTRVL): int,
             vol.Optional(P.MAX_INTRVL): int,
@@ -56,7 +59,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.DIR): cv.boolean,
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.ARGS): vol.Any(
-                int, cv.string, list
+                int, list, cv.string
             ),  # Arguments to command
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
@@ -88,7 +91,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
-                cv.string, vol.Range(0, 0xFFFF)
+                vol.Range(0, 0xFFFF), cv.string
             ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
@@ -106,10 +109,10 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
-                cv.string, vol.Range(0, 0xFFFF)
+                vol.Range(0, 0xFFFF), cv.string
             ),
-            vol.Required(P.ATTR_TYPE): vol.Any(
-                cv.string, int
+            vol.Optional(P.ATTR_TYPE): vol.Any(
+                int, cv.string
             ),  # String is for later
             vol.Required(P.ATTR_VAL): vol.Any(
                 list,
@@ -211,6 +214,10 @@ SERVICE_SCHEMAS = {
         {},
         extra=vol.ALLOW_EXTRA,
     ),
+    S.ZHA_DEVICES: vol.Schema(
+        {},
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.HANDLE_JOIN: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
@@ -246,8 +253,7 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
-    # TODO: Update next string to S.REGISTER_SERVICES
-    "register_services": vol.Schema(
+    S.REGISTER_SERVICES: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
         },
@@ -376,6 +382,21 @@ def register_services(hass):  # noqa: C901
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
 
+        # importlib.reload(PARDEFS)
+        # S = PARDEFS.SERVICES
+
+        # Reload ourselves
+        mod_path = f"custom_components.{DOMAIN}"
+        try:
+            module = importlib.import_module(mod_path)
+        except ImportError as err:
+            LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
+            return
+
+        importlib.reload(module)
+
+        LOGGER.debug("module is %s", module)
+
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
         cmd_data = service.data.get(ATTR_COMMAND_DATA)
@@ -393,6 +414,7 @@ def register_services(hass):  # noqa: C901
             "ieee_org": ieee_str,
             "ieee": str(ieee),
             "command": cmd,
+            "command_data": cmd_data,
             "start_time": dt_util.utcnow().isoformat(),
             "errors": [],
             "params": params,
@@ -402,16 +424,6 @@ def register_services(hass):  # noqa: C901
             LOGGER.debug(
                 "'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee
             )
-
-        mod_path = f"custom_components.{DOMAIN}"
-        try:
-            module = importlib.import_module(mod_path)
-        except ImportError as err:
-            LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
-            return
-
-        importlib.reload(module)
-        LOGGER.debug("module is %s", module)
 
         service_cmd = service.service  # Lower case service name in domain
 
@@ -429,7 +441,10 @@ def register_services(hass):  # noqa: C901
             if service_cmd != "execute":
                 # Actual service name (exists, defined in services.yaml)
                 cmd = service_cmd
-                handler = getattr(module, f"command_handler_{cmd}")
+                try:
+                    handler = getattr(module, f"command_handler_{cmd}")
+                except AttributeError:  # nosec
+                    pass
 
         if handler is None:
             LOGGER.debug(f"Default handler for {cmd}")
@@ -523,6 +538,27 @@ async def command_handler_default(
         )
 
 
+async def reload_services_yaml(hass):
+    import os
+    from homeassistant.util.yaml.loader import load_yaml
+    from homeassistant.helpers.service import async_set_service_schema
+    from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
+
+    CONF_FIELDS = "fields"
+
+    services_yaml = os.path.join(os.path.dirname(__file__), "services.yaml")
+    s_defs = load_yaml(services_yaml)
+
+    for s in s_defs:
+        # await hass.services.remove(DOMAIN, s)
+        s_desc = {
+            CONF_NAME: s_defs.get(s, {}).get("name", s),
+            CONF_DESCRIPTION: s_defs.get(s, {}).get("description", ""),
+            CONF_FIELDS: s_defs.get(s, {}).get("fields", {}),
+        }
+        async_set_service_schema(hass, DOMAIN, s, s_desc)
+
+
 #
 # To register services when modifying while system is online
 #
@@ -530,6 +566,7 @@ async def command_handler_register_services(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     register_services(listener._hass)
+    await reload_services_yaml(listener._hass)
 
 
 async def command_handler_handle_join(*args, **kwargs):

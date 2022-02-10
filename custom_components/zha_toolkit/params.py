@@ -60,6 +60,7 @@ class SERVICE_consts:
     GET_GROUPS = "get_groups"
     GET_ROUTES_AND_NEIGHBOURS = "get_routes_and_neighbours"
     GET_ZLL_GROUPS = "get_zll_groups"
+    ZHA_DEVICES = "zha_devices"
     HANDLE_JOIN = "handle_join"
     IEEE_PING = "ieee_ping"
     LEAVE = "leave"

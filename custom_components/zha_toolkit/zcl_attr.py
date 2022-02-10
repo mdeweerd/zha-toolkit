@@ -4,7 +4,6 @@ import importlib
 
 from homeassistant.util import dt as dt_util
 
-from zigpy import types as t
 from zigpy.zcl import foundation as f
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
@@ -18,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def conf_report(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     dev = app.get_device(ieee=ieee)
 
@@ -160,9 +159,11 @@ async def attr_write(  # noqa: C901
     #  and attr_value
     # Then the match should be in a loop
 
-    # Decode attribute id
-    # Could accept name for attribute, but extra code to check
-    attr_id = params[p.ATTR_ID]
+    attr_id = u.get_attr_id(cluster, params[p.ATTR_ID])
+    if attr_id is None:
+        msg = f"Could not determine attribute id for '{params[p.ATTR_ID]}'"
+        event_data["errors"].append(msg)
+        raise ValueError(msg)
 
     attr_read_list.append(attr_id)  # Read before write list
 
@@ -172,103 +173,26 @@ async def attr_write(  # noqa: C901
         attr_type = params[p.ATTR_TYPE]
         attr_val_str = params[p.ATTR_VAL]
 
+        if attr_type is None:
+            attr_type = u.get_attr_type(cluster, attr_id)
+
         # Type only needed for write
         if attr_type is None or attr_val_str is None:
             event_data["errors"].append(
                 "attr_type and attr_val must be set for attr_write"
             )
         else:
-            # Convert attribute value (provided as a string)
-            # to appropriate attribute value.
-            # If the attr_type is not set, only read the attribute.
-            attr_val = None
-            if attr_type == 0x10:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.Bool(compare_val))
-            elif attr_type == 0x20:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint8_t(compare_val))
-            elif attr_type == 0x21:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint16_t(compare_val))
-            elif attr_type == 0x22:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint24_t(compare_val))
-            elif attr_type == 0x23:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint32_t(compare_val))
-            elif attr_type == 0x24:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint32_t(compare_val))
-            elif attr_type == 0x25:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint48_t(compare_val))
-            elif attr_type == 0x26:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint56_t(compare_val))
-            elif attr_type == 0x27:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.uint64_t(compare_val))
-            elif attr_type == 0x28:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int8_t(compare_val))
-            elif attr_type == 0x29:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int16_t(compare_val))
-            elif attr_type == 0x2A:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int24_t(compare_val))
-            elif attr_type == 0x2B:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int32_t(compare_val))
-            elif attr_type == 0x2C:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int32_t(compare_val))
-            elif attr_type == 0x2D:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int48_t(compare_val))
-            elif attr_type == 0x2E:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int56_t(compare_val))
-            elif attr_type == 0x2F:
-                compare_val = u.str2int(attr_val_str)
-                attr_val = f.TypeValue(attr_type, t.int64_t(compare_val))
-            elif attr_type <= 0x31 and attr_type >= 0x08:
-                compare_val = u.str2int(attr_val_str)
-                # uint, int, bool, bitmap and enum
-                attr_val = f.TypeValue(attr_type, t.FixedIntType(compare_val))
-            elif attr_type in [0x41, 0x42]:  # Octet string
-                # Octet string requires length -> LVBytes
-                compare_val = attr_val_str
-
+            attr_val, msg, compare_val = u.attr_encode(attr_val_str, attr_type)
+            event_data["compare_val"] = compare_val
+            if attr_type in [0x41, 0x42]:  # Octet string
                 event_data["str"] = attr_val_str
 
-                if type(attr_val_str) == str:
-                    attr_val_str = bytes(attr_val_str, "utf-8")
-
-                if isinstance(attr_val_str, list):
-                    # Convert list to List of uint8_t
-                    attr_val_str = t.List[t.uint8_t](
-                        [t.uint8_t(i) for i in attr_val_str]
-                    )
-
-                attr_val = f.TypeValue(attr_type, t.LVBytes(attr_val_str))
+            if msg is not None:
+                event_data["errors"].append(msg)
 
             if attr_val is not None:
                 attr = f.Attribute(attr_id, value=attr_val)
                 attr_write_list.append(attr)  # Write list
-            else:
-                msg = (
-                    "attr_type {} not supported, "
-                    + "or incorrect parameters (attr_val={})"
-                ).format(params[p.ATTR_TYPE], params[p.ATTR_VAL])
-                event_data["errors"].append(msg)
-                LOGGER.debug(msg)
-            LOGGER.debug(
-                "ATTR TYPE %s, attr_val %s",
-                params[p.ATTR_TYPE],
-                params[p.ATTR_VAL],
-            )
 
     result_read = None
     if (

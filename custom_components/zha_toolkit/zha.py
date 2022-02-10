@@ -1,0 +1,73 @@
+import logging
+
+
+from . import utils as u
+from .params import INTERNAL_PARAMS as p
+
+
+LOGGER = logging.getLogger(__name__)
+
+
+async def zha_devices(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+
+    devices = [device.zha_device_info for device in listener.devices.values()]
+    event_data["devices"] = devices
+
+    if params[p.CSV_FILE] is not None:
+        if data is not None and type(data) == list:
+            columns = data
+        else:
+            columns = [
+                "ieee",
+                "nwk",
+                "manufacturer",
+                "model",
+                "name",
+                "quirk_applied",
+                "quirk_class",
+                "manufacturer_code",
+                "power_source",
+                "lqi",
+                "rssi",
+                "last_seen",
+                "available",
+                "device_type",
+                "user_given_name",
+                "device_reg_id",
+                "area_id",
+            ]
+            # TODO: Skipped in columns, needs special handling
+            #  'signature'
+            #  'endpoints'
+
+        u.append_to_csvfile(
+            columns,
+            "csv",
+            params[p.CSV_FILE],
+            "device_dump['HEADER']",
+            listener=listener,
+            overwrite=True,
+        )
+
+        for d in devices:
+            fields = []
+            for c in columns:
+                if c not in d.keys():
+                    fields.append(None)
+                else:
+                    val = d[c]
+                    if c in ["manufacturer", "nwk"] and type(val) == int:
+                        val = f"0x{val:04X}"
+
+                    fields.append(d[c])
+
+            LOGGER.debug(f"Device {fields!r}")
+            u.append_to_csvfile(
+                fields,
+                "csv",
+                params[p.CSV_FILE],
+                f"device_dump[{d['ieee']}]",
+                listener=listener,
+            )

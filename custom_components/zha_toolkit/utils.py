@@ -3,7 +3,9 @@ import os
 import json
 
 from enum import Enum
+
 from zigpy import types as t
+from zigpy.zcl import foundation as f
 from homeassistant.util.json import save_json
 
 from .params import USER_PARAMS as P
@@ -206,7 +208,9 @@ def write_json_to_file(data, subdir, fname, desc, listener=None):
     LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
 
 
-def append_to_csvfile(fields, subdir, fname, desc, listener=None):
+def append_to_csvfile(
+    fields, subdir, fname, desc, listener=None, overwrite=False
+):
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
     else:
@@ -220,11 +224,126 @@ def append_to_csvfile(fields, subdir, fname, desc, listener=None):
 
     import csv
 
-    with open(file_name, "a") as f:
+    with open(file_name, "w" if overwrite else "a") as f:
         writer = csv.writer(f)
         writer.writerow(fields)
 
-    LOGGER.debug(f"Appended {desc} to '{file_name}'")
+    if overwrite:
+        LOGGER.debug(f"Wrote {desc} to '{file_name}'")
+    else:
+        LOGGER.debug(f"Appended {desc} to '{file_name}'")
+
+
+def get_attr_id(cluster, attribute):
+    # Try to get attribute id from cluster
+    try:
+        if isinstance(attribute, str):
+            return cluster.attridx.get(attribute)
+    except Exception:
+        return None
+
+    # By default, just try to convert it to an int
+    return str2int(attribute)
+
+
+def get_attr_type(cluster, attr_id):
+    """Get type for attribute in cluster, or None if not found"""
+    try:
+        return f.DATA_TYPES.pytype_to_datatype_id(
+            cluster.attributes.get(attr_id, (None, f.Unknown))[1]
+        )
+    except Exception:  # nosec
+        pass
+
+    return None
+
+
+def attr_encode(attr_val_in, attr_type):  # noqa C901
+    # Convert attribute value (provided as a string)
+    # to appropriate attribute value.
+    # If the attr_type is not set, only read the attribute.
+    attr_obj = None
+    if attr_type == 0x10:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.Bool(compare_val))
+    elif attr_type == 0x20:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint8_t(compare_val))
+    elif attr_type == 0x21:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint16_t(compare_val))
+    elif attr_type == 0x22:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint24_t(compare_val))
+    elif attr_type == 0x23:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint32_t(compare_val))
+    elif attr_type == 0x24:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint32_t(compare_val))
+    elif attr_type == 0x25:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint48_t(compare_val))
+    elif attr_type == 0x26:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint56_t(compare_val))
+    elif attr_type == 0x27:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.uint64_t(compare_val))
+    elif attr_type == 0x28:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int8_t(compare_val))
+    elif attr_type == 0x29:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int16_t(compare_val))
+    elif attr_type == 0x2A:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int24_t(compare_val))
+    elif attr_type == 0x2B:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int32_t(compare_val))
+    elif attr_type == 0x2C:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int32_t(compare_val))
+    elif attr_type == 0x2D:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int48_t(compare_val))
+    elif attr_type == 0x2E:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int56_t(compare_val))
+    elif attr_type == 0x2F:
+        compare_val = str2int(attr_val_in)
+        attr_obj = f.TypeValue(attr_type, t.int64_t(compare_val))
+    elif attr_type <= 0x31 and attr_type >= 0x08:
+        compare_val = str2int(attr_val_in)
+        # uint, int, bool, bitmap and enum
+        attr_obj = compare_val
+        # attr_obj = f.TypeValue(attr_type, t.FixedIntType(compare_val))
+    elif attr_type in [0x41, 0x42]:  # Octet string
+        # Octet string requires length -> LVBytes
+        compare_val = t.LVBytes(attr_val_in)
+
+        if type(attr_val_in) == str:
+            attr_val_in = bytes(attr_val_in, "utf-8")
+
+        if isinstance(attr_val_in, list):
+            # Convert list to List of uint8_t
+            attr_val_in = t.List[t.uint8_t](
+                [t.uint8_t(i) for i in attr_val_in]
+            )
+
+        attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
+
+    if attr_obj is None:
+        msg = (
+            "attr_type {} not supported, "
+            + "or incorrect parameters (attr_val={})"
+        ).format(attr_type, attr_val_in)
+        LOGGER.debug(msg)
+    else:
+        msg = None
+
+    return attr_obj, msg, compare_val
 
 
 # Common method to extract and convert parameters.

@@ -299,6 +299,18 @@ data:
 ```
 
 
+Using the symbolic name of the attribute, and automatic endpoint selection.
+
+```yaml
+service: zha_toolkit.attr_write
+data:
+  ieee: button.fictious_model_dcd14224_identify
+  cluster: 0
+  attribute: location_desc
+  attr_val: "My Location"
+```
+
+
 ## `conf_report`: Configure reporting
 
 Set the minimum and maximum delay between two reports and
@@ -653,6 +665,29 @@ data:
   # With this example the backup is written to `nwk_backup_20220105.json`
   command_data: _20220105
 ```
+
+
+## `zha_devices`: Get information about devices in network to CSV
+
+
+```yaml
+service: zha_toolkit.zha_devices
+data:
+  command_data: ['name', 'ieee', 'rssi', 'lqi']
+  csvout: ../www/devices.csv
+  event_done: zha_devices
+```
+
+The above should write the CSV to the www directory, so its available as 'INSTANCEURL/local/devices.csv' and you could add a button to your UI for downloading:
+
+```yaml
+type: button
+name: Devices CSV File
+tap_action:
+  action: url
+  url_path: /local/devices.csv
+```
+
 
 ## `znp_nvram_backup`: Backup ZNP NVRAM data
 

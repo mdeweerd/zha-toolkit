@@ -12,7 +12,7 @@ from .params import INTERNAL_PARAMS as p
 LOGGER = logging.getLogger(__name__)
 
 
-async def leave(app, listener, ieee, cmd, data, service, event_data, params):
+async def leave(app, listener, ieee, cmd, data, service, params, event_data):
     if ieee is None or not data:
         LOGGER.warning(
             "Incorrect parameters for 'zdo.leave' command: %s", service
@@ -33,7 +33,7 @@ async def leave(app, listener, ieee, cmd, data, service, event_data, params):
 
 
 async def ieee_ping(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     if ieee is None:
         LOGGER.warning(
@@ -47,14 +47,17 @@ async def ieee_ping(
     LOGGER.debug("running 'ieee_ping' command to 0x%s", dev.nwk)
 
     res = await dev.zdo.request(
-        zdo_t.ZDOCmd.IEEE_addr_req, dev.nwk, 0x00, 0x00
+        zdo_t.ZDOCmd.IEEE_addr_req,
+        dev.nwk,  # nwk_addr_of_interest
+        0x00,  # request_type (0=single device response)
+        0x00,  # Start index
     )
     event_data["result_ping"] = res
     LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)
 
 
 async def join_with_code(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     import bellows.types as bt
 
@@ -75,7 +78,7 @@ async def join_with_code(
 
 
 async def update_nwk_id(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Update NWK id. data contains new NWK id."""
     if data is None:
@@ -106,7 +109,7 @@ async def update_nwk_id(
 
 
 async def topo_scan_now(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
 
     LOGGER.debug("Scanning topology")
@@ -115,7 +118,7 @@ async def topo_scan_now(
 
 
 async def flood_parent_annce(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
 
     LOGGER.debug("flooding network with parent annce")

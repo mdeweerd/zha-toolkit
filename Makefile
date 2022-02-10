@@ -8,7 +8,7 @@ lint_python:
                  --max-complexity=20 --max-line-length=79 \
                  --show-source --statistics
 	mypy --ignore-missing-imports --install-types --non-interactive . 
-	safety check
+	# safety check
 
 # No tests, just for reference:
 test:
@@ -17,5 +17,9 @@ test:
 
 install_requirements:
 	pip install --upgrade pip wheel
-	pip install bandit black codespell flake8 flake8-2020 flake8-bugbear \
-                  flake8-comprehensions isort mypy pytest pyupgrade safety
+	pip install --upgrade bandit black codespell flake8 flake8-2020 flake8-bugbear \
+                  flake8-comprehensions isort mypy pytest pyupgrade safety \
+	          autoflake8
+
+upgrade_unsafe:
+	A="$$(safety check --bare)" ; [ "$$A" == "" ] || pip install --upgrade $$A
