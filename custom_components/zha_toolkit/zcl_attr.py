@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def conf_report(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     dev = app.get_device(ieee=ieee)
 

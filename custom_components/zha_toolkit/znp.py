@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def znp_backup(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Backup ZNP network information."""
 
@@ -52,7 +52,7 @@ async def znp_backup(
 
 
 async def znp_restore(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Restore ZNP network information."""
 
@@ -129,7 +129,7 @@ async def znp_restore(
 
 
 async def znp_nvram_backup(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Save ZNP NVRAM to file for backup"""
 
@@ -165,7 +165,7 @@ async def znp_nvram_backup(
 
 
 async def znp_nvram_restore(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Restore ZNP NVRAM from file"""
 
@@ -208,7 +208,7 @@ async def znp_nvram_restore(
 
 
 async def znp_nvram_reset(
-    app, listener, ieee, cmd, data, service, event_data, params
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Reset ZNP NVRAM"""
 
