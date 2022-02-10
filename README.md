@@ -299,6 +299,18 @@ data:
 ```
 
 
+Using the symbolic name of the attribute, and automatic endpoint selection.
+
+```yaml
+service: zha_toolkit.attr_write
+data:
+  ieee: button.fictious_model_dcd14224_identify
+  cluster: 0
+  attribute: location_desc
+  attr_val: "My Location"
+```
+
+
 ## `conf_report`: Configure reporting
 
 Set the minimum and maximum delay between two reports and
