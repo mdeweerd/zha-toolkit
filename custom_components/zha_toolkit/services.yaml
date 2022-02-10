@@ -771,6 +771,11 @@ zha_devices:
       example: ["ieee", "lqi", "name" ]
       selector:
         text:
+    csvout:
+      description: Filename of CSV to write read data to.  Written to 'csv' directory (can be relative as in example).
+      example: '../web/mycsv.csv'
+      selector:
+        text:
     csvlabel:
       description: Column to sort table by
       example: "lqi"
