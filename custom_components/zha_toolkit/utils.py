@@ -208,7 +208,7 @@ def write_json_to_file(data, subdir, fname, desc, listener=None):
     LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
 
 
-def append_to_csvfile(fields, subdir, fname, desc, listener=None):
+def append_to_csvfile(fields, subdir, fname, desc, listener=None, overwrite=False):
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
     else:
@@ -222,11 +222,14 @@ def append_to_csvfile(fields, subdir, fname, desc, listener=None):
 
     import csv
 
-    with open(file_name, "a") as f:
+    with open(file_name, "w" if overwrite else "a") as f:
         writer = csv.writer(f)
         writer.writerow(fields)
 
-    LOGGER.debug(f"Appended {desc} to '{file_name}'")
+    if overwrite:
+        LOGGER.debug(f"Wrote {desc} to '{file_name}'")
+    else:
+        LOGGER.debug(f"Appended {desc} to '{file_name}'")
 
 
 def get_attr_id(cluster, attribute):

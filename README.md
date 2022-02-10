@@ -666,6 +666,29 @@ data:
   command_data: _20220105
 ```
 
+
+## `zha_devices`: Get information about devices in network to CSV
+
+
+```yaml
+service: zha_toolkit.zha_devices
+data:
+  command_data: ['name', 'ieee', 'rssi', 'lqi']
+  csvout: ../www/devices.csv
+  event_done: zha_devices
+```
+
+The above should write the CSV to the www directory, so its available as 'INSTANCEURL/local/devices.csv' and you could add a button to your UI for downloading:
+
+```yaml
+type: button
+name: Devices CSV File
+tap_action:
+  action: url
+  url_path: /local/devices.csv
+```
+
+
 ## `znp_nvram_backup`: Backup ZNP NVRAM data
 
 The output is written to the customisation directory as `local/nvram_backup.json`

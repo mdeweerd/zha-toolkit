@@ -9,9 +9,7 @@ from homeassistant.util import dt as dt_util
 from zigpy import types as t
 
 from . import utils as u
-from .params import INTERNAL_PARAMS as p
-from .params import USER_PARAMS as P
-from .params import SERVICES as S
+from . import params as PARDEFS
 
 DEPENDENCIES = ["zha"]
 
@@ -28,6 +26,11 @@ DATA_ZHATK = "zha_toolkit"
 
 LOGGER = logging.getLogger(__name__)
 
+importlib.reload(params)
+p = PARDEFS.INTERNAL_PARAMS
+P = PARDEFS.USER_PARAMS
+S = PARDEFS.SERVICES
+
 SERVICE_SCHEMAS = {
     # This service provides access to all other services
     S.EXECUTE: vol.Schema(
@@ -36,7 +39,7 @@ SERVICE_SCHEMAS = {
                 cv.string, cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(ATTR_COMMAND): cv.string,
-            vol.Optional(ATTR_COMMAND_DATA): cv.string,
+            vol.Optional(ATTR_COMMAND_DATA): vol.Any(list, cv.string),
             vol.Optional(P.CMD): cv.string,
             vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
@@ -211,6 +214,10 @@ SERVICE_SCHEMAS = {
         {},
         extra=vol.ALLOW_EXTRA,
     ),
+    S.ZHA_DEVICES: vol.Schema(
+        {},
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.HANDLE_JOIN: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
@@ -246,8 +253,7 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
-    # TODO: Update next string to S.REGISTER_SERVICES
-    "register_services": vol.Schema(
+    S.REGISTER_SERVICES: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
         },
@@ -375,6 +381,21 @@ def register_services(hass):  # noqa: C901
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
+        
+        # importlib.reload(PARDEFS)
+        # S = PARDEFS.SERVICES
+
+        # Reload ourselves
+        mod_path = f"custom_components.{DOMAIN}"
+        try:
+            module = importlib.import_module(mod_path)
+        except ImportError as err:
+            LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
+            return
+        
+        importlib.reload(module)
+
+        LOGGER.debug("module is %s", module)
 
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
@@ -393,6 +414,7 @@ def register_services(hass):  # noqa: C901
             "ieee_org": ieee_str,
             "ieee": str(ieee),
             "command": cmd,
+            "command_data": cmd_data,
             "start_time": dt_util.utcnow().isoformat(),
             "errors": [],
             "params": params,
@@ -403,15 +425,6 @@ def register_services(hass):  # noqa: C901
                 "'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee
             )
 
-        mod_path = f"custom_components.{DOMAIN}"
-        try:
-            module = importlib.import_module(mod_path)
-        except ImportError as err:
-            LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
-            return
-
-        importlib.reload(module)
-        LOGGER.debug("module is %s", module)
 
         service_cmd = service.service  # Lower case service name in domain
 
@@ -429,7 +442,10 @@ def register_services(hass):  # noqa: C901
             if service_cmd != "execute":
                 # Actual service name (exists, defined in services.yaml)
                 cmd = service_cmd
-                handler = getattr(module, f"command_handler_{cmd}")
+                try:
+                    handler = getattr(module, f"command_handler_{cmd}")
+                except AttributeError:  # nosec
+                    pass
 
         if handler is None:
             LOGGER.debug(f"Default handler for {cmd}")
