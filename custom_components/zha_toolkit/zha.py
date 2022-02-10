@@ -15,6 +15,19 @@ async def zha_devices(
     devices = [device.zha_device_info for device in listener.devices.values()]
     event_data["devices"] = devices
 
+    if params[p.CSV_LABEL] is not None and type(params[p.CSV_LABEL]) == str:
+        try:
+            # Lamba function gets column and returns false if None
+            # This make compares possible for ints)
+            devices = sorted(
+                devices,
+                key=lambda item: (lambda a: (a is None, a))(
+                    item[params[p.CSV_LABEL]]
+                ),
+            )
+        except Exception:  # nosec
+            pass
+
     if params[p.CSV_FILE] is not None:
         if data is not None and type(data) == list:
             columns = data

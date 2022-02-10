@@ -350,7 +350,12 @@ COMMON_SCHEMA = {
     vol.Optional(P.EVENT_SUCCESS): cv.string,
     vol.Optional(P.EVENT_FAIL): cv.string,
     vol.Optional(P.EVENT_DONE): cv.string,
-    vol.Optional(P.EXPECT_REPLY): cv.boolean,  # May be called 'wait' later?
+    vol.Optional(
+        P.FAIL_EXCEPTION
+    ): cv.boolean,  # raise exception when success==False
+    vol.Optional(
+        P.EXPECT_REPLY
+    ): cv.boolean,  # To be use where Zigpy uses 'expect_reply'
 }
 
 
@@ -492,7 +497,7 @@ def register_services(hass):  # noqa: C901
         if handler_exception is not None:
             raise handler_exception
 
-        if not event_data["success"] and params[p.EXPECT_REPLY]:
+        if not event_data["success"] and params[p.FAIL_EXCEPTION]:
             raise Exception("Success expected, but failed")
 
     # Set up all service schemas
