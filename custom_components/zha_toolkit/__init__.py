@@ -350,8 +350,12 @@ COMMON_SCHEMA = {
     vol.Optional(P.EVENT_SUCCESS): cv.string,
     vol.Optional(P.EVENT_FAIL): cv.string,
     vol.Optional(P.EVENT_DONE): cv.string,
-    vol.Optional(P.FAIL_EXCEPTION): cv.boolean,  # raise exception when success==False
-    vol.Optional(P.EXPECT_REPLY): cv.boolean,  # To be use where Zigpy uses 'expect_reply'
+    vol.Optional(
+        P.FAIL_EXCEPTION
+    ): cv.boolean,  # raise exception when success==False
+    vol.Optional(
+        P.EXPECT_REPLY
+    ): cv.boolean,  # To be use where Zigpy uses 'expect_reply'
 }
 
 

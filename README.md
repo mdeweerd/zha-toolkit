@@ -125,7 +125,7 @@ time but it is shorter to enter if you know it.
 All commands support setting event names.
 When set, These events are generated at the end of the command execution.
 
-For sleepy devices (on a battery) the "tries" option can be usefull to try many times until the command succeeds.
+For sleepy devices (on a battery) the "tries" option can be useful to try many times until the command succeeds.
 Or, you may need to wake them up just after sending the command so that they can receive it.
 
 
