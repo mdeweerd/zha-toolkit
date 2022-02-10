@@ -26,7 +26,7 @@ DATA_ZHATK = "zha_toolkit"
 
 LOGGER = logging.getLogger(__name__)
 
-importlib.reload(params)
+importlib.reload(PARDEFS)
 p = PARDEFS.INTERNAL_PARAMS
 P = PARDEFS.USER_PARAMS
 S = PARDEFS.SERVICES
@@ -381,7 +381,7 @@ def register_services(hass):  # noqa: C901
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
-        
+
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
 
@@ -392,7 +392,7 @@ def register_services(hass):  # noqa: C901
         except ImportError as err:
             LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
             return
-        
+
         importlib.reload(module)
 
         LOGGER.debug("module is %s", module)
@@ -424,7 +424,6 @@ def register_services(hass):  # noqa: C901
             LOGGER.debug(
                 "'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee
             )
-
 
         service_cmd = service.service  # Lower case service name in domain
 
