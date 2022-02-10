@@ -316,7 +316,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         # attr_obj = f.TypeValue(attr_type, t.FixedIntType(compare_val))
     elif attr_type in [0x41, 0x42]:  # Octet string
         # Octet string requires length -> LVBytes
-        compare_val = attr_val_in
+        compare_val = t.LVBytes(attr_val_in)
 
         if type(attr_val_in) == str:
             attr_val_in = bytes(attr_val_in, "utf-8")

@@ -183,6 +183,7 @@ async def attr_write(  # noqa: C901
             )
         else:
             attr_val, msg, compare_val = u.attr_encode(attr_val_str, attr_type)
+            event_data["compare_val"] = compare_val
             if attr_type in [0x41, 0x42]:  # Octet string
                 event_data["str"] = attr_val_str
 
