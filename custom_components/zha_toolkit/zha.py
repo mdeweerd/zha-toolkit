@@ -15,6 +15,10 @@ async def zha_devices(
     devices = [device.zha_device_info for device in listener.devices.values()]
     event_data["devices"] = devices
 
+    LOGGER.debug(f"PARAMS{params!r} LABEL:{params[p.CSV_LABEL]} Type: {type(params[p.CSV_LABEL])}")
+    if params[p.CSV_LABEL] is not None and type(params[p.CSV_LABEL]) == str:
+        devices = sorted(devices, key=lambda item: item[params[p.CSV_LABEL]])
+
     if params[p.CSV_FILE] is not None:
         if data is not None and type(data) == list:
             columns = data

@@ -173,6 +173,10 @@ execute:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     allow_create:
        description: Allow state creation (given by state_id) if it does not exist
        selector:
@@ -275,6 +279,10 @@ attr_read:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     allow_create:
        description: Allow state creation (given by state_id) if it does not exist
        selector:
@@ -377,6 +385,10 @@ attr_write:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     allow_create:
        description: Allow state creation (given by state_id) if it does not exist
        selector:
@@ -430,6 +442,10 @@ backup:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
        selector:
@@ -480,6 +496,10 @@ bind_ieee:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
        selector:
@@ -570,6 +590,10 @@ conf_report:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
        selector:
@@ -597,6 +621,10 @@ ezsp_backup:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
        selector:
@@ -643,6 +671,10 @@ ieee_ping:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
        selector:
@@ -669,6 +701,14 @@ scan_device:
       selector:
         entity:
           integration: zha
+    endpoint:
+      description: Target endpoint, or list of endpoints
+      example: 1
+      selector:
+        number:
+          min: 1
+          max: 255 
+          mode: box
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
@@ -684,6 +724,10 @@ scan_device:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
        selector:
@@ -711,7 +755,44 @@ znp_backup:
       example: my_read_done_trigger_event
       selector:
         text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
+       selector:
+         boolean:
     expect_reply:
        description: "Wait for/expect a reply (not used yet)"
+       selector:
+         boolean:
+zha_devices:
+  description: Export IEEE device information to CSV file or Event
+  fields:
+    command_data:
+      description: List of columns for csv file
+      example: ["ieee", "lqi", "name" ]
+      selector:
+        text:
+    csvlabel:
+      description: Column to sort table by
+      example: "lqi"
+      selector:
+        select:
+          options: [ "ieee", "nwk", "manufacturer", "model", "name", "quirk_applied", "quirk_class", "manufacturer_code", "power_source", "lqi", "rssi", "last_seen", "available", "device_type", "user_given_name", "device_reg_id", "area_id", ]
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+       description: "Throw exception when success==False, useful to stop scripts, automations"
        selector:
          boolean:

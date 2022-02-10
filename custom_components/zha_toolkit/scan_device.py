@@ -35,7 +35,7 @@ async def scan_results(device, endpoints=None):
     if endpoints is not None and isinstance(endpoints, int):
         endpoints = [endpoints]
 
-    if endpoints is None or not isinstance(endpoints, list):
+    if endpoints is None or not isinstance(endpoints, list) or len(endpoints) == 0:
         endpoints = []
         for epid, _ep in device.endpoints.items():
             endpoints.append(epid)
@@ -323,18 +323,39 @@ async def scan_device(
 
     device = app.get_device(ieee)
 
-    scan = await scan_results(device, params[p.EP_ID])
+    endpoints = params[p.EP_ID]
+
+    if endpoints is None:
+        endpoints = []
+    elif isinstance(endpoints, int):
+        endpoints = [endpoints]
+    elif not isinstance(endpoints, list):
+        raise ValueError("Endpoint must be int or list of int")
+
+    endpoints = sorted(set(endpoints))  # Uniqify and sort
+
+    scan = await scan_results(device, endpoints)
 
     event_data["scan"] = scan
 
     model = scan.get("model")
     manufacturer = scan.get("manufacturer")
-    if model is not None and manufacturer is not None:
-        ieee_tail = "".join([f"{o:02x}" for o in ieee[-4:]])
-        file_name = f"{model}_{manufacturer}_{ieee_tail}_scan_results.txt"
+
+    if len(endpoints) == 0:
+        ep_str = ""
     else:
-        ieee_tail = "".join([f"{o:02x}" for o in ieee])
-        file_name = f"{ieee_tail}_scan_results.txt"
+        ep_str = "_"+("_".join([f"{e:02x}" for e in endpoints]))
+
+    postfix = f"{ep_str}_scan_results.txt"
+
+    # Set a unique filename for each device, using the manf name and
+    # the variable part of the device mac address
+    if model is not None and manufacturer is not None:
+        ieee_tail = "".join([f"{o:02x}" for o in ieee[4::-1]])
+        file_name = f"{model}_{manufacturer}_{ieee_tail}{postfix}"
+    else:
+        ieee_tail = "".join([f"{o:02x}" for o in ieee[::-1]])
+        file_name = f"{ieee_tail}{postfix}"
 
     u.write_json_to_file(
         scan,

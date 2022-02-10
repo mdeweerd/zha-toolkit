@@ -380,6 +380,7 @@ def extractParams(service):  # noqa: C901
         p.EVT_SUCCESS: None,
         p.EVT_FAIL: None,
         p.EVT_DONE: None,
+        p.FAIL_EXCEPTION: False,
         p.READ_BEFORE_WRITE: True,
         p.READ_AFTER_WRITE: True,
         p.WRITE_IF_EQUAL: False,
@@ -432,6 +433,9 @@ def extractParams(service):  # noqa: C901
     # Get expect_reply
     if P.EXPECT_REPLY in rawParams:
         params[p.EXPECT_REPLY] = str2int(rawParams[P.EXPECT_REPLY]) == 0
+
+    if P.FAIL_EXCEPTION in rawParams:
+        params[p.FAIL_EXCEPTION] = str2int(rawParams[P.FAIL_EXCEPTION]) == 0
 
     if P.ARGS in rawParams:
         cmd_args = []
