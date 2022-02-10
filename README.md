@@ -63,6 +63,10 @@ data:
     zigpy.zcl: debug
 ```
 
+For sleepy devices (on a battery) you may need to wake them up
+just after sending the command so that they can receive it.
+
+
 # Automations
 
 This is a list (of 1) automation:
@@ -106,18 +110,23 @@ Feel free to propose documentation updates.
 
 # Examples
 
-Examples are work in progress and may not be functional.
+Services are easy to called once or tested through Developer Tools > Services .  And you can also use them in scripts, automations, etc. .
 
-For sleepy devices (on a battery) you may need to wake them up
-just after sending the command so that they can receive it.
+Quite a few services can be configured from the UI.  And you can also start using the UI (to select the ieee/entity for instance), and then Go To YAML mode to add the other parameters.
+
+Empty UI example:
+![image](images/service-config-ui.png)
+
 
 The 'ieee' address can be the IEEE address, the short network address
 (0x1203 for instance), or the entity name (example: "light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off").  Be aware that the network address can change over
 time but it is shorter to enter if you know it.
 
-
 All commands support setting event names.
 When set, These events are generated at the end of the command execution.
+
+For sleepy devices (on a battery) the "tries" option can be usefull to try many times until the command succeeds.
+Or, you may need to wake them up just after sending the command so that they can receive it.
 
 
 ```yaml
