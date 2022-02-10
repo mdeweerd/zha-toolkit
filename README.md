@@ -669,10 +669,14 @@ data:
 
 ## `zha_devices`: Get information about devices in network to CSV
 
+Write information from currently known ZHA devices to a CSV file.
+You also get this data in the 'devices' field of the generated events which
+allows you to get information about endpoints and services as well.
 
 ```yaml
 service: zha_toolkit.zha_devices
 data:
+  # Optional list of fields to write to the CSV, all non-list fields by default.
   command_data: ['name', 'ieee', 'rssi', 'lqi']
   csvout: ../www/devices.csv
   event_done: zha_devices
