@@ -537,6 +537,13 @@ data:
 
 ## `misc_reinitialize`: Reinitialize device
 
+`misc_reinitialize` is a pretty dirty (white-hat) hack to reinitialize a device by making zigpy think the device is not initialized, and then requesting an initialisation.
+
+This is more than `handle_join` which is not reinitializing much when the device is already set up in zigpy.
+
+`misc_reinitialize` sets several device attributes to None and False so that the zigpy initialisation code will proceed with initialisation.
+
+
 ```yaml
 service: zha_toolkit.misc_reinitialize
 data:
