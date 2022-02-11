@@ -1,4 +1,4 @@
-lint_python:
+lint_python:  # And markdown format
 	-shopt -s globstar && pyupgrade --py36-plus **/*.py
 	bandit --recursive --skip B101,B311 .
 	black -l 79 .
@@ -9,6 +9,7 @@ lint_python:
                  --show-source --statistics
 	mypy --ignore-missing-imports --install-types --non-interactive . 
 	# safety check
+	mdformat --wrap 79 README.md --number
 
 # No tests, just for reference:
 test:
@@ -19,7 +20,7 @@ install_requirements:
 	pip install --upgrade pip wheel
 	pip install --upgrade bandit black codespell flake8 flake8-2020 flake8-bugbear \
                   flake8-comprehensions isort mypy pytest pyupgrade safety \
-	          autoflake8
+	          autoflake8 mdformat
 
 upgrade_unsafe:
 	A="$$(safety check --bare)" ; [ "$$A" == "" ] || pip install --upgrade $$A
