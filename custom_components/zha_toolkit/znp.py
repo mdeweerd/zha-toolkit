@@ -23,9 +23,10 @@ async def znp_backup(
         raise Exception(msg)
 
     # Import stuff we need
-    from zigpy_znp.tools.network_backup import backup_network as backup_network
-    import os
     import json
+    import os
+
+    from zigpy_znp.tools.network_backup import backup_network as backup_network
 
     # Get backup information
     backup_obj = await backup_network(app._znp)
@@ -81,10 +82,11 @@ async def znp_restore(
     await znp_backup(app, listener, ieee, cmd, current_datetime, service)
 
     # Import stuff we need for restoring
-    from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
-    from zigpy_znp.tools.common import validate_backup_json
-    from os import path
     import json
+    from os import path
+
+    from zigpy_znp.tools.common import validate_backup_json
+    from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
 
     # Set name with regards to local path
     fname = path.dirname(__file__) + "/local/nwk_backup.json"
@@ -139,9 +141,10 @@ async def znp_nvram_backup(
         raise Exception(msg)
 
     # Store backup information to file
-    from zigpy_znp.tools.nvram_read import nvram_read
-    import os
     import json
+    import os
+
+    from zigpy_znp.tools.nvram_read import nvram_read
 
     # Set name with regards to local path
     out_dir = os.path.dirname(__file__) + "/local/"
@@ -181,9 +184,10 @@ async def znp_nvram_restore(
     await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)
 
     # Restore NVRAM backup from file
-    from zigpy_znp.tools.nvram_write import nvram_write
-    import os
     import json
+    import os
+
+    from zigpy_znp.tools.nvram_write import nvram_write
 
     # Set name with regards to local path
     out_dir = os.path.dirname(__file__) + "/local/"

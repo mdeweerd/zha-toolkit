@@ -1,10 +1,9 @@
-import logging
 import inspect
+import logging
 
 from . import utils as u
-from .params import USER_PARAMS as P
 from .params import INTERNAL_PARAMS as p
-
+from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 

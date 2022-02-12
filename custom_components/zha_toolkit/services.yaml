@@ -79,14 +79,14 @@ execute:
       selector:
         number:
           min: 0
-          max: 255 
+          max: 255
           mode: box
     endpoint:
       description: target endpoint
       selector:
         number:
           min: 1
-          max: 255 
+          max: 255
           mode: box
     cluster:
       description: target cluster
@@ -139,13 +139,13 @@ execute:
       selector:
         number:
           min: 0
-          max: 1  
+          max: 1
           mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0 
+          min: 0
           max: 255
           mode: box
     state_id:
@@ -155,7 +155,7 @@ execute:
         text:
     state_attr:
       description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
-      example: other_attr 
+      example: other_attr
       selector:
         text:
     event_success:
@@ -229,7 +229,7 @@ attr_read:
       selector:
         number:
           min: 1
-          max: 255 
+          max: 255
           mode: box
     cluster:
       description: target cluster
@@ -251,7 +251,7 @@ attr_read:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0 
+          min: 0
           max: 255
           mode: box
     state_id:
@@ -261,7 +261,7 @@ attr_read:
         text:
     state_attr:
       description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
-      example: other_attr 
+      example: other_attr
       selector:
         text:
     event_success:
@@ -323,7 +323,7 @@ attr_write:
       selector:
         number:
           min: 1
-          max: 255 
+          max: 255
           mode: box
     cluster:
       description: target cluster
@@ -357,7 +357,7 @@ attr_write:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0 
+          min: 0
           max: 255
           mode: box
     state_id:
@@ -367,7 +367,7 @@ attr_write:
         text:
     state_attr:
       description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
-      example: other_attr 
+      example: other_attr
       selector:
         text:
     event_success:
@@ -478,7 +478,7 @@ bind_ieee:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0 
+          min: 0
           max: 255
           mode: box
     event_success:
@@ -526,7 +526,7 @@ conf_report:
       selector:
         number:
           min: 1
-          max: 255 
+          max: 255
           mode: box
     cluster:
       description: target cluster
@@ -572,7 +572,7 @@ conf_report:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0 
+          min: 0
           max: 255
           mode: box
     event_success:
@@ -707,7 +707,7 @@ scan_device:
       selector:
         number:
           min: 1
-          max: 255 
+          max: 255
           mode: box
     event_success:
       description: Event name in case of success
