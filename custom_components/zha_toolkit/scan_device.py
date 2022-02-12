@@ -2,9 +2,9 @@ import asyncio
 import logging
 import re
 
+from zigpy import types as t
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
-from zigpy import types as t
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p

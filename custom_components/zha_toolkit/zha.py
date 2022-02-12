@@ -1,9 +1,7 @@
 import logging
 
-
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
-
 
 LOGGER = logging.getLogger(__name__)
 

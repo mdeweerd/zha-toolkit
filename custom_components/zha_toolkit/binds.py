@@ -19,8 +19,8 @@ BINDABLE_IN_CLUSTERS = [
 async def bind_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
+    from zigpy.zdo.types import MultiAddress
 
     LOGGER.debug("running 'bind group' command: %s", service)
     if ieee is None:
@@ -83,8 +83,8 @@ async def bind_group(
 async def unbind_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy.zdo.types import MultiAddress
     from zigpy import types as t
+    from zigpy.zdo.types import MultiAddress
 
     LOGGER.debug("running 'unbind group' command: %s", service)
     if ieee is None:

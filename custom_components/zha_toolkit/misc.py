@@ -1,6 +1,6 @@
 # import asyncio
-import logging
 import asyncio
+import logging
 
 import zigpy.types as t
 from zigpy.exceptions import DeliveryError
