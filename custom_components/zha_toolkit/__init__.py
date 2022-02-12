@@ -364,14 +364,15 @@ DENY_COMMAND_SCHEMA = {
 }
 
 
-# Almost all command_handlers below should be converted to an
-# entry in this dictionary.
-# Only for legacy handlers where the name does not follow the
-# ruleset:
+# Command to internal command mapping for
+#
+# Exceptions to the ruleset:
 # - Service name/cmd =  "MODULE_CMD"
 # - Method in MODULE is "MODULE_CMD".
-#
+# (i.e., these commands to not have the module name at
+#        at the start of the function name)
 CMD_TO_INTERNAL_MAP = {
+    # "COMMAND or SERVICE": ["MODULE", "modulemethod"],
     S.ADD_GROUP: ["groups", S.ADD_GROUP],
     S.ADD_TO_GROUP: ["groups", S.ADD_TO_GROUP],
     S.ALL_ROUTES_AND_NEIGHBOURS: ["neighbours", S.ALL_ROUTES_AND_NEIGHBOURS],
