@@ -1,6 +1,9 @@
+---
 # Describes the format for available zha services
 execute:
-  description: Execute ZHA Toolkit service (Examine the documentation or code to know which parameters are needed)
+  description: >-
+    Execute ZHA Toolkit service (Examine the documentation or code to know
+    which parameters are needed)
   fields:
     command:
       description: Command name
@@ -57,14 +60,18 @@ execute:
             - znp_nvram_restore
             - znp_restore
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
           integration: zha
     command_data:
-      description: data for the command (specific command. Example, second IEEE address for binding)
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        data for the command (specific command. Example, second IEEE address
+        for binding)
+      example: 00:0d:6f:00:05:7d:2d:34
       selector:
         text:
     manf:
@@ -149,12 +156,15 @@ execute:
           max: 255
           mode: box
     state_id:
-      description: When defined, name of state to write the read attribute value to
+      description: >-
+        When defined, name of state to write the read attribute value to
       example: sensor.example
       selector:
         text:
     state_attr:
-      description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
+      description: >-
+        When defined, attribute in state_id to write the read attribute
+        value to.  Write to state value when missing (and state_id is defined)
       example: other_attr
       selector:
         text:
@@ -169,12 +179,15 @@ execute:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     allow_create:
@@ -182,24 +195,32 @@ execute:
       selector:
         boolean:
     read_before_write:
-      description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
+      description: >-
+        Read attribute before writing it (used with attr_write).  When
+        the read value matches the value to write, no write is done.
+        Defaults to True.
       selector:
         boolean:
     read_after_write:
-      description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+      description: >-
+        Read attribute after writing.  Can be used to ensure the values
+        match.  Defaults to True
       selector:
         boolean:
     write_if_equal:
-      description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+      description: >-
+        Force writing the attribute even if the read attribute already
+        matches.  Defaults to False
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
     csvout:
-      description: Filename of CSV to write read data to.  Written to 'csv' directory
-      example: '../web/mycsv.csv'
+      description: >-
+        Filename of CSV to write read data to.  Written to 'csv' directory
+      example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
@@ -211,8 +232,10 @@ attr_read:
   description: Read Attribute (ZHA-Toolkit)
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
@@ -255,12 +278,15 @@ attr_read:
           max: 255
           mode: box
     state_id:
-      description: When defined, name of state to write the read attribute value to
+      description: >-
+        When defined, name of state to write the read attribute value to
       example: sensor.example
       selector:
         text:
     state_attr:
-      description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
+      description: >-
+        When defined, attribute in state_id to write the read attribute
+        value to.  Write to state value when missing (and state_id is defined)
       example: other_attr
       selector:
         text:
@@ -275,25 +301,30 @@ attr_read:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     allow_create:
-      description: Allow state creation (given by state_id) if it does not exist
+      description: >-
+        Allow state creation (given by state_id) if it does not exist
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
     csvout:
-      description: Filename of CSV to write read data to.  Written to 'csv' directory
-      example: '../web/mycsv.csv'
+      description: >-
+        Filename of CSV to write read data to.  Written to 'csv' directory
+      example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
@@ -305,8 +336,10 @@ attr_write:
   description: Write Attribute (ZHA-Toolkit)
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute\
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
@@ -361,12 +394,15 @@ attr_write:
           max: 255
           mode: box
     state_id:
-      description: When defined, name of state to write the read attribute value to
+      description: >-
+        When defined, name of state to write the read attribute value to
       example: sensor.example
       selector:
         text:
     state_attr:
-      description: When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)
+      description: >-
+        When defined, attribute in state_id to write the read attribute
+        value to.  Write to state value when missing (and state_id is defined)
       example: other_attr
       selector:
         text:
@@ -381,37 +417,49 @@ attr_write:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     allow_create:
-      description: Allow state creation (given by state_id) if it does not exist
+      description: >-
+        Allow state creation (given by state_id) if it does not exist
       selector:
         boolean:
     read_before_write:
-      description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
+      description: >-
+        Read attribute before writing it (used with attr_write).  When
+        the read value matches the value to write, no write is done.
+        Defaults to True.
       selector:
         boolean:
     read_after_write:
-      description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+      description: >-
+        Read attribute after writing.  Can be used to ensure the values
+        match.  Defaults to True
       selector:
         boolean:
     write_if_equal:
-      description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+      description: >-
+        Force writing the attribute even if the read attribute already
+        matches.  Defaults to False
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
     csvout:
-      description: Filename of CSV to write read data to.  Written to 'csv' directory
-      example: '../web/mycsv.csv'
+      description: >-
+        Filename of CSV to write read data to.  Written to 'csv' directory
+      example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
@@ -424,7 +472,7 @@ backup:
   fields:
     command_data:
       description: Suffix for backup file
-      example: "_bathroom_added"
+      example: _bathroom_added
       selector:
         text:
     event_success:
@@ -438,31 +486,38 @@ backup:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 bind_ieee:
   description: Bind clusters from ieee device to command_data device
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     command_data:
-      description: "Binding target\nEntity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Binding target\nEntity name,\ndevice name, or\nIEEE address of
+        the node to execute command"
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
@@ -492,24 +547,31 @@ bind_ieee:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 conf_report:
-  description: "Configure attribute reporting\nYou can set a high value for tries (100 or more) for sleepy devices."
+  description: >-
+    Configure attribute reporting\nYou can set a high value for tries
+    (100 or more) for sleepy devices."
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command"
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
@@ -586,16 +648,19 @@ conf_report:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 ezsp_backup:
@@ -603,7 +668,7 @@ ezsp_backup:
   fields:
     command_data:
       description: Suffix for backup file
-      example: "_bathroom_added"
+      example: _bathroom_added
       selector:
         text:
     event_success:
@@ -617,30 +682,37 @@ ezsp_backup:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 handle_join:
-  description: Handle join (ZHA should re-interrogate the device as on new join)
+  description: >-
+    Handle join (ZHA should re-interrogate the device as on new join)
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     command_data:
-      description: Short network address of the device (optional, if known in ZHA)
+      description: >-
+        Short network address of the device (optional, if known in ZHA)
       selector:
         number:
           min: 1
@@ -650,8 +722,9 @@ ieee_ping:
   description: Ping device
   fields:
     ieee:
-      description: "Ping: Requests IEEE address (using the known NWK Address)"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Ping: Requests IEEE address (using the known NWK Address)
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
@@ -667,36 +740,45 @@ ieee_ping:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 misc_reinitialize:
   description: Reinitialize device
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command"
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
 register_services:
-  description: "Reregister zha-toolkit services\nUsefull during development when they are updated in __init__.py"
+  description: >-
+    Reregister zha-toolkit services\nUsefull during development when they
+    are updated in __init__.py
 scan_device:
   description: Scan device (result written to file in /config/scans)
   fields:
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute command"
-      example: "00:0d:6f:00:05:7d:2d:34"
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
@@ -720,16 +802,19 @@ scan_device:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 znp_backup:
@@ -737,7 +822,7 @@ znp_backup:
   fields:
     command_data:
       description: Suffix for backup file
-      example: "_bathroom_added"
+      example: _bathroom_added
       selector:
         text:
     event_success:
@@ -751,16 +836,19 @@ znp_backup:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
-      description: "Wait for/expect a reply (not used yet)"
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 zha_devices:
@@ -768,20 +856,25 @@ zha_devices:
   fields:
     command_data:
       description: List of columns for csv file
-      example: ["ieee", "lqi", "name"]
+      example: [ieee, lqi, name]
       selector:
         text:
     csvout:
-      description: Filename of CSV to write read data to.  Written to 'csv' directory (can be relative as in example).
-      example: '../web/mycsv.csv'
+      description: >-
+        Filename of CSV to write read data to.  Written to 'csv' directory
+        (can be relative as in example).
+      example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
       description: Column to sort table by
-      example: "lqi"
+      example: lqi
       selector:
         select:
-          options: ["ieee", "nwk", "manufacturer", "model", "name", "quirk_applied", "quirk_class", "manufacturer_code", "power_source", "lqi", "rssi", "last_seen", "available", "device_type", "user_given_name", "device_reg_id", "area_id"]
+          options: [ieee, nwk, manufacturer, model, name, quirk_applied,
+                    quirk_class, manufacturer_code, power_source, lqi, rssi,
+                    last_seen, available, device_type, user_given_name,
+                    device_reg_id, area_id]
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
@@ -793,11 +886,14 @@ zha_devices:
       selector:
         text:
     event_done:
-      description: Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
       example: my_read_done_trigger_event
       selector:
         text:
     fail_exception:
-      description: "Throw exception when success==False, useful to stop scripts, automations"
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
