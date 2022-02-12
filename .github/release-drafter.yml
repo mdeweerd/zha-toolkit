@@ -1,32 +1,33 @@
-name-template: 'v$RESOLVED_VERSION 🧰'
-tag-template: 'v$RESOLVED_VERSION'
+---
+name-template: v$RESOLVED_VERSION 🧰
+tag-template: v$RESOLVED_VERSION
 change-template: '- #$NUMBER $TITLE @$AUTHOR'
 sort-direction: ascending
 categories:
-  - title: '🚀 Features'
+  - title: 🚀 Features
     labels:
-      - 'feature'
-      - 'enhancement'
+      - feature
+      - enhancement
 
-  - title: '🐛 Bug Fixes'
+  - title: 🐛 Bug Fixes
     labels:
-      - 'fix'
-      - 'bugfix'
-      - 'bug'
+      - fix
+      - bugfix
+      - bug
 
-  - title: '🧰 Maintenance'
-    label: 'chore'
+  - title: 🧰 Maintenance
+    label: chore
 
 version-resolver:
   major:
     labels:
-      - 'major'
+      - major
   minor:
     labels:
-      - 'minor'
+      - minor
   patch:
     labels:
-      - 'patch'
+      - patch
   default: patch
 template: |
   ## Changes
@@ -36,9 +37,9 @@ template: |
   ## ⭐️ Thank you so much for helping out to keep this integration awesome
   $CONTRIBUTORS
 autolabeler:
-  - label: 'bug'
+  - label: bug
     branch:
-      - '/fix\/.+/'
-  - label: 'enhancement'
+      - /fix\/.+/
+  - label: enhancement
     branch:
-      - '/feature\/.+/'
+      - /feature\/.+/

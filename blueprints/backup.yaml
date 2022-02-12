@@ -1,3 +1,4 @@
+---
 blueprint:
   name: Daily Coordinator Backup - Monthly rotation
   description: >-
@@ -8,7 +9,7 @@ blueprint:
     backup_time:
       name: Backup time
       description: >-
-        Time at which the daily backup should be madeaction should start
+        Time at which the daily backup should be made.
       selector:
         time:
 trigger:
