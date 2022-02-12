@@ -174,29 +174,29 @@ execute:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     allow_create:
-       description: Allow state creation (given by state_id) if it does not exist
-       selector:
-         boolean:
+      description: Allow state creation (given by state_id) if it does not exist
+      selector:
+        boolean:
     read_before_write:
-       description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
-       selector:
-         boolean:
+      description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
+      selector:
+        boolean:
     read_after_write:
-       description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
-       selector:
-         boolean:
+      description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+      selector:
+        boolean:
     write_if_equal:
-       description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
-       selector:
-         boolean:
+      description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
     csvout:
       description: Filename of CSV to write read data to.  Written to 'csv' directory
       example: '../web/mycsv.csv'
@@ -280,17 +280,17 @@ attr_read:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     allow_create:
-       description: Allow state creation (given by state_id) if it does not exist
-       selector:
-         boolean:
+      description: Allow state creation (given by state_id) if it does not exist
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
     csvout:
       description: Filename of CSV to write read data to.  Written to 'csv' directory
       example: '../web/mycsv.csv'
@@ -386,29 +386,29 @@ attr_write:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     allow_create:
-       description: Allow state creation (given by state_id) if it does not exist
-       selector:
-         boolean:
+      description: Allow state creation (given by state_id) if it does not exist
+      selector:
+        boolean:
     read_before_write:
-       description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
-       selector:
-         boolean:
+      description: "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done  Defaults to True."
+      selector:
+        boolean:
     read_after_write:
-       description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
-       selector:
-         boolean:
+      description: "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+      selector:
+        boolean:
     write_if_equal:
-       description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
-       selector:
-         boolean:
+      description: "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
     csvout:
       description: Filename of CSV to write read data to.  Written to 'csv' directory
       example: '../web/mycsv.csv'
@@ -443,13 +443,13 @@ backup:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 bind_ieee:
   description: Bind clusters from ieee device to command_data device
   fields:
@@ -497,13 +497,13 @@ bind_ieee:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 conf_report:
   description: "Configure attribute reporting\nYou can set a high value for tries (100 or more) for sleepy devices."
   fields:
@@ -591,13 +591,13 @@ conf_report:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 ezsp_backup:
   description: Backup coordinator data (znp, bellows/ezsp)
   fields:
@@ -622,13 +622,13 @@ ezsp_backup:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 handle_join:
   description: Handle join (ZHA should re-interrogate the device as on new join)
   fields:
@@ -672,13 +672,13 @@ ieee_ping:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 misc_reinitialize:
   description: Reinitialize device
   fields:
@@ -725,13 +725,13 @@ scan_device:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 znp_backup:
   description: Backup coordinator data (znp, bellows/ezsp)
   fields:
@@ -756,19 +756,19 @@ znp_backup:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:
     expect_reply:
-       description: "Wait for/expect a reply (not used yet)"
-       selector:
-         boolean:
+      description: "Wait for/expect a reply (not used yet)"
+      selector:
+        boolean:
 zha_devices:
   description: Export IEEE device information to CSV file or Event
   fields:
     command_data:
       description: List of columns for csv file
-      example: ["ieee", "lqi", "name" ]
+      example: ["ieee", "lqi", "name"]
       selector:
         text:
     csvout:
@@ -781,7 +781,7 @@ zha_devices:
       example: "lqi"
       selector:
         select:
-          options: [ "ieee", "nwk", "manufacturer", "model", "name", "quirk_applied", "quirk_class", "manufacturer_code", "power_source", "lqi", "rssi", "last_seen", "available", "device_type", "user_given_name", "device_reg_id", "area_id", ]
+          options: ["ieee", "nwk", "manufacturer", "model", "name", "quirk_applied", "quirk_class", "manufacturer_code", "power_source", "lqi", "rssi", "last_seen", "available", "device_type", "user_given_name", "device_reg_id", "area_id"]
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
@@ -798,6 +798,6 @@ zha_devices:
       selector:
         text:
     fail_exception:
-       description: "Throw exception when success==False, useful to stop scripts, automations"
-       selector:
-         boolean:
+      description: "Throw exception when success==False, useful to stop scripts, automations"
+      selector:
+        boolean:

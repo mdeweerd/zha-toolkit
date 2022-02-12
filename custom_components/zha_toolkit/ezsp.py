@@ -1,11 +1,11 @@
 import binascii
-import logging
 import importlib
+import logging
 
-from zigpy import types as t
-import zigpy.zdo.types
 import bellows
 import bellows.types
+import zigpy.zdo.types
+from zigpy import types as t
 
 from . import utils as u
 
@@ -228,8 +228,12 @@ async def ezsp_backup_legacy(
         raise Exception(msg)
 
     # Import stuff we need
+    import json
+    import os
+
     import bellows.types as bt
-    from bellows.cli.backup import (
+
+    from bellows.cli.backup import (  # isort:skip
         ATTR_NODE_TYPE,
         ATTR_NODE_ID,
         ATTR_NODE_EUI64,
@@ -245,8 +249,6 @@ async def ezsp_backup_legacy(
         ATTR_KEY_TABLE,
         _backup_keys,
     )
-    import os
-    import json
 
     (status, node_type, network) = await app._ezsp.getNetworkParameters()
     assert status == bt.EmberStatus.SUCCESS
@@ -309,9 +311,10 @@ async def ezsp_backup(
         raise Exception(msg)
 
     # Import stuff we need
-    from . import ezsp_backup
-    import os
     import json
+    import os
+
+    from . import ezsp_backup
 
     importlib.reload(ezsp_backup)
 
