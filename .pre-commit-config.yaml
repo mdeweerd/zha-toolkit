@@ -29,6 +29,7 @@ repos:
           - --safe
           - --quiet
           - -l 79
+          - .
   - repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
     rev: v1.0.5
     hooks:
