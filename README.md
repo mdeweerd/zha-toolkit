@@ -328,6 +328,42 @@ data:
   attr_val: "My Location"
 ```
 
+A more complex example using HA's templating feature can be found below.\
+Each call will increment the previous target temperature by 0.5 degrees
+(increment by 50 in Zigbee's unit) up to 22.50 degrees and restart from
+20 degrees.\
+On the first call (when the state is not set yet), the setpoint temperature
+is 21.5 degrees.
+
+The toolkit implements a read after each write (and it is not disabled
+by a `read_after_write` parameter), so it will write the temperature value
+to the state `sensor.tgt_temperature`.
+
+Note that a template is evaluated before calling the service, so the
+`read_before_write` can't influence the attribute to write during the same
+service call even though it updates the attribute.
+The read before write could still be useful if you want to track updates
+in history graphs for instance.
+
+This example also uses the attribute name, not the attribute id.
+
+Tries is set to 3 to cope with some uncommon communication issues.
+
+
+```yaml
+service: zha_toolkit.attr_write
+data:
+  ieee: entity.my_thermostat_entity
+  cluster: 0x201
+  attribute: 'occupied_heating_setpoint'
+  attr_val: "{% set t = states('sensor.tgt_temperature') %}{{ [(t|int+50) % 2300,2000]|max if is_number(t) else 2150 }}"
+  state_id: sensor.tgt_temperature
+  allow_create: true
+  read_before_write: false
+  tries: 3
+  fail_exception: true
+```
+
 ## `conf_report`: Configure reporting
 
 Set the minimum and maximum delay between two reports and set the level of
