@@ -29,12 +29,11 @@ repos:
           - --safe
           - --quiet
           - -l 79
-          - .
   - repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
     rev: v1.0.5
     hooks:
       - id: python-bandit-vulnerability-check
-        args: [--skip, "B103,B311"]
+        args: [--skip, "B103,B311", --recursive, .]
 
   - repo: https://github.com/fsouza/autoflake8
     rev: v0.3.1
