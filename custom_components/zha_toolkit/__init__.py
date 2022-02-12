@@ -364,6 +364,45 @@ DENY_COMMAND_SCHEMA = {
 }
 
 
+# Almost all command_handlers below should be converted to an
+# entry in this dictionary.
+# Only for legacy handlers where the name does not follow the
+# ruleset:
+# - Service name/cmd =  "MODULE_CMD"
+# - Method in MODULE is "MODULE_CMD".
+#
+CMD_TO_INTERNAL_MAP = {
+    # Currently an entry for testing, key will be backup
+    "test": ["misc", "backup"],
+    # Entries that will be effective after removing handlers below
+    S.ADD_GROUP: ["groups", S.ADD_GROUP],
+    S.ADD_TO_GROUP: ["groups", S.ADD_TO_GROUP],
+    S.ALL_ROUTES_AND_NEIGHBOURS: ["neighbours", S.ALL_ROUTES_AND_NEIGHBOURS],
+    S.ATTR_READ: ["zcl_attr", S.ATTR_READ],
+    S.ATTR_WRITE: ["zcl_attr", S.ATTR_WRITE],
+    S.BACKUP: ["misc", S.BACKUP],
+    S.BIND_GROUP: ["binds", S.BIND_GROUP],
+    S.BIND_IEEE: ["binds", S.BIND_IEEE],
+    S.CONF_REPORT: ["zcl_attr", S.CONF_REPORT],
+    S.GET_GROUPS: ["groups", S.GET_GROUPS],
+    S.GET_ROUTES_AND_NEIGHBOURS: ["neighbours", S.GET_ROUTES_AND_NEIGHBOURS],
+    S.GET_ZLL_GROUPS: ["groups", S.GET_ZLL_GROUPS],
+    S.HANDLE_JOIN: ["misc", S.HANDLE_JOIN],
+    S.IEEE_PING: ["zdo", S.IEEE_PING],
+    S.LEAVE: ["zdo", S.LEAVE],
+    S.REJOIN: ["misc", S.REJOIN],
+    S.REMOVE_ALL_GROUPS: ["groups", S.REMOVE_ALL_GROUPS],
+    S.REMOVE_FROM_GROUP: ["groups", S.REMOVE_FROM_GROUP],
+    S.REMOVE_GROUP: ["groups", S.REMOVE_GROUP],
+    S.SCAN_DEVICE: ["scan_device", S.SCAN_DEVICE],
+    S.SINOPE: ["sinope", S.SINOPE],
+    S.UNBIND_COORDINATOR: ["binds", S.UNBIND_COORDINATOR],
+    S.UNBIND_GROUP: ["binds", S.UNBIND_GROUP],
+    S.ZCL_CMD: ["zcl_cmd", S.ZCL_CMD],
+    S.ZIGPY_DECONZ: ["zigpy_deconz", S.ZIGPY_DECONZ],
+}
+
+
 async def async_setup(hass, config):
     """Set up ZHA from config."""
 
@@ -537,6 +576,10 @@ async def command_handler_default(
         from . import default
 
         importlib.reload(default)
+
+        # Use default handler for generic command loading
+        if cmd in CMD_TO_INTERNAL_MAP:
+            cmd = CMD_TO_INTERNAL_MAP[cmd]
 
         await default.default(
             app, listener, ieee, cmd, data, service, params, event_data
@@ -802,195 +845,13 @@ def command_handler_zigpy_deconz(*args, **kwargs):
     return zigpy_deconz.zigpy_deconz(*args, **kwargs)
 
 
-def command_handler_ezsp_backup(*args, **kwargs):
-    """Backup BELLOWS (ezsp) network information."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.ezsp_backup(*args, **kwargs)
-
-
-def command_handler_ezsp_set_channel(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.set_channel(*args, **kwargs)
-
-
-def command_handler_ezsp_get_token(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_token(*args, **kwargs)
-
-
-def command_handler_ezsp_start_mfg(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.start_mfg(*args, **kwargs)
-
-
-def command_handler_ezsp_get_keys(*args, **kwargs):
-    """Get EZSP keys."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_keys(*args, **kwargs)
-
-
-def command_handler_ezsp_add_key(*args, **kwargs):
-    """Add transient link key."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-    return ezsp.add_transient_key(*args, **kwargs)
-
-
-def command_handler_ezsp_get_ieee_by_nwk(*args, **kwargs):
-    """Get EZSP keys."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-    return ezsp.get_ieee_by_nwk(*args, **kwargs)
-
-
-def command_handler_ezsp_get_policy(*args, **kwargs):
-    """Get EZSP keys."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-    return ezsp.get_policy(*args, **kwargs)
-
-
-def command_handler_ezsp_clear_keys(*args, **kwargs):
-    """Clear key table."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.clear_keys(*args, **kwargs)
-
-
-def command_handler_ezsp_get_config_value(*args, **kwargs):
-    """Get EZSP config value."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_config_value(*args, **kwargs)
-
-
-def command_handler_ezsp_get_value(*args, **kwargs):
-    """Get EZSP value."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_value(*args, **kwargs)
-
-
-def command_handler_ota_notify(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ota
-
-    importlib.reload(ota)
-
-    return ota.notify(*args, **kwargs)
-
-
-def command_handler_zdo_join_with_code(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.join_with_code(*args, **kwargs)
-
-
-def command_handler_zdo_update_nwk_id(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.update_nwk_id(*args, **kwargs)
-
-
-def command_handler_zdo_scan_now(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.topo_scan_now(*args, **kwargs)
-
-
-def command_handler_zdo_flood_parent_annce(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.flood_parent_annce(*args, **kwargs)
-
-
-def command_handler_znp_backup(*args, **kwargs):
-    """Backup ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_backup(*args, **kwargs)
-
-
-def command_handler_znp_restore(*args, **kwargs):
-    """Restore ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_restore(*args, **kwargs)
-
-
 def command_handler_zcl_cmd(*args, **kwargs):
-    """Perform scene command."""
+    """Perform command."""
     from . import zcl_cmd
 
     importlib.reload(zcl_cmd)
 
     return zcl_cmd.zcl_cmd(*args, **kwargs)
-
-
-def command_handler_znp_nvram_backup(*args, **kwargs):
-    """Backup ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_nvram_backup(*args, **kwargs)
-
-
-def command_handler_znp_nvram_restore(*args, **kwargs):
-    """Restore ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_nvram_restore(*args, **kwargs)
-
-
-def command_handler_znp_nvram_reset(*args, **kwargs):
-    """Restore ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_nvram_reset(*args, **kwargs)
 
 
 def command_handler_backup(*args, **kwargs):

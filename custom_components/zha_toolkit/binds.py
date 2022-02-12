@@ -6,6 +6,15 @@ from . import utils as u
 
 LOGGER = logging.getLogger(__name__)
 
+BINDABLE_OUT_CLUSTERS = [
+    0x0006,  # OnOff
+    0x0008,  # Level
+    0x0300,  # Color Control
+]
+BINDABLE_IN_CLUSTERS = [
+    0x0402,  # Temperature
+]
+
 
 async def bind_group(
     app, listener, ieee, cmd, data, service, params, event_data
@@ -26,26 +35,26 @@ async def bind_group(
 
     group_id = u.str2int(data)
     zdo = src_dev.zdo
-    src_cls = [6, 8, 768]
+    src_out_cls = BINDABLE_OUT_CLUSTERS
 
     # find src ep_id
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
     results = {}
-    for src_cluster in src_cls:
+    for src_out_cluster in src_out_cls:
         src_epid = None
         for ep_id, ep in src_dev.endpoints.items():
             if ep_id == 0:
                 continue
-            if src_cluster in ep.out_clusters:
+            if src_out_cluster in ep.out_clusters:
                 src_epid = ep_id
                 break
         if not src_epid:
             LOGGER.debug(
                 "0x%04x: skipping %s cluster as non present",
                 src_dev.nwk,
-                src_cluster,
+                src_out_cluster,
             )
             continue
         if src_epid not in results:
@@ -55,12 +64,12 @@ async def bind_group(
             src_dev.nwk,
             str(src_dev.ieee),
             src_epid,
-            src_cluster,
+            src_out_cluster,
         )
-        bind_result = {"endpoint_id": src_epid, "cluster_id": src_cluster}
+        bind_result = {"endpoint_id": src_epid, "cluster_id": src_out_cluster}
 
         res = await zdo.request(
-            ZDOCmd.Bind_req, src_dev.ieee, src_epid, src_cluster, dst_addr
+            ZDOCmd.Bind_req, src_dev.ieee, src_epid, src_out_cluster, dst_addr
         )
         bind_result["result"] = res
         results[src_epid].append(bind_result)
@@ -90,25 +99,25 @@ async def unbind_group(
     group_id = u.str2int(data)
 
     zdo = src_dev.zdo
-    src_cls = [6, 8, 768]
+    src_out_cls = BINDABLE_OUT_CLUSTERS
 
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
     results = {}
-    for src_cluster in src_cls:
+    for src_out_cluster in src_out_cls:
         src_ep = None
         for ep_id, ep in src_dev.endpoints.items():
             if ep_id == 0:
                 continue
-            if src_cluster in ep.out_clusters:
+            if src_out_cluster in ep.out_clusters:
                 src_ep = ep_id
                 break
         if not src_ep:
             LOGGER.debug(
                 "0x%04x: skipping %s cluster as non present",
                 src_dev.nwk,
-                src_cluster,
+                src_out_cluster,
             )
             continue
 
@@ -120,12 +129,12 @@ async def unbind_group(
             src_dev.nwk,
             str(src_dev.ieee),
             src_ep,
-            src_cluster,
+            src_out_cluster,
         )
 
-        unbind_result = {"endpoint_id": src_ep, "cluster_id": src_cluster}
+        unbind_result = {"endpoint_id": src_ep, "cluster_id": src_out_cluster}
         res = await zdo.request(
-            ZDOCmd.Unbind_req, src_dev.ieee, src_ep, src_cluster, dst_addr
+            ZDOCmd.Unbind_req, src_dev.ieee, src_ep, src_out_cluster, dst_addr
         )
         unbind_result["result"] = res
         results[src_ep].append(unbind_result)
@@ -151,15 +160,8 @@ async def bind_ieee(
     dst_dev = await u.get_device(app, listener, data)
 
     zdo = src_dev.zdo
-    src_out_clusters = [
-        0x0006,  # OnOff
-        0x0008,  # Level
-        0x0300,  # Color Control
-    ]
-
-    src_in_clusters = [
-        0x0402,  # Temperature
-    ]
+    src_out_clusters = BINDABLE_OUT_CLUSTERS
+    src_in_clusters = BINDABLE_IN_CLUSTERS
 
     # TODO: Filter according to params[p.CLUSTER_ID]
 
@@ -303,7 +305,7 @@ async def unbind_coordinator(
         LOGGER.error("missing ieee and/or data")
         return
     src_dev = app.get_device(ieee=ieee)
-    cluster_id = int(data)
+    cluster_id = u.str2int(data)
 
     for ep_id, ep in src_dev.endpoints.items():
         if not ep_id or cluster_id not in ep.out_clusters:

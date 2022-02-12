@@ -9,7 +9,7 @@ lint_python:  # And markdown format
                  --show-source --statistics
 	mypy --ignore-missing-imports --install-types --non-interactive . 
 	# safety check
-	mdformat --wrap 79 README.md --number
+	mdformat --wrap 75 README.md --number
 
 # No tests, just for reference:
 test:

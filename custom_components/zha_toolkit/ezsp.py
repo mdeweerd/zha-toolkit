@@ -12,7 +12,7 @@ from . import utils as u
 LOGGER = logging.getLogger(__name__)
 
 
-async def set_channel(
+async def ezsp_set_channel(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     ch = t.uint8_t(data)
@@ -56,7 +56,7 @@ async def set_channel(
     LOGGER.info("Set channel status: %s", res)
 
 
-async def get_token(
+async def ezsp_get_token(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     token = t.uint8_t(data)
@@ -77,7 +77,7 @@ async def get_token(
         )
 
 
-async def start_mfg(
+async def ezsp_start_mfg(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("Starting mfg lib")
@@ -92,7 +92,7 @@ async def start_mfg(
     LOGGER.info("mfg lib change channel: %s", res)
 
 
-async def get_keys(
+async def ezsp_get_keys(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("getting all keys")
@@ -130,7 +130,7 @@ async def get_keys(
     event_data["network"] = nwkParams
 
 
-async def add_transient_key(
+async def ezsp_add_transient_key(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("adding well known link key as transient key")
@@ -143,7 +143,7 @@ async def add_transient_key(
     LOGGER.debug("Installed key for %s: %s", ieee, status)
 
 
-async def get_ieee_by_nwk(
+async def ezsp_get_ieee_by_nwk(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("Lookup IEEE by nwk")
@@ -155,7 +155,7 @@ async def get_ieee_by_nwk(
     event_data["status"] = status
 
 
-async def get_policy(
+async def ezsp_get_policy(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     policy = int(data)
@@ -169,7 +169,7 @@ async def get_policy(
     event_data["policy_value"] = repr(value)
 
 
-async def clear_keys(
+async def ezsp_clear_keys(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     LOGGER.info("Clear key table")
@@ -177,7 +177,7 @@ async def clear_keys(
     LOGGER.info("Cleared key table: %s", status)
 
 
-async def get_config_value(
+async def ezsp_get_config_value(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None:
@@ -194,7 +194,7 @@ async def get_config_value(
     LOGGER.info("%s = %s", cfg_id.name, value)
 
 
-async def get_value(
+async def ezsp_get_value(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None:
