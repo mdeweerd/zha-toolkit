@@ -33,7 +33,7 @@ repos:
     rev: v1.0.5
     hooks:
       - id: python-bandit-vulnerability-check
-        args: [--skip, "B103,B311", --recursive, .]
+        args: [--skip, "B101,B311", --recursive, .]
 
   - repo: https://github.com/fsouza/autoflake8
     rev: v0.3.1
