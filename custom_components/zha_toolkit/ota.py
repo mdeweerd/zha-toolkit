@@ -4,7 +4,9 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-async def notify(app, listener, ieee, cmd, data, service, params, event_data):
+async def ota_notify(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
     if ieee is None:
         LOGGER.error("missing ieee")
         return

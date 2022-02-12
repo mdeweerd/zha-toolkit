@@ -56,7 +56,7 @@ async def ieee_ping(
     LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)
 
 
-async def join_with_code(
+async def zdo_join_with_code(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     import bellows.types as bt
@@ -77,7 +77,7 @@ async def join_with_code(
     res = await app.permit(60)
 
 
-async def update_nwk_id(
+async def zdo_update_nwk_id(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     """Update NWK id. data contains new NWK id."""
@@ -108,16 +108,17 @@ async def update_nwk_id(
     LOGGER.debug("Network params: %s", res)
 
 
-async def topo_scan_now(
+async def zdo_scan_now(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    """Scan topology"""
 
     LOGGER.debug("Scanning topology")
     task = asyncio.create_task(app.topology.scan())
     event_data["task"] = task
 
 
-async def flood_parent_annce(
+async def zdo_flood_parent_annce(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
 

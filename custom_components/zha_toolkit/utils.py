@@ -292,28 +292,28 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         attr_obj = f.TypeValue(attr_type, t.uint64_t(compare_val))
     elif attr_type == 0x28:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int8_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int8s(compare_val))
     elif attr_type == 0x29:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int16_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int16s(compare_val))
     elif attr_type == 0x2A:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int24_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int24s(compare_val))
     elif attr_type == 0x2B:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int32_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int32s(compare_val))
     elif attr_type == 0x2C:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int32_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int32s(compare_val))
     elif attr_type == 0x2D:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int48_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int48s(compare_val))
     elif attr_type == 0x2E:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int56_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int56s(compare_val))
     elif attr_type == 0x2F:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int64_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int64s(compare_val))
     elif attr_type <= 0x31 and attr_type >= 0x08:
         compare_val = str2int(attr_val_in)
         # uint, int, bool, bitmap and enum

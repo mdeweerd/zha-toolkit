@@ -364,6 +364,43 @@ DENY_COMMAND_SCHEMA = {
 }
 
 
+# Command to internal command mapping for
+#
+# Exceptions to the ruleset:
+# - Service name/cmd =  "MODULE_CMD"
+# - Method in MODULE is "MODULE_CMD".
+# (i.e., these commands to not have the module name at
+#        at the start of the function name)
+CMD_TO_INTERNAL_MAP = {
+    # "COMMAND or SERVICE": ["MODULE", "modulemethod"],
+    S.ADD_GROUP: ["groups", S.ADD_GROUP],
+    S.ADD_TO_GROUP: ["groups", S.ADD_TO_GROUP],
+    S.ALL_ROUTES_AND_NEIGHBOURS: ["neighbours", S.ALL_ROUTES_AND_NEIGHBOURS],
+    S.ATTR_READ: ["zcl_attr", S.ATTR_READ],
+    S.ATTR_WRITE: ["zcl_attr", S.ATTR_WRITE],
+    S.BACKUP: ["misc", S.BACKUP],
+    S.BIND_GROUP: ["binds", S.BIND_GROUP],
+    S.BIND_IEEE: ["binds", S.BIND_IEEE],
+    S.CONF_REPORT: ["zcl_attr", S.CONF_REPORT],
+    S.GET_GROUPS: ["groups", S.GET_GROUPS],
+    S.GET_ROUTES_AND_NEIGHBOURS: ["neighbours", S.GET_ROUTES_AND_NEIGHBOURS],
+    S.GET_ZLL_GROUPS: ["groups", S.GET_ZLL_GROUPS],
+    S.HANDLE_JOIN: ["misc", S.HANDLE_JOIN],
+    S.IEEE_PING: ["zdo", S.IEEE_PING],
+    S.LEAVE: ["zdo", S.LEAVE],
+    S.REJOIN: ["misc", S.REJOIN],
+    S.REMOVE_ALL_GROUPS: ["groups", S.REMOVE_ALL_GROUPS],
+    S.REMOVE_FROM_GROUP: ["groups", S.REMOVE_FROM_GROUP],
+    S.REMOVE_GROUP: ["groups", S.REMOVE_GROUP],
+    S.SCAN_DEVICE: ["scan_device", S.SCAN_DEVICE],
+    S.SINOPE: ["sinope", S.SINOPE],
+    S.UNBIND_COORDINATOR: ["binds", S.UNBIND_COORDINATOR],
+    S.UNBIND_GROUP: ["binds", S.UNBIND_GROUP],
+    S.ZCL_CMD: ["zcl_cmd", S.ZCL_CMD],
+    S.ZIGPY_DECONZ: ["zigpy_deconz", S.ZIGPY_DECONZ],
+}
+
+
 async def async_setup(hass, config):
     """Set up ZHA from config."""
 
@@ -538,6 +575,10 @@ async def command_handler_default(
 
         importlib.reload(default)
 
+        # Use default handler for generic command loading
+        if cmd in CMD_TO_INTERNAL_MAP:
+            cmd = CMD_TO_INTERNAL_MAP[cmd]
+
         await default.default(
             app, listener, ieee, cmd, data, service, params, event_data
         )
@@ -572,431 +613,3 @@ async def command_handler_register_services(
 ):
     register_services(listener._hass)
     await reload_services_yaml(listener._hass)
-
-
-async def command_handler_handle_join(*args, **kwargs):
-    from . import misc
-
-    importlib.reload(misc)
-
-    await misc.handle_join(*args, **kwargs)
-
-
-async def command_handler_scan_device(*args, **kwargs):
-    """Scan a device for all supported attributes and commands.
-    ieee -- ieee of the device to scan
-
-    ToDo: use manufacturer_id to scan for manufacturer specific clusters/attrs.
-    """
-
-    from . import scan_device
-
-    importlib.reload(scan_device)
-
-    await scan_device.scan_device(*args, **kwargs)
-
-
-async def command_handler_get_groups(*args, **kwargs):
-    """Get all groups a device is member of.
-    ieee -- ieee of the device to issue "get_groups" cluster command
-    """
-
-    from . import groups
-
-    importlib.reload(groups)
-
-    await groups.get_groups(*args, **kwargs)
-
-
-async def command_handler_add_group(*args, **kwargs):
-    """Add a group to the device.
-    ieee -- device to issue "add_group" Groups cluster command
-    data -- group_id of the group to add, in 0xXXXX format
-    """
-    from . import groups
-
-    importlib.reload(groups)
-
-    await groups.add_group(*args, **kwargs)
-
-
-async def command_handler_remove_group(*args, **kwargs):
-    """Remove a group from the device.
-    ieee -- device to issue "remove_group" Groups cluster command
-    data -- group_id of the group to remove in 0xXXXX format
-    """
-    from . import groups
-
-    importlib.reload(groups)
-
-    await groups.remove_group(*args, **kwargs)
-
-
-async def command_handler_remove_all_groups(*args, **kwargs):
-    """Remove all groups from a device.
-    ieee -- device to issue "remove all" Groups cluster command
-    """
-    from . import groups
-
-    importlib.reload(groups)
-
-    await groups.remove_all_groups(*args, **kwargs)
-
-
-async def command_handler_bind_group(*args, **kwargs):
-    """Add group binding to a device.
-    ieee -- ieee of the remote (device configured with a binding)
-    data -- group_id
-    """
-    from . import binds
-
-    importlib.reload(binds)
-
-    await binds.bind_group(*args, **kwargs)
-
-
-async def command_handler_unbind_group(*args, **kwargs):
-    """Remove group binding from a device.
-    ieee -- ieee of the remote (device configured with a binding)
-    data -- group_id
-    """
-    from . import binds
-
-    importlib.reload(binds)
-
-    await binds.unbind_group(*args, **kwargs)
-
-
-async def command_handler_bind_ieee(*args, **kwargs):
-    """IEEE bind device.
-    ieee -- ieee of the remote (device configured with a binding)
-    data -- ieee of the target device (device remote sends commands to)
-    """
-    from . import binds
-
-    importlib.reload(binds)
-
-    await binds.bind_ieee(*args, **kwargs)
-
-
-async def command_handler_unbind_coordinator(*args, **kwargs):
-    """IEEE bind device.
-    ieee -- ieee of the device to unbind from coordinator
-    data -- cluster ID to unbind
-    """
-    from . import binds
-
-    importlib.reload(binds)
-
-    await binds.unbind_coordinator(*args, **kwargs)
-
-
-async def command_handler_rejoin(*args, **kwargs):
-    from . import misc
-
-    importlib.reload(misc)
-
-    await misc.rejoin(*args, **kwargs)
-
-
-def command_handler_get_zll_groups(*args, **kwargs):
-    from . import groups
-
-    importlib.reload(groups)
-
-    return groups.get_zll_groups(*args, **kwargs)
-
-
-def command_handler_add_to_group(*args, **kwargs):
-    """Add device to a group."""
-    from . import groups
-
-    importlib.reload(groups)
-
-    return groups.add_to_group(*args, **kwargs)
-
-
-def command_handler_remove_from_group(*args, **kwargs):
-    """Remove device from a group."""
-    from . import groups
-
-    importlib.reload(groups)
-
-    return groups.remove_from_group(*args, **kwargs)
-
-
-def command_handler_sinope(*args, **kwargs):
-    from . import sinope
-
-    importlib.reload(sinope)
-
-    return sinope.sinope_write_test(*args, **kwargs)
-
-
-def command_handler_attr_read(*args, **kwargs):
-    from . import zcl_attr
-
-    importlib.reload(zcl_attr)
-
-    return zcl_attr.attr_read(*args, **kwargs)
-
-
-def command_handler_attr_write(*args, **kwargs):
-    from . import zcl_attr
-
-    importlib.reload(zcl_attr)
-
-    return zcl_attr.attr_write(*args, **kwargs)
-
-
-def command_handler_conf_report(*args, **kwargs):
-    from . import zcl_attr
-
-    importlib.reload(zcl_attr)
-
-    return zcl_attr.conf_report(*args, **kwargs)
-
-
-def command_handler_get_routes_and_neighbours(*args, **kwargs):
-    """Scan a device for neighbours and routes.
-    ieee -- ieee of the device to scan
-    """
-    from . import neighbours
-
-    importlib.reload(neighbours)
-
-    return neighbours.routes_and_neighbours(*args, **kwargs)
-
-
-def command_handler_all_routes_and_neighbours(*args, **kwargs):
-    """Scan all devices for neighbours and routes."""
-    from . import neighbours
-
-    importlib.reload(neighbours)
-
-    return neighbours.all_routes_and_neighbours(*args, **kwargs)
-
-
-def command_handler_leave(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.leave(*args, **kwargs)
-
-
-def command_handler_ieee_ping(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.ieee_ping(*args, **kwargs)
-
-
-def command_handler_zigpy_deconz(*args, **kwargs):
-    """Zigpy deconz test."""
-    from . import zigpy_deconz
-
-    importlib.reload(zigpy_deconz)
-
-    return zigpy_deconz.zigpy_deconz(*args, **kwargs)
-
-
-def command_handler_ezsp_backup(*args, **kwargs):
-    """Backup BELLOWS (ezsp) network information."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.ezsp_backup(*args, **kwargs)
-
-
-def command_handler_ezsp_set_channel(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.set_channel(*args, **kwargs)
-
-
-def command_handler_ezsp_get_token(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_token(*args, **kwargs)
-
-
-def command_handler_ezsp_start_mfg(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.start_mfg(*args, **kwargs)
-
-
-def command_handler_ezsp_get_keys(*args, **kwargs):
-    """Get EZSP keys."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_keys(*args, **kwargs)
-
-
-def command_handler_ezsp_add_key(*args, **kwargs):
-    """Add transient link key."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-    return ezsp.add_transient_key(*args, **kwargs)
-
-
-def command_handler_ezsp_get_ieee_by_nwk(*args, **kwargs):
-    """Get EZSP keys."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-    return ezsp.get_ieee_by_nwk(*args, **kwargs)
-
-
-def command_handler_ezsp_get_policy(*args, **kwargs):
-    """Get EZSP keys."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-    return ezsp.get_policy(*args, **kwargs)
-
-
-def command_handler_ezsp_clear_keys(*args, **kwargs):
-    """Clear key table."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.clear_keys(*args, **kwargs)
-
-
-def command_handler_ezsp_get_config_value(*args, **kwargs):
-    """Get EZSP config value."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_config_value(*args, **kwargs)
-
-
-def command_handler_ezsp_get_value(*args, **kwargs):
-    """Get EZSP value."""
-    from . import ezsp
-
-    importlib.reload(ezsp)
-
-    return ezsp.get_value(*args, **kwargs)
-
-
-def command_handler_ota_notify(*args, **kwargs):
-    """Set EZSP radio channel."""
-    from . import ota
-
-    importlib.reload(ota)
-
-    return ota.notify(*args, **kwargs)
-
-
-def command_handler_zdo_join_with_code(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.join_with_code(*args, **kwargs)
-
-
-def command_handler_zdo_update_nwk_id(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.update_nwk_id(*args, **kwargs)
-
-
-def command_handler_zdo_scan_now(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.topo_scan_now(*args, **kwargs)
-
-
-def command_handler_zdo_flood_parent_annce(*args, **kwargs):
-    from . import zdo
-
-    importlib.reload(zdo)
-
-    return zdo.flood_parent_annce(*args, **kwargs)
-
-
-def command_handler_znp_backup(*args, **kwargs):
-    """Backup ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_backup(*args, **kwargs)
-
-
-def command_handler_znp_restore(*args, **kwargs):
-    """Restore ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_restore(*args, **kwargs)
-
-
-def command_handler_zcl_cmd(*args, **kwargs):
-    """Perform scene command."""
-    from . import zcl_cmd
-
-    importlib.reload(zcl_cmd)
-
-    return zcl_cmd.zcl_cmd(*args, **kwargs)
-
-
-def command_handler_znp_nvram_backup(*args, **kwargs):
-    """Backup ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_nvram_backup(*args, **kwargs)
-
-
-def command_handler_znp_nvram_restore(*args, **kwargs):
-    """Restore ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_nvram_restore(*args, **kwargs)
-
-
-def command_handler_znp_nvram_reset(*args, **kwargs):
-    """Restore ZNP network information."""
-    from . import znp
-
-    importlib.reload(znp)
-
-    return znp.znp_nvram_reset(*args, **kwargs)
-
-
-def command_handler_backup(*args, **kwargs):
-    """Backup Coordinator information."""
-    from . import misc
-
-    importlib.reload(misc)
-
-    return misc.backup(*args, **kwargs)
