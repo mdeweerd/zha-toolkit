@@ -45,7 +45,6 @@ execute:
             - remove_from_group
             - remove_group
             - scan_device
-            - sinope
             - unbind_coordinator
             - unbind_group
             - zcl_cmd
@@ -53,7 +52,6 @@ execute:
             - zdo_join_with_code
             - zdo_scan_now
             - zdo_update_nwk_id
-            - zigpy_deconz
             - znp_backup
             - znp_nvram_backup
             - znp_nvram_reset

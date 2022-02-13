@@ -278,10 +278,6 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
-    S.SINOPE: vol.Schema(
-        {},
-        extra=vol.ALLOW_EXTRA,
-    ),
     S.UNBIND_COORDINATOR: vol.Schema(
         {},
         extra=vol.ALLOW_EXTRA,
@@ -307,10 +303,6 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_UPDATE_NWK_ID: vol.Schema(
-        {},
-        extra=vol.ALLOW_EXTRA,
-    ),
-    S.ZIGPY_DECONZ: vol.Schema(
         {},
         extra=vol.ALLOW_EXTRA,
     ),
@@ -391,11 +383,9 @@ CMD_TO_INTERNAL_MAP = {
     S.REMOVE_FROM_GROUP: ["groups", S.REMOVE_FROM_GROUP],
     S.REMOVE_GROUP: ["groups", S.REMOVE_GROUP],
     S.SCAN_DEVICE: ["scan_device", S.SCAN_DEVICE],
-    S.SINOPE: ["sinope", S.SINOPE],
     S.UNBIND_COORDINATOR: ["binds", S.UNBIND_COORDINATOR],
     S.UNBIND_GROUP: ["binds", S.UNBIND_GROUP],
     S.ZCL_CMD: ["zcl_cmd", S.ZCL_CMD],
-    S.ZIGPY_DECONZ: ["zigpy_deconz", S.ZIGPY_DECONZ],
 }
 
 
