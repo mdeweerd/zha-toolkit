@@ -1,7 +1,7 @@
-# 
-# Sample 'user.py' script 
-# 
-# 'user.py' should be located in the 'local' directory of the 
+#
+# Sample 'user.py' script
+#
+# 'user.py' should be located in the 'local' directory of the
 # zha_toolkit custom component.
 #
 import logging
@@ -23,7 +23,7 @@ async def user_test(
     # ```
 
     # Just a stub, does nothing special
-    LOGGER.debug(f"User test called")
+    LOGGER.debug("User test called")
 
 
 async def user_sinope_write_test(
@@ -53,7 +53,7 @@ async def user_sinope_write_test(
     attrs = {0x0009: 0b00001000, 0x0012: 1400, 0x001C: 0xFF}
     LOGGER.debug("Writing test attrs to thermostat cluster: %s", attrs)
     res = await cluster.write_attributes(attrs)
-    event_data['result'] = res
+    event_data["result"] = res
     LOGGER.info("Writing attrs status: %s", res)
 
 
@@ -73,7 +73,6 @@ async def user_zigpy_deconz(
     res = await app._ezsp.setRadioChannel(20)
     LOGGER.debug("set channel %s", res)
     return
-
 
     # User skipped this previous custom code (due to return above)
     LOGGER.debug("Getting model from iris: %s", service)

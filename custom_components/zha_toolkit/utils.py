@@ -192,13 +192,15 @@ def find_endpoint(dev, cluster_id):
     return endpoint_id
 
 
+def get_cluster_from_params(dev, params, event_data):
+    """
+    Get in or outcluster (and endpoint) with best
+    correspondence to values provided in params
+    """
 
-def get_cluster_from_params(dev, params):
-    """Get in or outcluster (and endpoint) with best correspondance to parameters"""
-
-    # Get best endpoint 
+    # Get best endpoint
     if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
+        params[p.EP_ID] = find_endpoint(dev, params[p.CLUSTER_ID])
 
     if params[p.EP_ID] not in dev.endpoints:
         msg = f"Endpoint {params[p.EP_ID]} not found for '{dev.ieee!r}"
@@ -210,18 +212,25 @@ def get_cluster_from_params(dev, params):
         msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
             params[p.CLUSTER_ID], repr(dev.ieee), params[p.EP_ID]
         )
-        if params[p.CLUSTER_ID] in dev.enddev.points[params[p.EP_ID]].out_clusters:
+        if (
+            params[p.CLUSTER_ID]
+            in dev.enddev.points[params[p.EP_ID]].out_clusters
+        ):
             msg = f'"Using" OutCluster. {msg}'
             LOGGER.warning(msg)
             if "warnings" not in event_data:
                 event_data["warnings"] = []
             event_data["warnings"].append(msg)
-            cluster = dev.endpoints[params[p.EP_ID]].out_clusters[params[p.CLUSTER_ID]]
+            cluster = dev.endpoints[params[p.EP_ID]].out_clusters[
+                params[p.CLUSTER_ID]
+            ]
         else:
             LOGGER.error(msg)
             raise Exception(msg)
     else:
-        cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
+        cluster = dev.endpoints[params[p.EP_ID]].in_clusters[
+            params[p.CLUSTER_ID]
+        ]
 
     return cluster
 
