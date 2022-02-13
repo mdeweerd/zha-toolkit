@@ -1,10 +1,12 @@
 import asyncio
 import importlib
+import functools
 import logging
 
 from homeassistant.util import dt as dt_util
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
+from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
 from . import utils as u
@@ -13,13 +15,130 @@ from .params import SERVICES as S
 
 LOGGER = logging.getLogger(__name__)
 
+if True or not hasattr(Cluster, '_read_reporting_configuration'):
+    if hasattr(f, 'GeneralCommand'):
+        GeneralCommand = f.GeneralCommand
+    else:
+        GeneralCommand = f.Command
+
+    setattr(Cluster, '_read_reporting_configuration', 
+            functools.partial(Cluster.general_command,
+            GeneralCommand.Read_Reporting_Configuration))
+
+
+async def zha_toolkit_read_reporting_configuration_multiple(
+    self,
+    attributes,  #: list[int | str, tuple[int, int, int]],
+    manufacturer,  #: int | None = None,
+    direction = 0
+) -> list[f.AttributeReportingConfig]:
+    """Read Report Configuration for multiple attributes in the same request.
+    :param attributes: list of attributes to read read report conf from
+    :param manufacturer: optional manufacturer id to use with the command
+    """
+
+    cfg = []
+
+    for attribute in attributes:
+        if isinstance(attribute, str):
+            attrid = self.attributes_by_name[attribute].id
+        else:
+            # Allow reading attributes that aren't defined
+            attrid = attribute
+        record = f.ReadReportingConfigRecord
+        record.direction = direction
+        record.attrid = attrid
+        cfg.append(record)
+    LOGGER.warn("Read reporting with %s", cfg)
+    try:
+        res = await self._read_reporting_configuration(cfg, manufacturer=manufacturer)
+    except Exception as e:
+        LOGGER.warn(f"Exception {e!r}")
+        return
+
+    LOGGER.warn("Read reporting with %s result %s", cfg, res)
+
+    # Parse configure reporting result for unsupported attributes
+    records = res[0]
+    if (
+        isinstance(records, list)
+        and not (
+            len(records) == 1 and records[0].status == foundation.Status.SUCCESS
+        )
+        and len(records) >= 0
+    ):
+        failed = [
+            r.attrid
+            for r in records
+            if r.status == foundation.Status.UNSUPPORTED_ATTRIBUTE
+        ]
+        for attr in failed:
+            self.add_unsupported_attribute(attr)
+    return res
+
+
+zha_toolkit_read_reporting_configuration_multiple
+setattr(Cluster, 'zha_toolkit_read_reporting_configuration_multiple',
+        zha_toolkit_read_reporting_configuration_multiple)
+
+
+async def conf_report_read(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    dev = app.get_device(ieee=ieee)
+    cluster = u.get_cluster_from_params(dev, params, event_data)
+
+    triesToGo = params[p.TRIES]
+    event_data["success"] = False
+    result_conf = None
+
+    if not isinstance(params[p.ATTR_ID], list):
+        param[p.ATTR_ID] = [param[p.ATTR_ID]]
+
+    while triesToGo >= 1:
+        triesToGo = triesToGo - 1
+        try:
+            LOGGER.debug(
+                "Try %s/%s: read report configuration (%s,%s)",
+                params[p.TRIES] - triesToGo,
+                params[p.TRIES],
+                params[p.ATTR_ID],
+                params[p.MANF],
+            )
+            LOGGER.debug("Before call")
+            result_conf = await cluster.zha_toolkit_read_reporting_configuration_multiple(
+                params[p.ATTR_ID],
+                manufacturer=params[p.MANF],
+            )
+            LOGGER.debug("Got result %s", result_conf)
+            event_data["result_conf"] = result_conf
+            triesToGo = 0  # Stop loop
+            LOGGER.info("Read Report Configuration result: %s", result_conf)
+            if result_conf is None:
+                event_data["success"] = False
+            else:
+                event_data["success"] = (
+                    result_conf[0][0].status == f.Status.SUCCESS
+                )
+        except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
+            continue
+        except Exception as e:
+            triesToGo = 0  # Stop loop
+            LOGGER.debug(
+                "Read report configuration exception %s,%s,%s",
+                e,
+                params[p.ATTR_ID],
+                params[p.MANF],
+            )
+            raise e
+
 
 async def conf_report(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     dev = app.get_device(ieee=ieee)
 
-    cluster = u.get_cluster_from_params(dev, params)
+    cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # await cluster.bind()  -> commented, not performing bind to coordinator
 
@@ -102,7 +221,7 @@ async def attr_write(  # noqa: C901
     success = True
 
     dev = app.get_device(ieee=ieee)
-    cluster = u.get_cluster_from_params(dev, params)
+    cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # Prepare read and write lists
     attr_write_list = []

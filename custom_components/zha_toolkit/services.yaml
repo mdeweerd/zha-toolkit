@@ -21,6 +21,7 @@ execute:
             - bind_group
             - bind_ieee
             - conf_report
+            - conf_report_read
             - ezsp_add_key
             - ezsp_backup
             - ezsp_clear_keys
@@ -574,13 +575,6 @@ conf_report:
       selector:
         entity:
           integration: zha
-    manf:
-      description: Manufacturer id
-      selector:
-        number:
-          min: 1
-          max: 0xFFFF
-          mode: box
     endpoint:
       description: target endpoint
       selector:
@@ -627,6 +621,92 @@ conf_report:
         number:
           min: 0
           max: 65535
+          mode: box
+    manf:
+      description: Manufacturer id
+      selector:
+        number:
+          min: 1
+          max: 0xFFFF
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
+conf_report_read:
+  description: >-
+    Read attribute report configuration\nYou can set a high value for tries
+    (100 or more) for sleepy devices."
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command"
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: target endpoint
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    cluster:
+      description: target cluster
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    attribute:
+      description: >-
+        target attribute id (or name, accepted in most cases),\n
+        can be a list
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    manf:
+      description: Manufacturer id
+      selector:
+        number:
+          min: 1
+          max: 0xFFFF
           mode: box
     tries:
       description: Number of times the zigbee packet should be attempted

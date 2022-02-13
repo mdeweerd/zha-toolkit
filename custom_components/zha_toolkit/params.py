@@ -47,6 +47,7 @@ class SERVICE_consts:
     BIND_GROUP = "bind_group"
     BIND_IEEE = "bind_ieee"
     CONF_REPORT = "conf_report"
+    CONF_REPORT_READ = "conf_report_read"
     EZSP_ADD_KEY = "ezsp_add_key"
     EZSP_BACKUP = "ezsp_backup"
     EZSP_CLEAR_KEYS = "ezsp_clear_keys"

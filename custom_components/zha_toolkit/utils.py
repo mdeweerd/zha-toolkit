@@ -76,6 +76,17 @@ def get_radio(app):
     return RadioType.UNKNOWN
 
 
+def get_radio_version(app):
+    if hasattr(app, "_znp"):
+        import zigpy_znp
+        return zigpy_znp.__version__
+    if hasattr(app, "_ezsp"):
+        import bellows
+        return bellows.__version__
+    LOGGER.debug("Type recognition for '%s' not implemented", type(app))
+    return None
+
+
 # Get zigbee IEEE address (EUI64) for the reference.
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
@@ -178,7 +189,21 @@ def find_endpoint(dev, cluster_id):
             cnt = cnt + 1
 
     if cnt == 0:
-        LOGGER.error("No Endpoint found for cluster '%s'", cluster_id)
+        for key, value in dev.endpoints.items():
+            if key == 0:
+                continue
+            if cluster_id in value.in_clusters:
+                endpoint_id = key
+                cnt = cnt + 1
+
+        if cnt == 0:
+            LOGGER.error("No Endpoint found for cluster '%s'", cluster_id)
+        else:
+            LOGGER.error(
+                "No Endpoint found for in_cluster, found out_cluster '%s'",
+                cluster_id
+            )
+
     if cnt > 1:
         endpoint_id = None
         LOGGER.error(
@@ -280,7 +305,7 @@ def get_attr_id(cluster, attribute):
     # Try to get attribute id from cluster
     try:
         if isinstance(attribute, str):
-            return cluster.attridx.get(attribute)
+            return cluster.attributes_by_name(attribute)
     except Exception:
         return None
 

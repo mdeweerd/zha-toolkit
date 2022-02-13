@@ -1,5 +1,6 @@
 import importlib
 import logging
+import zigpy
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -34,7 +35,7 @@ SERVICE_SCHEMAS = {
     S.EXECUTE: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): vol.Any(
-                cv.string, cv.entity_id_or_uuid, t.EUI64.convert
+                cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(ATTR_COMMAND): cv.string,
             vol.Optional(ATTR_COMMAND_DATA): vol.Any(list, cv.string),
@@ -110,7 +111,7 @@ SERVICE_SCHEMAS = {
                 vol.Range(0, 0xFFFF), cv.string
             ),
             vol.Optional(P.ATTR_TYPE): vol.Any(
-                int, cv.string
+                vol.Range(0, 255), cv.string
             ),  # String is for later
             vol.Required(P.ATTR_VAL): vol.Any(
                 list,
@@ -151,7 +152,41 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.CONF_REPORT: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.ENDPOINT): vol.Range(0, 255),
+            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Required(P.ATTRIBUTE): vol.Any(
+                vol.Range(0, 0xFFFF), cv.string
+            ),
+            vol.Optional(P.ATTR_TYPE): vol.Any(
+                vol.Range(0, 255), cv.string
+            ),  # String is for later
+            # vol.Optional(P.ATTR_TYPE): int,  # Optional in ZCL, not used
+            vol.Required(P.MIN_INTRVL): int,  # Optional in ZCL
+            vol.Required(P.MAX_INTRVL): int,  # Optional in ZCL
+            vol.Required(P.REPTBLE_CHG): int,  # Optional in ZCL
+            # vol.Optional(P.DIR): cv.boolean,  # ZCL requires it, not used
+            vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
+    S.CONF_REPORT_READ: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.ENDPOINT): vol.Range(0, 255),
+            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Required(P.ATTRIBUTE): vol.Any(
+                vol.Range(0, 0xFFFF),
+                [vol.Any(vol.Range(0, 0xFFFF), cv.string)],
+                cv.string
+            ),
+            vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.EZSP_ADD_KEY: vol.Schema(
@@ -372,6 +407,7 @@ CMD_TO_INTERNAL_MAP = {
     S.BIND_GROUP: ["binds", S.BIND_GROUP],
     S.BIND_IEEE: ["binds", S.BIND_IEEE],
     S.CONF_REPORT: ["zcl_attr", S.CONF_REPORT],
+    S.CONF_REPORT_READ: ["zcl_attr", S.CONF_REPORT_READ],
     S.GET_GROUPS: ["groups", S.GET_GROUPS],
     S.GET_ROUTES_AND_NEIGHBOURS: ["neighbours", S.GET_ROUTES_AND_NEIGHBOURS],
     S.GET_ZLL_GROUPS: ["groups", S.GET_ZLL_GROUPS],
@@ -441,6 +477,8 @@ def register_services(hass):  # noqa: C901
 
         # Preload event_data
         event_data = {
+            "zigpy_version": zigpy.__version__,
+            "zigpy_rf_version": u.get_radio_version(app),
             "ieee_org": ieee_str,
             "ieee": str(ieee),
             "command": cmd,
