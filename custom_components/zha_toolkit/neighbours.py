@@ -5,10 +5,9 @@ import os
 from random import uniform
 
 import zigpy.zdo.types as zdo_t
+from homeassistant.util.json import save_json
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
-
-from homeassistant.util.json import save_json
 
 LOGGER = logging.getLogger(__name__)
 

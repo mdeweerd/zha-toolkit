@@ -62,7 +62,7 @@ debug logging only for a limited duration :
 
 ```yaml
 service: logger.set_level
-data: 
+data:
     custom_components.zha_toolkit: debug
     zigpy.zcl: debug
 ```
@@ -386,14 +386,14 @@ service: zha_toolkit.execute
 data:
   command: conf_report
   ieee: 00:12:4b:00:23:b3:da:a5
-  # Optional endpoint, when missing will match cluster 
+  # Optional endpoint, when missing will match cluster
   # endpoint: 1
   cluster: 0x402
   attribute: 0x0000
   min_interval: 60
   max_interval: 300
   reportable_change: 10
-  # Optional manufacturer 
+  # Optional manufacturer
   #manf: 0x1204
   # Optional number of configuration attempts
   tries: 3
@@ -566,13 +566,13 @@ data:
   # Optional: direction (0=to in_cluster (default), 1=to out_cluster),
   dir: 0
   # Optional: expect_reply  (default=true - false when 0 or 'false')
-  expect_reply: true 
+  expect_reply: true
   # Optional: manf - manufacturer - default : None
   manf: 0x0000
   # Optional: tries - default : 1
   tries: 1
   # Optional (only add when the command requires it): arguments (default=empty)
-  args: [ 1, 3, [ 1, 2, 3] ] 
+  args: [ 1, 3, [ 1, 2, 3] ]
 
 ```
 

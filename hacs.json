@@ -6,4 +6,4 @@
   "domains": ["zha"],
   "persistent_directory": "local",
   "homeassistant": "2021.1"
-}	
+}

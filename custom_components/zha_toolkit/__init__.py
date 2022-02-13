@@ -1,15 +1,13 @@
 import importlib
 import logging
 
-import voluptuous as vol
-
 import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
 from homeassistant.util import dt as dt_util
-
 from zigpy import types as t
 
-from . import utils as u
 from . import params as PARDEFS
+from . import utils as u
 
 DEPENDENCIES = ["zha"]
 
@@ -586,9 +584,10 @@ async def command_handler_default(
 
 async def reload_services_yaml(hass):
     import os
-    from homeassistant.util.yaml.loader import load_yaml
-    from homeassistant.helpers.service import async_set_service_schema
+
     from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
+    from homeassistant.helpers.service import async_set_service_schema
+    from homeassistant.util.yaml.loader import load_yaml
 
     CONF_FIELDS = "fields"
 

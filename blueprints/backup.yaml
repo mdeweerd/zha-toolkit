@@ -1,11 +1,15 @@
+---
 blueprint:
   name: Daily Coordinator Backup - Monthly rotation
-  description: Backup Zigbee Coordinator Configuration (ZNP/ezsp(bellows)), monthly rotation
+  description: >-
+    Backup Zigbee Coordinator Configuration (ZNP/ezsp(bellows)),
+    monthly rotation
   domain: automation
   input:
     backup_time:
       name: Backup time
-      description: Time at which the daily backup should be madeaction should start
+      description: >-
+        Time at which the daily backup should be made.
       selector:
         time:
 trigger:

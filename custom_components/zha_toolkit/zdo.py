@@ -1,10 +1,10 @@
 import asyncio
 import logging
 
-import zigpy.zdo.types as zdo_t
-import zigpy.types as t
 import zigpy.device
+import zigpy.types as t
 import zigpy.zdo
+import zigpy.zdo.types as zdo_t
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p

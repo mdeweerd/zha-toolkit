@@ -1,3 +1,4 @@
+---
 blueprint:
   name: Daily ZNP Backup - Monthly rotation
   description: Backup ZNP Zigbee configuration, monthly rotation
@@ -5,7 +6,8 @@ blueprint:
   input:
     backup_time:
       name: Backup time
-      description: Time at which the daily backup should be madeaction should start
+      description: >-
+        Time at which the daily backup should be madeaction should start
       selector:
         time:
 trigger:
