@@ -24,3 +24,7 @@ install_requirements:
 
 upgrade_unsafe:
 	A="$$(safety check --bare)" ; [ "$$A" == "" ] || pip install --upgrade $$A
+
+setup_precommit:
+	pip install --upgrade pip pre-commit tox
+	pre-commit install
