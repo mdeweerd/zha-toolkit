@@ -19,25 +19,7 @@ async def conf_report(
 ):
     dev = app.get_device(ieee=ieee)
 
-    LOGGER.debug(params)
-    # Get best endpoint
-    if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
-
-    if params[p.EP_ID] not in dev.endpoints:
-        LOGGER.error(
-            "Endpoint %s not found for '%s'", params[p.EP_ID], repr(ieee)
-        )
-
-    if params[p.CLUSTER_ID] not in dev.endpoints[params[p.EP_ID]].in_clusters:
-        LOGGER.error(
-            "Cluster 0x%04X not found for '%s', endpoint %s",
-            params[p.CLUSTER_ID],
-            repr(ieee),
-            params[p.EP_ID],
-        )
-
-    cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
+    cluster = u.get_cluster_from_params(dev, params)
 
     # await cluster.bind()  -> commented, not performing bind to coordinator
 
@@ -120,31 +102,7 @@ async def attr_write(  # noqa: C901
     success = True
 
     dev = app.get_device(ieee=ieee)
-
-    # Decode endpoint
-    if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
-
-    if params[p.EP_ID] not in dev.endpoints:
-        msg = f"Endpoint {params[p.EP_ID]} not found for '{ieee!r}"
-        LOGGER.error(msg)
-        raise Exception(msg)
-
-    if params[p.CLUSTER_ID] not in dev.endpoints[params[p.EP_ID]].in_clusters:
-        msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
-            params[p.CLUSTER_ID], repr(ieee), params[p.EP_ID]
-        )
-        if params[p.CLUSTER_ID] in dev.endpoints[params[p.EP_ID]].out_clusters:
-            msg = f'{cmd}: "Using" OutCluster. {msg}'
-            LOGGER.warning(msg)
-            if "warnings" not in event_data:
-                event_data["warnings"] = []
-            event_data["warnings"].append(msg)
-        else:
-            LOGGER.error(msg)
-            raise Exception(msg)
-
-    cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
+    cluster = u.get_cluster_from_params(dev, params)
 
     # Prepare read and write lists
     attr_write_list = []

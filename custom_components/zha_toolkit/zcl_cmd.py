@@ -24,23 +24,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
         raise Exception(msg)
 
     dev = app.get_device(ieee=ieee)
-
-    # Decode endpoint
-    if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
-
-    if params[p.EP_ID] not in dev.endpoints:
-        LOGGER.error(
-            "Endpoint %s not found for '%s'", params[p.EP_ID], repr(ieee)
-        )
-
-    if params[p.CLUSTER_ID] not in dev.endpoints[params[p.EP_ID]].in_clusters:
-        LOGGER.error(
-            "Cluster 0x%04X not found for '%s', endpoint %s",
-            params[p.CLUSTER_ID],
-            repr(ieee),
-            params[p.EP_ID],
-        )
+    cluster = u.get_cluster_from_params(dev, params)
 
     # Extract parameters
 
