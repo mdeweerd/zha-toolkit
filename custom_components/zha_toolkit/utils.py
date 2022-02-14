@@ -79,9 +79,11 @@ def get_radio(app):
 def get_radio_version(app):
     if hasattr(app, "_znp"):
         import zigpy_znp
+
         return zigpy_znp.__version__
     if hasattr(app, "_ezsp"):
         import bellows
+
         return bellows.__version__
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return None
@@ -201,7 +203,7 @@ def find_endpoint(dev, cluster_id):
         else:
             LOGGER.error(
                 "No Endpoint found for in_cluster, found out_cluster '%s'",
-                cluster_id
+                cluster_id,
             )
 
     if cnt > 1:

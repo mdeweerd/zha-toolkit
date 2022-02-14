@@ -1,5 +1,5 @@
 lint_python:  # And markdown format
-	-shopt -s globstar && pyupgrade --py36-plus **/*.py
+	-shopt -s globstar && pyupgrade --py37-plus **/*.py
 	bandit --recursive --skip B101,B311 .
 	black -l 79 .
 	codespell --ignore-words-list="hass" custom_components README.md

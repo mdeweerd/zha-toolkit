@@ -1,9 +1,9 @@
 import importlib
 import logging
-import zigpy
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+import zigpy
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 
@@ -183,7 +183,7 @@ SERVICE_SCHEMAS = {
             vol.Required(P.ATTRIBUTE): vol.Any(
                 vol.Range(0, 0xFFFF),
                 [vol.Any(vol.Range(0, 0xFFFF), cv.string)],
-                cv.string
+                cv.string,
             ),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
         },
