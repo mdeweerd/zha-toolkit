@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from . import utils as u
@@ -63,7 +65,7 @@ async def zha_devices(
         )
 
         for d in devices:
-            fields = []
+            fields: list[int | str | None] = []
             for c in columns:
                 if c not in d.keys():
                     fields.append(None)

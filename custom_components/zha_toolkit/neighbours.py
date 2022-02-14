@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import enum
 import logging
@@ -186,7 +188,7 @@ async def async_get_routes(device):
             Inactive = 0x3
             Validation_Underway = 0x4
 
-        res = {}
+        res: dict[str, str | bool | None | int] = {}
         res["destination"] = f"0x{route.DstNWK:04x}"
         res["next_hop"] = f"0x{route.NextHop:04x}"
         raw = route.RouteStatus & 0x07

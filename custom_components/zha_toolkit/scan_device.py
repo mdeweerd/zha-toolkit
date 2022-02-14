@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 import re
@@ -28,7 +30,10 @@ def wrapper(cmd, *args, **kwargs):
 
 async def scan_results(device, endpoints=None):
     """Construct scan results from information available in device"""
-    result = {"ieee": str(device.ieee), "nwk": f"0x{device.nwk:04x}"}
+    result: dict[str, str | list] = {
+        "ieee": str(device.ieee),
+        "nwk": f"0x{device.nwk:04x}",
+    }
 
     LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
 

@@ -79,7 +79,9 @@ async def znp_restore(
     current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
     # Safety: backup current configuration
-    await znp_backup(app, listener, ieee, cmd, current_datetime, service)
+    await znp_backup(
+        app, listener, ieee, cmd, current_datetime, service, params, event_data
+    )
 
     # Import stuff we need for restoring
     import json
@@ -181,7 +183,9 @@ async def znp_nvram_restore(
     from datetime import datetime
 
     current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
-    await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)
+    await znp_nvram_backup(
+        app, listener, ieee, cmd, current_datetime, service, params, event_data
+    )
 
     # Restore NVRAM backup from file
     import json
@@ -226,7 +230,9 @@ async def znp_nvram_reset(
     current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
     # Safety: backup current configuration
-    await znp_nvram_backup(app, listener, ieee, cmd, current_datetime, service)
+    await znp_nvram_backup(
+        app, listener, ieee, cmd, current_datetime, service, params, event_data
+    )
 
     # Import stuff we need for resetting
     from zigpy_znp.tools.nvram_reset import nvram_reset

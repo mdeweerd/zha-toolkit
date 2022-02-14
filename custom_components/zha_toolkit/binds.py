@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from zigpy.zdo.types import ZDOCmd
@@ -41,7 +43,7 @@ async def bind_group(
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
-    results = {}
+    results: dict[int, list[dict[str, int]]] = {}
     for src_out_cluster in src_out_cls:
         src_epid = None
         for ep_id, ep in src_dev.endpoints.items():
@@ -104,7 +106,7 @@ async def unbind_group(
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
-    results = {}
+    results: dict[int, list[dict[str, int]]] = {}
     for src_out_cluster in src_out_cls:
         src_ep = None
         for ep_id, ep in src_dev.endpoints.items():
@@ -165,7 +167,7 @@ async def bind_ieee(
 
     # TODO: Filter according to params[p.CLUSTER_ID]
 
-    results = {}
+    results: dict[int, dict] = {}
 
     for src_out_cluster in src_out_clusters:
         src_endpoints = [
@@ -274,7 +276,7 @@ async def bind_ieee(
                 dst_epid,
             )
             if src_ep not in results:
-                results[src_ep] = []
+                results[src_ep] = {}
 
             bind_result = {
                 "src_endpoint_id": src_ep,

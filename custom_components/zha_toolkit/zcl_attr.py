@@ -200,7 +200,9 @@ async def conf_report(
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
 )
-async def cluster_read_attributes(cluster, attrs, manufacturer=None):
+async def cluster_read_attributes(
+    cluster, attrs, manufacturer=None
+) -> tuple[list, list]:
     """Read attributes from cluster, retryable"""
     return await cluster.read_attributes(attrs, manufacturer=manufacturer)
 
@@ -282,7 +284,7 @@ async def attr_write(  # noqa: C901
         or (len(attr_write_list) == 0)
         or (cmd != S.ATTR_WRITE)
     ):
-        LOGGER.debug("Request attr read %s", attr_read_list)
+        LOGGER.debug("Re]uest attr read %s", attr_read_list)
         result_read = await cluster_read_attributes(
             cluster,
             attr_read_list,
@@ -297,8 +299,8 @@ async def attr_write(  # noqa: C901
         (params[p.READ_BEFORE_WRITE])
         and (len(attr_write_list) != 0)
         and (
-            (attr_id in result_read[0])
-            and (result_read[0][attr_id] == compare_val)
+            (attr_id in result_read[0])  # type:ignore[index]
+            and (result_read[0][attr_id] == compare_val)  # type:ignore[index]
         )
     )
 
@@ -422,8 +424,8 @@ async def attr_write(  # noqa: C901
         fields.append(cluster.name)
         fields.append(attr_name)
         fields.append(read_val)
-        fields.append("0x%04X" % (attr_id)),
-        fields.append("0x%04X" % (cluster.cluster_id)),
+        fields.append(f"0x{attr_id:04X}")
+        fields.append(f"0x{cluster.cluster_id:04X}")
         fields.append(cluster.endpoint.endpoint_id)
         fields.append(str(cluster.endpoint.device.ieee))
         fields.append(

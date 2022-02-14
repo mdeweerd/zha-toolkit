@@ -1,5 +1,4 @@
 import binascii
-import importlib
 import logging
 
 import bellows
@@ -314,9 +313,7 @@ async def ezsp_backup(
     import json
     import os
 
-    from . import ezsp_backup
-
-    importlib.reload(ezsp_backup)
+    from bellows.cli import backup as ezsp_backup
 
     result = await ezsp_backup._backup(app._ezsp)
 

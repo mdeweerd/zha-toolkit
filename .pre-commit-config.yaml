@@ -64,7 +64,13 @@ repos:
     rev: v0.931
     hooks:
       - id: mypy
-        args: [--ignore-missing-imports, --install-types, --non-interactive]
+        args:
+          - --ignore-missing-imports
+          - --install-types
+          - --non-interactive
+          - --check-untyped-defs
+          - --show-error-codes
+          - --show-error-context
         additional_dependencies:
-          - zigpy
+          - zigpy==0.43.0
   # TODO:  mdformat --wrap 75 README.md --number
