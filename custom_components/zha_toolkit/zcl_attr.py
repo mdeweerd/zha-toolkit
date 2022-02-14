@@ -8,6 +8,7 @@ import logging
 from homeassistant.util import dt as dt_util
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
+from zigpy import types as t
 from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
@@ -23,26 +24,44 @@ if True or not hasattr(Cluster, "_read_reporting_configuration"):
     else:
         GeneralCommand = f.Command
 
-    Cluster._read_reporting_configuration = (
-        functools.partial(
-            Cluster.general_command,
-            GeneralCommand.Read_Reporting_Configuration,
-        ),
-    )
+    def read_reporting_configuration(self, cfg: t.List[f.ReadReportingConfigRecord], **kwargs):
+        schema = f.COMMANDS[0x08][0]
+        LOGGER.error(f"SELF:{self!r}")
+        LOGGER.error(f"SCHEMA:{schema!r}")
+        ser = t.serialize([cfg], schema)
+        LOGGER.error(f"SERIALIZED:{ser!r}")
+
+        optional = len([s for s in schema if (hasattr(s, "optional") and s.optional)])
+        return self.request(
+                True,  # General, bool
+                0x08,  # Command id
+                schema, # Schema
+                cfg, # args
+                **kwargs
+                )
+
+    Cluster._read_reporting_configuration = read_reporting_configuration
+
+    # Cluster._read_reporting_configuration = (
+    #     functools.partial(
+    #         Cluster.general_command,
+    #         GeneralCommand.Read_Reporting_Configuration,
+    #     ),
+    # )
 
 
 async def my_read_reporting_configuration_multiple(
     self,
     attributes: list[int | str],
-    manufacturer: int | None = None,
     direction: int = 0,
+    **kwargs
 ) -> list[f.AttributeReportingConfig]:
-    """Read Report Configuration for multiple attributes in the same request.
+    """
+    Read Report Configuration for multiple attributes in the same request.
     :param attributes: list of attributes to read read report conf from
-    :param manufacturer: optional manufacturer id to use with the command
     """
 
-    cfg = []
+    cfg: list[f.ReadReportingConfigRecord] = []
 
     for attribute in attributes:
         if isinstance(attribute, str):
@@ -50,17 +69,18 @@ async def my_read_reporting_configuration_multiple(
         else:
             # Allow reading attributes that aren't defined
             attrid = attribute
-        record = f.ReadReportingConfigRecord
-        record.direction = direction
+        record = f.ReadReportingConfigRecord()
         record.attrid = attrid
+        record.direction = direction
+        LOGGER.warn(f"Record {record.direction} {record.attrid}")
         cfg.append(record)
     LOGGER.warn("Read reporting with %s", cfg)
     try:
         res = await self._read_reporting_configuration(
-            cfg, manufacturer=manufacturer
+            t.List[f.ReadReportingConfigRecord](cfg)
         )
     except Exception as e:
-        LOGGER.warn(f"Exception {e!r}")
+        LOGGER.exception(f"Exception {e!r}")
         return []
 
     LOGGER.warn("Read reporting with %s result %s", cfg, res)
@@ -93,6 +113,32 @@ async def conf_report_read(
     dev = app.get_device(ieee=ieee)
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
+    schema = f.COMMANDS[0x08][0]
+    LOGGER.error(f"SCHEMA:{schema!r}")
+
+    record = f.ReadReportingConfigRecord()
+    record.attrid = 0
+    record.direction = 0
+
+    cfg: list[f.ReadReportingConfigRecord] = []
+    cfg.append(record)
+
+    param = t.List[f.ReadReportingConfigRecord](cfg)
+    LOGGER.warn("Read reporting with %s", param)
+
+    #ser = t.serialize([param,], schema)
+    #LOGGER.error(f"SERIALIZED:{ser!r}")
+
+    event_data["result"] = await cluster.request(
+            True,  # General, bool
+            0x08,  # Command id
+            schema, # Schema
+            param,
+            expect_reply=True
+            )
+
+    return
+
     triesToGo = params[p.TRIES]
     event_data["success"] = False
     result_conf = None
@@ -124,9 +170,10 @@ async def conf_report_read(
             if result_conf is None:
                 event_data["success"] = False
             else:
-                event_data["success"] = (
-                    result_conf[0][0].status == f.Status.SUCCESS
-                )
+                pass
+                #event_data["success"] = (
+                #    result_conf[0][0].status == f.Status.SUCCESS
+                #)
         except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
             continue
         except Exception as e:
