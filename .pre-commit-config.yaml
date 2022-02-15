@@ -3,6 +3,8 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
+      - id: no-commit-to-branch
+        args: [--branch, main]
       - id: check-yaml
         args: [--unsafe]
       - id: debug-statements
@@ -10,6 +12,15 @@ repos:
       - id: trailing-whitespace
       - id: check-json
       - id: mixed-line-ending
+      - id: check-builtin-literals
+      - id: check-ast
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-docstring-first
+      - id: fix-byte-order-marker
+      - id: check-case-conflict
+      # - id: check-toml
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.23.0
     hooks:
