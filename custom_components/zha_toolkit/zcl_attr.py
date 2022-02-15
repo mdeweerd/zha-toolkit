@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-import functools
 import importlib
 import logging
 
 from homeassistant.util import dt as dt_util
+from zigpy import types as t
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
-from zigpy import types as t
 from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
@@ -24,21 +23,22 @@ if True or not hasattr(Cluster, "_read_reporting_configuration"):
     else:
         GeneralCommand = f.Command
 
-    def read_reporting_configuration(self, cfg: t.List[f.ReadReportingConfigRecord], **kwargs):
+    def read_reporting_configuration(
+        self, cfg: t.List[f.ReadReportingConfigRecord], **kwargs
+    ):
         schema = f.COMMANDS[0x08][0]
-        LOGGER.error(f"SELF:{self!r}")
-        LOGGER.error(f"SCHEMA:{schema!r}")
-        ser = t.serialize([cfg], schema)
-        LOGGER.error(f"SERIALIZED:{ser!r}")
+        # LOGGER.error(f"SELF:{self!r}")
+        # LOGGER.error(f"SCHEMA:{schema!r}")
+        # data = t.serialize([cfg], schema)
+        # LOGGER.error(f"SERIALIZED:{data!r}")
 
-        optional = len([s for s in schema if (hasattr(s, "optional") and s.optional)])
         return self.request(
-                True,  # General, bool
-                0x08,  # Command id
-                schema, # Schema
-                cfg, # args
-                **kwargs
-                )
+            True,  # General, bool
+            0x08,  # Command id
+            schema,  # Schema
+            cfg,  # args
+            **kwargs,
+        )
 
     Cluster._read_reporting_configuration = read_reporting_configuration
 
@@ -51,10 +51,7 @@ if True or not hasattr(Cluster, "_read_reporting_configuration"):
 
 
 async def my_read_reporting_configuration_multiple(
-    self,
-    attributes: list[int | str],
-    direction: int = 0,
-    **kwargs
+    self, attributes: list[int | str], direction: int = 0, **kwargs
 ) -> list[f.AttributeReportingConfig]:
     """
     Read Report Configuration for multiple attributes in the same request.
@@ -113,31 +110,32 @@ async def conf_report_read(
     dev = app.get_device(ieee=ieee)
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
-    schema = f.COMMANDS[0x08][0]
-    LOGGER.error(f"SCHEMA:{schema!r}")
+    if False:
+        schema = f.COMMANDS[0x08][0]
+        LOGGER.error(f"SCHEMA:{schema!r}")
 
-    record = f.ReadReportingConfigRecord()
-    record.attrid = 0
-    record.direction = 0
+        record = f.ReadReportingConfigRecord()
+        record.attrid = 0
+        record.direction = 0
 
-    cfg: list[f.ReadReportingConfigRecord] = []
-    cfg.append(record)
+        cfg: list[f.ReadReportingConfigRecord] = []
+        cfg.append(record)
 
-    param = t.List[f.ReadReportingConfigRecord](cfg)
-    LOGGER.warn("Read reporting with %s", param)
+        param = t.List[f.ReadReportingConfigRecord](cfg)
+        LOGGER.warn("Read reporting with %s", param)
 
-    #ser = t.serialize([param,], schema)
-    #LOGGER.error(f"SERIALIZED:{ser!r}")
+        # data = t.serialize([param,], schema)
+        # LOGGER.error(f"SERIALIZED:{data!r}")
 
-    event_data["result"] = await cluster.request(
+        event_data["result"] = await cluster.request(
             True,  # General, bool
             0x08,  # Command id
-            schema, # Schema
+            schema,  # Schema
             param,
-            expect_reply=True
-            )
+            expect_reply=True,
+        )
 
-    return
+        return
 
     triesToGo = params[p.TRIES]
     event_data["success"] = False
@@ -171,9 +169,9 @@ async def conf_report_read(
                 event_data["success"] = False
             else:
                 pass
-                #event_data["success"] = (
+                # event_data["success"] = (
                 #    result_conf[0][0].status == f.Status.SUCCESS
-                #)
+                # )
         except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
             continue
         except Exception as e:
