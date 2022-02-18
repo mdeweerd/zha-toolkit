@@ -43,10 +43,9 @@ def getVersion() -> str:
     except Exception:
         MANIFEST = {}
 
-    LOGGER.debug(f"Read version from {fname} {ftime}")
     if (VERSION is None and ftime != 0) or (ftime != VERSION_TIME):
         # No version, or file change -> get version again
-        LOGGER.debug(f"Read version from {fname}")
+        LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
 
         with open(fname) as f:
             VERSION_TIME = ftime
