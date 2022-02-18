@@ -1,0 +1,8 @@
+---
+# Example of service call to read basic cluster
+# Needs: script_read_basic_cluster.yaml
+#
+service: script.1645121662206
+data:
+  entity_name: button.tz3000_dbou1ap4_ts0505a_9afc91fe_identify
+  csv: ../www/lidl_basic_cluster.csv

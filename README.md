@@ -3,7 +3,6 @@
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-
 # Highlights
 
 - Read Zigbee attributes into Home Assistant attributes

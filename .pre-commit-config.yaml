@@ -25,13 +25,16 @@ repos:
     rev: v1.23.0
     hooks:
       - id: yamllint
-        args: [--no-warnings]
+        args:
+          - --no-warnings
+          - -d
+          - '{extends: relaxed, rules: {line-length: {max: 90}}}'
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.0
     hooks:
       - id: pyupgrade
         args:
-          - "--py37-plus"
+          - --py37-plus
   - repo: https://github.com/psf/black
     rev: 22.1.0
     hooks:
@@ -44,7 +47,7 @@ repos:
     rev: v1.0.5
     hooks:
       - id: python-bandit-vulnerability-check
-        args: [--skip, "B101,B311", --recursive, .]
+        args: [--skip, 'B101,B311', --recursive, .]
 
   - repo: https://github.com/fsouza/autoflake8
     rev: v0.3.1
@@ -56,9 +59,16 @@ repos:
           - --expand-star-imports
           - custom_components
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 4.0.1
     hooks:
       - id: flake8
+        additional_dependencies:
+          - flake8-bugbear==22.1.11
+          - flake8-comprehensions==3.8.0
+          - flake8_2020==1.6.1
+          - mccabe==0.6.1
+          - pycodestyle==2.8.0
+          - pyflakes==2.4.0
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
@@ -84,4 +94,12 @@ repos:
           - --show-error-context
         additional_dependencies:
           - zigpy==0.43.0
-  # TODO:  mdformat --wrap 75 README.md --number
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.13
+    hooks:
+      - id: mdformat
+        name: Format Markdown
+        entry: mdformat  # Executable to run, with fixed options
+        language: python
+        types: [markdown]
+        args: [--wrap, '75', --number]
