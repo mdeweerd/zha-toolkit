@@ -497,6 +497,7 @@ def register_services(hass):  # noqa: C901
 
         # Preload event_data
         event_data = {
+            "zha_toolkit_version": u.getVersion(),
             "zigpy_version": zigpy.__version__,
             "zigpy_rf_version": u.get_radio_version(app),
             "ieee_org": ieee_str,

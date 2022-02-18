@@ -14,6 +14,52 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
+VERSION_TIME: float
+VERSION: str
+MANIFEST: dict[str, str | list[str]]
+
+
+def getVersion() -> str:
+    # Set name with regards to local path
+    global VERSION_TIME
+    global VERSION
+    global MANIFEST
+
+    fname = os.path.dirname(__file__) + "/manifest.json"
+
+    ftime: float = 0
+    try:
+        VERSION_TIME
+    except NameError:
+        VERSION_TIME = 0
+        VERSION = "Unknown"
+        MANIFEST = {}
+
+    try:
+        ftime = os.path.getmtime(fname)
+        if ftime != ftime:
+            VERSION = "Unknown"
+            MANIFEST = {}
+    except Exception:
+        MANIFEST = {}
+
+    if (VERSION is None and ftime != 0) or (ftime != VERSION_TIME):
+        # No version, or file change -> get version again
+        LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
+
+        with open(fname) as f:
+            VERSION_TIME = ftime
+            MANIFEST = json.load(f)
+
+        if MANIFEST is not None:
+            if "version" in MANIFEST.keys():
+                v = MANIFEST["version"]
+                VERSION = v if isinstance(v, str) else "Invalid manifest"
+                if VERSION == "0.0.0":
+                    VERSION = "dev"
+
+    return VERSION
+
 
 # Convert string to int if possible or return original string
 #  (Returning the original string is useful for named attributes)
