@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import asyncio
 import importlib
 import logging
 
 from homeassistant.util import dt as dt_util
+from zigpy import types as t
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
+from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
 from . import utils as u
@@ -13,31 +17,180 @@ from .params import SERVICES as S
 
 LOGGER = logging.getLogger(__name__)
 
+if True or not hasattr(Cluster, "_read_reporting_configuration"):
+    if hasattr(f, "GeneralCommand"):
+        GeneralCommand = f.GeneralCommand
+    else:
+        GeneralCommand = f.Command
+
+    def read_reporting_configuration(
+        self, cfg: t.List[f.ReadReportingConfigRecord], **kwargs
+    ):
+        schema = f.COMMANDS[0x08][0]
+        # LOGGER.error(f"SELF:{self!r}")
+        # LOGGER.error(f"SCHEMA:{schema!r}")
+        # data = t.serialize([cfg], schema)
+        # LOGGER.error(f"SERIALIZED:{data!r}")
+
+        return self.request(
+            True,  # General, bool
+            0x08,  # Command id
+            schema,  # Schema
+            cfg,  # args
+            **kwargs,
+        )
+
+    Cluster._read_reporting_configuration = read_reporting_configuration
+
+    # Cluster._read_reporting_configuration = (
+    #     functools.partial(
+    #         Cluster.general_command,
+    #         GeneralCommand.Read_Reporting_Configuration,
+    #     ),
+    # )
+
+
+async def my_read_reporting_configuration_multiple(
+    self, attributes: list[int | str], direction: int = 0, **kwargs
+) -> list[f.AttributeReportingConfig]:
+    """
+    Read Report Configuration for multiple attributes in the same request.
+    :param attributes: list of attributes to read read report conf from
+    """
+
+    cfg: list[f.ReadReportingConfigRecord] = []
+
+    for attribute in attributes:
+        if isinstance(attribute, str):
+            attrid = self.attributes_by_name[attribute].id
+        else:
+            # Allow reading attributes that aren't defined
+            attrid = attribute
+        record = f.ReadReportingConfigRecord()
+        record.attrid = attrid
+        record.direction = direction
+        LOGGER.warn(f"Record {record.direction} {record.attrid}")
+        cfg.append(record)
+    LOGGER.warn("Read reporting with %s", cfg)
+    try:
+        res = await self._read_reporting_configuration(
+            t.List[f.ReadReportingConfigRecord](cfg)
+        )
+    except Exception as e:
+        LOGGER.exception(f"Exception {e!r}")
+        return []
+
+    LOGGER.warn("Read reporting with %s result %s", cfg, res)
+
+    # Parse configure reporting result for unsupported attributes
+    records = res[0]
+    if (
+        isinstance(records, list)
+        and not (len(records) == 1 and records[0].status == f.Status.SUCCESS)
+        and len(records) >= 0
+    ):
+        failed = [
+            r.attrid
+            for r in records
+            if r.status == f.Status.UNSUPPORTED_ATTRIBUTE
+        ]
+        for attr in failed:
+            self.add_unsupported_attribute(attr)
+    return res
+
+
+Cluster.my_read_reporting_configuration_multiple = (
+    my_read_reporting_configuration_multiple
+)
+
+
+async def conf_report_read(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    dev = app.get_device(ieee=ieee)
+    cluster = u.get_cluster_from_params(dev, params, event_data)
+
+    if False:
+        schema = f.COMMANDS[0x08][0]
+        LOGGER.error(f"SCHEMA:{schema!r}")
+
+        record = f.ReadReportingConfigRecord()
+        record.attrid = 0
+        record.direction = 0
+
+        cfg: list[f.ReadReportingConfigRecord] = []
+        cfg.append(record)
+
+        param = t.List[f.ReadReportingConfigRecord](cfg)
+        LOGGER.warn("Read reporting with %s", param)
+
+        # data = t.serialize([param,], schema)
+        # LOGGER.error(f"SERIALIZED:{data!r}")
+
+        event_data["result"] = await cluster.request(
+            True,  # General, bool
+            0x08,  # Command id
+            schema,  # Schema
+            param,
+            expect_reply=True,
+        )
+
+        return
+
+    triesToGo = params[p.TRIES]
+    event_data["success"] = False
+    result_conf = None
+
+    if not isinstance(params[p.ATTR_ID], list):
+        params[p.ATTR_ID] = [params[p.ATTR_ID]]
+
+    while triesToGo >= 1:
+        triesToGo = triesToGo - 1
+        try:
+            LOGGER.debug(
+                "Try %s/%s: read report configuration (%s,%s)",
+                params[p.TRIES] - triesToGo,
+                params[p.TRIES],
+                params[p.ATTR_ID],
+                params[p.MANF],
+            )
+            LOGGER.debug("Before call")
+            result_conf = (
+                await cluster.my_read_reporting_configuration_multiple(
+                    params[p.ATTR_ID],
+                    manufacturer=params[p.MANF],
+                )
+            )
+            LOGGER.debug("Got result %s", result_conf)
+            event_data["result_conf"] = result_conf
+            triesToGo = 0  # Stop loop
+            LOGGER.info("Read Report Configuration result: %s", result_conf)
+            if result_conf is None:
+                event_data["success"] = False
+            else:
+                pass
+                # event_data["success"] = (
+                #    result_conf[0][0].status == f.Status.SUCCESS
+                # )
+        except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
+            continue
+        except Exception as e:
+            triesToGo = 0  # Stop loop
+            LOGGER.debug(
+                "Read report configuration exception %s,%s,%s",
+                e,
+                params[p.ATTR_ID],
+                params[p.MANF],
+            )
+            raise e
+
 
 async def conf_report(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     dev = app.get_device(ieee=ieee)
 
-    LOGGER.debug(params)
-    # Get best endpoint
-    if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
-
-    if params[p.EP_ID] not in dev.endpoints:
-        LOGGER.error(
-            "Endpoint %s not found for '%s'", params[p.EP_ID], repr(ieee)
-        )
-
-    if params[p.CLUSTER_ID] not in dev.endpoints[params[p.EP_ID]].in_clusters:
-        LOGGER.error(
-            "Cluster 0x%04X not found for '%s', endpoint %s",
-            params[p.CLUSTER_ID],
-            repr(ieee),
-            params[p.EP_ID],
-        )
-
-    cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
+    cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # await cluster.bind()  -> commented, not performing bind to coordinator
 
@@ -92,7 +245,9 @@ async def conf_report(
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
 )
-async def cluster_read_attributes(cluster, attrs, manufacturer=None):
+async def cluster_read_attributes(
+    cluster, attrs, manufacturer=None
+) -> tuple[list, list]:
     """Read attributes from cluster, retryable"""
     return await cluster.read_attributes(attrs, manufacturer=manufacturer)
 
@@ -120,31 +275,7 @@ async def attr_write(  # noqa: C901
     success = True
 
     dev = app.get_device(ieee=ieee)
-
-    # Decode endpoint
-    if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = u.find_endpoint(dev, params[p.CLUSTER_ID])
-
-    if params[p.EP_ID] not in dev.endpoints:
-        msg = f"Endpoint {params[p.EP_ID]} not found for '{ieee!r}"
-        LOGGER.error(msg)
-        raise Exception(msg)
-
-    if params[p.CLUSTER_ID] not in dev.endpoints[params[p.EP_ID]].in_clusters:
-        msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
-            params[p.CLUSTER_ID], repr(ieee), params[p.EP_ID]
-        )
-        if params[p.CLUSTER_ID] in dev.endpoints[params[p.EP_ID]].out_clusters:
-            msg = f'{cmd}: "Using" OutCluster. {msg}'
-            LOGGER.warning(msg)
-            if "warnings" not in event_data:
-                event_data["warnings"] = []
-            event_data["warnings"].append(msg)
-        else:
-            LOGGER.error(msg)
-            raise Exception(msg)
-
-    cluster = dev.endpoints[params[p.EP_ID]].in_clusters[params[p.CLUSTER_ID]]
+    cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # Prepare read and write lists
     attr_write_list = []
@@ -213,8 +344,8 @@ async def attr_write(  # noqa: C901
         (params[p.READ_BEFORE_WRITE])
         and (len(attr_write_list) != 0)
         and (
-            (attr_id in result_read[0])
-            and (result_read[0][attr_id] == compare_val)
+            (attr_id in result_read[0])  # type:ignore[index]
+            and (result_read[0][attr_id] == compare_val)  # type:ignore[index]
         )
     )
 
@@ -338,8 +469,8 @@ async def attr_write(  # noqa: C901
         fields.append(cluster.name)
         fields.append(attr_name)
         fields.append(read_val)
-        fields.append("0x%04X" % (attr_id)),
-        fields.append("0x%04X" % (cluster.cluster_id)),
+        fields.append(f"0x{attr_id:04X}")
+        fields.append(f"0x{cluster.cluster_id:04X}")
         fields.append(cluster.endpoint.endpoint_id)
         fields.append(str(cluster.endpoint.device.ieee))
         fields.append(

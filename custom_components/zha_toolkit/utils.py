@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import logging
 import os
@@ -74,6 +76,19 @@ def get_radio(app):
         return app._ezsp
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
+
+
+def get_radio_version(app):
+    if hasattr(app, "_znp"):
+        import zigpy_znp
+
+        return zigpy_znp.__version__
+    if hasattr(app, "_ezsp"):
+        import bellows
+
+        return bellows.__version__
+    LOGGER.debug("Type recognition for '%s' not implemented", type(app))
+    return None
 
 
 # Get zigbee IEEE address (EUI64) for the reference.
@@ -178,7 +193,21 @@ def find_endpoint(dev, cluster_id):
             cnt = cnt + 1
 
     if cnt == 0:
-        LOGGER.error("No Endpoint found for cluster '%s'", cluster_id)
+        for key, value in dev.endpoints.items():
+            if key == 0:
+                continue
+            if cluster_id in value.in_clusters:
+                endpoint_id = key
+                cnt = cnt + 1
+
+        if cnt == 0:
+            LOGGER.error("No Endpoint found for cluster '%s'", cluster_id)
+        else:
+            LOGGER.error(
+                "No Endpoint found for in_cluster, found out_cluster '%s'",
+                cluster_id,
+            )
+
     if cnt > 1:
         endpoint_id = None
         LOGGER.error(
@@ -190,6 +219,49 @@ def find_endpoint(dev, cluster_id):
         )
 
     return endpoint_id
+
+
+def get_cluster_from_params(
+    dev, params: dict[str, int | str | list[int | str]], event_data: dict
+):
+    """
+    Get in or outcluster (and endpoint) with best
+    correspondence to values provided in params
+    """
+
+    # Get best endpoint
+    if params[p.EP_ID] is None or params[p.EP_ID] == "":
+        params[p.EP_ID] = find_endpoint(dev, params[p.CLUSTER_ID])
+
+    if params[p.EP_ID] not in dev.endpoints:
+        msg = f"Endpoint {params[p.EP_ID]} not found for '{dev.ieee!r}"
+        LOGGER.error(msg)
+        raise Exception(msg)
+
+    cluster_id = params[p.CLUSTER_ID]
+    if not isinstance(cluster_id, int):
+        msg = f"Cluster must be numeric {cluster_id}"
+        raise Exception(msg)
+
+    cluster = None
+    if cluster_id not in dev.endpoints[params[p.EP_ID]].in_clusters:
+        msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
+            cluster_id, repr(dev.ieee), params[p.EP_ID]
+        )
+        if cluster_id in dev.enddev.points[params[p.EP_ID]].out_clusters:
+            msg = f'"Using" OutCluster. {msg}'
+            LOGGER.warning(msg)
+            if "warnings" not in event_data:
+                event_data["warnings"] = []
+            event_data["warnings"].append(msg)
+            cluster = dev.endpoints[params[p.EP_ID]].out_clusters[cluster_id]
+        else:
+            LOGGER.error(msg)
+            raise Exception(msg)
+    else:
+        cluster = dev.endpoints[params[p.EP_ID]].in_clusters[cluster_id]
+
+    return cluster
 
 
 def write_json_to_file(data, subdir, fname, desc, listener=None):
@@ -237,7 +309,7 @@ def get_attr_id(cluster, attribute):
     # Try to get attribute id from cluster
     try:
         if isinstance(attribute, str):
-            return cluster.attridx.get(attribute)
+            return cluster.attributes_by_name(attribute)
     except Exception:
         return None
 
@@ -350,14 +422,16 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 # Most parameters are similar, this avoids repeating
 # code.
 #
-def extractParams(service):  # noqa: C901
+def extractParams(  # noqa: C901
+    service,
+) -> dict[str, None | int | str | list[int | str]]:
     rawParams = service.data
 
     LOGGER.debug("Parameters '%s'", rawParams)
 
     # Potential parameters, initialized to None
     # TODO: Not all parameters are decoded in this function yet
-    params = {
+    params: dict[str, None | int | str | list[int | str]] = {
         p.CMD_ID: None,
         p.EP_ID: None,
         p.CLUSTER_ID: None,

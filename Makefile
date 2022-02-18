@@ -1,5 +1,5 @@
 lint_python:  # And markdown format
-	-shopt -s globstar && pyupgrade --py36-plus **/*.py
+	-shopt -s globstar && pyupgrade --py37-plus **/*.py
 	bandit --recursive --skip B101,B311 .
 	black -l 79 .
 	codespell --ignore-words-list="hass" custom_components README.md
@@ -24,3 +24,7 @@ install_requirements:
 
 upgrade_unsafe:
 	A="$$(safety check --bare)" ; [ "$$A" == "" ] || pip install --upgrade $$A
+
+setup_precommit:
+	pip install --upgrade pip pre-commit tox
+	pre-commit install
