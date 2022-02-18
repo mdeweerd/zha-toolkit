@@ -20,6 +20,7 @@ execute:
             - backup
             - bind_group
             - bind_ieee
+            - binds_get
             - conf_report
             - conf_report_read
             - ezsp_add_key
@@ -59,8 +60,12 @@ execute:
             - znp_nvram_restore
             - znp_restore
     ieee:
-      description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+      description: Entity name,
+        
+        device name, or
+        
+        IEEE address of the node to execute
+        
         command
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
@@ -528,6 +533,53 @@ bind_ieee:
           min: 0
           max: 0xFFFF
           mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
+binds_get:
+  description: >-
+    Get binding table from device.  Note: very basic implementation,
+    return not decoded.
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:
