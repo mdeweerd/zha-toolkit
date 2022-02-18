@@ -14,6 +14,10 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
+VERSION_TIME: float
+VERSION: str
+MANIFEST: dict[str, str | list[str]]
+
 
 def getVersion() -> str:
     # Set name with regards to local path
@@ -23,25 +27,24 @@ def getVersion() -> str:
 
     fname = os.path.dirname(__file__) + "/manifest.json"
 
-    ftime = 0
+    ftime: float = 0
     try:
         VERSION_TIME
     except NameError:
-        VERSION_TIME = None
-        VERSION = None    
-        MANIFEST = None    
+        VERSION_TIME = 0
+        VERSION = "Unknown"
+        MANIFEST = {}
 
     try:
         ftime = os.path.getmtime(fname)
         if ftime != ftime:
-            VERSION = None    
-            MANIFEST = None    
+            VERSION = "Unknown"
+            MANIFEST = {}
     except Exception:
-        MANIFEST = None
-             
+        MANIFEST = {}
 
     LOGGER.debug(f"Read version from {fname} {ftime}")
-    if (VERSION is None and ftime != 0) or ( ftime != VERSION_TIME ):
+    if (VERSION is None and ftime != 0) or (ftime != VERSION_TIME):
         # No version, or file change -> get version again
         LOGGER.debug(f"Read version from {fname}")
 
@@ -51,12 +54,12 @@ def getVersion() -> str:
 
         if MANIFEST is not None:
             if "version" in MANIFEST.keys():
-                VERSION = MANIFEST["version"]
+                v = MANIFEST["version"]
+                VERSION = v if isinstance(v, str) else "Invalid manifest"
                 if VERSION == "0.0.0":
                     VERSION = "dev"
 
     return VERSION
-
 
 
 # Convert string to int if possible or return original string
