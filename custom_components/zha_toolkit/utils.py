@@ -422,7 +422,9 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 # Most parameters are similar, this avoids repeating
 # code.
 #
-def extractParams(service) -> dict[str, None | int | str | list[int | str]]:
+def extractParams(  # noqa: C901
+    service,
+) -> dict[str, None | int | str | list[int | str]]:
     rawParams = service.data
 
     LOGGER.debug("Parameters '%s'", rawParams)
