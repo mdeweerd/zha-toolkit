@@ -331,8 +331,6 @@ async def binds_get(
     """
     Get bindings from device.
     """
-    from zigpy import types as t
-    from zigpy.zdo.types import MultiAddress
 
     if ieee is None:
         LOGGER.error("missing ieee")
@@ -342,13 +340,7 @@ async def binds_get(
     zdo = src_dev.zdo
 
     # Todo: continue when reply is incomplete (update start index)
-    result = await zdo.request(
-                ZDOCmd.Mgmt_Bind_req,
-                0,
-                tries=params[p.TRIES]
-    )
-    LOGGER.debug(
-                "0x%04x: bindings ieee {ieee!r}: %s", result
-            )
+    result = await zdo.request(ZDOCmd.Mgmt_Bind_req, 0, tries=params[p.TRIES])
+    LOGGER.debug("0x%04x: bindings ieee {ieee!r}: %s", result)
 
     event_data["result"] = result

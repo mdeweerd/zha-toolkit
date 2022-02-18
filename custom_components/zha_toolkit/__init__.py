@@ -315,7 +315,7 @@ SERVICE_SCHEMAS = {
     S.REMOVE_ALL_GROUPS: vol.Schema(
         {
             vol.Optional(ATTR_IEEE): cv.string,
-        }, 
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_FROM_GROUP: vol.Schema(

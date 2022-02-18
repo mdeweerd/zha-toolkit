@@ -60,13 +60,8 @@ execute:
             - znp_nvram_restore
             - znp_restore
     ieee:
-      description: Entity name,
-        
-        device name, or
-        
-        IEEE address of the node to execute
-        
-        command
+      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute\n\
+        command"
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
@@ -1001,10 +996,9 @@ zha_devices:
       example: lqi
       selector:
         select:
-          options: [ieee, nwk, manufacturer, model, name, quirk_applied,
-                    quirk_class, manufacturer_code, power_source, lqi, rssi,
-                    last_seen, available, device_type, user_given_name,
-                    device_reg_id, area_id]
+          options: [ieee, nwk, manufacturer, model, name, quirk_applied, quirk_class,
+            manufacturer_code, power_source, lqi, rssi, last_seen, available, device_type,
+            user_given_name, device_reg_id, area_id]
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
