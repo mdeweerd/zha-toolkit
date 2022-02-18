@@ -1,5 +1,15 @@
 ---
 repos:
+  - repo: https://github.com/executablebooks/mdformat
+    # Do this before other tools "fixing" the line endings
+    rev: 0.7.13
+    hooks:
+      - id: mdformat
+        name: Format Markdown
+        entry: mdformat  # Executable to run, with fixed options
+        language: python
+        types: [markdown]
+        args: [--wrap, '75', --number]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
@@ -94,12 +104,3 @@ repos:
           - --show-error-context
         additional_dependencies:
           - zigpy==0.43.0
-  - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.13
-    hooks:
-      - id: mdformat
-        name: Format Markdown
-        entry: mdformat  # Executable to run, with fixed options
-        language: python
-        types: [markdown]
-        args: [--wrap, '75', --number]
