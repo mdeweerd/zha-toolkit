@@ -514,6 +514,22 @@ data:
 
 ```
 
+## `binds_get`: Get binding table from the device
+
+Get the bindings from the device.\
+Listen to the event, or enable debug and
+check the log to get the information.\
+Current limitation: only one request
+is made, if the binding table is long, the reply will be partial only. The
+reply is provided as given by zigpy.
+
+```yaml
+service: zha_toolkit.binds_get
+data:
+  ieee: 00:15:8d:00:04:7b:83:69
+  event_done: event_binds_get_done
+```
+
 ## `handle_join`: Handle join - rediscover device
 
 ```yaml

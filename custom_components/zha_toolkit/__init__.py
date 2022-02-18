@@ -86,7 +86,9 @@ SERVICE_SCHEMAS = {
     ),
     S.ATTR_READ: vol.Schema(
         {
-            vol.Required(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
@@ -104,7 +106,9 @@ SERVICE_SCHEMAS = {
     ),
     S.ATTR_WRITE: vol.Schema(
         {
-            vol.Required(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
             vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
@@ -143,10 +147,20 @@ SERVICE_SCHEMAS = {
     ),
     S.BIND_IEEE: vol.Schema(
         {
-            vol.Required(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
             vol.Required(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CLUSTER): vol.Any(
                 vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
+            ),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
+    S.BINDS_GET: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
             ),
         },
         extra=vol.ALLOW_EXTRA,
@@ -253,26 +267,34 @@ SERVICE_SCHEMAS = {
     ),
     S.HANDLE_JOIN: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Optional(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
             vol.Optional(ATTR_COMMAND_DATA): vol.Range(0, 0xFFFF),
         },
         extra=vol.ALLOW_EXTRA,
     ),
     S.IEEE_PING: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),
     S.LEAVE: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),
     S.MISC_REINITIALIZE: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),
@@ -287,9 +309,7 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.REGISTER_SERVICES: vol.Schema(
-        {
-            vol.Optional(ATTR_IEEE): cv.string,
-        },
+        {},
         extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_ALL_GROUPS: vol.Schema(

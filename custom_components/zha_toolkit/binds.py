@@ -5,6 +5,7 @@ import logging
 from zigpy.zdo.types import ZDOCmd
 
 from . import utils as u
+from .params import INTERNAL_PARAMS as p
 
 LOGGER = logging.getLogger(__name__)
 
@@ -322,3 +323,24 @@ async def unbind_coordinator(
         LOGGER.debug(
             "0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res
         )
+
+
+async def binds_get(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    """
+    Get bindings from device.
+    """
+
+    if ieee is None:
+        LOGGER.error("missing ieee")
+        return
+    src_dev = app.get_device(ieee=ieee)
+
+    zdo = src_dev.zdo
+
+    # Todo: continue when reply is incomplete (update start index)
+    result = await zdo.request(ZDOCmd.Mgmt_Bind_req, 0, tries=params[p.TRIES])
+    LOGGER.debug("0x%04x: bindings ieee {ieee!r}: %s", result)
+
+    event_data["result"] = result
