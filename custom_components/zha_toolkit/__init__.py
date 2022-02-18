@@ -444,6 +444,9 @@ CMD_TO_INTERNAL_MAP = {
     S.ZCL_CMD: ["zcl_cmd", S.ZCL_CMD],
 }
 
+VERSION = None  # type:str
+VERSION_TIME = None  #type:str
+MANIFEST = None  #type:str
 
 async def async_setup(hass, config):
     """Set up ZHA from config."""
@@ -497,6 +500,7 @@ def register_services(hass):  # noqa: C901
 
         # Preload event_data
         event_data = {
+            "zha_toolkit_version" : u.getVersion(),
             "zigpy_version": zigpy.__version__,
             "zigpy_rf_version": u.get_radio_version(app),
             "ieee_org": ieee_str,
