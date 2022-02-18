@@ -329,7 +329,7 @@ async def attr_write(  # noqa: C901
         or (len(attr_write_list) == 0)
         or (cmd != S.ATTR_WRITE)
     ):
-        LOGGER.debug("Re]uest attr read %s", attr_read_list)
+        LOGGER.debug("Request attr read %s", attr_read_list)
         result_read = await cluster_read_attributes(
             cluster,
             attr_read_list,
