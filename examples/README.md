@@ -1,10 +1,12 @@
 ## Read Attributes from Basic Cluster to CSV and state
 
-- `script_read_basic_cluster.yaml`: Script to add to HA (Configuration >
-  Scripts):
-- `service_call_read_basic_cluster.yaml`: Example of service call.
+- `script_read_basic_cluster.yaml`:  
+  Script to add to HA (Configuration > Scripts):
+- `service_call_read_basic_cluster.yaml`:  
+  Example of service call.  
   ![image](images/service_basic_cluster.png)
-- Values in state: ![image](images/state_basic_cluster.png)
+- Values in state:  
+  ![image](images/state_basic_cluster.png)
 - Values in CSV:
 
 ```csv
