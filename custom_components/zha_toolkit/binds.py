@@ -362,7 +362,27 @@ async def binds_get(
             total = reply[1]
             next_idx = reply[2]
             for binding in reply[3]:
-                bindings[next_idx] = binding
+                if binding.DstAddress.addrmode == 1:
+                    dst_info = {
+                       "addrmode": binding.DstAddress.addrmode,
+                       "group": f"0x{binding.DstAddress.nwk}",
+                    }
+                elif binding.DstAddress.addrmode == 3:
+                    dst_info = {
+                       "addrmode": binding.DstAddress.addrmode,
+                       "dst_ieee": repr(binding.DstAddress.ieee),
+                       "dst_ep": binding.DstAddress.endpoint,
+                    }
+                else:
+                    dst_info = binding.DstAddress
+
+                bind_info = {
+                    "src": repr(binding.SrcAddress),
+                    "src_ep": binding.SrcEndpoint,
+                    "cluster_id": f"0x{binding.ClusterId:04X}",
+                    "dst": dst_info,
+                }
+                bindings[next_idx] = bind_info
                 next_idx += 1
 
             if next_idx + 1 >= total:
