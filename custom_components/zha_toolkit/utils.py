@@ -470,14 +470,14 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 #
 def extractParams(  # noqa: C901
     service,
-) -> dict[str, None | int | str | list[int | str]]:
+) -> dict[str, None | int | str | list[int | str] | bytes]:
     rawParams = service.data
 
     LOGGER.debug("Parameters '%s'", rawParams)
 
     # Potential parameters, initialized to None
     # TODO: Not all parameters are decoded in this function yet
-    params: dict[str, None | int | str | list[int | str]] = {
+    params: dict[str, None | int | str | list[int | str] | bytes] = {
         p.CMD_ID: None,
         p.EP_ID: None,
         p.CLUSTER_ID: None,
@@ -506,8 +506,6 @@ def extractParams(  # noqa: C901
         p.CSV_FILE: None,
         p.CSV_LABEL: None,
     }
-
-    # Extract parameters
 
     # Endpoint to send command to
     if P.ENDPOINT in rawParams:
@@ -544,6 +542,10 @@ def extractParams(  # noqa: C901
     # Get manufacturer
     if P.MANF in rawParams:
         params[p.MANF] = str2int(rawParams[P.MANF])
+
+    manf = params[p.MANF]
+    if manf is None or manf == "" or manf == 0:
+        params[p.MANF] = b""  # Not None, force empty manf
 
     # Get tries
     if P.TRIES in rawParams:

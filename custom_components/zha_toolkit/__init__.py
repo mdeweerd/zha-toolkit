@@ -495,6 +495,12 @@ def register_services(hass):  # noqa: C901
 
         ieee = await u.get_ieee(app, zha_gw, ieee_str)
 
+        slickParams = params.copy()
+        for k in params.keys():
+            LOGGER.debug(f"Key {p}")
+            if slickParams[k] is None or slickParams[k] is False:
+                del slickParams[k]
+
         # Preload event_data
         event_data = {
             "zha_toolkit_version": u.getVersion(),
@@ -506,7 +512,7 @@ def register_services(hass):  # noqa: C901
             "command_data": cmd_data,
             "start_time": dt_util.utcnow().isoformat(),
             "errors": [],
-            "params": params,
+            "params": slickParams,  # stripped version of params
         }
 
         if ieee is not None:
