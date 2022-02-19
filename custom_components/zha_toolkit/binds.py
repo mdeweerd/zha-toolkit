@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 
+import zigpy.zcl.foundation as f
 from zigpy.zdo.types import ZDOCmd
 
 from . import utils as u
@@ -339,8 +340,47 @@ async def binds_get(
 
     zdo = src_dev.zdo
 
-    # Todo: continue when reply is incomplete (update start index)
-    result = await zdo.request(ZDOCmd.Mgmt_Bind_req, 0, tries=params[p.TRIES])
-    LOGGER.debug("0x%04x: bindings ieee {ieee!r}: %s", result)
+    idx = 0
+    done = False
 
-    event_data["result"] = result
+    event_data["replies"] = []
+    bindings = {}
+    success = False
+
+    while not done:
+        # Todo: continue when reply is incomplete (update start index)
+        reply = await zdo.request(
+            ZDOCmd.Mgmt_Bind_req, idx, tries=params[p.TRIES]
+        )
+        event_data["replies"].append(reply)
+
+        if (
+            isinstance(reply, list)
+            and len(reply) >= 3
+            and reply[0] == f.Status.SUCCESS
+        ):
+            total = reply[1]
+            next_idx = reply[2]
+            for binding in reply[3]:
+                bindings[next_idx] = binding
+                next_idx += 1
+
+            if next_idx + 1 >= total:
+                done = True
+                success = True
+            else:
+                if idx >= next_idx:
+                    # Not progressing in list
+                    success = False
+                    done = True
+                else:
+                    # Continue with next offset
+                    idx = next_idx
+        else:
+            event_data["warning"] = "Unexpected reply format or failure"
+            done = True
+
+    event_data["success"] = success
+    event_data["result"] = bindings
+
+    LOGGER.debug("0x%04x: bindings ieee {ieee!r}: %s", bindings)
