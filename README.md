@@ -542,18 +542,6 @@ data:
   command_data: 0x604e
 ```
 
-## `handle_join`: Handle join - rediscover device
-
-```yaml
-service: zha_toolkit.execute
-data:
-  # Address of the device that joined
-  ieee: 00:12:4b:00:22:08:ed:1a
-  command: handle_join
-  # NWK address of device that joined (must be exact)
-  command_data: 0x604e
-```
-
 ## `zcl_cmd`: Send a Cluster command
 
 Allows you to send a cluster command. Also accepts command arguments.
