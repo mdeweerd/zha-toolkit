@@ -532,17 +532,9 @@ data:
 
 ## `handle_join`: Handle join - rediscover device
 
-```yaml
-service: zha_toolkit.execute
-data:
-  # Address of the device that joined
-  ieee: 00:12:4b:00:22:08:ed:1a
-  command: handle_join
-  # NWK address of device that joined (must be exact)
-  command_data: 0x604e
-```
-
-## `handle_join`: Handle join - rediscover device
+You may want to try
+[`misc_reinitialize`](#misc_reinitialize-reinitialize-device) as
+`handle_join` will not redo any joining step that already completed.
 
 ```yaml
 service: zha_toolkit.execute
