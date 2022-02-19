@@ -218,7 +218,6 @@ async def conf_report(
                 params[p.REPORTABLE_CHANGE],
                 manufacturer=params[p.MANF],
             )
-            event_data["params"] = params
             event_data["result_conf"] = result_conf
             triesToGo = 0  # Stop loop
             LOGGER.info("Configure report result: %s", result_conf)

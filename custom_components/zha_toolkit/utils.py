@@ -507,8 +507,6 @@ def extractParams(  # noqa: C901
         p.CSV_LABEL: None,
     }
 
-    # Extract parameters
-
     # Endpoint to send command to
     if P.ENDPOINT in rawParams:
         params[p.EP_ID] = str2int(rawParams[P.ENDPOINT])
@@ -544,6 +542,10 @@ def extractParams(  # noqa: C901
     # Get manufacturer
     if P.MANF in rawParams:
         params[p.MANF] = str2int(rawParams[P.MANF])
+    
+    manf = params[p.MANF]
+    if manf is None or manf == "" or manf == 0:
+        params[p.MANF] = b""  # Not None, force empty manf
 
     # Get tries
     if P.TRIES in rawParams:
