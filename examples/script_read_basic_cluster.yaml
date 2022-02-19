@@ -13,9 +13,9 @@ fields:
   csv:
     name: csv
     description: >-
-      Csv filename '../www/device.csv' can be downloaded from
-      YOURINSTANCEURL/local/mydevice.csv .
-    example: ../www/mydevice.csv
+      Csv filename '../www/basic.csv' can be downloaded from
+      YOURINSTANCEURL/local/basic.csv .
+    example: ../www/basic.csv
     required: true
     selector:
       text:
