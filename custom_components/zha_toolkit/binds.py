@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 
 import zigpy.zcl.foundation as f
-from zigpy.zdo.types import ZDOCmd
+from zigpy import types as t
+from zigpy.zdo.types import MultiAddress, ZDOCmd
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
@@ -23,8 +24,6 @@ BINDABLE_IN_CLUSTERS = [
 async def bind_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy import types as t
-    from zigpy.zdo.types import MultiAddress
 
     LOGGER.debug("running 'bind group' command: %s", service)
     if ieee is None:
@@ -87,7 +86,6 @@ async def bind_group(
 async def unbind_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
 
     LOGGER.debug("running 'unbind group' command: %s", service)
@@ -152,7 +150,6 @@ async def unbind_group(
 async def bind_ieee(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy import types as t
     from zigpy.zdo.types import MultiAddress
 
     if ieee is None or not data:
@@ -309,11 +306,35 @@ async def unbind_coordinator(
         LOGGER.error("missing ieee and/or data")
         return
     src_dev = app.get_device(ieee=ieee)
-    cluster_id = u.str2int(data)
+    cluster_id = params[p.CLUSTER_ID]
 
     for ep_id, ep in src_dev.endpoints.items():
-        if not ep_id or cluster_id not in ep.out_clusters:
+        if not ep_id:
             continue
+
+        out_cluster = None
+        in_cluster = None
+
+        if cluster_id not in ep.out_clusters:
+            out_cluster = ep.out_clusters[ep_id]
+        if cluster_id not in ep.in_clusters:
+            in_cluster = ep.in_clusters[ep_id]
+
+        cluster = None
+        if in_cluster is not None and cluster_id in BINDABLE_IN_CLUSTERS:
+            # Prefer in cluster
+            cluster = in_cluster
+        elif out_cluster is not None and cluster_id in BINDABLE_OUT_CLUSTERS:
+            cluster = out_cluster
+
+        if cluster is None:
+            cluster = out_cluster
+        if cluster is None:
+            cluster = in_cluster
+
+        if cluster is None:
+            continue
+
         LOGGER.debug(
             "0x%04x: unbinding ep: %s, cluster: %s",
             src_dev.nwk,
@@ -324,6 +345,79 @@ async def unbind_coordinator(
         LOGGER.debug(
             "0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res
         )
+
+
+async def binds_remove_all(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    if ieee is None:
+        LOGGER.error("missing ieee")
+        return
+    src_dev = app.get_device(ieee=ieee)
+    zdo = src_dev.zdo
+
+    await binds_get(
+        app, listener, ieee, cmd, data, service, params, event_data
+    )
+    # Bindings in event_data["result"]
+
+    errors: list[str] = []
+    bindings_removed = []
+    bindings_skipped = []
+    try:
+        for binding in event_data["result"]:
+            if binding.addrmode == 1:
+                # group
+                src_ieee = t.EUI64.convert(binding.src)
+                dst_addr = MultiAddress()
+                dst_addr.addrmode = binding.addr_mode
+                dst_addr.nwk = t.uint16_t(binding.dst.group)
+                dst_addr.endpoint = t.uint8_t(binding.dst.dst_ep)
+                res = await zdo.request(
+                    ZDOCmd.Unbind_req,
+                    src_ieee,
+                    binding.src_ep,
+                    u.str2int(binding.cluster_id),
+                    dst_addr,
+                )
+                # TODO: check success status
+                bindings_removed.append(binding)
+                event_data["replies"].append(res)
+            elif binding.addrmode == 3:
+                # direct
+                src_ieee = t.EUI64.convert(binding.src)
+                dst_ieee = t.EUI64.convert(binding.dst.dst_ieee)
+                dst_addr = MultiAddress()
+                dst_addr.addrmode = binding.addr_mode
+                dst_addr.ieee = dst_ieee
+                dst_addr.endpoint = t.uint8_t(binding.dst.dst_ep)
+                res = await zdo.request(
+                    ZDOCmd.Unbind_req,
+                    src_ieee,
+                    binding.src_ep,
+                    u.str2int(binding.cluster_id),
+                    dst_addr,
+                )
+                # TODO: check success status
+                bindings_removed.append(binding)
+                event_data["replies"].append(res)
+            else:
+                msg = f"Binding not supported {binding!r}"
+                bindings_skipped.append(binding)
+                LOGGER.error(msg)
+                errors.append(msg)
+    except Exception as e:
+        event_data["result"] = {
+            "removed": bindings_removed,
+            "skipped": bindings_skipped,
+        }
+        raise e
+
+    event_data["result"] = {
+        "removed": bindings_removed,
+        "skipped": bindings_skipped,
+    }
+    event_data["success"] = len(bindings_skipped) == 0
 
 
 async def binds_get(
@@ -337,7 +431,6 @@ async def binds_get(
         LOGGER.error("missing ieee")
         return
     src_dev = app.get_device(ieee=ieee)
-
     zdo = src_dev.zdo
 
     idx = 0
