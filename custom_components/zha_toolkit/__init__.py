@@ -165,6 +165,14 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
+    S.BINDS_REMOVE_ALL: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.CONF_REPORT: vol.Schema(
         {
             vol.Required(ATTR_IEEE): vol.Any(
