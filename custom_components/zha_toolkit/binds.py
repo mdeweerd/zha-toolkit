@@ -364,14 +364,14 @@ async def binds_get(
             for binding in reply[3]:
                 if binding.DstAddress.addrmode == 1:
                     dst_info = {
-                       "addrmode": binding.DstAddress.addrmode,
-                       "group": f"0x{binding.DstAddress.nwk}",
+                        "addrmode": binding.DstAddress.addrmode,
+                        "group": f"0x{binding.DstAddress.nwk}",
                     }
                 elif binding.DstAddress.addrmode == 3:
                     dst_info = {
-                       "addrmode": binding.DstAddress.addrmode,
-                       "dst_ieee": repr(binding.DstAddress.ieee),
-                       "dst_ep": binding.DstAddress.endpoint,
+                        "addrmode": binding.DstAddress.addrmode,
+                        "dst_ieee": repr(binding.DstAddress.ieee),
+                        "dst_ep": binding.DstAddress.endpoint,
                     }
                 else:
                     dst_info = binding.DstAddress
