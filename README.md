@@ -532,6 +532,10 @@ data:
 
 ## `handle_join`: Handle join - rediscover device
 
+You may want to try
+[`misc_reinitialize`](#misc_reinitialize-reinitialize-device) as
+`handle_join` will not redo any joining step that already completed.
+
 ```yaml
 service: zha_toolkit.execute
 data:
