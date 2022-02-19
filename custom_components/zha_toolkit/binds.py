@@ -365,38 +365,43 @@ async def binds_remove_all(
     bindings_removed = []
     bindings_skipped = []
     try:
-        for binding in event_data["result"]:
-            if binding.addrmode == 1:
+        for _i, binding in event_data["result"].items():
+            LOGGER.debug(f"Remove bind {binding!r}")
+            addr_mode = binding["dst"]["addrmode"]
+
+            if addr_mode == 1:
                 # group
-                src_ieee = t.EUI64.convert(binding.src)
+                src_ieee = t.EUI64.convert(binding["src"])
                 dst_addr = MultiAddress()
-                dst_addr.addrmode = binding.addr_mode
-                dst_addr.nwk = t.uint16_t(binding.dst.group)
-                dst_addr.endpoint = t.uint8_t(binding.dst.dst_ep)
+                dst_addr.addrmode = addr_mode
+                dst_addr.nwk = t.uint16_t(binding["dst"]["group"])
+                dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
                 res = await zdo.request(
                     ZDOCmd.Unbind_req,
                     src_ieee,
-                    binding.src_ep,
-                    u.str2int(binding.cluster_id),
+                    binding["src_ep"],
+                    u.str2int(binding["cluster_id"]),
                     dst_addr,
+                    tries=params[p.TRIES],
                 )
                 # TODO: check success status
                 bindings_removed.append(binding)
                 event_data["replies"].append(res)
-            elif binding.addrmode == 3:
+            if addr_mode == 3:
                 # direct
-                src_ieee = t.EUI64.convert(binding.src)
-                dst_ieee = t.EUI64.convert(binding.dst.dst_ieee)
+                src_ieee = t.EUI64.convert(binding["src"])
+                dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
                 dst_addr = MultiAddress()
-                dst_addr.addrmode = binding.addr_mode
+                dst_addr.addrmode = addr_mode
                 dst_addr.ieee = dst_ieee
-                dst_addr.endpoint = t.uint8_t(binding.dst.dst_ep)
+                dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
                 res = await zdo.request(
                     ZDOCmd.Unbind_req,
                     src_ieee,
-                    binding.src_ep,
-                    u.str2int(binding.cluster_id),
+                    binding["src_ep"],
+                    u.str2int(binding["cluster_id"]),
                     dst_addr,
+                    tries=params[p.TRIES],
                 )
                 # TODO: check success status
                 bindings_removed.append(binding)
