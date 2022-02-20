@@ -13,7 +13,7 @@ from . import utils as u
 DEPENDENCIES = ["zha"]
 
 DOMAIN = "zha_toolkit"
-
+REGISTERED_VERSION = ""
 
 # Legacy parameters
 ATTR_COMMAND = "command"
@@ -466,6 +466,7 @@ async def async_setup(hass, config):
         return True
 
     register_services(hass)
+
     return True
 
 
@@ -490,12 +491,24 @@ def register_services(hass):  # noqa: C901
         importlib.reload(module)
 
         LOGGER.debug("module is %s", module)
+        importlib.reload(u)
+
+        if u.getVersion() != REGISTERED_VERSION:
+            await command_handler_register_services(
+                zha_gw.application_controller,
+                zha_gw,
+                None,  # ieee,
+                None,  # cmd,
+                None,  # cmd_data,
+                None,  # Not needed
+                params={},  # params Not needed
+                event_data={},  # event_data Not needed
+            )
 
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
         cmd_data = service.data.get(ATTR_COMMAND_DATA)
 
-        importlib.reload(u)
         # Decode parameters
         params = u.extractParams(service)
 
@@ -612,6 +625,8 @@ def register_services(hass):  # noqa: C901
             toolkit_service,
             schema=value,
         )
+
+    REGISTERED_VERSION = u.getVersion()
 
 
 async def command_handler_default(
