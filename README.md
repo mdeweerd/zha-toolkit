@@ -24,8 +24,6 @@
 <details>
 <summary>Table of Contents</summary>
 
-- [Highlights](#highlights)
-- [Purpose](#purpose)
 - [Setup](#setup)
 - [Automations](#automations)
 - [Using `zha_toolkit`](#using-zha_toolkit)
