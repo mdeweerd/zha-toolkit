@@ -28,14 +28,10 @@ is sufficient and avoiding the need to understand the inner workings of ZHA
 or Zigpy (methods, quirks, etc).
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 <details>
 <summary>Table of Contents</summary>
 
-- [Highlights](#highlights)
-- [Purpose](#purpose)
 - [Setup](#setup)
 - [Automations](#automations)
 - [Using `zha_toolkit`](#using-zha_toolkit)
