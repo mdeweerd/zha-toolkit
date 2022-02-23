@@ -11,23 +11,13 @@
 - "Low level" access to most Zigbee commands
   (read/write/report/cmd/discover)
 
-# Purpose
-
-Using the Home Assistant 'Services' feature, provide direct control over
-low level zigbee commands provided in ZHA or Zigpy that are not otherwise
-available or too limited for some use cases.
-
-Can also serve as a framework to do local low level coding (the modules are
-reloaded on each call).
-
-Provide access to some higher level commands such as ZNP backup (and
-restore).
-
-Make it easier to perform one-time operations where (some) Zigbee knowledge
-is sufficient and avoiding the need to understand the inner workings of ZHA
-or Zigpy (methods, quirks, etc).
+# Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
+<!-- param::isNotitle::true:: -->
+
+<!-- param::maxHeaderLevel::4:: -->
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -69,6 +59,22 @@ or Zigpy (methods, quirks, etc).
 
 </details>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Purpose
+
+Using the Home Assistant 'Services' feature, provide direct control over
+low level zigbee commands provided in ZHA or Zigpy that are not otherwise
+available or too limited for some use cases.
+
+Can also serve as a framework to do local low level coding (the modules are
+reloaded on each call).
+
+Provide access to some higher level commands such as ZNP backup (and
+restore).
+
+Make it easier to perform one-time operations where (some) Zigbee knowledge
+is sufficient and avoiding the need to understand the inner workings of ZHA
+or Zigpy (methods, quirks, etc).
 
 # Setup
 
