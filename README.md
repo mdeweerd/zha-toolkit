@@ -14,16 +14,11 @@
 # Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
-<!-- param::isNotitle::true:: -->
-
-<!-- param::maxHeaderLevel::4:: -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 <details>
 <summary>Table of Contents</summary>
 
+- [Purpose](#purpose)
 - [Setup](#setup)
 - [Automations](#automations)
 - [Using `zha_toolkit`](#using-zha_toolkit)
