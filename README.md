@@ -27,6 +27,10 @@ Make it easier to perform one-time operations where (some) Zigbee knowledge
 is sufficient and avoiding the need to understand the inner workings of ZHA
 or Zigpy (methods, quirks, etc).
 
+<!-- START doctoc -->
+
+<!-- END doctoc -->
+
 # Setup
 
 The component files needs to be added to your `custom_components` directory
