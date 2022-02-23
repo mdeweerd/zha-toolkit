@@ -14,8 +14,11 @@
 # Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- param::isNotitle::true:: -->
+
 <!-- param::maxHeaderLevel::4:: -->
 
 - [Purpose](#purpose)
@@ -588,7 +591,6 @@ data:
   command_data: 0x604e
 ```
 
-
 ## `misc_reinitialize`: Reinitialize device
 
 `misc_reinitialize` is a pretty dirty (white-hat) hack to reinitialize a
@@ -607,7 +609,6 @@ data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
 ```
-
 
 ## `zcl_cmd`: Send a Cluster command
 
