@@ -1,5 +1,6 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
+![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
@@ -9,6 +10,47 @@
 - Daily ZNP Coordinator backup (See blueprint)
 - "Low level" access to most Zigbee commands
   (read/write/report/cmd/discover)
+
+# Table of Contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- param::isNotitle::true:: -->
+<!-- param::maxHeaderLevel::4:: -->
+
+- [Purpose](#purpose)
+- [Setup](#setup)
+- [Automations](#automations)
+- [Using `zha_toolkit`](#using-zha_toolkit)
+- [Examples](#examples)
+  - [`attr_read`: Read an attribute value](#attr_read-read-an-attribute-value)
+  - [`attr_write`: Write(/Read) an attribute value](#attr_write-writeread-an-attribute-value)
+  - [`conf_report`: Configure reporting](#conf_report-configure-reporting)
+  - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
+  - [`zdo_scan_now`: Do a topology scan](#zdo_scan_now-do-a-topology-scan)
+  - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
+  - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
+  - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
+  - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
+  - [`zcl_cmd`: Send a Cluster command](#zcl_cmd-send-a-cluster-command)
+    - [`zcl_cmd` Example: Send `on` command to an OnOff Cluster.](#zcl_cmd-example-send-on-command-to-an-onoff-cluster)
+    - [`zcl_cmd` Example: Send `off` command to an OnOff Cluster:](#zcl_cmd-example-send-off-command-to-an-onoff-cluster)
+    - [`zcl_cmd` Example: "Store Scene"](#zcl_cmd-example-store-scene)
+    - [`zcl_cmd` Example: "Recall Scene"](#zcl_cmd-example-recall-scene)
+    - [`zcl_cmd` Example: "Add Scene"](#zcl_cmd-example-add-scene)
+  - [`ezsp_backup`: Backup ezsp/bellows network data](#ezsp_backup-backup-ezspbellows-network-data)
+  - [`zha_devices`: Get information about devices in network to CSV](#zha_devices-get-information-about-devices-in-network-to-csv)
+  - [`znp_nvram_backup`: Backup ZNP NVRAM data](#znp_nvram_backup-backup-znp-nvram-data)
+  - [`znp_nvram_restore`: Restore ZNP NVRAM data](#znp_nvram_restore-restore-znp-nvram-data)
+  - [`znp_nvram_reset`: Reset ZNP NVRAM data](#znp_nvram_reset-reset-znp-nvram-data)
+  - [`znp_backup`: Backup ZNP network data](#znp_backup-backup-znp-network-data)
+  - [`znp_restore`: Restore ZNP network data](#znp_restore-restore-znp-network-data)
+  - [User method](#user-method)
+- [Credits/Motivation](#creditsmotivation)
+- [License](#license)
+- [Contributing](#contributing)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Purpose
 
@@ -546,6 +588,27 @@ data:
   command_data: 0x604e
 ```
 
+
+## `misc_reinitialize`: Reinitialize device
+
+`misc_reinitialize` is a pretty dirty (white-hat) hack to reinitialize a
+device by making zigpy think the device is not initialized, and then
+requesting an initialisation.
+
+This is more than `handle_join` which is not reinitializing much when the
+device is already set up in zigpy.
+
+`misc_reinitialize` sets several device attributes to None and False so
+that the zigpy initialisation code will proceed with initialisation.
+
+```yaml
+service: zha_toolkit.misc_reinitialize
+data:
+  # Reference of the device that should be reinitialized
+  ieee: 00:12:4b:00:22:08:ed:1a
+```
+
+
 ## `zcl_cmd`: Send a Cluster command
 
 Allows you to send a cluster command. Also accepts command arguments.
@@ -583,25 +646,6 @@ data:
   # Optional (only add when the command requires it): arguments (default=empty)
   args: [ 1, 3, [ 1, 2, 3] ]
 
-```
-
-## `misc_reinitialize`: Reinitialize device
-
-`misc_reinitialize` is a pretty dirty (white-hat) hack to reinitialize a
-device by making zigpy think the device is not initialized, and then
-requesting an initialisation.
-
-This is more than `handle_join` which is not reinitializing much when the
-device is already set up in zigpy.
-
-`misc_reinitialize` sets several device attributes to None and False so
-that the zigpy initialisation code will proceed with initialisation.
-
-```yaml
-service: zha_toolkit.misc_reinitialize
-data:
-  # Reference of the device that should be reinitialized
-  ieee: 00:12:4b:00:22:08:ed:1a
 ```
 
 ### `zcl_cmd` Example: Send `on` command to an OnOff Cluster.
