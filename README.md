@@ -32,8 +32,8 @@
   - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
   - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
   - [`zcl_cmd`: Send a Cluster command](#zcl_cmd-send-a-cluster-command)
-    - [`zcl_cmd` Example: Send `on` command to an OnOff Cluster.](#zcl_cmd-example-send-on-command-to-an-onoff-cluster)
-    - [`zcl_cmd` Example: Send `off` command to an OnOff Cluster:](#zcl_cmd-example-send-off-command-to-an-onoff-cluster)
+    - [`zcl_cmd` Example: `on` to an OnOff Cluster.](#zcl_cmd-example-send-on-command-to-an-onoff-cluster)
+    - [`zcl_cmd` Example: `off` to an OnOff Cluster:](#zcl_cmd-example-send-off-command-to-an-onoff-cluster)
     - [`zcl_cmd` Example: "Store Scene"](#zcl_cmd-example-store-scene)
     - [`zcl_cmd` Example: "Recall Scene"](#zcl_cmd-example-recall-scene)
     - [`zcl_cmd` Example: "Add Scene"](#zcl_cmd-example-add-scene)
@@ -777,7 +777,7 @@ data:
   command_data: _20220105
 ```
 
-## `zha_devices`: Get information about devices in network to CSV
+## `zha_devices`: Device List Information to Event or CSV
 
 Write information from currently known ZHA devices to a CSV file. You also
 get this data in the 'devices' field of the generated events which allows
