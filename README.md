@@ -13,14 +13,10 @@
 
 # Table of Contents
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- mdformat-toc start --slug=github --no-anchors --maxlevel=4 --minlevel=1 -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-<!-- param::isNotitle::true:: -->
-
-<!-- param::maxHeaderLevel::4:: -->
-
+- [Highlights](#highlights)
+- [Table of Contents](#table-of-contents)
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Automations](#automations)
@@ -53,7 +49,7 @@
 - [License](#license)
 - [Contributing](#contributing)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- mdformat-toc end -->
 
 # Purpose
 
