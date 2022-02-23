@@ -1,5 +1,36 @@
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
+![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
+![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
+# Highlights
+
+- Read Zigbee attributes into Home Assistant attributes
+- Daily ZNP Coordinator backup (See blueprint)
+- "Low level" access to most Zigbee commands
+  (read/write/report/cmd/discover)
+
+# Purpose
+
+Using the Home Assistant 'Services' feature, provide direct control over
+low level zigbee commands provided in ZHA or Zigpy that are not otherwise
+available or too limited for some use cases.
+
+Can also serve as a framework to do local low level coding (the modules are
+reloaded on each call).
+
+Provide access to some higher level commands such as ZNP backup (and
+restore).
+
+Make it easier to perform one-time operations where (some) Zigbee knowledge
+is sufficient and avoiding the need to understand the inner workings of ZHA
+or Zigpy (methods, quirks, etc).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <details>
 <summary>Table of Contents</summary>
 
@@ -38,39 +69,6 @@
 
 </details>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
-![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
-![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
-![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-
-# Highlights
-
-- Read Zigbee attributes into Home Assistant attributes
-- Daily ZNP Coordinator backup (See blueprint)
-- "Low level" access to most Zigbee commands
-  (read/write/report/cmd/discover)
-
-# Purpose
-
-Using the Home Assistant 'Services' feature, provide direct control over
-low level zigbee commands provided in ZHA or Zigpy that are not otherwise
-available or too limited for some use cases.
-
-Can also serve as a framework to do local low level coding (the modules are
-reloaded on each call).
-
-Provide access to some higher level commands such as ZNP backup (and
-restore).
-
-Make it easier to perform one-time operations where (some) Zigbee knowledge
-is sufficient and avoiding the need to understand the inner workings of ZHA
-or Zigpy (methods, quirks, etc).
-
-<!-- START doctoc -->
-
-<!-- END doctoc -->
 
 # Setup
 
