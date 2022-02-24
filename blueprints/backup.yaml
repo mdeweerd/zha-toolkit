@@ -24,3 +24,4 @@ action:
       event_success: zha_coordinator_backup_success
       event_fail: zha_coordinator_backup_failed
       event_done: zha_coordinator_backup_done
+mode: restart
