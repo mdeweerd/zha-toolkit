@@ -20,7 +20,7 @@ install_requirements:
 	pip install --upgrade pip wheel
 	pip install --upgrade bandit black codespell flake8 flake8-2020 flake8-bugbear \
                   flake8-comprehensions isort mypy pytest pyupgrade safety \
-	          autoflake8 mdformat
+	          autoflake8 mdformat mdformat-toc
 
 upgrade_unsafe:
 	A="$$(safety check --bare)" ; [ "$$A" == "" ] || pip install --upgrade $$A
