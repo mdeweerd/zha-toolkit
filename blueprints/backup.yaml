@@ -24,11 +24,4 @@ action:
       event_success: zha_coordinator_backup_success
       event_fail: zha_coordinator_backup_failed
       event_done: zha_coordinator_backup_done
-  - service: zha_toolkit.execute
-    data:
-      command: zha_coordinator_nvram_backup
-      command_data: '{{ now().strftime("_%d") }}'
-      event_success: zha_coordinator_nvram_backup_success
-      event_fail: zha_coordinator_nvram_backup_failed
-      event_done: zha_coordinator_nvram_backup_done
 mode: restart
