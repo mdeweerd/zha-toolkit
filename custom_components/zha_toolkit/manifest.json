@@ -2,6 +2,7 @@
     "codeowners": [
         "@mdeweerd"
     ],
+    "config_flow": true,
     "dependencies": [
         "zha"
     ],

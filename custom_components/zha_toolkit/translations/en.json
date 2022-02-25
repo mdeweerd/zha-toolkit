@@ -1,0 +1,21 @@
+{
+    "config": {
+        "abort": {
+            "single_instance_allowed": "Only a single configuration of HACS is allowed."
+        },
+        "error": {
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "tries": "Number of times a zigbee transaction may be retried until success",
+                    "event_success": "Name of event that is fired when a service call succeeds",
+                    "event_failed": "Name of event that is fired when a service call fails",
+                    "event_done": "Name of event that is fired when a service call is done (success or failure)"
+                },
+                "description": "These are default values that may be used when you do not set the corresponding parameter in a specific ZHA-TOOLKIT service call.",
+                "title": "zha-toolkit"
+           }
+        }
+    }
+}

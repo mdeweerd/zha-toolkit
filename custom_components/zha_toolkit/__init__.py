@@ -408,7 +408,7 @@ COMMON_SCHEMA = {
     ): cv.boolean,  # raise exception when success==False
     vol.Optional(
         P.EXPECT_REPLY
-    ): cv.boolean,  # To be use where Zigpy uses 'expect_reply'
+    ): cv.boolean,  # To be used where Zigpy uses 'expect_reply'
 }
 
 
@@ -612,13 +612,15 @@ def register_services(hass):  # noqa: C901
             raise Exception("Success expected, but failed")
 
     # Set up all service schemas
+
+    LOGGER.debug(f"{DOMAIN} Register services")
     for key, value in SERVICE_SCHEMAS.items():
         value.extend(COMMON_SCHEMA)
         if key != S.EXECUTE:
             # command key is only for general "execute" - avoid confusion
             # by denying this option
             value.extend(DENY_COMMAND_SCHEMA)
-        LOGGER.debug(f"Add service {DOMAIN}.{key}")
+        # LOGGER.debug(f"Add service {DOMAIN}.{key}")
         hass.services.async_register(
             DOMAIN,
             key,
