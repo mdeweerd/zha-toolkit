@@ -73,11 +73,23 @@ SERVICE_SCHEMAS = {
     ),
     # All services with their specific parameters (List being completed)
     S.ADD_GROUP: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(ATTR_COMMAND_DATA): vol.Range(0, 0xFFFF),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ADD_TO_GROUP: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(ATTR_COMMAND_DATA): vol.Range(0, 0xFFFF),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ALL_ROUTES_AND_NEIGHBOURS: vol.Schema(
@@ -258,7 +270,12 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.GET_GROUPS: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.GET_ROUTES_AND_NEIGHBOURS: vol.Schema(
@@ -266,7 +283,11 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.GET_ZLL_GROUPS: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZHA_DEVICES: vol.Schema(
@@ -322,22 +343,38 @@ SERVICE_SCHEMAS = {
     ),
     S.REMOVE_ALL_GROUPS: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
         },
         extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_FROM_GROUP: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(ATTR_COMMAND_DATA): vol.Range(0, 0xFFFF),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.REMOVE_GROUP: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(ATTR_COMMAND_DATA): vol.Range(0, 0xFFFF),
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.SCAN_DEVICE: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
-            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),

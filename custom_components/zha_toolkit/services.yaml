@@ -1141,8 +1141,8 @@ register_services:
   description: >-
     Reregister zha-toolkit services\nUsefull during development when they
     are updated in __init__.py
-remove_group:
-  description: Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`
+remove_all_groups:
+  description: Remove all groups from (selected) endpoints on device
   fields:
     ieee:
       description: >-
@@ -1153,20 +1153,11 @@ remove_group:
         entity:
           integration: zha
     endpoint:
-      description: endpoint to remove group from (or all EP if not set)
+      description: endpoint to remove group from (all endpoints when not set)
       selector:
         number:
           min: 1
           max: 255
-          mode: box
-    command_data:
-      description: Group id to remove
-      example: 0x0002
-      required: true
-      selector:
-        number:
-          min: 0
-          max: 0xFF
           mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
@@ -1253,8 +1244,8 @@ remove_from_group:
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
-remove_all_groups:
-  description: Remove all groups from (selected) endpoints on device
+remove_group:
+  description: Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`
   fields:
     ieee:
       description: >-
@@ -1265,11 +1256,20 @@ remove_all_groups:
         entity:
           integration: zha
     endpoint:
-      description: endpoint to remove group from (all endpoints when not set)
+      description: endpoint to remove group from (or all EP if not set)
       selector:
         number:
           min: 1
           max: 255
+          mode: box
+    command_data:
+      description: Group id to remove
+      example: 0x0002
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFF
           mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
