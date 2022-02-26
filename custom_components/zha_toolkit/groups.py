@@ -21,14 +21,19 @@ async def get_groups(
     groups: dict[int, dict[str, Any]] = {}
     endpoint_id = params[p.EP_ID]
 
+    event_data["result"]=[]
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             continue
         try:
             ep_info: dict[str, Any] = {}
-            name_support = await ep.groups.read_attributes(
-                ["name_support"], tries=params[p.TRIES]
+            res = await ep.groups.read_attributes(
+                ["name_support"]  #, tries=params[p.TRIES]
             )
+                #ep_info["name_support"] = int(name_support["name_support"])  # int(name_support)
+            event_data["result"].append(res)
+
+            name_support = res[0]["name_support"]
             ep_info["name_support"] = int(name_support)
             LOGGER.debug(
                 "Group on 0x%04X EP %u name support: %s",
@@ -38,12 +43,12 @@ async def get_groups(
             )
 
             all_groups = await ep.groups.get_membership(
-                [], tries=params[p.TRIES]
+                [] #, tries=params[p.TRIES]
             )
             LOGGER.debug(
                 "Groups on 0x%04X EP %u : %s", src_dev.nwk, ep_id, all_groups
             )
-            ep_info["groups"] = all_groups
+            ep_info["groups"] = all_groups[1]
             groups[ep_id] = ep_info
         except AttributeError:
             LOGGER.debug(
@@ -71,8 +76,9 @@ async def add_group(
             continue
         try:
             res = await ep.groups.add(
-                group_id, f"group {group_id}", tries=params[p.TRIES]
+                group_id, f"group {group_id}" #, tries=params[p.TRIES]
             )
+            result.append(res)
             LOGGER.debug(
                 "0x%04x EP %u: Setting group 0x%04x: %s",
                 src_dev.nwk,
@@ -80,11 +86,12 @@ async def add_group(
                 group_id,
                 res,
             )
-            result.append(res)
         except AttributeError:
             LOGGER.debug(
                 "0x%04x EP %u : no group cluster found", src_dev.nwk, ep_id
             )
+
+    event_data['result'] = result
 
 
 async def remove_group(
@@ -98,12 +105,14 @@ async def remove_group(
     group_id = u.str2int(data)
     endpoint_id = params[p.EP_ID]
 
+    result = []
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             # Skip ZDO or endpoints that are not selected
             continue
         try:
             res = await ep.groups.remove(group_id)
+            result.append(res)
             LOGGER.debug(
                 "0x%04x EP %u: Removing group 0x%04x: %s",
                 src_dev.nwk,
@@ -116,6 +125,8 @@ async def remove_group(
                 "0x%04x EP %u: no group cluster found", src_dev.nwk, ep_id
             )
 
+    event_data['result'] = result
+
 
 async def remove_all_groups(
     app, listener, ieee, cmd, data, service, params, event_data
@@ -126,17 +137,21 @@ async def remove_all_groups(
 
     src_dev = app.get_device(ieee=ieee)
     endpoint_id = params[p.EP_ID]
+    result = []
 
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             continue
         try:
             res = await ep.groups.remove_all()
+            result.append(res)
             LOGGER.debug("0x%04x: Removing all groups: %s", src_dev.nwk, res)
         except AttributeError:
             LOGGER.debug(
                 "0x%04x: no group cluster on endpoint #%d", src_dev.nwk, ep_id
             )
+
+    event_data['result'] = result
 
 
 async def add_to_group(
@@ -210,11 +225,16 @@ async def get_zll_groups(
         for epid, ep in dev.endpoints.items()
         if epid and LightLink.cluster_id in ep.in_clusters
     ]
-    zll_cluster = next(iter(clusters))
+    zll_cluster = None
+    try:
+        zll_cluster = next(iter(clusters))
+    except Exception:
+        LOGGER.warning("No cluster in clusters")
+
     if not zll_cluster:
-        LOGGER.warning(
-            "Couldn't find ZLL Commissioning cluster on %s", dev.ieee
-        )
+        msg = f"Couldn't find ZLL Commissioning cluster on {dev.ieee}" 
+        event_data['warning'] = msg
+        LOGGER.warning(msg)
         return
 
     res = await zll_cluster.get_group_identifiers(0)
