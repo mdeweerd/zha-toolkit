@@ -1,0 +1,2 @@
+# For tests
+pytest-homeassistant-custom-component>=0.4.8
