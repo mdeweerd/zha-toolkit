@@ -75,7 +75,7 @@ execute:
       selector:
         text:
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -228,6 +228,118 @@ execute:
       example: SecretAttributeName
       selector:
         text:
+add_group:
+  description: Add group to endpoint groups list of device.  May be equivalent to `add_to_group`
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: endpoint to get information for (all endpoints when not set)
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    command_data:
+      description: Group id to add
+      example: 0x0002
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFF
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+add_to_group:
+  description: Add device to group
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: endpoint to remove group from (or all EP if not set)
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    command_data:
+      description: Group id to remove
+      example: 0x0002
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFF
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
 attr_read:
   description: Read Attribute (ZHA-Toolkit)
   fields:
@@ -241,7 +353,7 @@ attr_read:
         entity:
           integration: zha
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -345,7 +457,7 @@ attr_write:
         entity:
           integration: zha
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -716,7 +828,7 @@ conf_report:
           max: 65535
           mode: box
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -795,7 +907,7 @@ conf_report_read:
           max: 0xFFFF
           mode: box
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -866,6 +978,93 @@ ezsp_backup:
         boolean:
     expect_reply:
       description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
+get_groups:
+  description: Get groups set on the endpoints of the device
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: endpoint to get information for (all endpoints when not set)
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+get_zll_groups:
+  description: Get groups for zll_cluster (if present)
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 handle_join:
@@ -942,6 +1141,165 @@ register_services:
   description: >-
     Reregister zha-toolkit services\nUsefull during development when they
     are updated in __init__.py
+remove_all_groups:
+  description: Remove all groups from (selected) endpoints on device
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: endpoint to remove group from (all endpoints when not set)
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+remove_from_group:
+  description: Remove device endpoints from group
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: endpoint to remove group from (or all EP if not set)
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    command_data:
+      description: Group id to remove
+      example: 0x0002
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFF
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+remove_group:
+  description: Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: endpoint to remove group from (or all EP if not set)
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    command_data:
+      description: Group id to remove
+      example: 0x0002
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFF
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
 scan_device:
   description: Scan device (result written to file in /config/scans)
   fields:
@@ -1001,7 +1359,7 @@ zcl_cmd:
         entity:
           integration: zha
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
