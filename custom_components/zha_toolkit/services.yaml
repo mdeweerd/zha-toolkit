@@ -75,7 +75,7 @@ execute:
       selector:
         text:
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -353,7 +353,7 @@ attr_read:
         entity:
           integration: zha
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -457,7 +457,7 @@ attr_write:
         entity:
           integration: zha
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -828,7 +828,7 @@ conf_report:
           max: 65535
           mode: box
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -907,7 +907,7 @@ conf_report_read:
           max: 0xFFFF
           mode: box
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
@@ -1359,7 +1359,7 @@ zcl_cmd:
         entity:
           integration: zha
     manf:
-      description: Manufacturer id
+      description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
           min: 1
