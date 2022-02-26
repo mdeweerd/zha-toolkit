@@ -21,16 +21,15 @@ async def get_groups(
     groups: dict[int, dict[str, Any]] = {}
     endpoint_id = params[p.EP_ID]
 
-    event_data["result"]=[]
+    event_data["result"] = []
     for ep_id, ep in src_dev.endpoints.items():
         if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             continue
         try:
             ep_info: dict[str, Any] = {}
             res = await ep.groups.read_attributes(
-                ["name_support"]  #, tries=params[p.TRIES]
+                ["name_support"]  # , tries=params[p.TRIES]
             )
-                #ep_info["name_support"] = int(name_support["name_support"])  # int(name_support)
             event_data["result"].append(res)
 
             name_support = res[0]["name_support"]
@@ -43,8 +42,8 @@ async def get_groups(
             )
 
             all_groups = await ep.groups.get_membership(
-                [] #, tries=params[p.TRIES]
-            )
+                []
+            )  # , tries=params[p.TRIES]
             LOGGER.debug(
                 "Groups on 0x%04X EP %u : %s", src_dev.nwk, ep_id, all_groups
             )
@@ -76,7 +75,7 @@ async def add_group(
             continue
         try:
             res = await ep.groups.add(
-                group_id, f"group {group_id}" #, tries=params[p.TRIES]
+                group_id, f"group {group_id}"  # , tries=params[p.TRIES]
             )
             result.append(res)
             LOGGER.debug(
@@ -91,7 +90,7 @@ async def add_group(
                 "0x%04x EP %u : no group cluster found", src_dev.nwk, ep_id
             )
 
-    event_data['result'] = result
+    event_data["result"] = result
 
 
 async def remove_group(
@@ -125,7 +124,7 @@ async def remove_group(
                 "0x%04x EP %u: no group cluster found", src_dev.nwk, ep_id
             )
 
-    event_data['result'] = result
+    event_data["result"] = result
 
 
 async def remove_all_groups(
@@ -151,7 +150,7 @@ async def remove_all_groups(
                 "0x%04x: no group cluster on endpoint #%d", src_dev.nwk, ep_id
             )
 
-    event_data['result'] = result
+    event_data["result"] = result
 
 
 async def add_to_group(
@@ -232,8 +231,8 @@ async def get_zll_groups(
         LOGGER.warning("No cluster in clusters")
 
     if not zll_cluster:
-        msg = f"Couldn't find ZLL Commissioning cluster on {dev.ieee}" 
-        event_data['warning'] = msg
+        msg = f"Couldn't find ZLL Commissioning cluster on {dev.ieee}"
+        event_data["warning"] = msg
         LOGGER.warning(msg)
         return
 
