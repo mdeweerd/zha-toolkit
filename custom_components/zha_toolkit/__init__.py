@@ -350,7 +350,18 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZCL_CMD: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.CMD): cv.string,
+            vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+            vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+            vol.Optional(P.ARGS): vol.Any(
+                int, list, cv.string
+            ),  # Arguments to command
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_FLOOD_PARENT_ANNCE: vol.Schema(
