@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 from . import utils as u
+from .params import INTERNAL_PARAMS as p
 
 LOGGER = logging.getLogger(__name__)
 
@@ -8,73 +12,109 @@ LOGGER = logging.getLogger(__name__)
 async def get_groups(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    LOGGER.debug("running 'get_groups' command: %s", service)
     if ieee is None:
         LOGGER.error("missing ieee")
         return
 
     src_dev = app.get_device(ieee=ieee)
 
+    groups: dict[int, dict[str, Any]] = {}
+    endpoint_id = params[p.EP_ID]
+
     for ep_id, ep in src_dev.endpoints.items():
-        if ep_id == 0:
+        if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             continue
         try:
-            name_support = await ep.groups.read_attributes(["name_support"])
+            ep_info: dict[str, Any] = {}
+            name_support = await ep.groups.read_attributes(
+                ["name_support"], tries=params[p.TRIES]
+            )
+            ep_info["name_support"] = int(name_support)
             LOGGER.debug(
-                "Group on 0x%04x name support: %s", src_dev.nwk, name_support
+                "Group on 0x%04X EP %u name support: %s",
+                src_dev.nwk,
+                ep_id,
+                name_support,
             )
 
-            all_groups = await ep.groups.get_membership([])
-            LOGGER.debug("Groups on 0x%04x : %s", src_dev.nwk, all_groups)
+            all_groups = await ep.groups.get_membership(
+                [], tries=params[p.TRIES]
+            )
+            LOGGER.debug(
+                "Groups on 0x%04X EP %u : %s", src_dev.nwk, ep_id, all_groups
+            )
+            ep_info["groups"] = all_groups
+            groups[ep_id] = ep_info
         except AttributeError:
-            LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
+            LOGGER.debug(
+                "0x%04X/EP %u: no group cluster found", src_dev.nwk, ep_id
+            )
+
+    event_data["groups"] = groups
 
 
 async def add_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    LOGGER.debug("running 'add group' command: %s", service)
     if ieee is None or not data:
-        return
+        raise ValueError("ieee and command_data required")
 
     src_dev = app.get_device(ieee=ieee)
 
     group_id = u.str2int(data)
+    endpoint_id = params[p.EP_ID]
 
+    result = []
     for ep_id, ep in src_dev.endpoints.items():
-        if ep_id == 0:
+        if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
+            # Skip ZDO or endpoints that are not selected
             continue
         try:
-            res = await ep.groups.add(group_id, f"group {group_id}")
-            LOGGER.debug(
-                "0x%04x: Setting group 0x%04x: %s", src_dev.nwk, group_id, res
+            res = await ep.groups.add(
+                group_id, f"group {group_id}", tries=params[p.TRIES]
             )
+            LOGGER.debug(
+                "0x%04x EP %u: Setting group 0x%04x: %s",
+                src_dev.nwk,
+                ep_id,
+                group_id,
+                res,
+            )
+            result.append(res)
         except AttributeError:
-            LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
+            LOGGER.debug(
+                "0x%04x EP %u : no group cluster found", src_dev.nwk, ep_id
+            )
 
 
 async def remove_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    LOGGER.debug("running 'remove group' command: %s", service)
     if ieee is None or not data:
-        LOGGER.error("missing ieee")
-        return
+        raise ValueError("ieee and command_data required")
 
     src_dev = app.get_device(ieee=ieee)
 
     group_id = u.str2int(data)
+    endpoint_id = params[p.EP_ID]
 
     for ep_id, ep in src_dev.endpoints.items():
-        if ep_id == 0:
+        if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
+            # Skip ZDO or endpoints that are not selected
             continue
         try:
             res = await ep.groups.remove(group_id)
             LOGGER.debug(
-                "0x%04x: Removing group 0x%04x: %s", src_dev.nwk, group_id, res
+                "0x%04x EP %u: Removing group 0x%04x: %s",
+                src_dev.nwk,
+                ep_id,
+                group_id,
+                res,
             )
         except AttributeError:
-            LOGGER.debug("0x%04x: no group cluster found", src_dev.nwk)
+            LOGGER.debug(
+                "0x%04x EP %u: no group cluster found", src_dev.nwk, ep_id
+            )
 
 
 async def remove_all_groups(
@@ -85,9 +125,10 @@ async def remove_all_groups(
         return
 
     src_dev = app.get_device(ieee=ieee)
+    endpoint_id = params[p.EP_ID]
 
     for ep_id, ep in src_dev.endpoints.items():
-        if ep_id == 0:
+        if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             continue
         try:
             res = await ep.groups.remove_all()
@@ -108,24 +149,49 @@ async def add_to_group(
     dev = app.get_device(ieee=ieee)
 
     grp_id = u.str2int(data)
-    LOGGER.debug("Subscribing EZSP to %s group: %s", grp_id, service)
-    res = await dev.add_to_group(grp_id, f"Group {data}")
-    LOGGER.info("Subscribed NCP to %s group: %s", grp_id, res)
+    endpoint_id = params[p.EP_ID]
+
+    result = []
+    for ep_id, ep in dev.endpoints.items():
+        if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
+            continue
+        LOGGER.debug(
+            "Subscribing %s EP %u to %s group: %s", ieee, ep_id, grp_id
+        )
+        res = await ep.add_to_group(grp_id, f"Group {data}")
+        result.append(res)
+        LOGGER.info(
+            "Subscribed EP %u to %s group: %s", ieee, ep_id, grp_id, res
+        )
+
+    event_data["result"] = result
 
 
 async def remove_from_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None or ieee is None:
-        LOGGER.error("invalid arguments for unsubscribe_group()")
-        return
+        raise ValueError("ieee and command_data required")
 
     dev = app.get_device(ieee)
 
     grp_id = u.str2int(data)
-    LOGGER.debug("Unsubscribing EZSP to %s group: %s", grp_id, service)
-    res = await dev.remove_from_group(grp_id)
-    LOGGER.info("Unsubscribed NCP to %s group: %s", grp_id, res)
+    endpoint_id = params[p.EP_ID]
+
+    result = []
+    for ep_id, ep in dev.endpoints.items():
+        if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
+            continue
+        LOGGER.debug(
+            "Unsubscribing %s EP %u from group: %s", ieee, ep_id, grp_id
+        )
+        res = await ep.remove_from_group(grp_id)
+        result.append(res)
+        LOGGER.info(
+            "Unsubscribed %s EP %u from group: %s", ieee, ep_id, grp_id, res
+        )
+
+    event_data["result"] = result
 
 
 async def get_zll_groups(
@@ -136,7 +202,7 @@ async def get_zll_groups(
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-    LOGGER.debug("Getting ZLL groups: %s", service)
+
     dev = app.get_device(ieee=ieee)
 
     clusters = [
@@ -152,7 +218,7 @@ async def get_zll_groups(
         return
 
     res = await zll_cluster.get_group_identifiers(0)
-    groups = res[2]
-    LOGGER.debug(
-        "Get group identifiers response: %s", [g.group_id for g in groups]
-    )
+    groups = [g.group_id for g in res[2]]
+    LOGGER.debug("Get group identifiers response: %s", groups)
+
+    event_data["groups"] = groups
