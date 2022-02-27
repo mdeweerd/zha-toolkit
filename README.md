@@ -32,7 +32,7 @@
   - [`attr_write`: Write(/Read) an attribute value](#attr_write-writeread-an-attribute-value)
   - [Binding related](#binding-related)
     - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
-  - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
+    - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
     - [`binds_remove_all`: Remove all device to device bindings](#binds_remove_all-remove-all-device-to-device-bindings)
   - [`conf_report`: Configure reporting](#conf_report-configure-reporting)
   - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
@@ -556,7 +556,7 @@ data:
 
 ```
 
-## `binds_get`: Get binding table from the device
+### `binds_get`: Get binding table from the device
 
 Get the bindings from the device.\
 Listen to the event, or enable debug and
