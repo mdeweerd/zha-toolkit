@@ -229,7 +229,8 @@ execute:
       selector:
         text:
 add_group:
-  description: Add group to endpoint groups list of device.  May be equivalent to `add_to_group`
+  description: Add group to endpoint groups list of device.  May be equivalent to
+    `add_to_group`
   fields:
     ieee:
       description: >-
@@ -1125,6 +1126,105 @@ ieee_ping:
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
+rejoin:
+  description: >-
+    Send a rejoin request to the device (=leave with rejoin)
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to request rejoin
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    command_data:
+      description: >-
+        Node used to accept the rejoin (Entity name,\ndevice name, or\nIEEE address
+        of the node)
+      example: 00:0d:6f:00:05:7d:2d:34
+      selector:
+        entity:
+          integration: zha
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
+leave:
+  description: >-
+    Send a Leave request to the device
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to leave
+        the network
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
 misc_reinitialize:
   description: Reinitialize device
   fields:
@@ -1245,7 +1345,8 @@ remove_from_group:
       selector:
         boolean:
 remove_group:
-  description: Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`
+  description: Remove group from endpoint groups list of device.  May be equivalent
+    to `remove_from_group`
   fields:
     ieee:
       description: >-
@@ -1389,8 +1490,9 @@ zcl_cmd:
           max: 0xFF
           mode: box
     args:
-      description: Arguments for command when needed (as per zigpy's definition corresponding to Zigbee Library Cluster (ZCL) specification)
-      example: [1, "abcd", 3]
+      description: Arguments for command when needed (as per zigpy's definition corresponding
+        to Zigbee Library Cluster (ZCL) specification)
+      example: [1, abcd, 3]
       selector:
         text:
     tries:
@@ -1400,6 +1502,60 @@ zcl_cmd:
           min: 0
           max: 255
           mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
+zdo_join_with_code:
+  description: >-
+    Allow a device to join with a code (bellows radio type only)
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to request rejoin
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    command_data:
+      description: >-
+        Node used to accept the rejoin (Entity name,\ndevice name, or\nIEEE address
+        of the node)
+      example: 00:0d:6f:00:05:7d:2d:34
+      selector:
+        entity:
+          integration: zha
+    code:
+      description: >-
+        The code the device needs to present
+        of the node)
+      example: '01234567'
+      required: true
+      selector:
+        text:
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
