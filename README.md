@@ -21,6 +21,12 @@
 - [Setup](#setup)
 - [Automations](#automations)
 - [Using `zha_toolkit`](#using-zha_toolkit)
+- [General recommendations](#general-recommendations)
+- [Common options](#common-options)
+  - [`ieee`: A reference to the device](#ieee-a-reference-to-the-device)
+  - [Events](#events)
+  - [Raise an exception on failure](#raise-an-exception-on-failure)
+  - [Tries](#tries)
 - [Examples](#examples)
   - [`attr_read`: Read an attribute value](#attr_read-read-an-attribute-value)
   - [`attr_write`: Write(/Read) an attribute value](#attr_write-writeread-an-attribute-value)
@@ -37,6 +43,14 @@
     - [`zcl_cmd` Example: "Store Scene"](#zcl_cmd-example-store-scene)
     - [`zcl_cmd` Example: "Recall Scene"](#zcl_cmd-example-recall-scene)
     - [`zcl_cmd` Example: "Add Scene"](#zcl_cmd-example-add-scene)
+  - [Group related services](#group-related-services)
+    - [`add_group`](#add_group)
+    - [`get_groups`](#get_groups)
+    - [`remove_group`](#remove_group)
+    - [`remove_all_groups`](#remove_all_groups)
+    - [`add_to_group`](#add_to_group)
+    - [`remove_from_group`](#remove_from_group)
+    - [`get_zll_groups`](#get_zll_groups)
   - [`ezsp_backup`: Backup ezsp/bellows network data](#ezsp_backup-backup-ezspbellows-network-data)
   - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
   - [`znp_nvram_backup`: Backup ZNP NVRAM data](#znp_nvram_backup-backup-znp-nvram-data)
@@ -158,6 +172,111 @@ very specific trials from the original authors.\
 Feel free to propose
 documentation updates.
 
+# General recommendations
+
+- Set the log level to debug ([See Setup](#setup))
+- Use [`scan_device`](#scan_device-scan-a-deviceread-all-attribute-values)
+  to find out more about your device.
+- Use events to see what happens.
+- Use `home_assistant.log` to see what happened.
+- Check this README.
+- Check the
+  [Github issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
+- Check the
+  [Home Assistant Forum](https://community.home-assistant.io/search?q=zha_toolkit)
+- Check the [examples directory](examples)
+- Check
+  [zhaquirks](https://github.com/zigpy/zha-device-handlers/tree/dev/zhaquirks)
+  for hints about available attributes (available ones, meaning of their
+  values)
+
+# Common options
+
+## `ieee`: A reference to the device
+
+In almost all commands you need to provide a reference to the device that
+you want to control.
+
+```yaml
+  # Valid possibilities for the `ieee` address
+  # The full IEEE address:
+  ieee: 00:12:4b:00:24:42:d1:dc
+  # The short network address
+  ieee: 0x2F3E
+  # entity name (one of them)
+  ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
+```
+
+The `ieee` address can be the IEEE address, the short network address
+(0x1203 for instance), or the entity name (example:
+`light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off`). Be
+aware that the network address can change over time but it is shorter to
+enter if you know it.
+
+## Events
+
+All commands support setting event names. When set, These events are
+generated at the end of the command execution.
+
+```yaml
+  # You can set the next events to use as a trigger.
+  # The event data has the result of the command
+  event_success: my_read_success_trigger_event
+  event_fail: my_read_fail_trigger_event
+  event_done: my_read_done_trigger_event
+```
+
+It's recommended to use the `event_done` event during interactive use. You
+can use `Developer Tools > Events > Listen to events` to see the result of
+the service call. You need to use `Listen to events` in a separate
+navigator tab, `START LISTENING` and leave it open to see the data of the
+events.
+
+By listening for the event, you can see the list of groups that is found
+when using `zha_toolkit.get_groups` for instance.\
+Otherwise you need to
+set the debug level and watch the `home-assistant.log`. That can be useful
+if you do a lot of service calls in sequence and you want to look back what
+happened.
+
+You can also simply always enable debugging for `zha_toolkit` if you use it
+sporadically - it is quite verbose and tends to fill up the logs if you use
+it often.
+
+## Raise an exception on failure
+
+```yaml
+    fail_exception: true
+```
+
+By default the result of a zigbee transaction is "ignored" for the end
+result of the service call: it will appear as if it succeeds (unless you
+have the parameters wrong).
+
+So if you want the `Developer Tools > Services > CALL SERVICE` button to
+turn red in case the zigbee transaction result is not `SUCCESS`, then add
+`fail_exception: true` to the options
+
+## Tries
+
+```yaml
+    tries: true
+```
+
+Tries indicates how many times a zigbee transaction is repeated until it
+succeeds. An individual zigbee transaction may fail because of radio
+interference or because the device is sleeping.
+
+So by setting `tries: 100` you'll request that zigbee requests are repeated
+up too 100 times.
+
+This is not applied everywhere, but it's applied for attribute reading,
+writing and report configuration. It's handy when you want to change the
+report configuration of your battery powered thermometer for instance.
+
+You may still need to wake them up just after sending the command so that
+they can receive it.
+
 # Examples
 
 Services are easy to called once or tested through Developer Tools >
@@ -169,30 +288,9 @@ mode to add the other parameters.
 
 Empty UI example: ![image](images/service-config-ui.png)
 
-The 'ieee' address can be the IEEE address, the short network address
-(0x1203 for instance), or the entity name (example:
-"light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off"). Be
-aware that the network address can change over time but it is shorter to
-enter if you know it.
-
-All commands support setting event names. When set, These events are
-generated at the end of the command execution.
-
-For sleepy devices (on a battery) the "tries" option can be useful to try
-many times until the command succeeds. Or, you may need to wake them up
-just after sending the command so that they can receive it.
-
-```yaml
-  # You can set the next events to use as a trigger.
-  # The event data has the result of the command
-  event_success: my_read_success_trigger_event
-  event_fail: my_read_fail_trigger_event
-  event_done: my_read_done_trigger_event
-```
-
-An example of event data is shown below. The data>errors field can be
-useful to understand what went wrong. The "ieee_org" fields take the
-original value of the "ieee" parameter, and the "ieee" field is the actual
+An example of event data is shown below. The `data>errors` field can be
+useful to understand what went wrong. The `ieee_org` fields take the
+original value of the "ieee" parameter, and the `ieee` field is the actual
 IEEE address found.
 
 ```json
@@ -267,9 +365,8 @@ IEEE address found.
 Read a zigbee attribute value, optionnally write to a state.
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.attr_read
 data:
-  command: attr_read
   ieee: sensor.zigbee_sensor
   # The endpoint is optional - when missing tries to find endpoint matching the cluster
   # endpoint: 1
@@ -753,6 +850,111 @@ ZigBee Cluster Library Frame
         Extension Set: 06000101
 ```
 
+## Group related services
+
+### `add_group`
+
+Add a group on the endpoint (or all endpoints).
+
+```yaml
+service: zha_toolkit.add_group
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Group Id
+  command_data: 0x0021
+  # Optional endpoint
+  endpoint: 1
+  event_done: zha_done
+```
+
+### `get_groups`
+
+Get the groups defined on the endpoint (or all endpoints)
+
+```yaml
+service: zha_toolkit.get_groups
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Optional endpoint
+  endpoint: 1
+  # Optional event
+  event_done: zha_done
+```
+
+### `remove_group`
+
+Remove a group defined on the endpoint (or all endpoints)
+
+```yaml
+service: zha_toolkit.remove_group
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Group Id
+  command_data: 0x0021
+  # Optional endpoint
+  endpoint: 1
+  # Optional event
+  event_done: zha_done
+```
+
+### `remove_all_groups`
+
+```yaml
+service: zha_toolkit.remove_all_groups
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Optional endpoint
+  endpoint: 1
+  # Optional event
+  event_done: zha_done
+```
+
+### `add_to_group`
+
+Similar to `add_group` but uses another method internally.
+
+```yaml
+service: zha_toolkit.add_to_group
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Group Id
+  command_data: 0x0021
+  # Optional endpoint
+  endpoint: 1
+  # Optional event
+  event_done: zha_done
+```
+
+### `remove_from_group`
+
+Similar to `remove_group` but uses another method internally.
+
+```yaml
+service: zha_toolkit.remove_from_group
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Group Id
+  command_data: 0x0021
+  # Optional endpoint
+  endpoint: 1
+  # Optional event
+  event_done: zha_done
+```
+
+### `get_zll_groups`
+
+Get groups on Zigbee Light Link cluster (uses `get group identifiers`)
+
+```yaml
+service: zha_toolkit.get_zll_groups
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # Optional endpoint
+  endpoint: 1
+  # Optional event
+  event_done: zha_done
+```
+
 ## `ezsp_backup`: Backup ezsp/bellows network data
 
 :warning: Under test
@@ -761,7 +963,7 @@ Used to transfer to another coordinator later, backup or simply get network
 key and other info.
 
 The output is written to
-'{custom_component_dir}/local/nwk_backup{command_data}.json\`.
+`{custom_component_dir}/local/nwk_backup{command_data}.json`.
 
 You can use the blueprint to setup daily backup:
 [![Open your Home Assistant instance and show the blueprint import dialog with the Daily backup blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup.yaml).
