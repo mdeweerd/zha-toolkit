@@ -18,7 +18,9 @@ LOGGER = logging.getLogger(__name__)
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
 )
 async def read_attr(cluster, attrs, manufacturer=None):
-    return await cluster.read_attributes(attrs, allow_cache=False, manufacturer=manufacturer)
+    return await cluster.read_attributes(
+        attrs, allow_cache=False, manufacturer=manufacturer
+    )
 
 
 @retryable(
@@ -30,7 +32,7 @@ async def wrapper(cmd, *args, **kwargs):
 
 async def scan_results(device, endpoints=None, manufacturer=None):
     """Construct scan results from information available in device"""
-    result: dict[str, str | list] = {
+    result: dict[str, str | list | None] = {
         "ieee": str(device.ieee),
         "nwk": f"0x{device.nwk:04x}",
     }
@@ -75,7 +77,9 @@ async def scan_results(device, endpoints=None, manufacturer=None):
             if epid != 242:
                 endpoint.update(await scan_endpoint(ep, manufacturer))
                 if manufacturer is None and ep.manufacturer_id is not None:
-                    endpoint.update(await scan_endpoint(ep, ep.manufacturer_id))
+                    endpoint.update(
+                        await scan_endpoint(ep, ep.manufacturer_id)
+                    )
         ep_result.append(endpoint)
 
     result["endpoints"] = ep_result
@@ -92,7 +96,9 @@ async def scan_endpoint(ep, manufacturer=None):
             )
         )
         key = f"0x{cluster.cluster_id:04x}"
-        clusters[key] = await scan_cluster(cluster, is_server=True, manufacturer=manufacturer)
+        clusters[key] = await scan_cluster(
+            cluster, is_server=True, manufacturer=manufacturer
+        )
     result["in_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
 
     clusters = {}
@@ -103,7 +109,9 @@ async def scan_endpoint(ep, manufacturer=None):
             )
         )
         key = f"0x{cluster.cluster_id:04x}"
-        clusters[key] = await scan_cluster(cluster, is_server=True, manufacturer=manufacturer)
+        clusters[key] = await scan_cluster(
+            cluster, is_server=True, manufacturer=manufacturer
+        )
     result["out_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
     return result
 
@@ -115,13 +123,15 @@ async def scan_cluster(cluster, is_server=True, manufacturer=None):
     else:
         cmds_rec = "commands_generated"
         cmds_gen = "commands_received"
-    attributes=await discover_attributes_extended(cluster, None)
+    attributes = await discover_attributes_extended(cluster, None)
     LOGGER.debug("scan_cluster attributes (none): %s", attributes)
-    if(manufacturer is not None and manufacturer != b"" and manufacturer != 0):
+    if manufacturer is not None and manufacturer != b"" and manufacturer != 0:
         LOGGER.debug("scan_cluster attributes (none): %s", attributes)
-        attributes.update(await discover_attributes_extended(cluster, manufacturer))
-    
-    #LOGGER.debug("scan_cluster attributes: %s", attributes)
+        attributes.update(
+            await discover_attributes_extended(cluster, manufacturer)
+        )
+
+    # LOGGER.debug("scan_cluster attributes: %s", attributes)
 
     return {
         "cluster_id": f"0x{cluster.cluster_id:04x}",
@@ -210,14 +220,19 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 "access": access,
                 "access_acl": access_acl,
             }
-            if(manufacturer is not None and manufacturer != b"" and manufacturer != 0):
+            if (
+                manufacturer is not None
+                and manufacturer != b""
+                and manufacturer != 0
+            ):
                 result[attr_id]["manf_id"] = manufacturer
             attr_id += 1
         await asyncio.sleep(0.2)
 
     LOGGER.debug("Reading attrs: %s", to_read)
     chunk, to_read = to_read[:4], to_read[4:]
-    # TODO: Force manufacturer b"" when manufacturer is None, depending on Zigpy version
+    # TODO: Force manufacturer b"" when manufacturer is None,
+    #       depending on Zigpy version
     if manufacturer is None:
         manf = b""
     else:
