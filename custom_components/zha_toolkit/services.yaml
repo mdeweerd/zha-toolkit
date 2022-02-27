@@ -1551,7 +1551,6 @@ zdo_join_with_code:
     code:
       description: >-
         The code the device needs to present
-        of the node)
       example: '01234567'
       required: true
       selector:
