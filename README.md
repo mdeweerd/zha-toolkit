@@ -27,14 +27,17 @@
   - [Events](#events)
   - [Raise an exception on failure](#raise-an-exception-on-failure)
   - [Tries](#tries)
-- [Examples](#examples)
+- [Service commands](#service-commands)
   - [`attr_read`: Read an attribute value](#attr_read-read-an-attribute-value)
   - [`attr_write`: Write(/Read) an attribute value](#attr_write-writeread-an-attribute-value)
+  - [Binding related](#binding-related)
+    - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
+  - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
+    - [`binds_remove_all`: Remove all device to device bindings](#binds_remove_all-remove-all-device-to-device-bindings)
   - [`conf_report`: Configure reporting](#conf_report-configure-reporting)
+  - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
   - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
   - [`zdo_scan_now`: Do a topology scan](#zdo_scan_now-do-a-topology-scan)
-  - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
-  - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
   - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
   - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
   - [`zcl_cmd`: Send a Cluster command](#zcl_cmd-send-a-cluster-command)
@@ -277,7 +280,7 @@ report configuration of your battery powered thermometer for instance.
 You may still need to wake them up just after sending the command so that
 they can receive it.
 
-# Examples
+# Service commands
 
 Services are easy to called once or tested through Developer Tools >
 Services . And you can also use them in scripts, automations, etc. .
@@ -359,6 +362,32 @@ IEEE address found.
     }
 }
 ```
+
+Services that are not documented below yet:
+
+- `all_routes_and_neighbours`
+- `bind_group`
+- `conf_report_read`
+- `ezsp_add_key`
+- `ezsp_clear_keys`
+- `ezsp_get_config_value`
+- `ezsp_get_ieee_by_nwk`
+- `ezsp_get_keys`
+- `ezsp_get_policy`
+- `ezsp_get_token`
+- `ezsp_get_value`
+- `ezsp_set_channel`
+- `ezsp_start_mfg`
+- `get_routes_and_neighbours`
+- `ieee_ping`
+- `leave`
+- `ota_notify`
+- `rejoin`
+- `unbind_coordinator`
+- `unbind_group`
+- `zdo_flood_parent_annce`
+- `zdo_join_with_code`
+- `zdo_update_nwk_id`
 
 ## `attr_read`: Read an attribute value
 
@@ -503,6 +532,61 @@ data:
   fail_exception: true
 ```
 
+## Binding related
+
+The default list of binding clusters is currently as follows:
+
+- in clusters:
+  - 0x0006 - OnOff
+  - 0x0008 - Level
+  - 0x0300 - Color Control
+- out clusters:
+  - 0x0402 - Temperature
+
+### `bind_ieee`: Bind matching cluster to another device
+
+Bind all available default and matching clusters from `ieee` to
+`command_data` on all endpoints.
+
+```yaml
+service: zha_toolkit.bind_ieee
+data:
+  ieee: entity.my_thermostat_entity
+  command_data: 00:12:4b:00:22:08:ed:1a
+
+```
+
+## `binds_get`: Get binding table from the device
+
+Get the bindings from the device.\
+Listen to the event, or enable debug and
+check the log to get the information.\
+Current limitation: only one request
+is made, if the binding table is long, the reply will be partial only. The
+reply is provided as given by zigpy.
+
+```yaml
+service: zha_toolkit.binds_get
+data:
+  ieee: 00:15:8d:00:04:7b:83:69
+  event_done: event_binds_get_done
+```
+
+### `binds_remove_all`: Remove all device to device bindings
+
+Remove all bindings from the device.\
+This internally fetches all the
+existing bindings (`binds_get` service) and requests the device to remove
+them.
+
+```yaml
+service: zha_toolkit.binds_remove_all
+data:
+  ieee: entity.my_thermostat_entity
+  # Optional
+  tries: 100
+```
+
 ## `conf_report`: Configure reporting
 
 Set the minimum and maximum delay between two reports and set the level of
@@ -597,6 +681,31 @@ Example of data available in the event report.
 }
 ```
 
+## `conf_report_read`: Read configured reporting
+
+Read the report configuration of a cluster.
+
+This is currently not fully functional due to a limitation in zigpy which
+is resolved in a version not released yet in Home Assistant.\
+The data read
+back is not decoded properly.\
+The read request is sent and replied to so
+you can sniff it.
+
+```yaml
+service: zha_toolkit.read_report_conf
+data:
+  command: conf_report
+  ieee: 00:12:4b:00:23:b3:da:a5
+  # Optional endpoint, when missing will match cluster
+  # endpoint: 1
+  cluster: 0x402
+  attribute: 0x0000
+  # Optional manufacturer
+  #manf: 0x1204
+  event_done: my_conf_read_done_trigger_event
+```
+
 ## `scan_device`: Scan a device/Read all attribute values
 
 This operation will discover the device attributes and read their values.
@@ -637,35 +746,6 @@ Runs `topology.scan()`.
 service: zha_toolkit.execute
 data:
   command: zdo_scan_now
-```
-
-## `bind_ieee`: Bind matching cluster to another device
-
-Binds all matching clusters (within the scope of the integrated list)
-
-```yaml
-service: zha_toolkit.execute
-data:
-  ieee: 00:15:8d:00:04:7b:83:69
-  command: bind_ieee
-  command_data: 00:12:4b:00:22:08:ed:1a
-
-```
-
-## `binds_get`: Get binding table from the device
-
-Get the bindings from the device.\
-Listen to the event, or enable debug and
-check the log to get the information.\
-Current limitation: only one request
-is made, if the binding table is long, the reply will be partial only. The
-reply is provided as given by zigpy.
-
-```yaml
-service: zha_toolkit.binds_get
-data:
-  ieee: 00:15:8d:00:04:7b:83:69
-  event_done: event_binds_get_done
 ```
 
 ## `handle_join`: Handle join - rediscover device
