@@ -152,12 +152,10 @@ async def bind_ieee(
 ):
     from zigpy.zdo.types import MultiAddress
 
-    if ieee is None or not data:
-        LOGGER.error("missing ieee")
-        return
-    LOGGER.debug("running 'bind ieee' command: %s", service)
-    src_dev = app.get_device(ieee=ieee)
+    if ieee is None or data is None:
+        raise ValueError("'ieee' and 'data' required")
 
+    src_dev = app.get_device(ieee=ieee)
     dst_dev = await u.get_device(app, listener, data)
 
     zdo = src_dev.zdo
@@ -308,6 +306,7 @@ async def unbind_coordinator(
     src_dev = app.get_device(ieee=ieee)
     cluster_id = params[p.CLUSTER_ID]
 
+    event_data["results"] = []
     for ep_id, ep in src_dev.endpoints.items():
         if not ep_id:
             continue
@@ -342,6 +341,7 @@ async def unbind_coordinator(
             cluster_id,
         )
         res = await ep.out_clusters[cluster_id].unbind()
+        event_data["results"].append(res)
         LOGGER.debug(
             "0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res
         )
