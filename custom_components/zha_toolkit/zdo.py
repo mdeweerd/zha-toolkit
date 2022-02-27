@@ -14,10 +14,8 @@ LOGGER = logging.getLogger(__name__)
 
 async def leave(app, listener, ieee, cmd, data, service, params, event_data):
     if ieee is None or not data:
-        LOGGER.warning(
-            "Incorrect parameters for 'zdo.leave' command: %s", service
-        )
-        return
+        raise ValueError("Need 'ieee' and command_data'")
+
     LOGGER.debug(
         "running 'leave' command. Telling 0x%s to remove %s: %s",
         data,

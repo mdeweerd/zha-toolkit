@@ -38,8 +38,12 @@
   - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
   - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
   - [`zdo_scan_now`: Do a topology scan](#zdo_scan_now-do-a-topology-scan)
-  - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
-  - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
+  - [Join & Network presence related](#join--network-presence-related)
+    - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
+    - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
+    - [`leave`](#leave)
+    - [`rejoin`](#rejoin)
+    - [`zdo_join_with_code`](#zdo_join_with_code)
   - [`zcl_cmd`: Send a Cluster command](#zcl_cmd-send-a-cluster-command)
     - [`zcl_cmd` Example: Send `on` command to an OnOff Cluster.](#zcl_cmd-example-send-on-command-to-an-onoff-cluster)
     - [`zcl_cmd` Example: Send `off` command to an OnOff Cluster:](#zcl_cmd-example-send-off-command-to-an-onoff-cluster)
@@ -367,7 +371,6 @@ Services that are not documented below yet:
 
 - `all_routes_and_neighbours`
 - `bind_group`
-- `conf_report_read`
 - `ezsp_add_key`
 - `ezsp_clear_keys`
 - `ezsp_get_config_value`
@@ -380,13 +383,11 @@ Services that are not documented below yet:
 - `ezsp_start_mfg`
 - `get_routes_and_neighbours`
 - `ieee_ping`
-- `leave`
 - `ota_notify`
-- `rejoin`
+- `register_services`
 - `unbind_coordinator`
 - `unbind_group`
 - `zdo_flood_parent_annce`
-- `zdo_join_with_code`
 - `zdo_update_nwk_id`
 
 ## `attr_read`: Read an attribute value
@@ -748,7 +749,9 @@ data:
   command: zdo_scan_now
 ```
 
-## `handle_join`: Handle join - rediscover device
+## Join & Network presence related
+
+### `handle_join`: Handle join - rediscover device
 
 You may want to try
 [`misc_reinitialize`](#misc_reinitialize-reinitialize-device) as
@@ -764,7 +767,7 @@ data:
   command_data: 0x604e
 ```
 
-## `misc_reinitialize`: Reinitialize device
+### `misc_reinitialize`: Reinitialize device
 
 `misc_reinitialize` is a pretty dirty (white-hat) hack to reinitialize a
 device by making zigpy think the device is not initialized, and then
@@ -781,6 +784,43 @@ service: zha_toolkit.misc_reinitialize
 data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
+```
+
+### `leave`
+
+Send Leave Request to the device.
+
+```yaml
+service: zha_toolkit.leave
+data:
+  # Reference of the device that should be reinitialized
+  ieee: 00:12:4b:00:22:08:ed:1a
+```
+
+### `rejoin`
+
+Send Rejoin Request to the device (=Leave with Rejoin).
+
+```yaml
+service: zha_toolkit.rejoin
+data:
+  # Reference of the device that should be rejoined
+  ieee: 00:12:4b:00:22:08:ed:1a
+  # Optional, device that will accept joining.
+  command_data: 00:12:4b:00:10:00:1d:1a
+```
+
+### `zdo_join_with_code`
+
+Currently for "bellow's" radio types.
+
+```yaml
+service: zha_toolkit.zdo_join_with_code
+data:
+  # Reference of the device that allows the join
+  ieee: 00:12:4b:00:22:08:ed:1a
+  # The code to be used in the join
+  code: "Joining Code"
 ```
 
 ## `zcl_cmd`: Send a Cluster command

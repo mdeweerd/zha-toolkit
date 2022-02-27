@@ -333,7 +333,12 @@ SERVICE_SCHEMAS = {
     ),
     S.REJOIN: vol.Schema(
         {
-            vol.Optional(ATTR_IEEE): cv.string,
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(ATTR_COMMAND_DATA): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),
@@ -406,7 +411,15 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_JOIN_WITH_CODE: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(ATTR_COMMAND_DATA): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(P.CODE): vol.Any(cv.string),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZDO_SCAN_NOW: vol.Schema(
