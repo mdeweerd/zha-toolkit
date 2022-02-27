@@ -367,7 +367,6 @@ Services that are not documented below yet:
 
 - `all_routes_and_neighbours`
 - `bind_group`
-- `conf_report_read`
 - `ezsp_add_key`
 - `ezsp_clear_keys`
 - `ezsp_get_config_value`
@@ -383,6 +382,7 @@ Services that are not documented below yet:
 - `leave`
 - `ota_notify`
 - `rejoin`
+- `register_services`
 - `unbind_coordinator`
 - `unbind_group`
 - `zdo_flood_parent_annce`
