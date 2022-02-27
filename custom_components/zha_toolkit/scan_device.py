@@ -17,18 +17,18 @@ LOGGER = logging.getLogger(__name__)
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
 )
-async def read_attr(cluster, attrs):
-    return await cluster.read_attributes(attrs, allow_cache=False)
+async def read_attr(cluster, attrs, manufacturer=None):
+    return await cluster.read_attributes(attrs, allow_cache=False, manufacturer=manufacturer)
 
 
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
 )
-def wrapper(cmd, *args, **kwargs):
-    return cmd(*args, **kwargs)
+async def wrapper(cmd, *args, **kwargs):
+    return await cmd(*args, **kwargs)
 
 
-async def scan_results(device, endpoints=None):
+async def scan_results(device, endpoints=None, manufacturer=None):
     """Construct scan results from information available in device"""
     result: dict[str, str | list] = {
         "ieee": str(device.ieee),
@@ -37,6 +37,9 @@ async def scan_results(device, endpoints=None):
 
     LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
 
+    # Get list of endpoints
+    #  None -> all endpoints
+    #  List or id -> Provided endpoints
     if endpoints is not None and isinstance(endpoints, int):
         endpoints = [endpoints]
 
@@ -60,57 +63,71 @@ async def scan_results(device, endpoints=None):
             ep = device.endpoints[epid]
             result["model"] = ep.model
             result["manufacturer"] = ep.manufacturer
+            if ep.manufacturer_id is not None:
+                result["manufacturer_id"] = f"0x{ep.manufacturer_id}"
+            else:
+                result["manufacturer_id"] = None
             endpoint = {
                 "id": epid,
                 "device_type": f"0x{ep.device_type:04x}",
                 "profile": f"0x{ep.profile_id:04x}",
             }
             if epid != 242:
-                endpoint.update(await scan_endpoint(ep))
+                endpoint.update(await scan_endpoint(ep, manufacturer))
+                if manufacturer is None and ep.manufacturer_id is not None:
+                    endpoint.update(await scan_endpoint(ep, ep.manufacturer_id))
         ep_result.append(endpoint)
 
     result["endpoints"] = ep_result
     return result
 
 
-async def scan_endpoint(ep):
+async def scan_endpoint(ep, manufacturer=None):
     result = {}
     clusters = {}
     for cluster in ep.in_clusters.values():
         LOGGER.debug(
-            "Scanning cluster_id 0x{:04x}/'{}' input cluster".format(
+            "Scanning input cluster 0x{:04x}/'{}' ".format(
                 cluster.cluster_id, cluster.ep_attribute
             )
         )
         key = f"0x{cluster.cluster_id:04x}"
-        clusters[key] = await scan_cluster(cluster, is_server=True)
+        clusters[key] = await scan_cluster(cluster, is_server=True, manufacturer=manufacturer)
     result["in_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
 
     clusters = {}
     for cluster in ep.out_clusters.values():
         LOGGER.debug(
-            "Scanning cluster_id 0x{:04x}/'{}' output cluster".format(
+            "Scanning output cluster 0x{:04x}/'{}'".format(
                 cluster.cluster_id, cluster.ep_attribute
             )
         )
         key = f"0x{cluster.cluster_id:04x}"
-        clusters[key] = await scan_cluster(cluster, is_server=True)
+        clusters[key] = await scan_cluster(cluster, is_server=True, manufacturer=manufacturer)
     result["out_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
     return result
 
 
-async def scan_cluster(cluster, is_server=True):
+async def scan_cluster(cluster, is_server=True, manufacturer=None):
     if is_server:
         cmds_gen = "commands_generated"
         cmds_rec = "commands_received"
     else:
         cmds_rec = "commands_generated"
         cmds_gen = "commands_received"
+    attributes=await discover_attributes_extended(cluster, None)
+    LOGGER.debug("scan_cluster attributes (none): %s", attributes)
+    if(manufacturer is not None and manufacturer != b"" and manufacturer != 0):
+        LOGGER.debug("scan_cluster attributes (none): %s", attributes)
+        attributes.update(await discover_attributes_extended(cluster, manufacturer))
+    
+    #LOGGER.debug("scan_cluster attributes: %s", attributes)
+
     return {
         "cluster_id": f"0x{cluster.cluster_id:04x}",
         "title": cluster.name,
         "name": cluster.ep_attribute,
-        "attributes": await discover_attributes_extended(cluster),
+        "attributes": attributes,
         cmds_rec: await discover_commands_received(cluster, is_server),
         cmds_gen: await discover_commands_generated(cluster, is_server),
     }
@@ -133,7 +150,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 16,  # Number of attributes to discover in this request
                 manufacturer=manufacturer,
             )
-            await asyncio.sleep(0.4)
+            await asyncio.sleep(0.2)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 (
@@ -193,15 +210,22 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 "access": access,
                 "access_acl": access_acl,
             }
+            if(manufacturer is not None and manufacturer != b"" and manufacturer != 0):
+                result[attr_id]["manf_id"] = manufacturer
             attr_id += 1
         await asyncio.sleep(0.2)
 
     LOGGER.debug("Reading attrs: %s", to_read)
     chunk, to_read = to_read[:4], to_read[4:]
+    # TODO: Force manufacturer b"" when manufacturer is None, depending on Zigpy version
+    if manufacturer is None:
+        manf = b""
+    else:
+        manf = manufacturer
     while chunk:
         try:
             chunk = sorted(chunk)
-            success, failed = await read_attr(cluster, chunk)
+            success, failed = await read_attr(cluster, chunk, manf)
             LOGGER.debug(
                 "Reading attr success: %s, failed %s", success, failed
             )
@@ -220,7 +244,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 ex,
             )
         chunk, to_read = to_read[:4], to_read[4:]
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(0.2)
 
     return {f"0x{a_id:04x}": result[a_id] for a_id in sorted(result)}
 
@@ -242,7 +266,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
                 16,  # Number of commands to discover
                 manufacturer=manufacturer,
             )
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(0.2)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover %s commands starting %s. Error: %s",
@@ -290,7 +314,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
                 16,  # Number of commands to discover this run
                 manufacturer=manufacturer,
             )
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(0.2)
         except (DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: %s",
@@ -333,6 +357,7 @@ async def scan_device(
     device = app.get_device(ieee)
 
     endpoints = params[p.EP_ID]
+    manf = params[p.MANF]
 
     if endpoints is None:
         endpoints = []
@@ -343,7 +368,7 @@ async def scan_device(
 
     endpoints = sorted(set(endpoints))  # Uniqify and sort
 
-    scan = await scan_results(device, endpoints)
+    scan = await scan_results(device, endpoints, manufacturer=manf)
 
     event_data["scan"] = scan
 
