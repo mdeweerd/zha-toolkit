@@ -450,13 +450,18 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             )
 
         attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
+    else:
+        # Try to apply conversion using foundation DATA_TYPES table
+        data_type = f.DATA_TYPES[attr_type]
+        compare_val = data_type(str2int(attr_val_in))
+        attr_obj = compare_val
 
     if attr_obj is None:
         msg = (
             "attr_type {} not supported, "
-            + "or incorrect parameters (attr_val={})"
+            "or incorrect parameters (attr_val={})"
         ).format(attr_type, attr_val_in)
-        LOGGER.debug(msg)
+        LOGGER.error(msg)
     else:
         msg = None
 
