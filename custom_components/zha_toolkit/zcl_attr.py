@@ -277,7 +277,7 @@ async def attr_write(  # noqa: C901
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # Prepare read and write lists
-    attr_write_list = []
+    attr_write_list: list[f.Attribute] = []
     attr_read_list = []
 
     # Decode attribute(s)
@@ -313,9 +313,9 @@ async def attr_write(  # noqa: C901
         LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
         success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
 
-        # Try to get attribute type 
+        # Try to get attribute type
         if success and (attr_id in result_read[0]):
-            python_type=type(result_read[0][attr_id])
+            python_type = type(result_read[0][attr_id])
             found_attr_type = f.DATA_TYPES.pytype_to_datatype_id(python_type)
             LOGGER.debug("Type determined from read: 0x%02x", found_attr_type)
 
@@ -326,10 +326,8 @@ async def attr_write(  # noqa: C901
                     "Type determined from read "
                     "different from requested: 0x%02X <> 0x%02X",
                     found_attr_type,
-                    attr_id
+                    attr_id,
                 )
-
-
 
     compare_val = None
 

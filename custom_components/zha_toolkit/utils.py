@@ -452,7 +452,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
     else:
         # Try to apply conversion using foundation DATA_TYPES table
         data_type = f.DATA_TYPES[attr_type][1]
-        LOGGER.debug(f"Data type '{data_type}' for attr type {attr_type}") 
+        LOGGER.debug(f"Data type '{data_type}' for attr type {attr_type}")
         compare_val = data_type(str2int(attr_val_in))
         attr_obj = f.TypeValue(attr_type, data_type(compare_val))
         LOGGER.debug(

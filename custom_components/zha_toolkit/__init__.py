@@ -559,8 +559,8 @@ def register_services(hass):  # noqa: C901
             LOGGER.debug(
                 "Reload services because version changed from %s to %s",
                 REGISTERED_VERSION,
-                u.getVersion()
-                )
+                u.getVersion(),
+            )
             await command_handler_register_services(
                 zha_gw.application_controller,
                 zha_gw,

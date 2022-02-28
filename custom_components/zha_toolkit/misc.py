@@ -128,7 +128,7 @@ async def misc_reinitialize(
     dev.all_endpoint_init = False  # Force rescan
     dev.model = None  # Force rescan
     dev.manufacturer = None  # Force rescan
-    #event_data["result"] = await dev.schedule_initialize()
+    # event_data["result"] = await dev.schedule_initialize()
     event_data["result"] = await dev.initialize()
 
 
