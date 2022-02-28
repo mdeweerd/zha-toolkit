@@ -431,11 +431,6 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
     elif attr_type == 0x2F:
         compare_val = str2int(attr_val_in)
         attr_obj = f.TypeValue(attr_type, t.int64s(compare_val))
-    elif attr_type <= 0x31 and attr_type >= 0x08:
-        compare_val = str2int(attr_val_in)
-        # uint, int, bool, bitmap and enum
-        attr_obj = compare_val
-        # attr_obj = f.TypeValue(attr_type, t.FixedIntType(compare_val))
     elif attr_type in [0x41, 0x42]:  # Octet string
         # Octet string requires length -> LVBytes
         compare_val = t.LVBytes(attr_val_in)
@@ -450,13 +445,25 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             )
 
         attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
+    else:
+        # Try to apply conversion using foundation DATA_TYPES table
+        data_type = f.DATA_TYPES[attr_type][1]
+        compare_val = data_type(str2int(attr_val_in))
+        attr_obj = f.TypeValue(attr_type, data_type(compare_val))
+        LOGGER.debug(
+            "Converted %s to %s - will compare to %s - Type: 0x%02X",
+            attr_val_in,
+            attr_obj,
+            compare_val,
+            attr_type,
+        )
 
     if attr_obj is None:
         msg = (
             "attr_type {} not supported, "
-            + "or incorrect parameters (attr_val={})"
+            "or incorrect parameters (attr_val={})"
         ).format(attr_type, attr_val_in)
-        LOGGER.debug(msg)
+        LOGGER.error(msg)
     else:
         msg = None
 
