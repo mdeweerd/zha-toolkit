@@ -445,9 +445,14 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             )
 
         attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
+    elif attr_type == 0xFF or attr_type is None:
+        compare_val = str2int(attr_val_in)
+        # This should not happen ideally
+        attr_obj = f.TypeValue(attr_type, t.LVBytes(compare_val))
     else:
         # Try to apply conversion using foundation DATA_TYPES table
         data_type = f.DATA_TYPES[attr_type][1]
+        LOGGER.debug(f"Data type '{data_type}' for attr type {attr_type}")
         compare_val = data_type(str2int(attr_val_in))
         attr_obj = f.TypeValue(attr_type, data_type(compare_val))
         LOGGER.debug(

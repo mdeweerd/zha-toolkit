@@ -277,7 +277,7 @@ async def attr_write(  # noqa: C901
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # Prepare read and write lists
-    attr_write_list = []
+    attr_write_list: list[f.Attribute] = []
     attr_read_list = []
 
     # Decode attribute(s)
@@ -295,10 +295,43 @@ async def attr_write(  # noqa: C901
 
     attr_read_list.append(attr_id)  # Read before write list
 
+    attr_type = params[p.ATTR_TYPE]
+
+    result_read = None
+    if (
+        params[p.READ_BEFORE_WRITE]
+        or (len(attr_write_list) == 0)
+        or (cmd != S.ATTR_WRITE)
+    ):
+        LOGGER.debug("Request attr read %s", attr_read_list)
+        result_read = await cluster_read_attributes(
+            cluster,
+            attr_read_list,
+            manufacturer=params[p.MANF],
+            tries=params[p.TRIES],
+        )
+        LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
+        success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
+
+        # Try to get attribute type
+        if success and (attr_id in result_read[0]):
+            python_type = type(result_read[0][attr_id])
+            found_attr_type = f.DATA_TYPES.pytype_to_datatype_id(python_type)
+            LOGGER.debug("Type determined from read: 0x%02x", found_attr_type)
+
+            if attr_type is None:
+                attr_type = found_attr_type
+            elif attr_type != found_attr_type:
+                LOGGER.warning(
+                    "Type determined from read "
+                    "different from requested: 0x%02X <> 0x%02X",
+                    found_attr_type,
+                    attr_id,
+                )
+
     compare_val = None
 
     if cmd == "attr_write":
-        attr_type = params[p.ATTR_TYPE]
         attr_val_str = params[p.ATTR_VAL]
 
         if attr_type is None:
@@ -321,22 +354,6 @@ async def attr_write(  # noqa: C901
             if attr_val is not None:
                 attr = f.Attribute(attr_id, value=attr_val)
                 attr_write_list.append(attr)  # Write list
-
-    result_read = None
-    if (
-        params[p.READ_BEFORE_WRITE]
-        or (len(attr_write_list) == 0)
-        or (cmd != S.ATTR_WRITE)
-    ):
-        LOGGER.debug("Request attr read %s", attr_read_list)
-        result_read = await cluster_read_attributes(
-            cluster,
-            attr_read_list,
-            manufacturer=params[p.MANF],
-            tries=params[p.TRIES],
-        )
-        LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
-        success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
 
     # True if value that should be written is the equal to the read one
     write_is_equal = (

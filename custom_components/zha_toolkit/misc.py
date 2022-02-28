@@ -118,12 +118,18 @@ async def misc_reinitialize(
 
     dev = app.get_device(ieee=ieee)
     LOGGER.debug(f"{ieee!r} - Set initialisations=False, call handle_join")
-    dev.node_desc = None  # Force rescan
-    dev.has_non_zdo_endpoint = False  # Force rescan
+    # dev.has_non_zdo_endpoints = False  # Force rescan
+    # Can't set: dev.non_zdo_endpoints = False  # Force rescan
+    dev.endpoints = {0: dev.zdo}  # Force rescan
+
+    # dev._znp = u.get_radio(app)
+    # dev.node_desc = None  # Force rescan
+
     dev.all_endpoint_init = False  # Force rescan
     dev.model = None  # Force rescan
     dev.manufacturer = None  # Force rescan
-    event_data["result"] = dev.schedule_initialize()
+    # event_data["result"] = await dev.schedule_initialize()
+    event_data["result"] = await dev.initialize()
 
 
 async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):

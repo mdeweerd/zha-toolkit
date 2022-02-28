@@ -1,4 +1,5 @@
 ---
+files: ^(.*\.(py|json|md|sh|yaml|cfg|txt))$
 exclude: ^(\.[^/]*cache/.*)$
 repos:
   - repo: https://github.com/executablebooks/mdformat
