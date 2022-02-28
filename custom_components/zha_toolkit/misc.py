@@ -123,7 +123,7 @@ async def misc_reinitialize(
     dev.all_endpoint_init = False  # Force rescan
     dev.model = None  # Force rescan
     dev.manufacturer = None  # Force rescan
-    event_data["result"] = dev.schedule_initialize()
+    event_data["result"] = await dev.schedule_initialize()
 
 
 async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
