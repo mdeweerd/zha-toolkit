@@ -294,6 +294,154 @@ async def bind_ieee(
 
     event_data["result"] = results
 
+async def unbind_ieee(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    from zigpy.zdo.types import MultiAddress
+
+    if ieee is None or not data:
+        LOGGER.error("missing ieee")
+        return
+    LOGGER.debug("running 'unbind ieee' command: %s", service)
+    src_dev = app.get_device(ieee=ieee)
+
+    dst_dev = await u.get_device(app, listener, data)
+
+    zdo = src_dev.zdo
+    src_out_clusters = BINDABLE_OUT_CLUSTERS
+    src_in_clusters = BINDABLE_IN_CLUSTERS
+
+    # TODO: Filter according to params[p.CLUSTER_ID]
+
+    results: dict[int, dict] = {}
+
+    for src_out_cluster in src_out_clusters:
+        src_endpoints = [
+            ep_id
+            for ep_id, ep in src_dev.endpoints.items()
+            if ep_id != 0 and src_out_cluster in ep.out_clusters
+        ]
+        LOGGER.debug(
+            "0x%04x: got the %s endpoints for %s cluster",
+            src_dev.nwk,
+            src_endpoints,
+            src_out_cluster,
+        )
+
+        if not src_endpoints:
+            LOGGER.debug(
+                "0x%04x: skipping %0x04X cluster as non present",
+                src_dev.nwk,
+                src_out_cluster,
+            )
+            continue
+        dst_addr = MultiAddress()
+        dst_addr.addrmode = t.uint8_t(3)
+        dst_addr.ieee = dst_dev.ieee
+
+        # find dest ep
+        dst_epid = None
+        for ep_id, ep in dst_dev.endpoints.items():
+            if ep_id == 0:
+                continue
+            if src_out_cluster in ep.in_clusters:
+                dst_epid = ep_id
+                break
+        if not dst_epid:
+            continue
+        dst_addr.endpoint = t.uint8_t(dst_epid)
+
+        for src_ep in src_endpoints:
+            LOGGER.debug(
+                "0x%04x: unbinding %s, ep: %s, cluster: 0x%04X to %s dev %s ep",
+                src_dev.nwk,
+                str(src_dev.ieee),
+                src_ep,
+                src_out_cluster,
+                str(dst_dev.ieee),
+                dst_epid,
+            )
+            res = await zdo.request(
+                ZDOCmd.Unbind_req,
+                src_dev.ieee,
+                src_ep,
+                src_out_cluster,
+                dst_addr,
+            )
+            LOGGER.debug(
+                "0x%04x: unbinding ieee %s: %s",
+                src_dev.nwk,
+                str(dst_dev.ieee),
+                res,
+            )
+
+    for src_in_cluster in src_in_clusters:
+        src_endpoints = [
+            ep_id
+            for ep_id, ep in src_dev.endpoints.items()
+            if ep_id != 0 and src_in_cluster in ep.in_clusters
+        ]
+        LOGGER.debug(
+            "0x%04x: got the %s endpoints for %s cluster",
+            src_dev.nwk,
+            src_endpoints,
+            src_in_cluster,
+        )
+
+        if not src_endpoints:
+            LOGGER.debug(
+                "0x%04x: skipping %0x04X cluster as non present",
+                src_dev.nwk,
+                src_in_cluster,
+            )
+            continue
+        dst_addr = MultiAddress()
+        dst_addr.addrmode = t.uint8_t(3)
+        dst_addr.ieee = dst_dev.ieee
+
+        # find dest ep
+        dst_epid = None
+        for ep_id, ep in dst_dev.endpoints.items():
+            if ep_id == 0:
+                continue
+            if src_in_cluster in ep.out_clusters:
+                dst_epid = ep_id
+                break
+        if not dst_epid:
+            continue
+        dst_addr.endpoint = t.uint8_t(dst_epid)
+
+        for src_ep in src_endpoints:
+            LOGGER.debug(
+                "0x%04x: unbinding %s, ep: %s, cluster: 0x%04X to %s dev %s ep",
+                src_dev.nwk,
+                str(src_dev.ieee),
+                src_ep,
+                src_in_cluster,
+                str(dst_dev.ieee),
+                dst_epid,
+            )
+            if src_ep not in results:
+                results[src_ep] = {}
+
+            bind_result = {
+                "src_endpoint_id": src_ep,
+                "dst_endpoint_id": dst_epid,
+                "cluster_id": src_in_cluster,
+            }
+            res = await zdo.request(
+                ZDOCmd.Bind_req, src_dev.ieee, src_ep, src_in_cluster, dst_addr
+            )
+            bind_result["result"] = res
+            results[src_ep] = bind_result
+            LOGGER.debug(
+                "0x%04x: unbinding ieee %s: %s",
+                src_dev.nwk,
+                str(dst_dev.ieee),
+                res,
+            )
+
+    event_data["result"] = results
 
 async def unbind_coordinator(
     app, listener, ieee, cmd, data, service, params, event_data

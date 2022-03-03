@@ -391,6 +391,18 @@ SERVICE_SCHEMAS = {
         {},
         extra=vol.ALLOW_EXTRA,
     ),
+    S.UNBIND_IEEE: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(ATTR_COMMAND_DATA): cv.string,
+            vol.Optional(P.CLUSTER): vol.Any(
+                vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
+            ),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.ZCL_CMD: vol.Schema(
         {
             vol.Required(ATTR_IEEE): vol.Any(
@@ -510,6 +522,7 @@ CMD_TO_INTERNAL_MAP = {
     S.SCAN_DEVICE: ["scan_device", S.SCAN_DEVICE],
     S.UNBIND_COORDINATOR: ["binds", S.UNBIND_COORDINATOR],
     S.UNBIND_GROUP: ["binds", S.UNBIND_GROUP],
+    S.UNBIND_IEEE: ["binds", S.UNBIND_IEEE],
     S.ZCL_CMD: ["zcl_cmd", S.ZCL_CMD],
 }
 

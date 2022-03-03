@@ -78,6 +78,7 @@ class SERVICE_consts:
     SCAN_DEVICE = "scan_device"
     UNBIND_COORDINATOR = "unbind_coordinator"
     UNBIND_GROUP = "unbind_group"
+    UNBIND_IEEE = "unbind_ieee"
     ZCL_CMD = "zcl_cmd"
     ZDO_FLOOD_PARENT_ANNCE = "zdo_flood_parent_annce"
     ZDO_JOIN_WITH_CODE = "zdo_join_with_code"

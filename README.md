@@ -1280,6 +1280,30 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+## `unbind_ieee`: Unbind matching cluster to another device
+
+Unbinds all matching clusters (within the scope of the integrated list)
+
+```yaml
+service: zha_toolkit.execute
+data:
+  ieee: 00:15:8d:00:04:7b:83:69
+  command: unbind_ieee
+  command_data: 00:12:4b:00:22:08:ed:1a
+
+## `unbind_ieee`: Unbind matching cluster to another device
+
+Unbinds all matching clusters (within the scope of the integrated list)
+
+```yaml
+service: zha_toolkit.execute
+data:
+  ieee: 00:15:8d:00:04:7b:83:69
+  command: unbind_ieee
+  command_data: 00:12:4b:00:22:08:ed:1a
+
+
+
 
 async def user_test(
     app, listener, ieee, cmd, data, service, params, event_data
