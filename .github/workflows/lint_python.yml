@@ -6,8 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
+        # with:
+        #  ref: ${{ github.head_ref }}
       - uses: actions/setup-python@v2
       - run: pip install --upgrade pip wheel
       - run: >-
