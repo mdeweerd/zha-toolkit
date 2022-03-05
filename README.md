@@ -93,6 +93,10 @@ or Zigpy (methods, quirks, etc).
 The component files needs to be added to your `custom_components` directory
 either manually or using [HACS](https://hacs.xyz/docs/setup/prerequisites)
 ([Tutorial](https://codingcyclist.medium.com/how-to-install-any-custom-component-from-github-in-less-than-5-minutes-ad84e6dc56ff)).
+If you already have HACS, simply look for "ZHA Toolkit" under Integrations
+to add it (you still need to do the next step).
+![image](https://user-images.githubusercontent.com/1504752/156879928-e81560e1-1c10-4daf-8c17-c1f0bba0828f.png)
+
 
 Then, the integration is only available in Home Assistant after adding the
 next line to `configuration.yaml`, and restarting Home Assistant.
