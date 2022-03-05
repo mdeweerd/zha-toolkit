@@ -734,6 +734,24 @@ binds_remove_all:
       selector:
         entity:
           integration: zha
+    command_data:
+      description: >-
+        When provided, remove only bindings towards this device\n(Entity name,\ndevice
+        name, or\nIEEE address of the binding destination)
+      example: 00:0d:6f:00:05:7d:2d:34
+      selector:
+        entity:
+          integration: zha
+    cluster:
+      description: >-
+        When provided, remove only bindings for this cluster or list of clusters\n(
+        single value or list. Example: 0x0200 or [ 0x200, 0x300] )
+        Otherwise\: removes bindings for all clusters
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:

@@ -356,6 +356,33 @@ async def binds_remove_all(
     src_dev = app.get_device(ieee=ieee)
     zdo = src_dev.zdo
 
+    # Get target ieee filter
+    tgt_ieee = None
+    if data is not None and data != "":
+        try:
+            tgt_ieee = t.EUI64.convert(data)
+            # Get destination device if set
+        except ValueError:
+            pass
+
+        if tgt_ieee is None:
+            # Conversion did not succeed, try other method
+            try:
+                tgt_ieee = await u.get_device(app, listener, data).ieee
+            except ValueError:
+                pass
+
+    # Determine clusters to unbind
+    clusters = []
+
+    u_cluster_id = params[p.CLUSTER_ID]
+    if u_cluster_id is not None and u_cluster_id != "":
+        if not isinstance(u_cluster_id, list):
+            u_cluster_id = [u_cluster_id]
+
+        # unbind user provided clusters instead
+        clusters = u_cluster_id
+
     await binds_get(
         app, listener, ieee, cmd, data, service, params, event_data
     )
@@ -369,25 +396,34 @@ async def binds_remove_all(
             LOGGER.debug(f"Remove bind {binding!r}")
             addr_mode = binding["dst"]["addrmode"]
 
+            res = None
+            # Note, the code belowe is essentally two times the same
+            #       but the goal is to make a distinciont between group
+            #       and ieee addressing for testing/evolutions.
             if addr_mode == 1:
                 # group
                 src_ieee = t.EUI64.convert(binding["src"])
+                dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
                 dst_addr = MultiAddress()
                 dst_addr.addrmode = addr_mode
                 dst_addr.nwk = t.uint16_t(binding["dst"]["group"])
-                dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
-                res = await zdo.request(
-                    ZDOCmd.Unbind_req,
-                    src_ieee,
-                    binding["src_ep"],
-                    u.str2int(binding["cluster_id"]),
-                    dst_addr,
-                    tries=params[p.TRIES],
-                )
-                # TODO: check success status
-                bindings_removed.append(binding)
-                event_data["replies"].append(res)
-            if addr_mode == 3:
+                dst_addr.ieee = dst_ieee
+                cluster_id = u.str2int(binding["cluster_id"])
+                if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
+                    len(clusters) == 0 or cluster_id in clusters
+                ):
+                    res = await zdo.request(
+                        ZDOCmd.Unbind_req,
+                        src_ieee,
+                        binding["src_ep"],
+                        cluster_id,
+                        dst_addr,
+                        tries=params[p.TRIES],
+                    )
+                    # TODO: check success status
+                    bindings_removed.append(binding)
+                    event_data["replies"].append(res)
+            elif addr_mode == 3:
                 # direct
                 src_ieee = t.EUI64.convert(binding["src"])
                 dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
@@ -395,19 +431,24 @@ async def binds_remove_all(
                 dst_addr.addrmode = addr_mode
                 dst_addr.ieee = dst_ieee
                 dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
-                res = await zdo.request(
-                    ZDOCmd.Unbind_req,
-                    src_ieee,
-                    binding["src_ep"],
-                    u.str2int(binding["cluster_id"]),
-                    dst_addr,
-                    tries=params[p.TRIES],
-                )
-                # TODO: check success status
-                bindings_removed.append(binding)
-                event_data["replies"].append(res)
-            else:
-                msg = f"Binding not supported {binding!r}"
+                cluster_id = u.str2int(binding["cluster_id"])
+                if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
+                    len(clusters) == 0 or cluster_id in clusters
+                ):
+                    res = await zdo.request(
+                        ZDOCmd.Unbind_req,
+                        src_ieee,
+                        binding["src_ep"],
+                        cluster_id,
+                        dst_addr,
+                        tries=params[p.TRIES],
+                    )
+                    # TODO: check success status
+                    bindings_removed.append(binding)
+                    event_data["replies"].append(res)
+
+            if res is None:
+                msg = f"Binding not supported or not selected: {binding!r}"
                 bindings_skipped.append(binding)
                 LOGGER.error(msg)
                 errors.append(msg)
