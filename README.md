@@ -34,7 +34,7 @@
     - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
     - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
     - [`binds_remove_all`: Remove all device to device bindings](#binds_remove_all-remove-all-device-to-device-bindings)
-    - [`unbind_coordinator`: Remove all device to the coordinator](#unbind_coordinator-remove-all-device-to-the-coordinator)
+    - [`unbind_coordinator`: Remove all bindings to the coordinator](#unbind_coordinator-remove-all-bindings-to-the-coordinator)
   - [`conf_report`: Configure reporting](#conf_report-configure-reporting)
   - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
   - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
@@ -597,7 +597,7 @@ data:
   tries: 100
 ```
 
-### `unbind_coordinator`: Remove all device to the coordinator
+### `unbind_coordinator`: Remove all bindings to the coordinator
 
 Remove all bindings from the device to the coordinator. Typically on device
 initialisation Home Assistant sets up bindings with the main clusters to
