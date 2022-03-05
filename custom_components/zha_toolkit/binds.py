@@ -391,7 +391,9 @@ async def binds_remove_all(
                 dst_addr.ieee = dst_ieee
                 dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
                 cluster_id = u.str2int(binding["cluster_id"])
-                # LOGGER.debug(f"filter {tgt_ieee} {dst_ieee} {clusters} {cluster_id}")
+                # LOGGER.debug(
+                #     f"filter {tgt_ieee} {dst_ieee} {clusters} {cluster_id}"
+                # )
                 if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
                     len(clusters) == 0 or cluster_id in clusters
                 ):
