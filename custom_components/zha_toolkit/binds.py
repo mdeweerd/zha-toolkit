@@ -322,15 +322,14 @@ async def binds_remove_all(
         try:
             tgt_ieee = t.EUI64.convert(data)
             # Get destination device if set
-        except ValueError:
+        except (ValueError, AttributeError):
             pass
 
         if tgt_ieee is None:
             # Conversion did not succeed, try other method
-            try:
-                tgt_ieee = await u.get_device(app, listener, data).ieee
-            except ValueError:
-                pass
+            # If this fails, then we do not catch the exception
+            # as the field is not ok.
+            tgt_ieee = (await u.get_device(app, listener, data)).ieee
 
     # Determine clusters to unbind
     clusters = []
@@ -392,6 +391,7 @@ async def binds_remove_all(
                 dst_addr.ieee = dst_ieee
                 dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
                 cluster_id = u.str2int(binding["cluster_id"])
+                # LOGGER.debug(f"filter {tgt_ieee} {dst_ieee} {clusters} {cluster_id}")
                 if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
                     len(clusters) == 0 or cluster_id in clusters
                 ):
