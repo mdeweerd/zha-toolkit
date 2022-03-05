@@ -298,53 +298,13 @@ async def bind_ieee(
 async def unbind_coordinator(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    # Unbind bindings towards the coordinator:
+    data = app.ieee
 
-    LOGGER.debug("running 'unbind coordinator' command: %s", service)
-    if ieee is None or not data:
-        LOGGER.error("missing ieee and/or data")
-        return
-    src_dev = app.get_device(ieee=ieee)
-    cluster_id = params[p.CLUSTER_ID]
-
-    event_data["results"] = []
-    for ep_id, ep in src_dev.endpoints.items():
-        if not ep_id:
-            continue
-
-        out_cluster = None
-        in_cluster = None
-
-        if cluster_id not in ep.out_clusters:
-            out_cluster = ep.out_clusters[ep_id]
-        if cluster_id not in ep.in_clusters:
-            in_cluster = ep.in_clusters[ep_id]
-
-        cluster = None
-        if in_cluster is not None and cluster_id in BINDABLE_IN_CLUSTERS:
-            # Prefer in cluster
-            cluster = in_cluster
-        elif out_cluster is not None and cluster_id in BINDABLE_OUT_CLUSTERS:
-            cluster = out_cluster
-
-        if cluster is None:
-            cluster = out_cluster
-        if cluster is None:
-            cluster = in_cluster
-
-        if cluster is None:
-            continue
-
-        LOGGER.debug(
-            "0x%04x: unbinding ep: %s, cluster: %s",
-            src_dev.nwk,
-            ep_id,
-            cluster_id,
-        )
-        res = await ep.out_clusters[cluster_id].unbind()
-        event_data["results"].append(res)
-        LOGGER.debug(
-            "0x%04x: unbinding 0x%04x: %s", src_dev.nwk, cluster_id, res
-        )
+    # Use binds_remove_all with parameters
+    await binds_remove_all(
+        app, listener, ieee, cmd, data, service, params, event_data
+    )
 
 
 async def binds_remove_all(
