@@ -745,7 +745,7 @@ binds_remove_all:
     cluster:
       description: >-
         When provided, remove only bindings for this cluster or list of clusters\n(
-        single value or list. Example: 0x0200 or [ 0x200, 0x300] )
+        single value or list.\nExample: 0x0200 or [ 0x200, 0x300] )
         Otherwise\: removes bindings for all clusters
       selector:
         number:
@@ -1437,6 +1437,62 @@ scan_device:
       selector:
         number:
           min: 1
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
+unbind_coordinator:
+  description: >-
+    Remove (Unbind) all bindings from device to the coordinator (your HA Instance)
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    cluster:
+      description: >-
+        When provided, remove only bindings for this cluster or list of clusters\n(
+        single value or list.\nExample: 0x0200 or [ 0x200, 0x300] )
+        Otherwise\: removes bindings for all clusters
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
           max: 255
           mode: box
     event_success:

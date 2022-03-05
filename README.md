@@ -34,6 +34,7 @@
     - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
     - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
     - [`binds_remove_all`: Remove all device to device bindings](#binds_remove_all-remove-all-device-to-device-bindings)
+    - [`unbind_coordinator`: Remove all device to the coordinator](#unbind_coordinator-remove-all-device-to-the-coordinator)
   - [`conf_report`: Configure reporting](#conf_report-configure-reporting)
   - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
   - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
@@ -220,6 +221,9 @@ The `ieee` address can be the IEEE address, the short network address
 aware that the network address can change over time but it is shorter to
 enter if you know it.
 
+The same also applies to the `command_data` field when it is used to
+designate a device.
+
 ## Events
 
 All commands support setting event names. When set, These events are
@@ -385,7 +389,6 @@ Services that are not documented below yet:
 - `ieee_ping`
 - `ota_notify`
 - `register_services`
-- `unbind_coordinator`
 - `unbind_group`
 - `zdo_flood_parent_annce`
 - `zdo_update_nwk_id`
@@ -584,6 +587,34 @@ them.
 service: zha_toolkit.binds_remove_all
 data:
   ieee: entity.my_thermostat_entity
+  # Optional - only remove binding to device
+  command_data: 00:12:4b:00:01:6a:41:0c
+  # Optional - name of generated event when done
+  event_done: zhat_event
+  # Optional - Cluster or list of clusters for which to remove bindings
+  #cluster: [ 0x0006, 0x0300]
+  # Optional
+  tries: 100
+```
+
+### `unbind_coordinator`: Remove all device to the coordinator
+
+Remove all bindings from the device to the coordinator. Typically on device
+initialisation Home Assistant sets up bindings with the main clusters to
+that it is informed about state changes.
+
+This command will use `binds_remove_all` and set the coordinator's ieee
+address as the `command_data` parameter automatically avoiding that you
+have to look it up.
+
+```yaml
+service: zha_toolkit.unbind_coordinator
+data:
+  ieee: entity.my_thermostat_entity
+  # Optional - name of generated event when done
+  event_done: zhat_event
+  # Optional - Cluster or list of clusters for which to remove bindings
+  #cluster: [ 0x0006, 0x0300]
   # Optional
   tries: 100
 ```
