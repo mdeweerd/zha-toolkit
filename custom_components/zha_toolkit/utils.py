@@ -96,6 +96,7 @@ class RadioType(Enum):
     ZNP = 1
     EZSP = 2
     BELLOWS = 2
+    DECONZ = 3
 
 
 def isJsonable(x):
@@ -111,6 +112,8 @@ def get_radiotype(app):
         return RadioType.ZNP
     if hasattr(app, "_ezsp"):
         return RadioType.EZSP
+    if hasattr(app, "_api"):
+        return RadioType.DECONZ
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
 
@@ -120,8 +123,10 @@ def get_radio(app):
         return app._znp
     if hasattr(app, "_ezsp"):
         return app._ezsp
+    if hasattr(app, "_api"):
+        return app._api
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
-    return RadioType.UNKNOWN
+    return None
 
 
 def get_radio_version(app):
@@ -133,6 +138,11 @@ def get_radio_version(app):
         import bellows
 
         return bellows.__version__
+    if hasattr(app, "_api"):
+        import deconz
+
+        return deconz.__version__
+
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return None
 
