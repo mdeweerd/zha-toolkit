@@ -97,6 +97,9 @@ class RadioType(Enum):
     EZSP = 2
     BELLOWS = 2
     DECONZ = 3
+    ZIGPY_CC = 4
+    XBEE = 5
+    ZIGATE = 6
 
 
 def isJsonable(x):
@@ -113,7 +116,38 @@ def get_radiotype(app):
     if hasattr(app, "_ezsp"):
         return RadioType.EZSP
     if hasattr(app, "_api"):
-        return RadioType.DECONZ
+        try:
+            from zigpy_deconz.api import Deconz
+
+            if isinstance(app._api, Deconz):
+                return RadioType.DECONZ
+        except Exception:  # nosec
+            pass
+
+        try:
+            from zigpy_zigate.api import ZiGate
+
+            if isinstance(app._api, ZiGate):
+                return RadioType.ZIGATE
+        except Exception:  # nosec
+            pass
+
+        try:
+            import zigpy_xbee
+
+            if isinstance(app._api, zigpy_xbee.api.XBee):
+                return RadioType.XBEE
+        except Exception:  # nosec
+            pass
+
+        try:
+            from zigpy_cc.api import API
+
+            if isinstance(app._api, API):
+                return RadioType.ZIGPY_CC
+        except Exception:  # nosec
+            pass
+
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
 
