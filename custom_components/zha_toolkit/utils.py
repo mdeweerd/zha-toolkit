@@ -173,9 +173,23 @@ def get_radio_version(app):
 
         return bellows.__version__
     if hasattr(app, "_api"):
-        import deconz
+        rt = get_radiotype(app)
+        if rt == RadioType.DECONZ:
+            import deconz
 
-        return deconz.__version__
+            return deconz.__version__
+        if rt == RadioType.ZIGATE:
+            import zigpy_zigate
+
+            return zigpy_zigate.__version__
+        if rt == RadioType.XBEE:
+            import zigpy_xbee
+
+            return zigpy_xbee.__version__
+        if rt == RadioType.ZIGPY_CC:
+            import zigpy_cc
+
+            return zigpy_cc.__version__
 
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return None
