@@ -140,13 +140,12 @@ def get_radiotype(app):
         except Exception:  # nosec
             pass
 
-        try:
-            from zigpy_cc.api import API
-
-            if isinstance(app._api, API):
-                return RadioType.ZIGPY_CC
-        except Exception:  # nosec
-            pass
+        # try:
+        #    from zigpy_cc.api import API
+        #    if isinstance(app._api, API):
+        #        return RadioType.ZIGPY_CC
+        # except Exception:  # nosec
+        #    pass
 
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
