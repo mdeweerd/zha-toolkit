@@ -9,7 +9,7 @@
 - Read Zigbee attributes into Home Assistant attributes
 - Daily ZNP Coordinator backup (See blueprint)
 - "Low level" access to most Zigbee commands
-  (read/write/report/cmd/discover)
+  (read/write/(un)bind/report/cmd/discover)
 
 # Table of Contents
 
@@ -34,6 +34,7 @@
     - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
     - [`binds_get`: Get binding table from the device](#binds_get-get-binding-table-from-the-device)
     - [`binds_remove_all`: Remove all device to device bindings](#binds_remove_all-remove-all-device-to-device-bindings)
+    - [`unbind_coordinator`: Remove all bindings to the coordinator](#unbind_coordinator-remove-all-bindings-to-the-coordinator)
   - [`conf_report`: Configure reporting](#conf_report-configure-reporting)
   - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
   - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
@@ -58,14 +59,19 @@
     - [`add_to_group`](#add_to_group)
     - [`remove_from_group`](#remove_from_group)
     - [`get_zll_groups`](#get_zll_groups)
-  - [`ezsp_backup`: Backup ezsp/bellows network data](#ezsp_backup-backup-ezspbellows-network-data)
-  - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
-  - [`znp_nvram_backup`: Backup ZNP NVRAM data](#znp_nvram_backup-backup-znp-nvram-data)
-  - [`znp_nvram_restore`: Restore ZNP NVRAM data](#znp_nvram_restore-restore-znp-nvram-data)
-  - [`znp_nvram_reset`: Reset ZNP NVRAM data](#znp_nvram_reset-reset-znp-nvram-data)
-  - [`znp_backup`: Backup ZNP network data](#znp_backup-backup-znp-network-data)
-  - [`znp_restore`: Restore ZNP network data](#znp_restore-restore-znp-network-data)
-  - [User method](#user-method)
+  - [EZSP/Bellows](#ezspbellows)
+    - [`ezsp_backup`: Backup ezsp/bellows network data](#ezsp_backup-backup-ezspbellows-network-data)
+  - [ZNP related (TI Zigbee Radio)](#znp-related-ti-zigbee-radio)
+    - [`znp_nvram_backup`: Backup ZNP NVRAM data](#znp_nvram_backup-backup-znp-nvram-data)
+    - [`znp_nvram_restore`: Restore ZNP NVRAM data](#znp_nvram_restore-restore-znp-nvram-data)
+    - [`znp_nvram_reset`: Reset ZNP NVRAM data](#znp_nvram_reset-reset-znp-nvram-data)
+    - [`znp_backup`: Backup ZNP network data](#znp_backup-backup-znp-network-data)
+    - [`znp_restore`: Restore ZNP network data](#znp_restore-restore-znp-network-data)
+  - [Miscellaneous](#miscellaneous)
+    - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
+    - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
+    - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
+    - [User method](#user-method)
 - [Credits/Motivation](#creditsmotivation)
 - [License](#license)
 - [Contributing](#contributing)
@@ -96,7 +102,6 @@ either manually or using [HACS](https://hacs.xyz/docs/setup/prerequisites)
 If you already have HACS, simply look for "ZHA Toolkit" under Integrations
 to add it (you still need to do the next step).
 ![image](https://user-images.githubusercontent.com/1504752/156879928-e81560e1-1c10-4daf-8c17-c1f0bba0828f.png)
-
 
 Then, the integration is only available in Home Assistant after adding the
 next line to `configuration.yaml`, and restarting Home Assistant.
@@ -223,6 +228,9 @@ The `ieee` address can be the IEEE address, the short network address
 `light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off`). Be
 aware that the network address can change over time but it is shorter to
 enter if you know it.
+
+The same also applies to the `command_data` field when it is used to
+designate a device.
 
 ## Events
 
@@ -371,25 +379,14 @@ IEEE address found.
 }
 ```
 
-Services that are not documented below yet:
+Services that are not documented below yet (not including undocumented ezsp
+commands):
 
 - `all_routes_and_neighbours`
 - `bind_group`
-- `ezsp_add_key`
-- `ezsp_clear_keys`
-- `ezsp_get_config_value`
-- `ezsp_get_ieee_by_nwk`
-- `ezsp_get_keys`
-- `ezsp_get_policy`
-- `ezsp_get_token`
-- `ezsp_get_value`
-- `ezsp_set_channel`
-- `ezsp_start_mfg`
 - `get_routes_and_neighbours`
 - `ieee_ping`
 - `ota_notify`
-- `register_services`
-- `unbind_coordinator`
 - `unbind_group`
 - `zdo_flood_parent_annce`
 - `zdo_update_nwk_id`
@@ -588,6 +585,34 @@ them.
 service: zha_toolkit.binds_remove_all
 data:
   ieee: entity.my_thermostat_entity
+  # Optional - only remove binding to device
+  command_data: 00:12:4b:00:01:6a:41:0c
+  # Optional - name of generated event when done
+  event_done: zhat_event
+  # Optional - Cluster or list of clusters for which to remove bindings
+  #cluster: [ 0x0006, 0x0300]
+  # Optional
+  tries: 100
+```
+
+### `unbind_coordinator`: Remove all bindings to the coordinator
+
+Remove all bindings from the device to the coordinator. Typically on device
+initialisation Home Assistant sets up bindings with the main clusters to
+that it is informed about state changes.
+
+This command will use `binds_remove_all` and set the coordinator's ieee
+address as the `command_data` parameter automatically avoiding that you
+have to look it up.
+
+```yaml
+service: zha_toolkit.unbind_coordinator
+data:
+  ieee: entity.my_thermostat_entity
+  # Optional - name of generated event when done
+  event_done: zhat_event
+  # Optional - Cluster or list of clusters for which to remove bindings
+  #cluster: [ 0x0006, 0x0300]
   # Optional
   tries: 100
 ```
@@ -1079,7 +1104,29 @@ data:
   event_done: zha_done
 ```
 
-## `ezsp_backup`: Backup ezsp/bellows network data
+## EZSP/Bellows
+
+`ezsp` refers to `EmberZNet Serial Protocol` proposed by Silicon Labs.
+`bellows` refers to the library providing the interface between `zigpy` and
+`ezsp` compatible zigbee solutions.
+
+This section lists the commands that are used specifically with the
+`bellows` library.
+
+The following commands are not documented:
+
+- `ezsp_add_key`
+- `ezsp_clear_keys`
+- `ezsp_get_config_value`
+- `ezsp_get_ieee_by_nwk`
+- `ezsp_get_keys`
+- `ezsp_get_policy`
+- `ezsp_get_token`
+- `ezsp_get_value`
+- `ezsp_set_channel`
+- `ezsp_start_mfg`
+
+### `ezsp_backup`: Backup ezsp/bellows network data
 
 :warning: Under test
 
@@ -1103,34 +1150,15 @@ data:
   command_data: _20220105
 ```
 
-## `zha_devices`: Device List Information to Event or CSV
+## ZNP related (TI Zigbee Radio)
 
-Write information from currently known ZHA devices to a CSV file. You also
-get this data in the 'devices' field of the generated events which allows
-you to get information about endpoints and services as well.
+ZNP stands for "Zigbee Network Processor" and refers to the network layer
+proposed by TI's zigbee solutions. `zigpy-znp` refers to the plugin/library
+that provides the layer that interfaces `zigpy` with the ZNP radio.
 
-```yaml
-service: zha_toolkit.zha_devices
-data:
-  # Optional list of fields to write to the CSV, all non-list fields by default.
-  command_data: ['name', 'ieee', 'rssi', 'lqi']
-  csvout: ../www/devices.csv
-  event_done: zha_devices
-```
+This section lists the services that specifically target ZNP processors.
 
-The above should write the CSV to the www directory, so its available as
-'INSTANCEURL/local/devices.csv' and you could add a button to your UI for
-downloading:
-
-```yaml
-type: button
-name: Devices CSV File
-tap_action:
-  action: url
-  url_path: /local/devices.csv
-```
-
-## `znp_nvram_backup`: Backup ZNP NVRAM data
+### `znp_nvram_backup`: Backup ZNP NVRAM data
 
 The output is written to the customisation directory as
 `local/nvram_backup.json` when `command_data` is empty or not provided.
@@ -1147,7 +1175,7 @@ data:
   command_data: _20220105
 ```
 
-## `znp_nvram_restore`: Restore ZNP NVRAM data
+### `znp_nvram_restore`: Restore ZNP NVRAM data
 
 Will restore ZNP NVRAM data from `local/nvram_backup.json` where `local` is
 a directory in the `zha_toolkit` directory.
@@ -1159,12 +1187,10 @@ For safety, a backup is made of the current network before restoring
 format `local/nvram_backup_YYmmDD_HHMMSS.json`.
 
 ```yaml
-service: zha_toolkit.execute
-data:
-  command: znp_nvram_restore
+service: zha_toolkit.znp_nvram_restore
 ```
 
-## `znp_nvram_reset`: Reset ZNP NVRAM data
+### `znp_nvram_reset`: Reset ZNP NVRAM data
 
 Will reset ZNP NVRAM data from `local/nvram_backup.json` where `local` is a
 directory in the `zha_toolkit` directory.
@@ -1176,12 +1202,10 @@ For safety, a backup is made of the current network before restoring
 format `local/nvram_backup_YYmmDD_HHMMSS.json`.
 
 ```yaml
-service: zha_toolkit.execute
-data:
-  command: znp_nvram_reset
+service: zha_toolkit.znp_nvram_reset
 ```
 
-## `znp_backup`: Backup ZNP network data
+### `znp_backup`: Backup ZNP network data
 
 Used to transfer to another ZNP key later, backup or simply get network key
 and other info.
@@ -1197,15 +1221,14 @@ The name of that backup is according to the format
 `nwk_backup{command_data}.json`.
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.znp_backup
 data:
-  command: znp_backup
   # Optional command_data, string added to the basename.
   # With this example the backup is written to `nwk_backup_20220105.json`
   command_data: _20220105
 ```
 
-## `znp_restore`: Restore ZNP network data
+### `znp_restore`: Restore ZNP network data
 
 Will restore network data from `local/nwk_backup.json` where `local` is a
 directory in the `zha_toolkit` directory.
@@ -1270,7 +1293,67 @@ data:
   command_data: 2500
 ```
 
-## User method
+## Miscellaneous
+
+### `backup`: Backup the coordinator
+
+The backup service starts a backup of the coordinator by calling upon
+`znp_backup` or `ezsp_backup`.
+
+It provides a radio independent service for backups.
+
+```yaml
+service: zha_toolkit.backup
+data:
+  # Optional command_data, string added to the basename.
+  # With this example the backup is written to `nwk_backup_20220105.json`
+  command_data: _20220105
+```
+
+### `zha_devices`: Device List Information to Event or CSV
+
+Write information from currently known ZHA devices to a CSV file. You also
+get this data in the 'devices' field of the generated events which allows
+you to get information about endpoints and services as well.
+
+```yaml
+service: zha_toolkit.zha_devices
+data:
+  # Optional list of fields to write to the CSV, all non-list fields by default.
+  command_data: ['name', 'ieee', 'rssi', 'lqi']
+  csvout: ../www/devices.csv
+  event_done: zha_devices
+```
+
+The above should write the CSV to the www directory, so its available as
+'INSTANCEURL/local/devices.csv' and you could add a button to your UI for
+downloading:
+
+```yaml
+type: button
+name: Devices CSV File
+tap_action:
+  action: url
+  url_path: /local/devices.csv
+```
+
+### `register_services`: Reregister ZHA-Toolkit services
+
+The services may have evolved after an update of the code and calling
+`register_services` will reload the `services.yaml` file defining the
+options available in the UI interface, as well as internal structures that
+define the validation rules for the parameters.
+
+Most of the time this operation will be done automatically (when upgrading
+through HACS), but during development no version or file changes may be
+detected, and a manual update may be due for testing or accessing updated
+interfaces.
+
+```yaml
+service: zha_toolkit.register_services
+```
+
+### User method
 
 You can add your own Python commands in `local/user.py`. Your file is
 reloaded on each call and will survive updates because it's inside the
@@ -1334,4 +1417,4 @@ The original `zha_custom` repository does not mention a license.
 
 # Contributing
 
-See [Contributing.md](Contributing.md)
+#See [Contributing.md](Contributing.md)

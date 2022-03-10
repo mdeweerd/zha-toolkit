@@ -182,6 +182,12 @@ SERVICE_SCHEMAS = {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
+            vol.Optional(ATTR_COMMAND_DATA): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.CLUSTER): vol.Any(
+                vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
+            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),
@@ -384,7 +390,14 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.UNBIND_COORDINATOR: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.CLUSTER): vol.Any(
+                vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
+            ),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.UNBIND_GROUP: vol.Schema(

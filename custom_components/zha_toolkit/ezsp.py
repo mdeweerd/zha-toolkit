@@ -32,12 +32,15 @@ async def ezsp_set_channel(
 
     status, _, network_params = await app._ezsp.getNetworkParameters()
     if status != bellows.types.EmberStatus.SUCCESS:
-        msg = "Couldn't get network parameters, abort channel change: %s" % (
-            status
+        msg = (
+            "Couldn't get network parameters, abort channel change: {}".format(
+                status,
+            )
         )
         event_data["errors"].append(msg)
-        LOGGER.error(msg)
-        return
+        raise Exception(msg)
+
+    event_data["nwk_params"] = network_params
 
     payload = b"\xDE" + ch_mask.serialize() + b"\xFE"
     payload += network_params.nwkUpdateId.serialize()
@@ -49,9 +52,14 @@ async def ezsp_set_channel(
         0x01,
         payload,
     )
-    assert status == bellows.types.EmberStatus.SUCCESS
+    success = status == bellows.types.EmberStatus.SUCCESS
+    event_data["success"] = success
+
+    if not success:
+        return
 
     res = await app._ezsp.setRadioChannel(ch)
+    event_data["result"] = res
     LOGGER.info("Set channel status: %s", res)
 
 
@@ -79,15 +87,19 @@ async def ezsp_get_token(
 async def ezsp_start_mfg(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    event_data["results"] = []
     LOGGER.info("Starting mfg lib")
     res = await app._ezsp.mfglibStart(True)
+    event_data["results"].append(res)
     LOGGER.info("starting mfg lib result: %s", res)
 
     channel = 11
     res = await app._ezsp.mfglibSetChannel(channel)
+    event_data["results"].append(res)
     LOGGER.info("mfg lib change channel: %s", res)
 
     res = await app._ezsp.mfglibEnd()
+    event_data["results"].append(res)
     LOGGER.info("mfg lib change channel: %s", res)
 
 
@@ -96,7 +108,7 @@ async def ezsp_get_keys(
 ):
     LOGGER.info("getting all keys")
     result = {}
-    erase = True if data is not None and data else False
+    erase = data is not None and data
     warnings = []
 
     for idx in range(0, 192):
@@ -135,11 +147,12 @@ async def ezsp_add_transient_key(
     LOGGER.info("adding well known link key as transient key")
     if ieee is None:
         msg = "No ieee to install transient key for"
-        event_data["errors"].append(msg)
         LOGGER.error(msg)
+        raise Exception(msg)
 
     (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
     LOGGER.debug("Installed key for %s: %s", ieee, status)
+    event_data["result"] = status
 
 
 async def ezsp_get_ieee_by_nwk(
@@ -174,38 +187,44 @@ async def ezsp_clear_keys(
     LOGGER.info("Clear key table")
     (status,) = await app._ezsp.clearKeyTable()
     LOGGER.info("Cleared key table: %s", status)
+    event_data["status"] = status
 
 
 async def ezsp_get_config_value(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None:
-        LOGGER.error("Need EZSP config value")
-        return
+        msg = "Need EZSP config value"
+        LOGGER.error(msg)
+        raise Exception(msg)
 
     cfg_id = app._ezsp.types.EzspConfigId(data)
     LOGGER.info("Getting EZSP configuration value: %s", cfg_id)
     (status, value) = await app._ezsp.getConfigurationValue(cfg_id)
     if status != app._ezsp.types.EzspStatus.SUCCESS:
-        LOGGER.error("Couldn't get %s configuration value: %s", status, cfg_id)
-        return
+        msg = f"Couldn't get {status} configuration value: {cfg_id}"
+        LOGGER.error(msg)
+        raise Exception(msg)
 
     LOGGER.info("%s = %s", cfg_id.name, value)
+    event_data["result"] = value
 
 
 async def ezsp_get_value(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     if data is None:
-        LOGGER.error("Need EZSP value id")
-        return
+        msg = "Need EZSP value id"
+        LOGGER.error(msg)
+        raise Exception(msg)
 
     value_id = app._ezsp.types.EzspValueId(data)
     LOGGER.info("Getting EZSP value: %s", value_id)
     (status, value) = await app._ezsp.getValue(value_id)
     if status != app._ezsp.types.EzspStatus.SUCCESS:
-        LOGGER.error("Couldn't get %s value: %s", status, value_id)
-        return
+        msg = f"Couldn't get {status} value: {value_id}"
+        LOGGER.error(msg)
+        raise Exception(msg)
 
     LOGGER.info("%s = %s", value_id.name, value)
     event_data["ezsp_" + value_id.name] = repr(value)

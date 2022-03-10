@@ -96,6 +96,10 @@ class RadioType(Enum):
     ZNP = 1
     EZSP = 2
     BELLOWS = 2
+    DECONZ = 3
+    ZIGPY_CC = 4
+    XBEE = 5
+    ZIGATE = 6
 
 
 def isJsonable(x):
@@ -111,6 +115,39 @@ def get_radiotype(app):
         return RadioType.ZNP
     if hasattr(app, "_ezsp"):
         return RadioType.EZSP
+    if hasattr(app, "_api"):
+        try:
+            from zigpy_deconz.api import Deconz
+
+            if isinstance(app._api, Deconz):
+                return RadioType.DECONZ
+        except Exception:  # nosec
+            pass
+
+        try:
+            from zigpy_zigate.api import ZiGate
+
+            if isinstance(app._api, ZiGate):
+                return RadioType.ZIGATE
+        except Exception:  # nosec
+            pass
+
+        try:
+            import zigpy_xbee
+
+            if isinstance(app._api, zigpy_xbee.api.XBee):
+                return RadioType.XBEE
+        except Exception:  # nosec
+            pass
+
+        try:
+            from zigpy_cc.api import API
+
+            if isinstance(app._api, API):
+                return RadioType.ZIGPY_CC
+        except Exception:  # nosec
+            pass
+
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
 
@@ -120,8 +157,10 @@ def get_radio(app):
         return app._znp
     if hasattr(app, "_ezsp"):
         return app._ezsp
+    if hasattr(app, "_api"):
+        return app._api
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
-    return RadioType.UNKNOWN
+    return None
 
 
 def get_radio_version(app):
@@ -133,6 +172,25 @@ def get_radio_version(app):
         import bellows
 
         return bellows.__version__
+    if hasattr(app, "_api"):
+        rt = get_radiotype(app)
+        if rt == RadioType.DECONZ:
+            import deconz
+
+            return deconz.__version__
+        if rt == RadioType.ZIGATE:
+            import zigpy_zigate
+
+            return zigpy_zigate.__version__
+        if rt == RadioType.XBEE:
+            import zigpy_xbee
+
+            return zigpy_xbee.__version__
+        if rt == RadioType.ZIGPY_CC:
+            import zigpy_cc
+
+            return zigpy_cc.__version__
+
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return None
 
