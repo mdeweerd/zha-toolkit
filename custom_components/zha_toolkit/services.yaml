@@ -1555,7 +1555,7 @@ zcl_cmd:
           min: 0
           max: 0xFFFF
           mode: box
-    cmd_id:
+    cmd:
       description: Command Id to execute
       required: true
       selector:
