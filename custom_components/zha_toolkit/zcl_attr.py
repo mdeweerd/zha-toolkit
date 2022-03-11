@@ -7,7 +7,6 @@ import logging
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
-from zigpy.util import retryable
 from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
@@ -239,28 +238,6 @@ async def conf_report(
             )
 
 
-# The zigpy library does not offer retryable on read_attributes.
-# Add it ourselves
-@retryable(
-    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
-)
-async def cluster_read_attributes(
-    cluster, attrs, manufacturer=None
-) -> tuple[list, list]:
-    """Read attributes from cluster, retryable"""
-    return await cluster.read_attributes(attrs, manufacturer=manufacturer)
-
-
-# The zigpy library does not offer retryable on read_attributes.
-# Add it ourselves
-@retryable(
-    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
-)
-async def cluster__write_attributes(cluster, attrs, manufacturer=None):
-    """Write cluster attributes from cluster, retryable"""
-    return await cluster._write_attributes(attrs, manufacturer=manufacturer)
-
-
 async def attr_read(*args, **kwargs):
     # Delegate to attr_write which also handles the read command.
     await attr_write(*args, **kwargs)
@@ -304,7 +281,7 @@ async def attr_write(  # noqa: C901
         or (cmd != S.ATTR_WRITE)
     ):
         LOGGER.debug("Request attr read %s", attr_read_list)
-        result_read = await cluster_read_attributes(
+        result_read = await u.cluster_read_attributes(
             cluster,
             attr_read_list,
             manufacturer=params[p.MANF],
@@ -384,7 +361,7 @@ async def attr_write(  # noqa: C901
             result_read = None
 
         LOGGER.debug("Request attr write %s", attr_write_list)
-        result_write = await cluster__write_attributes(
+        result_write = await u.cluster__write_attributes(
             cluster,
             attr_write_list,
             manufacturer=params[p.MANF],
@@ -405,7 +382,7 @@ async def attr_write(  # noqa: C901
 
         if params[p.READ_AFTER_WRITE]:
             LOGGER.debug(f"Request attr read {attr_read_list!r}")
-            result_read = await cluster_read_attributes(
+            result_read = await u.cluster_read_attributes(
                 cluster,
                 attr_read_list,
                 manufacturer=params[p.MANF],

@@ -72,6 +72,9 @@
     - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [User method](#user-method)
+  - [Manufacturers](#manufacturers)
+    - [Tuya](#tuya)
+      - [`tuya_magic` - Tuya Magic spell](#tuya_magic---tuya-magic-spell)
 - [Credits/Motivation](#creditsmotivation)
 - [License](#license)
 - [Contributing](#contributing)
@@ -1390,6 +1393,33 @@ ideas, and you can examine the other methods to see how you can use ZHA.
 This is a powerful tool to develop your own custom tool, and propose it for
 inclusion in the zha-toolkit when it's ready and of potential use to
 others.
+
+## Manufacturers
+
+### Tuya
+
+Shame on Tuya to be a
+[member of the Zigbee Alliance](https://zigbeealliance.org/member/tuya-global-inc/)
+and deviate from the Zigbee Specifications.
+
+#### `tuya_magic` - Tuya Magic spell
+
+This was labeled the
+[standard tuya "magic spell"](https://github.com/Koenkk/zigbee2mqtt/issues/9564#issuecomment-1051123722)
+as it makes most Tuya devices work normally.
+
+currently only the "read" part is implemented - if needed a
+super_magic_spell can be added to also execute the write procedure.
+
+It has to be done using the "execute" command it's not implemented as a
+searchable service.
+
+```yaml
+service: zha_toolkit.execute
+data:
+  command: tuya_magic
+  ieee: light.tz3000_dbou1ap4_ts0505a_level_light_color_on_off
+```
 
 # Credits/Motivation
 
