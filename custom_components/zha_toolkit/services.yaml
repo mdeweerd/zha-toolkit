@@ -48,9 +48,9 @@ execute:
             - remove_from_group
             - remove_group
             - scan_device
+            - tuya_magic
             - unbind_coordinator
             - unbind_group
-            - tuya_magic
             - zcl_cmd
             - zdo_flood_parent_annce
             - zdo_join_with_code
