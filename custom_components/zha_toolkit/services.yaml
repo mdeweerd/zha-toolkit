@@ -50,6 +50,7 @@ execute:
             - scan_device
             - unbind_coordinator
             - unbind_group
+            - tuya_magic
             - zcl_cmd
             - zdo_flood_parent_annce
             - zdo_join_with_code

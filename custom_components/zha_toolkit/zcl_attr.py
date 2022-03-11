@@ -7,14 +7,12 @@ import logging
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
-from zigpy.util import retryable
 from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
 from .params import SERVICES as S
-
 
 LOGGER = logging.getLogger(__name__)
 
