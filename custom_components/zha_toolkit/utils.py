@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -8,6 +9,8 @@ from enum import Enum
 from homeassistant.util.json import save_json
 from zigpy import types as t
 from zigpy.zcl import foundation as f
+from zigpy.util import retryable
+from zigpy.exceptions import DeliveryError
 
 from .params import INTERNAL_PARAMS as p
 from .params import USER_PARAMS as P
@@ -687,3 +690,27 @@ def extractParams(  # noqa: C901
         params[p.CSV_LABEL] = rawParams[P.CSVLABEL]
 
     return params
+
+
+# zigpy wrappers
+
+# The zigpy library does not offer retryable on read_attributes.
+# Add it ourselves
+@retryable(
+    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
+)
+async def cluster_read_attributes(
+    cluster, attrs, manufacturer=None
+) -> tuple[list, list]:
+    """Read attributes from cluster, retryable"""
+    return await cluster.read_attributes(attrs, manufacturer=manufacturer)
+
+
+# The zigpy library does not offer retryable on read_attributes.
+# Add it ourselves
+@retryable(
+    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
+)
+async def cluster__write_attributes(cluster, attrs, manufacturer=None):
+    """Write cluster attributes from cluster, retryable"""
+    return await cluster._write_attributes(attrs, manufacturer=manufacturer)
