@@ -1402,6 +1402,8 @@ Shame on Tuya to be a
 [member of the Zigbee Alliance](https://zigbeealliance.org/member/tuya-global-inc/)
 and deviate from the Zigbee Specifications.
 
+These commands help fix some of that.
+
 #### `tuya_magic` - Tuya Magic spell
 
 This was labeled the
