@@ -4,7 +4,29 @@
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-# Highlights
+[ZHA Toolkit](https://github.com/mdeweerd/zha-toolkit) (Zigbee Home Assistant Toolkit) is a custom service for "rare" Zigbee operations using the [ZHA integration component](https://www.home-assistant.io/integrations/zha) in [Home Assistant](https://www.home-assistant.io/) (an open source home automation software).
+
+You can add ZHA Toolkit as custom service to Home Assistant using [HACS (Home Assistant Community Store)](https://hacs.xyz/). ZHA Toolkit is already available HACS default repository list.
+
+## Purpose
+
+The purpose of ZHA Toolkit and its Home Assistant 'Services' feature, is to provide direct control over
+low level zigbee commands provided in ZHA or Zigpy that are not otherwise
+available or too limited for some use cases.
+
+ZHA Toolkit can also:
+
+* Serve as a framework to do local low level coding (the modules are
+reloaded on each call). 
+
+* Provide access to some higher level commands such as ZNP backup (and
+restore).
+
+* Make it easier to perform one-time operations where (some) Zigbee knowledge
+is sufficient and avoiding the need to understand the inner workings of ZHA
+or Zigpy (methods, quirks, etc).
+
+### Highlights
 
 - Read Zigbee attributes into Home Assistant attributes
 - Daily ZNP Coordinator backup (See blueprint)
@@ -80,22 +102,6 @@
 - [Contributing](#contributing)
 
 <!-- mdformat-toc end -->
-
-# Purpose
-
-Using the Home Assistant 'Services' feature, provide direct control over
-low level zigbee commands provided in ZHA or Zigpy that are not otherwise
-available or too limited for some use cases.
-
-Can also serve as a framework to do local low level coding (the modules are
-reloaded on each call).
-
-Provide access to some higher level commands such as ZNP backup (and
-restore).
-
-Make it easier to perform one-time operations where (some) Zigbee knowledge
-is sufficient and avoiding the need to understand the inner workings of ZHA
-or Zigpy (methods, quirks, etc).
 
 # Setup
 
