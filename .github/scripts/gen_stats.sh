@@ -5,7 +5,7 @@ DEST=$(dirname $0)/../../STATS.md
 TEMPLATE='- ![badge VERSION](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/VERSION/total.svg)'
 
 # Exclude stuff that results in invalid badges
-EXCLUDES="v0.7.9 v0.7.7 v0.7.6 v0.7.5 v0.7.3 v0.7.2 v0.7.1"
+EXCLUDES="v0.7.9 v0.7.7 v0.7.6 v0.7.5 v0.7.3 v0.7.2 v0.7.1 v0.7.23 v0.7.24"
 
 (
     echo '# Badges showing number of downloads per version'
