@@ -139,7 +139,10 @@ Add/update the logger configuration (in the `configuration.yaml` file):
 
 ```yaml
 logger:
-  log:
+  # The next line sets the default logging level, for all python modules.
+  # It seems "recommended" to set it to avoid too much logging.
+  default: warning
+  logs:
     custom_components.zha_toolkit: debug
 ```
 
