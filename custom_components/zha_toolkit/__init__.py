@@ -334,7 +334,11 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.OTA_NOTIFY: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.REJOIN: vol.Schema(
