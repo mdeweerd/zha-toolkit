@@ -5,9 +5,11 @@ from custom_components.zha_toolkit.params import INTERNAL_PARAMS as p
 async def tuya_magic(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    """
+    Send 'magic spell' sequence to device to try to get 'normal' behavior.
+    """
 
     dev = app.get_device(ieee)
-    """Initialize device so that all endpoints become available."""
     basic_cluster = dev.endpoints[1].in_clusters[0]
 
     # The magic spell is needed only once.
