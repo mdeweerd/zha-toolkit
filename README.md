@@ -98,6 +98,7 @@ ZHA Toolkit can also:
     - [`znp_restore`: Restore ZNP network data](#znp_restore-restore-znp-network-data)
   - [Miscellaneous](#miscellaneous)
     - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
+    - [`ota_notify`](#ota_notify)
     - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [User method](#user-method)
@@ -402,7 +403,6 @@ commands):
 - `bind_group`
 - `get_routes_and_neighbours`
 - `ieee_ping`
-- `ota_notify`
 - `unbind_group`
 - `zdo_flood_parent_annce`
 - `zdo_update_nwk_id`
@@ -1324,6 +1324,39 @@ data:
   # Optional command_data, string added to the basename.
   # With this example the backup is written to `nwk_backup_20220105.json`
   command_data: _20220105
+```
+
+### `ota_notify`
+
+`OTA` is the acronym for "Over the Air" and we implicitally add "update" or
+"upgrade".
+
+`ota_notify` will indicate to the device that an update is available, which
+will trigger the device to request this update from the coordinator (in
+this case zigpy).
+
+Prior to notifying the device, `ota_notify` will request all image provides
+to update the list of available images. By default this is only done on
+startup, so when you add a new image to your local directory or when a new
+update is available from a third party, you'ld have to restart HA. But with
+`ota_notify` no restart is required.
+
+For details on how to setup your images sources, check the
+[zigpy wiki section](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates#enabling-ota-updates).
+Also read about the possibilities to enable logging, and that some devices
+require to be re-associated.
+
+To trigger the OTA update, use `ota_notify` instead. The debug log is
+useful to check the update progress or indication that no update is
+available.\
+When the update starts, be patient: it can take a while.
+
+```yaml
+service: zha_toolkit.ota_notify
+data:
+  # Reference of the device that should be notified about an update.
+  # Using one of the entity/sensor names is so much easier !
+  ieee: sensor.lixee_zlinky_tic_00000000_electrical_measurement
 ```
 
 ### `zha_devices`: Device List Information to Event or CSV

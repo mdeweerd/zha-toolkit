@@ -1256,6 +1256,44 @@ misc_reinitialize:
       selector:
         entity:
           integration: zha
+ota_notify:
+  description: Notify a device that an update is available, after triggering ota image providers to fetch new images.
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        command
+      example: entity.name_of_zigbee_device
+      required: true
+      selector:
+        entity:
+          integration: zha
+    event_success:
+      description: Event name in case of success
+      example: ota_notify_success
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: ota_notify_fail
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the images were updated and the device notified (either success
+        or failure).
+      example: ota_notify_done
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
+      selector:
+        boolean:
 register_services:
   description: >-
     Reregister zha-toolkit services\nUsefull during development when they

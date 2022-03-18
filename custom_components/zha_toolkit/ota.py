@@ -3,9 +3,20 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
+async def ota_update_images(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    for _, (ota, _) in app.ota._listeners.items():
+        await ota.refresh_firmware_list()
+
+
 async def ota_notify(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    await ota_update_images(
+        app, listener, ieee, cmd, data, service, params, event_data
+    )
+
     if ieee is None:
         LOGGER.error("missing ieee")
         return
