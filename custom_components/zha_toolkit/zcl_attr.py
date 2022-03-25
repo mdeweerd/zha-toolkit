@@ -71,13 +71,11 @@ async def my_read_reporting_configuration_multiple(
         LOGGER.warn(f"Record {record.direction} {record.attrid}")
         cfg.append(record)
     LOGGER.warn("Read reporting with %s", cfg)
-    try:
-        res = await self._read_reporting_configuration(
-            t.List[f.ReadReportingConfigRecord](cfg)
-        )
-    except Exception as e:
-        LOGGER.exception(f"Exception {e!r}")
-        return []
+
+    # Exception is propagated to caller if any
+    res = await self._read_reporting_configuration(
+        t.List[f.ReadReportingConfigRecord](cfg)
+    )
 
     LOGGER.warn("Read reporting with %s result %s", cfg, res)
 
