@@ -365,7 +365,7 @@ async def scan_device(
 ):
     if ieee is None:
         LOGGER.error("missing ieee")
-        return
+        raise Exception("missing ieee")
 
     LOGGER.debug("running 'scan_device' command: %s", service)
 
