@@ -125,8 +125,12 @@ async def scan_cluster(cluster, is_server=True, manufacturer=None):
         cmds_gen = "commands_received"
     attributes = await discover_attributes_extended(cluster, None)
     LOGGER.debug("scan_cluster attributes (none): %s", attributes)
-    if manufacturer is not None and manufacturer != b"" and manufacturer != 0:
-        LOGGER.debug("scan_cluster attributes (none): %s", attributes)
+    if manufacturer is not None:
+        LOGGER.debug(
+            "scan_cluster attributes (none) with manf '%s': %s",
+            manufacturer,
+            attributes,
+        )
         attributes.update(
             await discover_attributes_extended(cluster, manufacturer)
         )
@@ -220,27 +224,17 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 "access": access,
                 "access_acl": access_acl,
             }
-            if (
-                manufacturer is not None
-                and manufacturer != b""
-                and manufacturer != 0
-            ):
+            if manufacturer is not None:
                 result[attr_id]["manf_id"] = manufacturer
             attr_id += 1
         await asyncio.sleep(0.2)
 
     LOGGER.debug("Reading attrs: %s", to_read)
     chunk, to_read = to_read[:4], to_read[4:]
-    # TODO: Force manufacturer b"" when manufacturer is None,
-    #       depending on Zigpy version
-    if manufacturer is None:
-        manf = b""
-    else:
-        manf = manufacturer
     while chunk:
         try:
             chunk = sorted(chunk)
-            success, failed = await read_attr(cluster, chunk, manf)
+            success, failed = await read_attr(cluster, chunk, manufacturer)
             LOGGER.debug(
                 "Reading attr success: %s, failed %s", success, failed
             )
