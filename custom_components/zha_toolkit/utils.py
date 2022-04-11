@@ -615,8 +615,15 @@ def extractParams(  # noqa: C901
         params[p.MANF] = str2int(rawParams[P.MANF])
 
     manf = params[p.MANF]
-    if manf == "" or manf == 0:
-        params[p.MANF] = b""  # Not None, force empty manf
+    if (isinstance(manf, str) and manf == "") or (
+        isinstance(manf, int) and (manf == 0 or manf < 0)
+    ):
+        LOGGER.debug("Got manf '%s'", manf)
+        if hasattr(f.ZCLHeader, "NO_MANUFACTURER_ID"):
+            manf = f.ZCLHeader.NO_MANUFACTURER_ID
+        else:
+            # Forcing b"" not ok in call cases # Not None, force empty manf
+            params[p.MANF] = b""
 
     # Get tries
     if P.TRIES in rawParams:
