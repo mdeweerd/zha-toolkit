@@ -68,7 +68,7 @@ async def my_read_reporting_configuration_multiple(
         record = f.ReadReportingConfigRecord()
         record.attrid = attrid
         record.direction = direction
-        LOGGER.warn(f"Record {record.direction} {record.attrid}")
+        # LOGGER.warn(f"Record {record.direction} {record.attrid}")
         cfg.append(record)
     LOGGER.warn("Read reporting with %s", cfg)
 
@@ -151,7 +151,6 @@ async def conf_report_read(
                 params[p.ATTR_ID],
                 params[p.MANF],
             )
-            LOGGER.debug("Before call")
             result_conf = (
                 await cluster.my_read_reporting_configuration_multiple(
                     params[p.ATTR_ID],
@@ -465,7 +464,9 @@ async def attr_write(  # noqa: C901
         fields.append(cluster.endpoint.endpoint_id)
         fields.append(str(cluster.endpoint.device.ieee))
         fields.append(
-            ("0x%04X" % (params[p.MANF])) if params[p.MANF] is not None else ""
+            ("0x%04X" % (params[p.MANF]),)
+            if params[p.MANF] is not None
+            else ""
         )
         u.append_to_csvfile(
             fields,
