@@ -68,9 +68,7 @@ async def backup(app, listener, ieee, cmd, data, service, params, event_data):
             params=params,
         )
     else:
-        raise Exception(
-            "Radio type %s not supported for backup" % (radio_type,)
-        )
+        raise Exception(f"Radio type {radio_type} not supported for backup")
 
 
 async def handle_join(

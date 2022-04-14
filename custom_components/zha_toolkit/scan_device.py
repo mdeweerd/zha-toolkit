@@ -75,10 +75,16 @@ async def scan_results(device, endpoints=None, manufacturer=None):
                 "profile": f"0x{ep.profile_id:04x}",
             }
             if epid != 242:
-                LOGGER.debug("Scanning endpoint #%i with manf '%r'", epid, manufacturer)
+                LOGGER.debug(
+                    "Scanning endpoint #%i with manf '%r'", epid, manufacturer
+                )
                 endpoint.update(await scan_endpoint(ep, manufacturer))
                 if not u.isManf(manufacturer) and u.isManf(ep.manufacturer_id):
-                    LOGGER.debug("Scanning endpoint #%i with manf '%r'", epid, ep.manufacturer_id)
+                    LOGGER.debug(
+                        "Scanning endpoint #%i with manf '%r'",
+                        epid,
+                        ep.manufacturer_id,
+                    )
                     endpoint.update(
                         await scan_endpoint(ep, ep.manufacturer_id)
                     )
@@ -369,7 +375,6 @@ async def scan_device(
 
     endpoints = params[p.EP_ID]
     manf = params[p.MANF]
-
 
     if endpoints is None:
         endpoints = []

@@ -536,9 +536,8 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 
 def isManf(manf, includeNone=False):
     if manf is None:
-        return includeNone;
-    return not (
-        isinstance(manf, str) and manf == "") or (
+        return includeNone
+    return not (isinstance(manf, str) and manf == "") or (
         isinstance(manf, int) and (manf == 0 or manf < 0)
     )
 
