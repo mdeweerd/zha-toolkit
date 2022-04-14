@@ -534,6 +534,15 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
     return attr_obj, msg, compare_val
 
 
+def isManf(manf, includeNone=False):
+    if manf is None:
+        return includeNone;
+    return not (
+        isinstance(manf, str) and manf == "") or (
+        isinstance(manf, int) and (manf == 0 or manf < 0)
+    )
+
+
 # Common method to extract and convert parameters.
 #
 # Most parameters are similar, this avoids repeating
@@ -615,15 +624,15 @@ def extractParams(  # noqa: C901
         params[p.MANF] = str2int(rawParams[P.MANF])
 
     manf = params[p.MANF]
-    if (isinstance(manf, str) and manf == "") or (
-        isinstance(manf, int) and (manf == 0 or manf < 0)
-    ):
+    if not isManf(manf, True):
         LOGGER.debug("Got manf '%s'", manf)
         if hasattr(f.ZCLHeader, "NO_MANUFACTURER_ID"):
-            manf = f.ZCLHeader.NO_MANUFACTURER_ID
+            params[p.MANF] = f.ZCLHeader.NO_MANUFACTURER_ID
         else:
             # Forcing b"" not ok in call cases # Not None, force empty manf
             params[p.MANF] = b""
+
+    LOGGER.debug("Final manf '%r'", params[p.MANF])
 
     # Get tries
     if P.TRIES in rawParams:

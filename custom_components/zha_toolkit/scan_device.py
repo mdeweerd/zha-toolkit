@@ -60,12 +60,12 @@ async def scan_results(device, endpoints=None, manufacturer=None):
     for epid in endpoints:
         if epid == 0:
             continue
-        LOGGER.debug("scanning endpoint #%i", epid)
         if epid in device.endpoints:
+            LOGGER.debug("scanning endpoint #%i", epid)
             ep = device.endpoints[epid]
             result["model"] = ep.model
             result["manufacturer"] = ep.manufacturer
-            if ep.manufacturer_id is not None:
+            if u.isManf(ep.manufacturer_id):
                 result["manufacturer_id"] = f"0x{ep.manufacturer_id}"
             else:
                 result["manufacturer_id"] = None
@@ -75,8 +75,10 @@ async def scan_results(device, endpoints=None, manufacturer=None):
                 "profile": f"0x{ep.profile_id:04x}",
             }
             if epid != 242:
+                LOGGER.debug("Scanning endpoint #%i with manf '%r'", epid, manufacturer)
                 endpoint.update(await scan_endpoint(ep, manufacturer))
-                if manufacturer is None and ep.manufacturer_id is not None:
+                if not u.isManf(manufacturer) and u.isManf(ep.manufacturer_id):
+                    LOGGER.debug("Scanning endpoint #%i with manf '%r'", epid, ep.manufacturer_id)
                     endpoint.update(
                         await scan_endpoint(ep, ep.manufacturer_id)
                     )
@@ -125,7 +127,7 @@ async def scan_cluster(cluster, is_server=True, manufacturer=None):
         cmds_gen = "commands_received"
     attributes = await discover_attributes_extended(cluster, None)
     LOGGER.debug("scan_cluster attributes (none): %s", attributes)
-    if manufacturer is not None:
+    if u.isManf(manufacturer):
         LOGGER.debug(
             "scan_cluster attributes (none) with manf '%s': %s",
             manufacturer,
@@ -169,8 +171,8 @@ async def discover_attributes_extended(cluster, manufacturer=None):
             LOGGER.error(
                 (
                     "Failed 'discover_attributes_extended'"
-                    + " starting 0x%04x/0x%04x."
-                    + " Error: %s"
+                    " starting 0x%04x/0x%04x."
+                    " Error: %s"
                 ),
                 cluster.cluster_id,
                 attr_id,
@@ -224,7 +226,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 "access": access,
                 "access_acl": access_acl,
             }
-            if manufacturer is not None:
+            if u.isManf(manufacturer):
                 result[attr_id]["manf_id"] = manufacturer
             attr_id += 1
         await asyncio.sleep(0.2)
@@ -361,12 +363,13 @@ async def scan_device(
         LOGGER.error("missing ieee")
         raise Exception("missing ieee")
 
-    LOGGER.debug("running 'scan_device' command: %s", service)
+    LOGGER.debug("Running 'scan_device'")
 
     device = app.get_device(ieee)
 
     endpoints = params[p.EP_ID]
     manf = params[p.MANF]
+
 
     if endpoints is None:
         endpoints = []
@@ -393,7 +396,7 @@ async def scan_device(
 
     # Set a unique filename for each device, using the manf name and
     # the variable part of the device mac address
-    if model is not None and manufacturer is not None:
+    if model is not None and u.isManf(manufacturer):
         ieee_tail = "".join([f"{o:02x}" for o in ieee[4::-1]])
         file_name = f"{model}_{manufacturer}_{ieee_tail}{postfix}"
     else:

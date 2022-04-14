@@ -602,7 +602,6 @@ def register_services(hass):  # noqa: C901
 
         slickParams = params.copy()
         for k in params.keys():
-            LOGGER.debug(f"Key {p}")
             if slickParams[k] is None or slickParams[k] is False:
                 del slickParams[k]
 
