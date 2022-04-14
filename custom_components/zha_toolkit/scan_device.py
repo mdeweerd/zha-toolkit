@@ -301,8 +301,12 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
                 cmd_id, (str(cmd_id), "not_in_zcl", None)
             )
             cmd_name, cmd_args, _ = cmd_data
-            if not isinstance(cmd_args, str):
+            if isinstance(cmd_args, Iterable):
                 cmd_args = [arg.__name__ for arg in cmd_args]
+            elif not isinstance(cmd_args, str):
+                # Unexpected type, get repr to make sure it transforms to json.
+                cmd_args = f"{cmd_args!r}"
+
             key = f"0x{cmd_id:02x}"
             result[key] = {
                 "command_id": f"0x{cmd_id:02x}",
