@@ -25,8 +25,16 @@ if True or not hasattr(Cluster, "_read_reporting_configuration"):
     def read_reporting_configuration(
         self, cfg: t.List[f.ReadReportingConfigRecord], **kwargs
     ):
-        schema = f.COMMANDS[0x08][0]
+        command = f.COMMANDS[0x08]
+        if isinstance(command, f.ZCLCommandDef):
+            # Since zigpy 0.44.0
+            schema = command.schema
+        else:
+            # Before zigpy 0.44.0
+            schema = command[0]
+
         # LOGGER.error(f"SELF:{self!r}")
+        # LOGGER.error(f"COMMAND:{command!r}")
         # LOGGER.error(f"SCHEMA:{schema!r}")
         # data = t.serialize([cfg], schema)
         # LOGGER.error(f"SERIALIZED:{data!r}")
@@ -71,6 +79,8 @@ async def my_read_reporting_configuration_multiple(
         # LOGGER.warn(f"Record {record.direction} {record.attrid}")
         cfg.append(record)
     LOGGER.warn("Read reporting with %s", cfg)
+    param = t.List[f.ReadReportingConfigRecord](cfg)
+    LOGGER.debug("Resolves to %s", param)
 
     # Exception is propagated to caller if any
     res = await self._read_reporting_configuration(
