@@ -80,7 +80,7 @@ async def my_read_reporting_configuration_multiple(
         cfg.append(record)
     LOGGER.warn("Read reporting with %s", cfg)
     param = t.List[f.ReadReportingConfigRecord](cfg)
-    LOGGER.warn("Resolves to %s", param)
+    LOGGER.debug("Resolves to %s", param)
 
     # Exception is propagated to caller if any
     res = await self._read_reporting_configuration(
