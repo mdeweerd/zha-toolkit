@@ -303,9 +303,9 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             cmd_name, cmd_args, _ = cmd_data
 
             if not isinstance(cmd_args, str):
-                if hasattr(cmd_args, "__iter__"):
+                try:
                     cmd_args = [arg.__name__ for arg in cmd_args]
-                else:
+                except TypeError:
                     # Unexpected type, get repr to make sure it is ok for json
                     cmd_args = f"{cmd_args!r}"
 
