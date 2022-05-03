@@ -355,8 +355,11 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
                 cmd_id, (str(cmd_id), "not_in_zcl", None)
             )
             cmd_name, cmd_args, _ = cmd_data
-            if not isinstance(cmd_args, str):
+            try:
                 cmd_args = [arg.__name__ for arg in cmd_args]
+            except TypeError:
+                # Unexpected type, get repr to make sure it is ok for json
+                cmd_args = f"{cmd_args!r}"
             key = f"0x{cmd_id:02x}"
             result[key] = {
                 "command_id": f"0x{cmd_id:02x}",
