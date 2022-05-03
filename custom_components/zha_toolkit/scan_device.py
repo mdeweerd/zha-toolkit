@@ -173,7 +173,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.2)
-        except (DeliveryError, asyncio.TimeoutError) as ex:
+        except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 (
                     "Failed 'discover_attributes_extended'"
@@ -284,7 +284,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.2)
-        except (DeliveryError, asyncio.TimeoutError) as ex:
+        except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover %s commands starting %s. Error: %s",
                 cmd_id,
@@ -338,7 +338,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
                 manufacturer=manufacturer,
             )
             await asyncio.sleep(0.2)
-        except (DeliveryError, asyncio.TimeoutError) as ex:
+        except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
                 "Failed to discover commands starting %s. Error: %s",
                 cmd_id,
