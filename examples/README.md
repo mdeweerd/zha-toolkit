@@ -23,8 +23,8 @@
 
 ## Download firmware from different sources.
 
-See `fetchOTAfw.sh` for instructions.
-Then refer to [ota_notify](https://github.com/mdeweerd/zha-toolkit#ota_notify) to
-reload the `otau_directory` contents.
+See `fetchOTAfw.sh` for instructions. Then refer to
+[ota_notify](https://github.com/mdeweerd/zha-toolkit#ota_notify) to reload
+the `otau_directory` contents.
 
 Maybe someday this will be converted to python...
