@@ -20,3 +20,11 @@
 2022-02-17T18:27:36.352902+00:00,Basic,model,TS0505A,0x0005,0x0000,1,60:a4:23:ff:fe:91:fc:9a,
 2022-02-17T18:27:36.488601+00:00,Basic,date_code,,0x0006,0x0000,1,60:a4:23:ff:fe:91:fc:9a,
 ```
+
+## Download firmware from different sources.
+
+See `fetchOTAfw.sh` for instructions.
+Then refer to [ota_notify](https://github.com/mdeweerd/zha-toolkit#ota_notify) to
+reload the `otau_directory` contents.
+
+Maybe someday this will be converted to python...
