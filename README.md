@@ -299,7 +299,7 @@ turn red in case the zigbee transaction result is not `SUCCESS`, then add
 ## Tries
 
 ```yaml
-    tries: true
+    tries: 10
 ```
 
 Tries indicates how many times a zigbee transaction is repeated until it
