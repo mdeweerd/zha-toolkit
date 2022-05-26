@@ -13,7 +13,6 @@ from . import utils as u
 DEPENDENCIES = ["zha"]
 
 DOMAIN = "zha_toolkit"
-REGISTERED_VERSION = ""
 
 # Legacy parameters
 ATTR_COMMAND = "command"
@@ -531,6 +530,10 @@ CMD_TO_INTERNAL_MAP = {
 }
 
 
+class modvars:  # pylint: disable=too-few-public-methods
+    REGISTERED_VERSION = ""
+
+
 async def async_setup(hass, config):
     """Set up ZHA from config."""
 
@@ -572,10 +575,10 @@ def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        if u.getVersion() != REGISTERED_VERSION:
+        if u.getVersion() != modvars.REGISTERED_VERSION:
             LOGGER.debug(
                 "Reload services because version changed from %s to %s",
-                REGISTERED_VERSION,
+                modvars.REGISTERED_VERSION,
                 u.getVersion(),
             )
             await command_handler_register_services(
@@ -601,7 +604,7 @@ def register_services(hass):  # noqa: C901
         ieee = await u.get_ieee(app, zha_gw, ieee_str)
 
         slickParams = params.copy()
-        for k in params.keys():
+        for k in params:
             if slickParams[k] is None or slickParams[k] is False:
                 del slickParams[k]
 
@@ -709,7 +712,7 @@ def register_services(hass):  # noqa: C901
             schema=value,
         )
 
-    REGISTERED_VERSION = u.getVersion()
+    modvars.REGISTERED_VERSION = u.getVersion()
 
 
 async def command_handler_default(
@@ -736,7 +739,7 @@ async def command_handler_default(
 
         # Use default handler for generic command loading
         if cmd in CMD_TO_INTERNAL_MAP:
-            cmd = CMD_TO_INTERNAL_MAP[cmd]
+            cmd = CMD_TO_INTERNAL_MAP.get(cmd)
 
         await default.default(
             app, listener, ieee, cmd, data, service, params, event_data

@@ -37,7 +37,7 @@ async def scan_results(device, endpoints=None, manufacturer=None):
         "nwk": f"0x{device.nwk:04x}",
     }
 
-    LOGGER.debug("Scanning device 0x{:04x}", device.nwk)
+    LOGGER.debug("Scanning device 0x{%04x}", device.nwk)
 
     # Get list of endpoints
     #  None -> all endpoints
@@ -270,7 +270,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
     from zigpy.zcl.foundation import Status
 
     LOGGER.debug("Discovering commands received")
-    direction = "received" if is_server else "generated"  # noqa: F841
+    # direction = "received" if is_server else "generated"  # noqa: F841
     result = {}
     cmd_id = 0  # Discover commands starting from 0
     done = False
@@ -286,7 +286,8 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
             await asyncio.sleep(0.2)
         except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover %s commands starting %s. Error: %s",
+                "Failed to discover 0x{%04x} commands starting %s. Error: %s",
+                cluster.cluster_id,
                 cmd_id,
                 ex,
             )
@@ -324,7 +325,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
     from zigpy.zcl.foundation import Status
 
     LOGGER.debug("Discovering commands generated")
-    direction = "generated" if is_server else "received"  # noqa: F841
+    # direction = "generated" if is_server else "received"  # noqa: F841
     result = {}
     cmd_id = 0  # Initial index of commands to discover
     done = False
