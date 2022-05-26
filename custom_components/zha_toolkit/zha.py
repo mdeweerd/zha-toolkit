@@ -15,7 +15,9 @@ async def zha_devices(
     devices = [device.zha_device_info for device in listener.devices.values()]
     event_data["devices"] = devices
 
-    if params[p.CSV_LABEL] is not None and type(params[p.CSV_LABEL]) == str:
+    if params[p.CSV_LABEL] is not None and isinstance(
+        params[p.CSV_LABEL], str
+    ):
         try:
             # Lamba function gets column and returns false if None
             # This make compares possible for ints)
@@ -29,7 +31,7 @@ async def zha_devices(
             pass
 
     if params[p.CSV_FILE] is not None:
-        if data is not None and type(data) == list:
+        if data is not None and isinstance(data, list):
             columns = data
         else:
             columns = [
@@ -71,12 +73,12 @@ async def zha_devices(
                     fields.append(None)
                 else:
                     val = d[c]
-                    if c in ["manufacturer", "nwk"] and type(val) == int:
+                    if c in ["manufacturer", "nwk"] and isinstance(val, int):
                         val = f"0x{val:04X}"
 
                     fields.append(d[c])
 
-            LOGGER.debug(f"Device {fields!r}")
+            LOGGER.debug("Device %r", fields)
             u.append_to_csvfile(
                 fields,
                 "csv",
