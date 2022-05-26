@@ -28,7 +28,7 @@ ls *.ZIGBEE *.OTA *.sbl-ota *.bin *.ota *.zigbee > existing.list
 curl https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json |\
  jq -r '.[] |.url' |\
  grep -v -f existing.list |\
- xargs wget --no-clobber
+ xargs bash -c 'for f do wget --no-clobber $f || rm ${f##*/} ; done'
 
 # Delete the helper file used to filter already downloaded files
 rm existing.list
