@@ -76,8 +76,9 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                 )
                 LOGGER.error(msg)
                 raise Exception(msg)
-            else:
-                cluster = endpoint.in_clusters[cluster_id]
+
+            # Cluster is found
+            cluster = endpoint.in_clusters[cluster_id]
 
             if (cluster_id == 5) and (cmd_id == 0):
                 org_cluster_cmd_defs[0] = cluster.server_commands[0]
@@ -114,8 +115,9 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                 )
                 LOGGER.error(msg)
                 raise Exception(msg)
-            else:
-                cluster = endpoint.out_clusters[cluster_id]
+
+            # Found cluster
+            cluster = endpoint.out_clusters[cluster_id]
 
             # Note: client_command not tested
             await cluster.client_command(cmd_id, *cmd_args, manufacturer=manf)
@@ -124,11 +126,11 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
     finally:
         # Restore replaced cluster command definitions
         # LOGGER.debug("replaced %s", org_cluster_cmd_defs)
-        for key, _value in org_cluster_cmd_defs.items():
+        for key, cmd_def in org_cluster_cmd_defs.items():
             if is_in_cluster:
-                cluster.server_commands[key] = org_cluster_cmd_defs[key]
+                cluster.server_commands[key] = cmd_def
             else:
-                cluster.client_commands[key] = org_cluster_cmd_defs[key]
+                cluster.client_commands[key] = cmd_def
         if caught_e is not None:
             raise caught_e
 
