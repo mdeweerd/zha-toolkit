@@ -44,7 +44,7 @@ repos:
           - -d
           - '{extends: relaxed, rules: {line-length: {max: 90}}}'
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.0
+    rev: v2.32.1
     hooks:
       - id: pyupgrade
         args:
@@ -104,7 +104,7 @@ repos:
           - --reports=no
         #exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.942
+    rev: v0.960
     hooks:
       - id: mypy
         args:
