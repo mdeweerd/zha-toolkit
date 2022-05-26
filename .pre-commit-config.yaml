@@ -44,7 +44,7 @@ repos:
           - -d
           - '{extends: relaxed, rules: {line-length: {max: 90}}}'
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.0
+    rev: v2.32.1
     hooks:
       - id: pyupgrade
         args:
@@ -96,8 +96,15 @@ repos:
           - --ignore-words-list=hass
           - --skip="./.*"
           - --quiet-level=2
+  - repo: https://github.com/pre-commit/mirrors-pylint
+    rev: v3.0.0a4
+    hooks:
+      - id: pylint
+        args:
+          - --reports=no
+        #exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.942
+    rev: v0.960
     hooks:
       - id: mypy
         args:

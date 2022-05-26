@@ -26,7 +26,7 @@ async def znp_backup(
     import json
     import os
 
-    from zigpy_znp.tools.network_backup import backup_network as backup_network
+    from zigpy_znp.tools.network_backup import backup_network
 
     # Get backup information
     backup_obj = await backup_network(app._znp)
@@ -47,9 +47,8 @@ async def znp_backup(
     event_data["backup_file"] = fname
 
     LOGGER.debug("Writing to %s", fname)
-    f = open(fname, "w")
-    f.write(json.dumps(backup_obj, indent=4))
-    f.close()
+    with open(fname, "w") as f:
+        f.write(json.dumps(backup_obj, indent=4))
 
 
 async def znp_restore(
@@ -69,7 +68,7 @@ async def znp_restore(
 
     counter_increment = u.str2int(data)
 
-    if type(counter_increment) != int:
+    if not isinstance(counter_increment, int):
         counter_increment = 2500
 
     counter_increment = t.uint32_t(counter_increment)
@@ -97,9 +96,8 @@ async def znp_restore(
     event_data["restore_file"] = fname
 
     # Read backup file
-    f = open(fname)
-    backup = json.load(f)
-    f.close()
+    with open(fname) as f:
+        backup = json.load(f)
 
     # validate the backup file
     LOGGER.info("Validating backup contents")
@@ -163,9 +161,8 @@ async def znp_nvram_backup(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Saving NVRAM to '%s'", fname)
-    f = open(fname, "w")
-    f.write(json.dumps(backup_obj, indent=4))
-    f.close()
+    with open(fname, "w") as f:
+        f.write(json.dumps(backup_obj, indent=4))
     LOGGER.info("NVRAM backup saved to '%s'", fname)
 
 
@@ -205,9 +202,8 @@ async def znp_nvram_restore(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Restoring NVRAM from '%s'", fname)
-    f = open(fname, "w")
-    nvram_obj = json.load(f)
-    f.close()
+    with open(fname, "w") as f:
+        nvram_obj = json.load(f)
 
     await nvram_write(app._znp, nvram_obj)
     LOGGER.info("Restored NVRAM from '%s'", fname)

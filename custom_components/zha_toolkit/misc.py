@@ -192,4 +192,4 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
         res = "Not executed, no valid 'method' defined in code"
 
     event_data["result"] = res
-    LOGGER.debug("%s: leave and rejoin result: %s", src, ieee, res)
+    LOGGER.debug("%s -> %s: leave and rejoin result: %s", src, ieee, res)

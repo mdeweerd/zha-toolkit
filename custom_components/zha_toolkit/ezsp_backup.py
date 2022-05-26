@@ -37,7 +37,7 @@ async def _backup(ezsp):
     )
     assert status == t.EmberStatus.SUCCESS
 
-    (status, tclk) = await ezsp.getKey(
+    (status, _tclk) = await ezsp.getKey(
         ezsp.types.EmberKeyType.TRUST_CENTER_LINK_KEY
     )
     assert status == t.EmberStatus.SUCCESS
@@ -50,10 +50,10 @@ async def _backup(ezsp):
 
         if nwk == EMBER_TABLE_ENTRY_UNUSED_NODE_ID:
             continue
-        elif nwk == EMBER_UNKNOWN_NODE_ID:
+        if nwk == EMBER_UNKNOWN_NODE_ID:
             LOGGER.warning("NWK address for %s is unknown!", eui64)
             continue
-        elif nwk == EMBER_DISCOVERY_ACTIVE_NODE_ID:
+        if nwk == EMBER_DISCOVERY_ACTIVE_NODE_ID:
             LOGGER.warning(
                 "NWK address discovery for %s is currently ongoing", eui64
             )

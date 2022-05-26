@@ -169,13 +169,15 @@ async def add_to_group(
     for ep_id, ep in dev.endpoints.items():
         if ep_id == 0 or (endpoint_id is not None and ep_id != endpoint_id):
             continue
-        LOGGER.debug(
-            "Subscribing %s EP %u to %s group: %s", ieee, ep_id, grp_id
-        )
+        LOGGER.debug("Subscribing %s EP %u to group: %s", ieee, ep_id, grp_id)
         res = await ep.add_to_group(grp_id, f"Group {data}")
         result.append(res)
         LOGGER.info(
-            "Subscribed EP %u to %s group: %s", ieee, ep_id, grp_id, res
+            "Subscribed %s EP %u to group: %s Result: %r",
+            ieee,
+            ep_id,
+            grp_id,
+            res,
         )
 
     event_data["result"] = result
@@ -202,7 +204,11 @@ async def remove_from_group(
         res = await ep.remove_from_group(grp_id)
         result.append(res)
         LOGGER.info(
-            "Unsubscribed %s EP %u from group: %s", ieee, ep_id, grp_id, res
+            "Unsubscribed %s EP %u from group: %s Result: %r",
+            ieee,
+            ep_id,
+            grp_id,
+            res,
         )
 
     event_data["result"] = result

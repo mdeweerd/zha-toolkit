@@ -17,72 +17,71 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
-VERSION_TIME: float
-VERSION: str
-MANIFEST: dict[str, str | list[str]]
+
+class _uvars:  # pylint: disable=too-few-public-methods
+    VERSION_TIME: float = 0
+    VERSION: str = "Unknown"
+    MANIFEST: dict[str, str | list[str]] = {}
 
 
 def getVersion() -> str:
-    # Set name with regards to local path
-    global VERSION_TIME
-    global VERSION
-    global MANIFEST
 
     fname = os.path.dirname(__file__) + "/manifest.json"
 
-    ftime: float = 0
-    try:
-        VERSION_TIME
-    except NameError:
-        VERSION_TIME = 0
-        VERSION = "Unknown"
-        MANIFEST = {}
+    ftime: float = _uvars.VERSION_TIME
 
     try:
-        ftime = os.path.getmtime(fname)
-        if ftime != ftime:
-            VERSION = "Unknown"
-            MANIFEST = {}
+        ntime = os.path.getmtime(fname)
+        if ftime != ntime:
+            ftime = ntime
+            _uvars.VERSION = "Unknown"
+            _uvars.MANIFEST = {}
     except Exception:
-        MANIFEST = {}
+        _uvars.MANIFEST = {}
 
-    if (VERSION is None and ftime != 0) or (ftime != VERSION_TIME):
+    if (_uvars.VERSION is None and ftime != 0) or (
+        ftime != _uvars.VERSION_TIME
+    ):
         # No version, or file change -> get version again
-        LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
+        LOGGER.debug(
+            f"Read version from {fname} {ftime}<>{_uvars.VERSION_TIME}"
+        )
 
-        with open(fname) as f:
-            VERSION_TIME = ftime
-            MANIFEST = json.load(f)
+        with open(fname) as infile:
+            _uvars.VERSION_TIME = ftime
+            _uvars.MANIFEST = json.load(infile)
 
-        if MANIFEST is not None:
-            if "version" in MANIFEST.keys():
-                v = MANIFEST["version"]
-                VERSION = v if isinstance(v, str) else "Invalid manifest"
-                if VERSION == "0.0.0":
-                    VERSION = "dev"
+        if _uvars.MANIFEST is not None:
+            if "version" in _uvars.MANIFEST.keys():
+                v = _uvars.MANIFEST["version"]
+                _uvars.VERSION = (
+                    v if isinstance(v, str) else "Invalid manifest"
+                )
+                if _uvars.VERSION == "0.0.0":
+                    _uvars.VERSION = "dev"
 
-    return VERSION
+    return _uvars.VERSION
 
 
 # Convert string to int if possible or return original string
 #  (Returning the original string is useful for named attributes)
-def str2int(s):
-    if not type(s) == str:
+def str2int(s):  # pylint: disable=too-many-return-statements
+    if not isinstance(s, str):
         return s
-    elif s.lower() == "false":
+    if s.lower() == "false":
         return 0
-    elif s.lower() == "true":
+    if s.lower() == "true":
         return 1
-    elif s.startswith("0x") or s.startswith("0X"):
+    if s.startswith("0x") or s.startswith("0X"):
         return int(s, 16)
-    elif s.startswith("0") and s.isnumeric():
+    if s.startswith("0") and s.isnumeric():
         return int(s, 8)
-    elif s.startswith("b") and s[1:].isnumeric():
+    if s.startswith("b") and s[1:].isnumeric():
         return int(s[1:], 2)
-    elif s.isnumeric():
+    if s.isnumeric():
         return int(s)
-    else:
-        return s
+    # By default, return the same value
+    return s
 
 
 # Convert string to best boolean representation
@@ -199,21 +198,23 @@ def get_radio_version(app):
 # Get zigbee IEEE address (EUI64) for the reference.
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
+    # pylint: disable=too-many-return-statements
     # LOGGER.debug("Type IEEE: %s", type(ref))
-    if type(ref) == str:
+    if isinstance(ref, str):
         # Check if valid ref address
         if ref.count(":") == 7:
             return t.EUI64.convert(ref)
 
         # Check if network address
         nwk = str2int(ref)
-        if (type(nwk) == int) and nwk >= 0x0000 and nwk <= 0xFFF7:
+        if isinstance(nwk, int) and 0x0000 <= nwk <= 0xFFF7:
             device = app.get_device(nwk=nwk)
             if device is None:
                 return None
-            else:
-                LOGGER.debug("NWK addr 0x04x -> %s", nwk, device.ieee)
-                return device.ieee
+
+            # Device is found
+            LOGGER.debug("NWK addr 0x%04x -> %s", nwk, device.ieee)
+            return device.ieee
 
         # Todo: check if NWK address
         entity_registry = (
@@ -400,8 +401,8 @@ def append_to_csvfile(
 
     import csv
 
-    with open(file_name, "w" if overwrite else "a") as f:
-        writer = csv.writer(f)
+    with open(file_name, "w" if overwrite else "a") as out:
+        writer = csv.writer(out)
         writer.writerow(fields)
 
     if overwrite:
@@ -494,7 +495,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         # Octet string requires length -> LVBytes
         compare_val = t.LVBytes(attr_val_in)
 
-        if type(attr_val_in) == str:
+        if isinstance(attr_val_in, str):
             attr_val_in = bytes(attr_val_in, "utf-8")
 
         if isinstance(attr_val_in, list):

@@ -86,8 +86,6 @@ async def bind_group(
 async def unbind_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy.zdo.types import MultiAddress
-
     LOGGER.debug("running 'unbind group' command: %s", service)
     if ieee is None:
         LOGGER.error("missing ieee")
@@ -150,8 +148,6 @@ async def unbind_group(
 async def bind_ieee(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    from zigpy.zdo.types import MultiAddress
-
     if ieee is None or data is None:
         raise ValueError("'ieee' and 'data' required")
 
@@ -504,4 +500,4 @@ async def binds_get(
     event_data["success"] = success
     event_data["result"] = bindings
 
-    LOGGER.debug("0x%04x: bindings ieee {ieee!r}: %s", bindings)
+    LOGGER.debug("Bindings for ieee {ieee!r}: %s", bindings)
