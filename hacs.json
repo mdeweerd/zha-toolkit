@@ -3,7 +3,6 @@
   "content_in_root": false,
   "zip_release": true,
   "render_readme": true,
-  "domains": ["zha"],
   "persistent_directory": "local",
   "homeassistant": "2021.1"
 }
