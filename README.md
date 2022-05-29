@@ -1,4 +1,4 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
