@@ -222,7 +222,7 @@ async def get_ieee(app, listener, ref):
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.entity_registry.async_get_registry()
             if HA_VERSION < "2022.6"
-            else await listener._hass.helpers.entity_registry.async_get()
+            else listener._hass.helpers.entity_registry.async_get(listener._hass)
         )
         # LOGGER.debug("registry %s",entity_registry)
         registry_entity = entity_registry.async_get(ref)
@@ -237,7 +237,7 @@ async def get_ieee(app, listener, ref):
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.device_registry.async_get_registry()
             if HA_VERSION < "2022.6"
-            else await listener._hass.helpers.device_registry.async_get()
+            else listener._hass.helpers.device_registry.async_get(listener._hass)
         )
         registry_device = device_registry.async_get(registry_entity.device_id)
         LOGGER.debug("registry_device %s", registry_device)
