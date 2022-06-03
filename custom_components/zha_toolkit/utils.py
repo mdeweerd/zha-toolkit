@@ -6,6 +6,7 @@ import logging
 import os
 from enum import Enum
 
+from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.util.json import save_json
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
@@ -218,7 +219,10 @@ async def get_ieee(app, listener, ref):
 
         # Todo: check if NWK address
         entity_registry = (
+            # Deprecated >= 2022.6.0
             await listener._hass.helpers.entity_registry.async_get_registry()
+            if HA_VERSION < "2022.6"
+            else await listener._hass.helpers.entity_registry.async_get()
         )
         # LOGGER.debug("registry %s",entity_registry)
         registry_entity = entity_registry.async_get(ref)
@@ -230,7 +234,10 @@ async def get_ieee(app, listener, ref):
             return None
 
         device_registry = (
+            # Deprecated >= 2022.6.0
             await listener._hass.helpers.device_registry.async_get_registry()
+            if HA_VERSION < "2022.6"
+            else await listener._hass.helpers.device_registry.async_get()
         )
         registry_device = device_registry.async_get(registry_entity.device_id)
         LOGGER.debug("registry_device %s", registry_device)
