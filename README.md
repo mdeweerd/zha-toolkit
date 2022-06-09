@@ -734,13 +734,6 @@ Example of data available in the event report.
 
 Read the report configuration of a cluster.
 
-This is currently not fully functional due to a limitation in zigpy which
-is resolved in a version not released yet in Home Assistant.\
-The data read
-back is not decoded properly.\
-The read request is sent and replied to so
-you can sniff it.
-
 ```yaml
 service: zha_toolkit.read_report_conf
 data:
@@ -753,6 +746,25 @@ data:
   # Optional manufacturer
   #manf: 0x1204
   event_done: my_conf_read_done_trigger_event
+```
+
+Example result (partial event data) where the min and max reporting
+intravals are provided, as well as the reportable change:
+
+```json
+        "result_conf": [
+            {
+                "cluster": "Metering",
+                "cluster_id": "0x0702",
+                "attr_id": "0x0000",
+                "direction": 0,
+                "type": "0x25",
+                "min_interval": 1,
+                "max_interval": 300,
+                "reportable_change": 1,
+                "status": 0
+            }
+        ]
 ```
 
 ## `scan_device`: Scan a device/Read all attribute values
