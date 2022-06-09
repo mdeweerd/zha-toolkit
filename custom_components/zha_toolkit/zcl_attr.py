@@ -147,6 +147,7 @@ async def conf_report_read(
     triesToGo = params[p.TRIES]
     event_data["success"] = False
     result_conf = None
+    event_data["result_conf"] = []
 
     if not isinstance(params[p.ATTR_ID], list):
         params[p.ATTR_ID] = [params[p.ATTR_ID]]
@@ -168,16 +169,27 @@ async def conf_report_read(
                 )
             )
             LOGGER.debug("Got result %s", result_conf)
-            event_data["result_conf"] = result_conf
             triesToGo = 0  # Stop loop
+
             LOGGER.info("Read Report Configuration result: %s", result_conf)
             if result_conf is None:
                 event_data["success"] = False
             else:
-                pass
-                # event_data["success"] = (
-                #    result_conf[0][0].status == f.Status.SUCCESS
-                # )
+                for cfg_with_status in result_conf.attribute_configs:
+                    rcfg: f.AttributeReportingConfig = cfg_with_status.config
+                    event_data["result_conf"].append(
+                        {
+                            "cluster": cluster.name,
+                            "cluster_id": f"0x{cluster.cluster_id:04X}",
+                            "attr_id": f"0x{rcfg.attrid:04X}",
+                            "direction": rcfg.direction,
+                            "type": f"0x{rcfg.datatype:02X}",
+                            "min_interval": rcfg.min_interval,
+                            "max_interval": rcfg.max_interval,
+                            "reportable_change": rcfg.reportable_change,
+                            "status": cfg_with_status.status,
+                        }
+                    )
         except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
             continue
         except Exception as e:
