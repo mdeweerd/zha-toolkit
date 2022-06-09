@@ -145,7 +145,7 @@ async def conf_report_read(
         return
 
     triesToGo = params[p.TRIES]
-    event_data["success"] = False
+    event_data["success"] = True
     result_conf = None
     event_data["result_conf"] = []
 
