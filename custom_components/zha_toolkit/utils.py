@@ -222,7 +222,9 @@ async def get_ieee(app, listener, ref):
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.entity_registry.async_get_registry()
             if HA_VERSION < "2022.6"
-            else listener._hass.helpers.entity_registry.async_get(listener._hass)
+            else listener._hass.helpers.entity_registry.async_get(
+                listener._hass
+            )
         )
         # LOGGER.debug("registry %s",entity_registry)
         registry_entity = entity_registry.async_get(ref)
@@ -237,7 +239,9 @@ async def get_ieee(app, listener, ref):
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.device_registry.async_get_registry()
             if HA_VERSION < "2022.6"
-            else listener._hass.helpers.device_registry.async_get(listener._hass)
+            else listener._hass.helpers.device_registry.async_get(
+                listener._hass
+            )
         )
         registry_device = device_registry.async_get(registry_entity.device_id)
         LOGGER.debug("registry_device %s", registry_device)
@@ -361,7 +365,7 @@ def get_cluster_from_params(
         msg = "InCluster 0x{:04X} not found for '{}', endpoint {}".format(
             cluster_id, repr(dev.ieee), params[p.EP_ID]
         )
-        if cluster_id in dev.enddev.points[params[p.EP_ID]].out_clusters:
+        if cluster_id in dev.endpoints[params[p.EP_ID]].out_clusters:
             msg = f'"Using" OutCluster. {msg}'
             LOGGER.warning(msg)
             if "warnings" not in event_data:
