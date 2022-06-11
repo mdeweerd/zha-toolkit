@@ -56,9 +56,8 @@ This example is located in `hello.py`. Therefore the start of the function
 name (`hello`) matches the module name.
 
 ```python
-async def hello_world(
-    app, listener, ieee, cmd, data, service, params, event_data
-):
+async def hello_world(app, listener, ieee, cmd, data, service, params, event_data):
+    pass
 ```
 
 Because of the naming, it is immediately available using the

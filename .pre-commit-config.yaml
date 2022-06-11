@@ -14,6 +14,11 @@ repos:
         args: [--wrap, '75', --number]
         additional_dependencies:
           - mdformat-toc
+          - mdformat-beautysh
+          - mdformat-config
+          - mdformat-black
+          - mdformat-web
+          - mdformat-gfm
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
