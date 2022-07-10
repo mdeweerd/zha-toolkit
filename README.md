@@ -861,6 +861,8 @@ service: zha_toolkit.leave
 data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
+  # (Parent ) IEEE address (router) that removes the device (required).
+  command_data: 00:12:4b:00:01:6a:41:0c
 ```
 
 ### `rejoin`
