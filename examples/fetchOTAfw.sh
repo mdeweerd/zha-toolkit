@@ -1,4 +1,10 @@
-#!/bin/sh 
+#!/bin/sh
+#
+# Important:
+#  Requires `jq` (https://stedolan.github.io/jq/)
+#  If not available on your system, on alpine you just
+#  need to add the [jq package](https://pkgs.alpinelinux.org/package/edge/main/x86/jq).
+#
 # In configuration.yaml, set the fw directory:
 # (Note: only the otau_directory option is shown)
 #
@@ -26,9 +32,9 @@ ls *.ZIGBEE *.OTA *.sbl-ota *.bin *.ota *.zigbee > existing.list
 
 # Get and filter the list from Koenk's list, download the files
 curl https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json |\
- jq -r '.[] |.url' |\
- grep -v -f existing.list |\
- xargs bash -c 'for f do wget --no-clobber $f || rm ${f##*/} ; done'
+    jq -r '.[] |.url' |\
+    grep -v -f existing.list |\
+    xargs bash -c 'for f do wget --no-clobber $f || rm ${f##*/} ; done'
 
 # Delete the helper file used to filter already downloaded files
 rm existing.list
