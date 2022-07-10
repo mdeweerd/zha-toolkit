@@ -351,7 +351,7 @@ def get_cluster_from_params(
         params[p.EP_ID] = find_endpoint(dev, params[p.CLUSTER_ID])
 
     if params[p.EP_ID] not in dev.endpoints:
-        msg = f"Endpoint {params[p.EP_ID]} not found for '{dev.ieee!r}"
+        msg = f"Endpoint {params[p.EP_ID]} not found for '{dev.ieee!r}'"
         LOGGER.error(msg)
         raise Exception(msg)
 

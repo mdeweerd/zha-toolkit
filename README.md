@@ -155,8 +155,8 @@ debug logging only for a limited duration :
 ```yaml
 service: logger.set_level
 data:
-    custom_components.zha_toolkit: debug
-    zigpy.zcl: debug
+  custom_components.zha_toolkit: debug
+  zigpy.zcl: debug
 ```
 
 For sleepy devices (on a battery) you may need to wake them up just after
@@ -233,7 +233,7 @@ documentation updates.
 In almost all commands you need to provide a reference to the device that
 you want to control.
 
-```yaml
+```
   # Valid possibilities for the `ieee` address
   # The full IEEE address:
   ieee: 00:12:4b:00:24:42:d1:dc
@@ -258,6 +258,7 @@ All commands support setting event names. When set, These events are
 generated at the end of the command execution.
 
 ```yaml
+zha_toolkit.SERVICE_NAME:
   # You can set the next events to use as a trigger.
   # The event data has the result of the command
   event_success: my_read_success_trigger_event
@@ -285,7 +286,8 @@ it often.
 ## Raise an exception on failure
 
 ```yaml
-    fail_exception: true
+zha_toolkit.SERVICE_CALL:
+  fail_exception: true
 ```
 
 By default the result of a zigbee transaction is "ignored" for the end
@@ -299,7 +301,8 @@ turn red in case the zigbee transaction result is not `SUCCESS`, then add
 ## Tries
 
 ```yaml
-    tries: 10
+zha_toolkit.SERVICE_CALL:
+  tries: 10
 ```
 
 Tries indicates how many times a zigbee transaction is repeated until it
@@ -334,68 +337,68 @@ IEEE address found.
 
 ```json
 {
-    "event_type": "my_write_done_trigger_event",
-    "data": {
-        "ieee_org": "sensor.test_smartenergy_metering",
-        "ieee": "00:12:4b:00:24:42:d1:dc",
-        "command": "attr_write",
-        "start_time": "2022-01-17T21:51:50.416725+00:00",
-        "errors": [ ],
-        "params": {
-            "cmd_id": null,
-            "endpoint_id": 1,
-            "cluster_id": 0,
-            "attr_id": 16,
-            "attr_type": 66,
-            "attr_val": "BureauTest",
-            "min_interval": 60,
-            "max_interval": 300,
-            "reportable_change": 1,
-            "dir": null,
-            "manf": null,
-            "tries": 1,
-            "expect_reply": true,
-            "args": [],
-            "state_id": "sensor.test",
-            "state_attr": null,
-            "allow_create": true,
-            "event_success": "my_write_success_trigger_event",
-            "event_fail": "my_write_fail_trigger_event",
-            "event_done": "my_write_done_trigger_event",
-            "read_before_write": true,
-            "read_after_write": true,
-            "write_if_equal": false
-        },
-        "str": "BureauTest",
-        "read_before": [
-            {
-                "16": "Bureau"
-            },
-            {}
-        ],
-        "result_write": [
-            [
-                {
-                    "status": 0,
-                    "attrid": null
-                }
-            ]
-        ],
-        "result_read": [
-            {
-                "16": "BureauTest"
-            },
-            {}
-        ],
-        "success": true
+  "event_type": "my_write_done_trigger_event",
+  "data": {
+    "ieee_org": "sensor.test_smartenergy_metering",
+    "ieee": "00:12:4b:00:24:42:d1:dc",
+    "command": "attr_write",
+    "start_time": "2022-01-17T21:51:50.416725+00:00",
+    "errors": [],
+    "params": {
+      "cmd_id": null,
+      "endpoint_id": 1,
+      "cluster_id": 0,
+      "attr_id": 16,
+      "attr_type": 66,
+      "attr_val": "BureauTest",
+      "min_interval": 60,
+      "max_interval": 300,
+      "reportable_change": 1,
+      "dir": null,
+      "manf": null,
+      "tries": 1,
+      "expect_reply": true,
+      "args": [],
+      "state_id": "sensor.test",
+      "state_attr": null,
+      "allow_create": true,
+      "event_success": "my_write_success_trigger_event",
+      "event_fail": "my_write_fail_trigger_event",
+      "event_done": "my_write_done_trigger_event",
+      "read_before_write": true,
+      "read_after_write": true,
+      "write_if_equal": false
     },
-    "origin": "LOCAL",
-    "time_fired": "2022-01-17T21:52:02.066310+00:00",
-    "context": {
-        "id": "c5d4d0d14f7801fda3b9ad471dcbd83b",
-        "parent_id": null,
-        "user_id": null
-    }
+    "str": "BureauTest",
+    "read_before": [
+      {
+        "16": "Bureau"
+      },
+      {}
+    ],
+    "result_write": [
+      [
+        {
+          "status": 0,
+          "attrid": null
+        }
+      ]
+    ],
+    "result_read": [
+      {
+        "16": "BureauTest"
+      },
+      {}
+    ],
+    "success": true
+  },
+  "origin": "LOCAL",
+  "time_fired": "2022-01-17T21:52:02.066310+00:00",
+  "context": {
+    "id": "c5d4d0d14f7801fda3b9ad471dcbd83b",
+    "parent_id": null,
+    "user_id": null
+  }
 }
 ```
 
@@ -427,7 +430,7 @@ data:
   # Optional, state attribute to write the value to, when missing: writes state itself
   state_attr: option
   # Optional, when true, allows creating the state (if not the state must exist)
-  allow_create: True
+  allow_create: true
   # The manufacturer should be set only for manufacturer attributes
   manf: 0x1212
   # Write read value to CSV file
@@ -481,17 +484,16 @@ data:
   attribute: 0x0000
   attr_type: 0x41
   # Example of octet strings (the length is added because of attr_type)
-  attr_val:  [41,33,8,45,52,46,50,191,55,57,136,60,100,102,63]
+  attr_val: [41, 33, 8, 45, 52, 46, 50, 191, 55, 57, 136, 60, 100, 102, 63]
   # Optional manufacturer Id
+  # - The manufacturer should be set only for manufacturer attributes
   manf: 0x1021
   # Optional, state to write the read value to
   state_id: sensor.test
   # Optional, state attribute to write the value to, when missing: writes state itself
   state_attr: option
   # Optional, when true, allows creating the state (if not the state must exist)
-  allow_create: True
-  # The manufacturer should be set only for manufacturer attributes
-  manf: 0x1202
+  allow_create: true
   # You can set the next events to use as a trigger.
   # The event data has the result of the command (currently attr_read, attr_write)
   event_success: my_read_success_trigger_event
@@ -499,11 +501,12 @@ data:
   event_done: my_read_done_trigger_event
   # Settings for attr_write
   # Read attribute before writing it (defaults to True)
-  read_before_write: True
+  read_before_write: true
   # Read attribute after writing it (defaults to True)
-  read_after_write: True
+  read_after_write: true
   # Write attribute when the read value matches (defaults to False)
-  write_if_equal: False
+  write_if_equal: false
+
 ```
 
 Using the symbolic name of the attribute, and automatic endpoint selection.
@@ -514,7 +517,7 @@ data:
   ieee: button.fictious_model_dcd14224_identify
   cluster: 0
   attribute: location_desc
-  attr_val: "My Location"
+  attr_val: My Location
 ```
 
 A more complex example using HA's templating feature can be found
@@ -544,8 +547,9 @@ service: zha_toolkit.attr_write
 data:
   ieee: entity.my_thermostat_entity
   cluster: 0x201
-  attribute: 'occupied_heating_setpoint'
-  attr_val: "{% set t = states('sensor.tgt_temperature') %}{{ [(t|int+50) % 2300,2000]|max if is_number(t) else 2150 }}"
+  attribute: occupied_heating_setpoint
+  attr_val: "{% set t = states('sensor.tgt_temperature') %}{{ [(t|int+50) % 2300,2000]|max\
+    \ if is_number(t) else 2150 }}"
   state_id: sensor.tgt_temperature
   allow_create: true
   read_before_write: false
@@ -581,15 +585,15 @@ data:
 
 Get the bindings from the device.\
 Listen to the event, or enable debug and
-check the log to get the information.\
-Current limitation: only one request
-is made, if the binding table is long, the reply will be partial only. The
-reply is provided as given by zigpy.
+check the log to get the information.\\
 
 ```yaml
 service: zha_toolkit.binds_get
 data:
   ieee: 00:15:8d:00:04:7b:83:69
+  # Optional number of tries for each sub-request,
+  # useful for sleepy devices
+  tries: 100
   event_done: event_binds_get_done
 ```
 
@@ -680,53 +684,53 @@ Example of data available in the event report.
 
 ```json
 {
-    "event_type": "my_conf_done_trigger_event",
-    "data": {
-        "ieee": "00:12:4b:00:24:42:d1:dc",
-        "command": "conf_report",
-        "start_time": "2022-01-16T21:56:21.393322+00:00",
-        "params": {
-            "cmd_id": null,
-            "endpoint_id": 1,
-            "cluster_id": 513,
-            "attr_id": 0,
-            "attr_type": null,
-            "attr_val": null,
-            "min_interval": 60,
-            "max_interval": 300,
-            "reportable_change": 10,
-            "dir": null,
-            "manf": null,
-            "tries": 3,
-            "expect_reply": true,
-            "args": [],
-            "state_id": "sensor.test",
-            "state_attr": null,
-            "allow_create": true,
-            "event_success": "my_conf_success_trigger_event",
-            "event_fail": "my_conf_fail_trigger_event",
-            "event_done": "my_conf_done_trigger_event",
-            "read_before_write": true,
-            "read_after_write": true,
-            "write_if_equal": false
-        },
-        "result_conf": [
-            [
-                {
-                    "status": 0,
-                    "direction": null,
-                    "attrid": null
-                }
-            ]
-        ]
+  "event_type": "my_conf_done_trigger_event",
+  "data": {
+    "ieee": "00:12:4b:00:24:42:d1:dc",
+    "command": "conf_report",
+    "start_time": "2022-01-16T21:56:21.393322+00:00",
+    "params": {
+      "cmd_id": null,
+      "endpoint_id": 1,
+      "cluster_id": 513,
+      "attr_id": 0,
+      "attr_type": null,
+      "attr_val": null,
+      "min_interval": 60,
+      "max_interval": 300,
+      "reportable_change": 10,
+      "dir": null,
+      "manf": null,
+      "tries": 3,
+      "expect_reply": true,
+      "args": [],
+      "state_id": "sensor.test",
+      "state_attr": null,
+      "allow_create": true,
+      "event_success": "my_conf_success_trigger_event",
+      "event_fail": "my_conf_fail_trigger_event",
+      "event_done": "my_conf_done_trigger_event",
+      "read_before_write": true,
+      "read_after_write": true,
+      "write_if_equal": false
     },
-    "origin": "LOCAL",
-    "time_fired": "2022-01-16T21:56:28.248353+00:00",
-    "context": {
-        "id": "596b9ba7b29d76545295881ea73c5708",
-        "parent_id": null,
-        "user_id": null
-    }
+    "result_conf": [
+      [
+        {
+          "status": 0,
+          "direction": null,
+          "attrid": null
+        }
+      ]
+    ]
+  },
+  "origin": "LOCAL",
+  "time_fired": "2022-01-16T21:56:28.248353+00:00",
+  "context": {
+    "id": "596b9ba7b29d76545295881ea73c5708",
+    "parent_id": null,
+    "user_id": null
+  }
 }
 ```
 
@@ -752,19 +756,21 @@ Example result (partial event data) where the min and max reporting
 intravals are provided, as well as the reportable change:
 
 ```json
-        "result_conf": [
-            {
-                "cluster": "Metering",
-                "cluster_id": "0x0702",
-                "attr_id": "0x0000",
-                "direction": 0,
-                "type": "0x25",
-                "min_interval": 1,
-                "max_interval": 300,
-                "reportable_change": 1,
-                "status": 0
-            }
-        ]
+{
+  "result_conf": [
+    {
+      "cluster": "Metering",
+      "cluster_id": "0x0702",
+      "attr_id": "0x0000",
+      "direction": 0,
+      "type": "0x25",
+      "min_interval": 1,
+      "max_interval": 300,
+      "reportable_change": 1,
+      "status": 0
+    }
+  ]
+}
 ```
 
 ## `scan_device`: Scan a device/Read all attribute values
@@ -787,7 +793,7 @@ data:
   # Optional: endpoint to scan, when missing: all known endpoints
   # endpoint: 1
   # Optional: endpoints to scan, when missing: all known endpoints
-  endpoint: [1,2]
+  endpoint: [1, 2]
 ```
 
 Scan using the entity name:
@@ -880,7 +886,7 @@ data:
   # Reference of the device that allows the join
   ieee: 00:12:4b:00:22:08:ed:1a
   # The code to be used in the join
-  code: "Joining Code"
+  code: Joining Code
 ```
 
 ## `zcl_cmd`: Send a Cluster command
@@ -918,7 +924,7 @@ data:
   # Optional: tries - default : 1
   tries: 1
   # Optional (only add when the command requires it): arguments (default=empty)
-  args: [ 1, 3, [ 1, 2, 3] ]
+  args: [1, 3, [1, 2, 3]]
 
 ```
 
@@ -956,7 +962,7 @@ data:
   cmd: 4
   cluster: 5
   endpoint: 11
-  args: [ 2, 5 ]
+  args: [2, 5]
 ```
 
 ### `zcl_cmd` Example: "Recall Scene"
@@ -969,7 +975,7 @@ data:
   cmd: 5
   cluster: 5
   endpoint: 11
-  args: [ 2, 5 ]
+  args: [2, 5]
 ```
 
 Results in (sniffed):
@@ -1004,10 +1010,10 @@ data:
     - 2
     - 5
     - 2
-    - "Final Example"
+    - Final Example
     # Two bytes of cluster Id (LSB first), length, attribute value bytes
     #   repeat as needed (inside the list!)
-    - [ 0x06, 0x00, 1, 1 ]
+    - [0x06, 0x00, 1, 1]
 ```
 
 sniffed as:
@@ -1384,7 +1390,7 @@ you to get information about endpoints and services as well.
 service: zha_toolkit.zha_devices
 data:
   # Optional list of fields to write to the CSV, all non-list fields by default.
-  command_data: ['name', 'ieee', 'rssi', 'lqi']
+  command_data: [name, ieee, rssi, lqi]
   csvout: ../www/devices.csv
   event_done: zha_devices
 ```
@@ -1432,9 +1438,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-async def user_test(
-    app, listener, ieee, cmd, data, service, params, event_data
-):
+async def user_test(app, listener, ieee, cmd, data, service, params, event_data):
     LOGGER.debug(f"User test called")
 ```
 

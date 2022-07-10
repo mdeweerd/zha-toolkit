@@ -152,7 +152,7 @@ async def conf_report_read(
     if not isinstance(params[p.ATTR_ID], list):
         params[p.ATTR_ID] = [params[p.ATTR_ID]]
 
-    while triesToGo >= 1:
+    while triesToGo >= 1:  # pylint: disable=too-many-nested-blocks
         triesToGo = triesToGo - 1
         try:
             LOGGER.debug(
@@ -177,19 +177,30 @@ async def conf_report_read(
             else:
                 for cfg_with_status in result_conf.attribute_configs:
                     rcfg: f.AttributeReportingConfig = cfg_with_status.config
-                    event_data["result_conf"].append(
-                        {
-                            "cluster": cluster.name,
-                            "cluster_id": f"0x{cluster.cluster_id:04X}",
-                            "attr_id": f"0x{rcfg.attrid:04X}",
-                            "direction": rcfg.direction,
-                            "type": f"0x{rcfg.datatype:02X}",
-                            "min_interval": rcfg.min_interval,
-                            "max_interval": rcfg.max_interval,
-                            "reportable_change": rcfg.reportable_change,
-                            "status": cfg_with_status.status,
-                        }
-                    )
+                    attr_id = rcfg.attrid
+                    r_conf = {
+                        "cluster": cluster.name,
+                        "cluster_id": f"0x{cluster.cluster_id:04X}",
+                        "ep": cluster.endpoint.endpoint_id,
+                        "attr_id": f"0x{attr_id:04X}",
+                        "direction": rcfg.direction,
+                        "type": f"0x{rcfg.datatype:02X}",
+                        "min_interval": rcfg.min_interval,
+                        "max_interval": rcfg.max_interval,
+                        "reportable_change": rcfg.reportable_change,
+                        "status": cfg_with_status.status,
+                    }
+                    try:
+                        # Try to add name of the attribute
+                        attr_name = cluster.attributes.get(
+                            attr_id, (str(attr_id), None)
+                        )[0]
+                        if attr_name is not None and attr_name != "":
+                            r_conf["attr"] = attr_name
+                    except Exception:  # nosec
+                        pass
+
+                    event_data["result_conf"].append(r_conf)
         except (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError):
             continue
         except Exception as e:
@@ -489,9 +500,7 @@ async def attr_write(  # noqa: C901
         fields.append(cluster.endpoint.endpoint_id)
         fields.append(str(cluster.endpoint.device.ieee))
         fields.append(
-            ("0x%04X" % (params[p.MANF]),)
-            if params[p.MANF] is not None
-            else ""
+            (f"0x{params[p.MANF]:04X}",) if params[p.MANF] is not None else ""
         )
         u.append_to_csvfile(
             fields,
