@@ -48,6 +48,10 @@ repos:
           - --no-warnings
           - -d
           - '{extends: relaxed, rules: {line-length: {max: 90}}}'
+  - repo: https://github.com/lovesegfault/beautysh.git
+    rev: v6.2.1
+    hooks:
+      - id: beautysh
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.34.0
     hooks:
