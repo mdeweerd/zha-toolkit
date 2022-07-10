@@ -500,9 +500,7 @@ async def attr_write(  # noqa: C901
         fields.append(cluster.endpoint.endpoint_id)
         fields.append(str(cluster.endpoint.device.ieee))
         fields.append(
-            ("0x%04X" % (params[p.MANF]),)
-            if params[p.MANF] is not None
-            else ""
+            (f"0x{params[p.MANF]:04X}",) if params[p.MANF] is not None else ""
         )
         u.append_to_csvfile(
             fields,

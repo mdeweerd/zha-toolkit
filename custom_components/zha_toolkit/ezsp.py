@@ -33,9 +33,7 @@ async def ezsp_set_channel(
     status, _, network_params = await app._ezsp.getNetworkParameters()
     if status != bellows.types.EmberStatus.SUCCESS:
         msg = (
-            "Couldn't get network parameters, abort channel change: {}".format(
-                status,
-            )
+            f"Couldn't get network parameters, abort channel change: {status}"
         )
         event_data["errors"].append(msg)
         raise Exception(msg)
@@ -313,7 +311,7 @@ async def ezsp_backup_legacy(
 
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    with open(fname, "w") as jsonfile:
+    with open(fname, "w", encoding="utf-8") as jsonfile:
         jsonfile.write(json.dumps(result, indent=4))
 
 
@@ -346,5 +344,5 @@ async def ezsp_backup(
 
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    with open(fname, "w") as jsonfile:
+    with open(fname, "w", encoding="utf-8") as jsonfile:
         jsonfile.write(json.dumps(result, indent=4))
