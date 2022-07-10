@@ -1,6 +1,6 @@
 ---
 files: ^(.*\.(py|json|md|sh|yaml|cfg|txt))$
-exclude: ^(\.[^/]*cache/.*)$
+exclude: ^(\.[^/]*cache/.*|.*/_user.py)$
 repos:
   - repo: https://github.com/executablebooks/mdformat
     # Do this before other tools "fixing" the line endings
@@ -20,7 +20,7 @@ repos:
           - mdformat-web
           - mdformat-gfm
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.3.0
     hooks:
       - id: no-commit-to-branch
         args: [--branch, main]
@@ -49,13 +49,13 @@ repos:
           - -d
           - '{extends: relaxed, rules: {line-length: {max: 90}}}'
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.1
+    rev: v2.34.0
     hooks:
       - id: pyupgrade
         args:
           - --py37-plus
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
         args:
@@ -102,7 +102,7 @@ repos:
           - --skip="./.*"
           - --quiet-level=2
   - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a4
+    rev: v3.0.0a5
     hooks:
       - id: pylint
         args:
@@ -110,7 +110,7 @@ repos:
           - --py-version=3.7
         #exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.960
+    rev: v0.961
     hooks:
       - id: mypy
         args:
