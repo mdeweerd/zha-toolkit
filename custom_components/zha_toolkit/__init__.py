@@ -608,6 +608,13 @@ def register_services(hass):  # noqa: C901
             if slickParams[k] is None or slickParams[k] is False:
                 del slickParams[k]
 
+        service_cmd = service.service  # Lower case service name in domain
+
+        # This method can be called as the 'execute' service or
+        # with the specific service
+        if cmd is None:
+            cmd = service_cmd
+
         # Preload event_data
         event_data = {
             "zha_toolkit_version": u.getVersion(),
@@ -626,13 +633,6 @@ def register_services(hass):  # noqa: C901
             LOGGER.debug(
                 "'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee
             )
-
-        service_cmd = service.service  # Lower case service name in domain
-
-        # This method can be called as the 'execute' service or
-        # with the specific service
-        if cmd is None:
-            cmd = service_cmd
 
         handler = None
         try:
