@@ -11,8 +11,8 @@ EXCLUDES="v0.7.9 v0.7.7 v0.7.6 v0.7.5 v0.7.3 v0.7.2 v0.7.1 v0.7.23 v0.7.24"
     echo '# Badges showing number of downloads per version'
     echo
     for tag in latest $(git tag -l  --sort=-creatordate v*[0-9]) ; do
-       if [[ "$EXCLUDES" != *"$tag"* ]] ; then
-           echo ${TEMPLATE//VERSION/$tag}
-       fi
+        if [[ "$EXCLUDES" != *"$tag"* ]] ; then
+            echo ${TEMPLATE//VERSION/$tag}
+        fi
     done
 ) > "${DEST}"
