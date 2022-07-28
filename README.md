@@ -11,22 +11,23 @@ the
 in [Home Assistant](https://www.home-assistant.io/) (an open source home
 automation software).
 
-You can add ZHA Toolkit as custom service to Home Assistant using
+You can add ZHA Toolkit to Home Assistant using
 [HACS (Home Assistant Community Store)](https://hacs.xyz/). ZHA Toolkit is
-already available HACS default repository list.
+available in HACS' default repository list.
 
 ## Purpose
 
 The purpose of ZHA Toolkit and its Home Assistant 'Services' feature, is to
-provide direct control overi low level zigbee commands provided in ZHA or
+provide direct control over low-level zigbee commands provided in ZHA or
 Zigpy that are not otherwise available or too limited for some use cases.
 
 ZHA Toolkit can also:
 
-- Serve as a framework to do local low level coding (the modules are
-  reloaded on each call).
+- Serve as a framework to do local low-level coding. zha-toolkit reloads
+  its python modules - including user custom modules - on each call,
+  applying code changes immediately.
 
-- Provide access to some higher level commands such as ZNP backup (and
+- Provide access to some higher-level commands such as ZNP backup (and
   restore).
 
 - Make it easier to perform one-time operations where (some) Zigbee
@@ -35,9 +36,9 @@ ZHA Toolkit can also:
 
 ### Highlights
 
-- Read Zigbee attributes into Home Assistant attributes
+- Reads Zigbee attributes into Home Assistant states/attributes
 - Daily ZNP Coordinator backup (See blueprint)
-- "Low level" access to most Zigbee commands
+- Provides "Low level" access to most Zigbee commands
   (read/write/(un)bind/report/cmd/discover)
 
 # Table of Contents
@@ -49,7 +50,7 @@ ZHA Toolkit can also:
 - [Table of Contents](#table-of-contents)
 - [Setup](#setup)
 - [Automations](#automations)
-- [Using `zha_toolkit`](#using-zha_toolkit)
+- [Using `zha-toolkit`](#using-zha-toolkit)
 - [General recommendations](#general-recommendations)
 - [Common options](#common-options)
   - [`ieee`: A reference to the device](#ieee-a-reference-to-the-device)
@@ -113,7 +114,11 @@ ZHA Toolkit can also:
 
 # Setup
 
-The component files needs to be added to your `custom_components` directory
+ZHA-Toolkit uses the well-known HACS installation mechanism. It is
+recommended to use HACS which facilitates the installation of many other
+custom components as well.
+
+The component files need to be added to your `custom_components` directory
 either manually or using [HACS](https://hacs.xyz/docs/setup/prerequisites)
 ([Tutorial](https://codingcyclist.medium.com/how-to-install-any-custom-component-from-github-in-less-than-5-minutes-ad84e6dc56ff)).
 If you already have HACS, simply look for "ZHA Toolkit" under Integrations
@@ -128,7 +133,7 @@ zha_toolkit:
 ```
 
 Before restarting, you may also want to enable debug verbosity.
-`zha_toolkit` isn't verbose when you use it occasionnaly. As it's a
+`zha-toolkit` isn't verbose when you use it occasionnaly. As it's a
 service, there is no really good way to inform the user about errors other
 than the log.
 
@@ -171,7 +176,7 @@ This is a list (of 1) automation:
 - :warning: Under test DAILY BACKUP OF ZNP/EZSP(Bellows) DONGLE TYPE :
   [![Open your Home Assistant instance and show the Daily Backup Blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fmdeweerd%2Fzha-toolkit%2Fdev%2Fblueprints%2Fbackup.yaml)
 
-# Using `zha_toolkit`
+# Using `zha-toolkit`
 
 This component provides a single service (`zha_toolkit.execute`) that
 provides several commands (`command` parameter) providing access to
@@ -254,7 +259,7 @@ designate a device.
 
 ## Events
 
-All commands support setting event names. When set, These events are
+All commands support setting event names. When set, these events are
 generated at the end of the command execution.
 
 ```yaml
@@ -290,11 +295,11 @@ zha_toolkit.SERVICE_CALL:
   fail_exception: true
 ```
 
-By default the result of a zigbee transaction is "ignored" for the end
+By default, the result of a zigbee transaction is "ignored" for the end
 result of the service call: it will appear as if it succeeds (unless you
 have the parameters wrong).
 
-So if you want the `Developer Tools > Services > CALL SERVICE` button to
+So, if you want the `Developer Tools > Services > CALL SERVICE` button to
 turn red in case the zigbee transaction result is not `SUCCESS`, then add
 `fail_exception: true` to the options
 
@@ -310,7 +315,7 @@ succeeds. An individual zigbee transaction may fail because of radio
 interference or because the device is sleeping.
 
 So by setting `tries: 100` you'll request that zigbee requests are repeated
-up too 100 times.
+up to 100 times.
 
 This is not applied everywhere, but it's applied for attribute reading,
 writing and report configuration. It's handy when you want to change the
@@ -415,7 +420,7 @@ commands):
 
 ## `attr_read`: Read an attribute value
 
-Read a zigbee attribute value, optionnally write to a state.
+Read a zigbee attribute value, optionally write to a state.
 
 ```yaml
 service: zha_toolkit.attr_read
@@ -620,9 +625,9 @@ data:
 
 ### `unbind_coordinator`: Remove all bindings to the coordinator
 
-Remove all bindings from the device to the coordinator. Typically on device
-initialisation Home Assistant sets up bindings with the main clusters to
-that it is informed about state changes.
+Remove all bindings from the device to the coordinator. Typically, on
+device initialisation Home Assistant sets up bindings with the main
+clusters to that it is informed about state changes.
 
 This command will use `binds_remove_all` and set the coordinator's ieee
 address as the `command_data` parameter automatically avoiding that you
@@ -753,7 +758,7 @@ data:
 ```
 
 Example result (partial event data) where the min and max reporting
-intravals are provided, as well as the reportable change:
+intervals are provided, as well as the reportable change:
 
 ```json
 {
@@ -1351,7 +1356,7 @@ data:
 
 ### `ota_notify`
 
-`OTA` is the acronym for "Over the Air" and we implicitally add "update" or
+`OTA` is the acronym for "Over the Air" and we implicitly add "update" or
 "upgrade".
 
 `ota_notify` will indicate to the device that an update is available, which
@@ -1359,9 +1364,9 @@ will trigger the device to request this update from the coordinator (in
 this case zigpy).
 
 Prior to notifying the device, `ota_notify` will request all image provides
-to update the list of available images. By default this is only done on
+to update the list of available images. By default, this is only done on
 startup, so when you add a new image to your local directory or when a new
-update is available from a third party, you'ld have to restart HA. But with
+update is available from a third party, you'd have to restart HA. But with
 `ota_notify` no restart is required.
 
 For details on how to setup your images sources, check the
@@ -1397,7 +1402,7 @@ data:
   event_done: zha_devices
 ```
 
-The above should write the CSV to the www directory, so its available as
+The above should write the CSV to the www directory, so it's available as
 'INSTANCEURL/local/devices.csv' and you could add a button to your UI for
 downloading:
 
@@ -1453,12 +1458,12 @@ data:
 ```
 
 You're free to reuse the parameters already available for the other
-commands. If you add your own you'll need to parse them yourself from
-`service.data`. You can checkout `utils.py/extractParams` to look for
+commands. If you add your own, you'll need to parse them yourself from
+`service.data`. You can check out `utils.py/extractParams` to look for
 ideas, and you can examine the other methods to see how you can use ZHA.
 
 This is a powerful tool to develop your own custom tool, and propose it for
-inclusion in the zha-toolkit when it's ready and of potential use to
+inclusion in the `zha-toolkit` when it's ready and of potential use to
 others.
 
 ## Manufacturers
@@ -1473,7 +1478,7 @@ These commands help fix some of that.
 
 #### `tuya_magic` - Tuya Magic spell
 
-This was labeled the
+This was labelled the
 [standard tuya "magic spell"](https://github.com/Koenkk/zigbee2mqtt/issues/9564#issuecomment-1051123722)
 as it makes most Tuya devices work normally.
 

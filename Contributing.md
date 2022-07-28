@@ -52,7 +52,7 @@ You can check that these updates are correct by calling the service
 The example below shows all the parameters you need to define for a new
 handler method.
 
-This example is located in `hello.py`. Therefore the start of the function
+This example is located in `hello.py`. Therefore, the start of the function
 name (`hello`) matches the module name.
 
 ```python
