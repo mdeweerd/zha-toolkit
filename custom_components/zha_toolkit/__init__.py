@@ -577,7 +577,6 @@ def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        LOGGER.info("COMPARED VERSION IS %s", LOADED_VERSION)
         if u.getVersion() != LOADED_VERSION:
             LOGGER.debug(
                 "Reload services because VERSION changed from %s to %s",

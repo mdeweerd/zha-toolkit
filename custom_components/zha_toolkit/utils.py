@@ -747,3 +747,11 @@ async def cluster_read_attributes(
 async def cluster__write_attributes(cluster, attrs, manufacturer=None):
     """Write cluster attributes from cluster, retryable"""
     return await cluster._write_attributes(attrs, manufacturer=manufacturer)
+
+
+def get_local_dir() -> str:
+    """Provide directory for local files that survive updates"""
+    local_dir = os.path.dirname(__file__) + "/local/"
+    if not os.path.isdir(local_dir):
+        os.mkdir(local_dir)
+    return local_dir
