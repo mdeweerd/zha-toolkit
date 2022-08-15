@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import typing
 from enum import Enum
 
 from homeassistant.const import __version__ as HA_VERSION
@@ -18,7 +19,15 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
+if typing.TYPE_CHECKING:
+    VERSION_TIME: float = 0.0
+    VERSION: str = "Unknown"
+    MANIFEST: dict[str, str | list[str]] = {}
+
+
 def getVersion() -> str:
+    # pylint: disable=global-variable-undefined,used-before-assignment
+    # pylint: disable=global-statement
     global VERSION_TIME
     global VERSION
     global MANIFEST
@@ -26,8 +35,7 @@ def getVersion() -> str:
     try:
         VERSION
     except NameError:
-        LOGGER.debug("************************** INIT VERSION")
-        VERSION_TIME = 0.
+        VERSION_TIME = 0.0
         VERSION = "Unknown"
         MANIFEST = {}
 
@@ -44,31 +52,22 @@ def getVersion() -> str:
     except Exception:
         MANIFEST = {}
 
-    if (VERSION is None and ftime != 0) or (
-        ftime != VERSION_TIME
-    ):
+    if (VERSION is None and ftime != 0) or (ftime != VERSION_TIME):
         # No version, or file change -> get version again
-        LOGGER.debug(
-            f"Read version from {fname} {ftime}<>{VERSION_TIME}"
-        )
+        LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
 
-        with open(fname) as infile:
+        with open(fname, encoding="utf8") as infile:
             VERSION_TIME = ftime
             MANIFEST = json.load(infile)
 
         if MANIFEST is not None:
             if "version" in MANIFEST.keys():
                 v = MANIFEST["version"]
-                VERSION = (
-                    v if isinstance(v, str) else "Invalid manifest"
-                )
+                VERSION = v if isinstance(v, str) else "Invalid manifest"
                 if VERSION == "0.0.0":
                     VERSION = "dev"
 
     return VERSION
-
-LOGGER.info("***************************   utils loaded VERSION %s", getVersion())
-
 
 
 # Convert string to int if possible or return original string
@@ -419,7 +418,7 @@ def append_to_csvfile(
 
     import csv
 
-    with open(file_name, "w" if overwrite else "a") as out:
+    with open(file_name, "w" if overwrite else "a", encoding="utf8") as out:
         writer = csv.writer(out)
         writer.writerow(fields)
 
