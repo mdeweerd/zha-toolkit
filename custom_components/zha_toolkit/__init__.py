@@ -21,8 +21,12 @@ ATTR_IEEE = "ieee"
 
 DATA_ZHATK = "zha_toolkit"
 
-
 LOGGER = logging.getLogger(__name__)
+
+try:
+    LOADED_VERSION
+except NameError:
+    LOADED_VERSION = ""
 
 importlib.reload(PARDEFS)
 p = PARDEFS.INTERNAL_PARAMS
@@ -530,10 +534,6 @@ CMD_TO_INTERNAL_MAP = {
 }
 
 
-class modvars:  # pylint: disable=too-few-public-methods
-    REGISTERED_VERSION = ""
-
-
 async def async_setup(hass, config):
     """Set up ZHA from config."""
 
@@ -553,11 +553,13 @@ async def async_setup(hass, config):
 
 
 def register_services(hass):  # noqa: C901
+    global LOADED_VERSION  # pylint: disable=global-statement
     zha_gw = hass.data["zha"]["zha_gateway"]
 
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
+        global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
 
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
@@ -575,10 +577,11 @@ def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        if u.getVersion() != modvars.REGISTERED_VERSION:
+        LOGGER.info("COMPARED VERSION IS %s", LOADED_VERSION)
+        if u.getVersion() != LOADED_VERSION:
             LOGGER.debug(
-                "Reload services because version changed from %s to %s",
-                modvars.REGISTERED_VERSION,
+                "Reload services because VERSION changed from %s to %s",
+                LOADED_VERSION,
                 u.getVersion(),
             )
             await command_handler_register_services(
@@ -608,6 +611,13 @@ def register_services(hass):  # noqa: C901
             if slickParams[k] is None or slickParams[k] is False:
                 del slickParams[k]
 
+        service_cmd = service.service  # Lower case service name in domain
+
+        # This method can be called as the 'execute' service or
+        # with the specific service
+        if cmd is None:
+            cmd = service_cmd
+
         # Preload event_data
         event_data = {
             "zha_toolkit_version": u.getVersion(),
@@ -626,13 +636,6 @@ def register_services(hass):  # noqa: C901
             LOGGER.debug(
                 "'ieee' parameter: '%s' -> IEEE Addr: '%s'", ieee_str, ieee
             )
-
-        service_cmd = service.service  # Lower case service name in domain
-
-        # This method can be called as the 'execute' service or
-        # with the specific service
-        if cmd is None:
-            cmd = service_cmd
 
         handler = None
         try:
@@ -712,7 +715,7 @@ def register_services(hass):  # noqa: C901
             schema=value,
         )
 
-    modvars.REGISTERED_VERSION = u.getVersion()
+    LOADED_VERSION = u.getVersion()
 
 
 async def command_handler_default(

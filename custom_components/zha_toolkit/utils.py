@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import typing
 from enum import Enum
 
 from homeassistant.const import __version__ as HA_VERSION
@@ -18,50 +19,55 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
-
-class _uvars:  # pylint: disable=too-few-public-methods
-    VERSION_TIME: float = 0
+if typing.TYPE_CHECKING:
+    VERSION_TIME: float = 0.0
     VERSION: str = "Unknown"
     MANIFEST: dict[str, str | list[str]] = {}
 
 
 def getVersion() -> str:
+    # pylint: disable=global-variable-undefined,used-before-assignment
+    # pylint: disable=global-statement
+    global VERSION_TIME
+    global VERSION
+    global MANIFEST
+
+    try:
+        VERSION
+    except NameError:
+        VERSION_TIME = 0.0
+        VERSION = "Unknown"
+        MANIFEST = {}
 
     fname = os.path.dirname(__file__) + "/manifest.json"
 
-    ftime: float = _uvars.VERSION_TIME
+    ftime: float = VERSION_TIME
 
     try:
         ntime = os.path.getmtime(fname)
         if ftime != ntime:
             ftime = ntime
-            _uvars.VERSION = "Unknown"
-            _uvars.MANIFEST = {}
+            VERSION = "Unknown"
+            MANIFEST = {}
     except Exception:
-        _uvars.MANIFEST = {}
+        MANIFEST = {}
 
-    if (_uvars.VERSION is None and ftime != 0) or (
-        ftime != _uvars.VERSION_TIME
-    ):
+    if (VERSION is None and ftime != 0) or (ftime != VERSION_TIME):
         # No version, or file change -> get version again
-        LOGGER.debug(
-            f"Read version from {fname} {ftime}<>{_uvars.VERSION_TIME}"
-        )
+        LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
 
-        with open(fname) as infile:
-            _uvars.VERSION_TIME = ftime
-            _uvars.MANIFEST = json.load(infile)
+        with open(fname, encoding="utf8") as infile:
+            VERSION_TIME = ftime
+            MANIFEST = json.load(infile)
 
-        if _uvars.MANIFEST is not None:
-            if "version" in _uvars.MANIFEST.keys():
-                v = _uvars.MANIFEST["version"]
-                _uvars.VERSION = (
-                    v if isinstance(v, str) else "Invalid manifest"
-                )
-                if _uvars.VERSION == "0.0.0":
-                    _uvars.VERSION = "dev"
+        if MANIFEST is not None:
+            if "version" in MANIFEST.keys():
+                v = MANIFEST["version"]
+                VERSION = v if isinstance(v, str) else "Invalid manifest"
+                if VERSION == "0.0.0":
+                    VERSION = "dev"
 
-    return _uvars.VERSION
+    return VERSION
 
 
 # Convert string to int if possible or return original string
@@ -412,7 +418,7 @@ def append_to_csvfile(
 
     import csv
 
-    with open(file_name, "w" if overwrite else "a") as out:
+    with open(file_name, "w" if overwrite else "a", encoding="utf8") as out:
         writer = csv.writer(out)
         writer.writerow(fields)
 
