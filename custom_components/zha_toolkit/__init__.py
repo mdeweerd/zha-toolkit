@@ -21,8 +21,15 @@ ATTR_IEEE = "ieee"
 
 DATA_ZHATK = "zha_toolkit"
 
-
 LOGGER = logging.getLogger(__name__)
+
+global REGISTERED_VERSION
+try:
+    LOGGER.info("VERSION IS %s", REGISTERED_VERSION)
+except NameError:
+    REGISTERED_VERSION = ""
+    LOGGER.info("INIT VERSION IS %s", REGISTERED_VERSION)
+    pass
 
 importlib.reload(PARDEFS)
 p = PARDEFS.INTERNAL_PARAMS
@@ -530,8 +537,6 @@ CMD_TO_INTERNAL_MAP = {
 }
 
 
-class modvars:  # pylint: disable=too-few-public-methods
-    REGISTERED_VERSION = ""
 
 
 async def async_setup(hass, config):
@@ -553,11 +558,13 @@ async def async_setup(hass, config):
 
 
 def register_services(hass):  # noqa: C901
+    global REGISTERED_VERSION
     zha_gw = hass.data["zha"]["zha_gateway"]
 
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
+        global REGISTERED_VERSION
 
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
@@ -575,10 +582,11 @@ def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        if u.getVersion() != modvars.REGISTERED_VERSION:
+        LOGGER.info("COMPARED VERSION IS %s", REGISTERED_VERSION)
+        if u.getVersion() != REGISTERED_VERSION:
             LOGGER.debug(
-                "Reload services because version changed from %s to %s",
-                modvars.REGISTERED_VERSION,
+                "Reload services because VERSION changed from %s to %s",
+                REGISTERED_VERSION,
                 u.getVersion(),
             )
             await command_handler_register_services(
@@ -712,7 +720,8 @@ def register_services(hass):  # noqa: C901
             schema=value,
         )
 
-    modvars.REGISTERED_VERSION = u.getVersion()
+    REGISTERED_VERSION = u.getVersion()
+    LOGGER.info("SET VERSION IS %s", REGISTERED_VERSION)
 
 
 async def command_handler_default(
