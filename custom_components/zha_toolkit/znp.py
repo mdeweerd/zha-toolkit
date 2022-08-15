@@ -44,7 +44,7 @@ async def znp_backup(
     event_data["backup_file"] = fname
 
     LOGGER.debug("Writing to %s", fname)
-    with open(fname, "w", encoding="utf8") as f:
+    with open(fname, "w", encoding="utf_8") as f:
         f.write(json.dumps(backup_obj, indent=4))
 
 
@@ -92,7 +92,7 @@ async def znp_restore(
     event_data["restore_file"] = fname
 
     # Read backup file
-    with open(fname, encoding="utf8") as f:
+    with open(fname, encoding="utf_8") as f:
         backup = json.load(f)
 
     # validate the backup file
@@ -154,7 +154,7 @@ async def znp_nvram_backup(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Saving NVRAM to '%s'", fname)
-    with open(fname, "w", encoding="utf8") as f:
+    with open(fname, "w", encoding="utf_8") as f:
         f.write(json.dumps(backup_obj, indent=4))
     LOGGER.info("NVRAM backup saved to '%s'", fname)
 
@@ -192,7 +192,7 @@ async def znp_nvram_restore(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Restoring NVRAM from '%s'", fname)
-    with open(fname, "w", encoding="utf8") as f:
+    with open(fname, "w", encoding="utf_8") as f:
         nvram_obj = json.load(f)
 
     await nvram_write(app._znp, nvram_obj)

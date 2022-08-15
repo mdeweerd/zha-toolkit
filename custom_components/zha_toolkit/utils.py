@@ -56,7 +56,7 @@ def getVersion() -> str:
         # No version, or file change -> get version again
         LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
 
-        with open(fname, encoding="utf8") as infile:
+        with open(fname, encoding="utf_8") as infile:
             VERSION_TIME = ftime
             MANIFEST = json.load(infile)
 
@@ -418,7 +418,7 @@ def append_to_csvfile(
 
     import csv
 
-    with open(file_name, "w" if overwrite else "a", encoding="utf8") as out:
+    with open(file_name, "w" if overwrite else "a", encoding="utf_8") as out:
         writer = csv.writer(out)
         writer.writerow(fields)
 
@@ -513,7 +513,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         compare_val = t.LVBytes(attr_val_in)
 
         if isinstance(attr_val_in, str):
-            attr_val_in = bytes(attr_val_in, "utf-8")
+            attr_val_in = bytes(attr_val_in, "utf_8")
 
         if isinstance(attr_val_in, list):
             # Convert list to List of uint8_t

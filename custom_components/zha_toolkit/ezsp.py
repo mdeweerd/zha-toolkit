@@ -308,7 +308,7 @@ async def ezsp_backup_legacy(
 
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    with open(fname, "w", encoding="utf-8") as jsonfile:
+    with open(fname, "w", encoding="utf_8") as jsonfile:
         jsonfile.write(json.dumps(result, indent=4))
 
 
@@ -338,5 +338,5 @@ async def ezsp_backup(
 
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    with open(fname, "w", encoding="utf-8") as jsonfile:
+    with open(fname, "w", encoding="utf_8") as jsonfile:
         jsonfile.write(json.dumps(result, indent=4))
