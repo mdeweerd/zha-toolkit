@@ -245,7 +245,6 @@ async def ezsp_backup_legacy(
 
     # Import stuff we need
     import json
-    import os
 
     from bellows.cli.backup import (  # isort:skip
         ATTR_NODE_TYPE,
@@ -301,9 +300,7 @@ async def ezsp_backup_legacy(
     # Store backup information to file
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + "/local/"
-    if not os.path.isdir(out_dir):
-        os.mkdir(out_dir)
+    out_dir = u.get_local_dir()
 
     # Ensure that data is an empty string when not set
     if data is None:
@@ -311,7 +308,7 @@ async def ezsp_backup_legacy(
 
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    with open(fname, "w", encoding="utf-8") as jsonfile:
+    with open(fname, "w", encoding="utf_8") as jsonfile:
         jsonfile.write(json.dumps(result, indent=4))
 
 
@@ -325,7 +322,6 @@ async def ezsp_backup(
 
     # Import stuff we need
     import json
-    import os
 
     from bellows.cli import backup as bellows_backup
 
@@ -334,9 +330,7 @@ async def ezsp_backup(
     # Store backup information to file
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + "/local/"
-    if not os.path.isdir(out_dir):
-        os.mkdir(out_dir)
+    out_dir = u.get_local_dir()
 
     # Ensure that data is an empty string when not set
     if data is None:
@@ -344,5 +338,5 @@ async def ezsp_backup(
 
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
-    with open(fname, "w", encoding="utf-8") as jsonfile:
+    with open(fname, "w", encoding="utf_8") as jsonfile:
         jsonfile.write(json.dumps(result, indent=4))

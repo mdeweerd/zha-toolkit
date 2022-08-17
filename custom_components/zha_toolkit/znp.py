@@ -24,7 +24,6 @@ async def znp_backup(
 
     # Import stuff we need
     import json
-    import os
 
     from zigpy_znp.tools.network_backup import backup_network
 
@@ -34,9 +33,7 @@ async def znp_backup(
     # Store backup information to file
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + "/local/"
-    if not os.path.isdir(out_dir):
-        os.mkdir(out_dir)
+    out_dir = u.get_local_dir()
 
     # Ensure that data is an empty string when not set
     if data is None:
@@ -47,7 +44,7 @@ async def znp_backup(
     event_data["backup_file"] = fname
 
     LOGGER.debug("Writing to %s", fname)
-    with open(fname, "w") as f:
+    with open(fname, "w", encoding="utf_8") as f:
         f.write(json.dumps(backup_obj, indent=4))
 
 
@@ -84,19 +81,18 @@ async def znp_restore(
 
     # Import stuff we need for restoring
     import json
-    from os import path
 
     from zigpy_znp.tools.common import validate_backup_json
     from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
 
     # Set name with regards to local path
-    fname = path.dirname(__file__) + "/local/nwk_backup.json"
+    fname = u.get_local_dir() + "nwk_backup.json"
     LOGGER.info("Restore from '%s'", fname)
 
     event_data["restore_file"] = fname
 
     # Read backup file
-    with open(fname) as f:
+    with open(fname, encoding="utf_8") as f:
         backup = json.load(f)
 
     # validate the backup file
@@ -142,14 +138,11 @@ async def znp_nvram_backup(
 
     # Store backup information to file
     import json
-    import os
 
     from zigpy_znp.tools.nvram_read import nvram_read
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + "/local/"
-    if not os.path.isdir(out_dir):
-        os.mkdir(out_dir)
+    out_dir = u.get_local_dir()
 
     LOGGER.info("Reading NVRAM from device")
     backup_obj = await nvram_read(app._znp)
@@ -161,7 +154,7 @@ async def znp_nvram_backup(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Saving NVRAM to '%s'", fname)
-    with open(fname, "w") as f:
+    with open(fname, "w", encoding="utf_8") as f:
         f.write(json.dumps(backup_obj, indent=4))
     LOGGER.info("NVRAM backup saved to '%s'", fname)
 
@@ -186,14 +179,11 @@ async def znp_nvram_restore(
 
     # Restore NVRAM backup from file
     import json
-    import os
 
     from zigpy_znp.tools.nvram_write import nvram_write
 
     # Set name with regards to local path
-    out_dir = os.path.dirname(__file__) + "/local/"
-    if not os.path.isdir(out_dir):
-        os.mkdir(out_dir)
+    out_dir = u.get_local_dir()
 
     # Ensure that data is an empty string when not set
     if data is None:
@@ -202,7 +192,7 @@ async def znp_nvram_restore(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Restoring NVRAM from '%s'", fname)
-    with open(fname, "w") as f:
+    with open(fname, "w", encoding="utf_8") as f:
         nvram_obj = json.load(f)
 
     await nvram_write(app._znp, nvram_obj)
