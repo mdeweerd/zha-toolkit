@@ -1,13 +1,14 @@
+import asyncio
 import json
 import logging
 import os
-import asyncio
 from glob import glob
-from zigpy import __version__ as zigpy_version
-from zigpy.util import retryable
-from zigpy.exceptions import DeliveryError
-from pkg_resources import parse_version
+
 import aiohttp
+from pkg_resources import parse_version
+from zigpy import __version__ as zigpy_version
+from zigpy.exceptions import DeliveryError
+from zigpy.util import retryable
 
 from . import DEFAULT_OTAU
 from .params import INTERNAL_PARAMS as p
@@ -17,9 +18,10 @@ KOENKK_LIST_URL = (
     "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json"
 )
 
+
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
-    )
+)
 async def wrapper(cmd, *args, **kwargs):
     return await cmd(*args, **kwargs)
 
@@ -40,7 +42,9 @@ async def download_koenkk_ota(listener, ota_dir):
     LOGGER.debug("List OTA files available on file system")
     ota_files_on_disk = {}
     for glob_expr in ota_glob_expr:
-        for path in [os.path.basename(x) for x in glob(os.path.join(ota_dir,glob_expr))]:
+        for path in [
+            os.path.basename(x) for x in glob(os.path.join(ota_dir, glob_expr))
+        ]:
             ota_files_on_disk[path] = True
 
     # LOGGER.debug(f"OTA files on disk {ota_files_on_disk!r}")
@@ -51,7 +55,6 @@ async def download_koenkk_ota(listener, ota_dir):
         device.zha_device_info for device in listener.devices.values()
     ]:
         manfs[info["manufacturer_code"]] = True
-
 
     LOGGER.debug("Get Koenkk FW list")
     new_fw_info = {}
@@ -65,7 +68,7 @@ async def download_koenkk_ota(listener, ota_dir):
                     if (
                         fw_info["manufacturerCode"] in manfs
                         and filename not in ota_files_on_disk
-                    ): 
+                    ):
                         LOGGER.debug("OTA file to download: '%s'", filename)
                         new_fw_info[filename] = fw_info
 
@@ -96,7 +99,7 @@ async def ota_update_images(
 async def ota_notify(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    event_data["PAR"]=params
+    event_data["PAR"] = params
     if params[p.DOWNLOAD]:
         LOGGER.debug("OTA image download requested")
         # Download FW from koenkk's list
@@ -140,12 +143,13 @@ async def ota_notify(
         ret = await cluster.image_notify(0, 100)
     else:
         cmd_args = [0, 100]
-        ret = await wrapper(cluster.client_command,
-           0, # cmd_id
-           *cmd_args,
-           # expect_reply = True,
-           tries=params[p.TRIES]
+        ret = await wrapper(
+            cluster.client_command,
+            0,  # cmd_id
+            *cmd_args,
+            # expect_reply = True,
+            tries=params[p.TRIES]
         )
 
     LOGGER.debug("Sent image notify command to 0x%04x: %s", device.nwk, ret)
-    event_data['result'] = ret
+    event_data["result"] = ret

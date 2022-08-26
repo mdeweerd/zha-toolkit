@@ -1280,6 +1280,13 @@ ota_notify:
         value or /config/zigpy_ota)
       selector:
         text:
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
     event_success:
       description: Event name in case of success
       example: ota_notify_success
