@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import typing
 from enum import Enum
 
@@ -98,6 +99,14 @@ def str2bool(s):
     if s is True or s is False:
         return s
     return str2int(s) != 0
+
+
+def normalize_filename(filename: str) -> str:
+    """
+    Normalize filename so that slashes and other problematic
+    characters are replaced with hyphen
+    """
+    return "".join([c if re.match(r"\w", c) else "-" for c in filename])
 
 
 class RadioType(Enum):
@@ -397,7 +406,7 @@ def write_json_to_file(data, subdir, fname, desc, listener=None):
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-    file_name = os.path.join(out_dir, fname)
+    file_name = os.path.join(out_dir, normalize_filename(fname))
     save_json(file_name, data)
     LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
 
@@ -414,7 +423,7 @@ def append_to_csvfile(
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-    file_name = os.path.join(out_dir, fname)
+    file_name = os.path.join(out_dir, normalize_filename(fname))
 
     import csv
 
