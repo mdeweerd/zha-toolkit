@@ -668,6 +668,9 @@ def extractParams(  # noqa: C901
     if P.EXPECT_REPLY in rawParams:
         params[p.EXPECT_REPLY] = str2int(rawParams[P.EXPECT_REPLY]) == 0
 
+    if P.DOWNLOAD in rawParams:
+        params[p.DOWNLOAD] = str2int(rawParams[P.DOWNLOAD]) == 0
+
     if P.FAIL_EXCEPTION in rawParams:
         params[p.FAIL_EXCEPTION] = str2int(rawParams[P.FAIL_EXCEPTION]) == 0
 
@@ -727,6 +730,9 @@ def extractParams(  # noqa: C901
 
     if P.OUTCSV in rawParams:
         params[p.CSV_FILE] = rawParams[P.OUTCSV]
+
+    if P.PATH in rawParams:
+        params[p.PATH] = rawParams[P.PATH]
 
     if P.CSVLABEL in rawParams:
         params[p.CSV_LABEL] = rawParams[P.CSVLABEL]

@@ -341,6 +341,8 @@ SERVICE_SCHEMAS = {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
+            vol.Optional(P.PATH): cv.string,
+            vol.Optional(P.DOWNLOAD): cv.boolean,
         },
         extra=vol.ALLOW_EXTRA,
     ),
@@ -533,12 +535,25 @@ CMD_TO_INTERNAL_MAP = {
     S.ZCL_CMD: ["zcl_cmd", S.ZCL_CMD],
 }
 
+ZHA_DOMAIN = "zha"
+DEFAULT_OTAU = "/config/zigpy_ota"
+
 
 async def async_setup(hass, config):
     """Set up ZHA from config."""
 
     if DOMAIN not in config:
         return True
+
+    try:
+        global DEFAULT_OTAU  # pylint: disable=global-statement
+        DEFAULT_OTAU = config[ZHA_DOMAIN]["zigpy_config"]["ota"][
+            "otau_directory"
+        ]
+        LOGGER.debug("DEFAULT_OTAU = %s", DEFAULT_OTAU)
+    except KeyError:
+        # Ignore if the value is not set
+        pass
 
     try:
         if hass.data["zha"]["zha_gateway"] is None:
