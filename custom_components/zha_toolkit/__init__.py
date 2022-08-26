@@ -543,6 +543,7 @@ CMD_TO_INTERNAL_MAP = {
 
 ZHA_DOMAIN = "zha"
 
+
 async def async_setup(hass, config):
     """Set up ZHA from config."""
 
