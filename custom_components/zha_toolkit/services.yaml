@@ -1257,7 +1257,8 @@ misc_reinitialize:
         entity:
           integration: zha
 ota_notify:
-  description: Notify a device that an update is available, after triggering ota image providers to fetch new images.
+  description: Notify a device that an update is available, after triggering ota image
+    providers to fetch new images.
   fields:
     ieee:
       description: >-
@@ -1268,6 +1269,24 @@ ota_notify:
       selector:
         entity:
           integration: zha
+    download:
+      description: >-
+        When True, download FW from KKoenk's list that possibly matches devices.
+      selector:
+        boolean:
+    path:
+      description: >-
+        Path to write ota image(s) to (defaults to zha:zigpy_config:ota:otau_directory
+        value or /config/zigpy_ota)
+      selector:
+        text:
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
     event_success:
       description: Event name in case of success
       example: ota_notify_success
@@ -1296,7 +1315,7 @@ ota_notify:
         boolean:
 register_services:
   description: >-
-    Reregister zha-toolkit services\nUsefull during development when they
+    Reregister zha-toolkit services\nUseful during development when they
     are updated in __init__.py
 remove_all_groups:
   description: Remove all groups from (selected) endpoints on device

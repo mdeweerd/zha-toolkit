@@ -43,7 +43,7 @@ def update_manifest():
 
     with open(
         f"{os.getcwd()}/custom_components/zha_toolkit/manifest.json",
-        encoding="utf8",
+        encoding="utf_8",
     ) as manifestfile:
         manifest = json.load(manifestfile)
 
@@ -52,7 +52,7 @@ def update_manifest():
     with open(
         f"{os.getcwd()}/custom_components/zha_toolkit/manifest.json",
         "w",
-        encoding="utf8",
+        encoding="utf_8",
     ) as manifestfile:
         manifestfile.write(json.dumps(manifest, indent=4, sort_keys=True))
 

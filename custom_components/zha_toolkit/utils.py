@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import typing
 from enum import Enum
 
@@ -98,6 +99,14 @@ def str2bool(s):
     if s is True or s is False:
         return s
     return str2int(s) != 0
+
+
+def normalize_filename(filename: str) -> str:
+    """
+    Normalize filename so that slashes and other problematic
+    characters are replaced with hyphen
+    """
+    return "".join([c if re.match(r"\w", c) else "-" for c in filename])
 
 
 class RadioType(Enum):
@@ -397,7 +406,7 @@ def write_json_to_file(data, subdir, fname, desc, listener=None):
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-    file_name = os.path.join(out_dir, fname)
+    file_name = os.path.join(out_dir, normalize_filename(fname))
     save_json(file_name, data)
     LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
 
@@ -414,7 +423,7 @@ def append_to_csvfile(
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-    file_name = os.path.join(out_dir, fname)
+    file_name = os.path.join(out_dir, normalize_filename(fname))
 
     import csv
 
@@ -602,6 +611,8 @@ def extractParams(  # noqa: C901
         p.WRITE_IF_EQUAL: False,
         p.CSV_FILE: None,
         p.CSV_LABEL: None,
+        p.DOWNLOAD: None,
+        p.PATH: None,
     }
 
     # Endpoint to send command to
@@ -658,6 +669,9 @@ def extractParams(  # noqa: C901
     # Get expect_reply
     if P.EXPECT_REPLY in rawParams:
         params[p.EXPECT_REPLY] = str2int(rawParams[P.EXPECT_REPLY]) == 0
+
+    if P.DOWNLOAD in rawParams:
+        params[p.DOWNLOAD] = str2int(rawParams[P.DOWNLOAD]) != 0
 
     if P.FAIL_EXCEPTION in rawParams:
         params[p.FAIL_EXCEPTION] = str2int(rawParams[P.FAIL_EXCEPTION]) == 0
@@ -718,6 +732,9 @@ def extractParams(  # noqa: C901
 
     if P.OUTCSV in rawParams:
         params[p.CSV_FILE] = rawParams[P.OUTCSV]
+
+    if P.PATH in rawParams:
+        params[p.PATH] = rawParams[P.PATH]
 
     if P.CSVLABEL in rawParams:
         params[p.CSV_LABEL] = rawParams[P.CSVLABEL]

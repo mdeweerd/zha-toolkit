@@ -1,4 +1,5 @@
 #!/bin/sh
+# NOTE: you can now download by using the HA Service `zha-toolkit/ota_notify`.
 #
 # Important:
 #  Requires `jq` (https://stedolan.github.io/jq/)

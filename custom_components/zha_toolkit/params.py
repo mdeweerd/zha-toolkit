@@ -31,6 +31,8 @@ class USER_PARAMS_consts:  # pylint: disable=too-few-public-methods
     WRITE_IF_EQUAL = "write_if_equal"
     OUTCSV = "csvout"
     CSVLABEL = "csvlabel"
+    DOWNLOAD = "download"
+    PATH = "path"
 
 
 class SERVICE_consts:  # pylint: disable=too-few-public-methods
@@ -120,6 +122,8 @@ class INTERNAL_PARAMS_consts:  # pylint: disable=too-few-public-methods
     WRITE_IF_EQUAL = "write_if_equal"
     CSV_FILE = "csvfile"
     CSV_LABEL = "csvlabel"
+    DOWNLOAD = "download"
+    PATH = "path"
 
 
 INTERNAL_PARAMS = INTERNAL_PARAMS_consts()

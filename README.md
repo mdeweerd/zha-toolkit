@@ -34,6 +34,9 @@ ZHA Toolkit can also:
   knowledge is sufficient and avoiding the need to understand the inner
   workings of ZHA or Zigpy (methods, quirks, etc).
 
+- Download Firmware referenced in
+  [Koenkk/zigbee-OTA](https://github.com/Koenkk/zigbee-OTA).
+
 ### Highlights
 
 - Reads Zigbee attributes into Home Assistant states/attributes
@@ -1359,6 +1362,9 @@ data:
 `OTA` is the acronym for "Over the Air" and we implicitly add "update" or
 "upgrade".
 
+You must have configured the
+[otau_directory](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates).
+
 `ota_notify` will indicate to the device that an update is available, which
 will trigger the device to request this update from the coordinator (in
 this case zigpy).
@@ -1385,6 +1391,10 @@ data:
   # Reference of the device that should be notified about an update.
   # Using one of the entity/sensor names is so much easier !
   ieee: sensor.lixee_zlinky_tic_00000000_electrical_measurement
+  # Optional, when true download data from https://github.com/Koenkk/zigbee-OTA
+  download: true
+  # Optional, directory to write OTA files to (default: HA configuration)
+  path: /config/zb_ota
 ```
 
 ### `zha_devices`: Device List Information to Event or CSV
