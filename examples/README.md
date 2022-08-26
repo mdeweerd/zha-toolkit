@@ -23,8 +23,8 @@
 
 ## Download firmware from different sources.
 
-See `fetchOTAfw.sh` for instructions. Then refer to
-[ota_notify](https://github.com/mdeweerd/zha-toolkit#ota_notify) to reload
-the `otau_directory` contents.
-
-Maybe someday this will be converted to python...
+See `fetchOTAfw.sh` for instructions. The download functionality is now
+integrated in
+[ota_notify](https://github.com/mdeweerd/zha-toolkit#ota_notify) which is
+more selective. If you choose to use the script, you still need to trigger
+the OTA update (which can be done using ota_notify).

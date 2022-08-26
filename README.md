@@ -34,6 +34,9 @@ ZHA Toolkit can also:
   knowledge is sufficient and avoiding the need to understand the inner
   workings of ZHA or Zigpy (methods, quirks, etc).
 
+- Download Firmware referenced in
+  [Koenkk/zigbee-OTA](https://github.com/Koenkk/zigbee-OTA).
+
 ### Highlights
 
 - Reads Zigbee attributes into Home Assistant states/attributes
