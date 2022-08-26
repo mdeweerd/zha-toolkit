@@ -1296,7 +1296,7 @@ ota_notify:
         boolean:
 register_services:
   description: >-
-    Reregister zha-toolkit services\nUsefull during development when they
+    Reregister zha-toolkit services\nUseful during development when they
     are updated in __init__.py
 remove_all_groups:
   description: Remove all groups from (selected) endpoints on device
