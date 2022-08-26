@@ -1,8 +1,12 @@
 import json
 import logging
 import os
+import asyncio
 from glob import glob
-
+from zigpy import __version__ as zigpy_version
+from zigpy.util import retryable
+from zigpy.exceptions import DeliveryError
+from pkg_resources import parse_version
 import aiohttp
 
 from . import DEFAULT_OTAU
@@ -12,6 +16,12 @@ LOGGER = logging.getLogger(__name__)
 KOENKK_LIST_URL = (
     "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json"
 )
+
+@retryable(
+    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
+    )
+async def wrapper(cmd, *args, **kwargs):
+    return await cmd(*args, **kwargs)
 
 
 async def download_koenkk_ota(listener, ota_dir):
@@ -27,10 +37,13 @@ async def download_koenkk_ota(listener, ota_dir):
     ]
 
     # Dictionary to do more efficient lookups
+    LOGGER.debug("List OTA files available on file system")
     ota_files_on_disk = {}
     for glob_expr in ota_glob_expr:
-        for path in glob(glob_expr):
+        for path in [os.path.basename(x) for x in glob(os.path.join(ota_dir,glob_expr))]:
             ota_files_on_disk[path] = True
+
+    # LOGGER.debug(f"OTA files on disk {ota_files_on_disk!r}")
 
     # Get manufacturers
     manfs = {}
@@ -39,10 +52,10 @@ async def download_koenkk_ota(listener, ota_dir):
     ]:
         manfs[info["manufacturer_code"]] = True
 
-    # var_dump(ota_files_on_disk)
+
+    LOGGER.debug("Get Koenkk FW list")
     new_fw_info = {}
     async with aiohttp.ClientSession() as req:
-        LOGGER.debug("Get Koenkk FW list")
         async with req.get(KOENKK_LIST_URL) as rsp:
             data = json.loads(await rsp.read())
             for fw_info in data:
@@ -51,9 +64,9 @@ async def download_koenkk_ota(listener, ota_dir):
                     # Try to get fw corresponding to device manufacturers
                     if (
                         fw_info["manufacturerCode"] in manfs
-                    ):  # or filename not in ota_files_on_disk:
-                        # Contains manufacturerCode which can be used to check
-                        # files that are meaningful to download
+                        and filename not in ota_files_on_disk
+                    ): 
+                        LOGGER.debug("OTA file to download: '%s'", filename)
                         new_fw_info[filename] = fw_info
 
     for filename, fw_info in new_fw_info.items():
@@ -72,8 +85,6 @@ async def download_koenkk_ota(listener, ota_dir):
             except Exception as e:
                 LOGGER.warning("Exception getting '%s': %s", url, e)
 
-        break  # Just get one during debug
-
 
 async def ota_update_images(
     app, listener, ieee, cmd, data, service, params, event_data
@@ -85,14 +96,16 @@ async def ota_update_images(
 async def ota_notify(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    event_data["PAR"]=params
     if params[p.DOWNLOAD]:
+        LOGGER.debug("OTA image download requested")
         # Download FW from koenkk's list
         if params[p.PATH]:
             ota_dir = params[p.PATH]
         else:
             ota_dir = DEFAULT_OTAU
 
-        download_koenkk_ota(listener, ota_dir)
+        await download_koenkk_ota(listener, ota_dir)
 
     # Update internal image database
     await ota_update_images(
@@ -121,6 +134,18 @@ async def ota_notify(
     await basic.bind()
     ret = await basic.configure_reporting("sw_build_id", 0, 1800, 1)
     LOGGER.debug("Configured reporting: %s", ret)
-    ret = await cluster.image_notify(0, 100)
+
+    ret = None
+    if parse_version(zigpy_version) < parse_version("0.45.0"):
+        ret = await cluster.image_notify(0, 100)
+    else:
+        cmd_args = [0, 100]
+        ret = await wrapper(cluster.client_command,
+           0, # cmd_id
+           *cmd_args,
+           # expect_reply = True,
+           tries=params[p.TRIES]
+        )
 
     LOGGER.debug("Sent image notify command to 0x%04x: %s", device.nwk, ret)
+    event_data['result'] = ret

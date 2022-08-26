@@ -611,6 +611,8 @@ def extractParams(  # noqa: C901
         p.WRITE_IF_EQUAL: False,
         p.CSV_FILE: None,
         p.CSV_LABEL: None,
+        p.DOWNLOAD: None,
+        p.PATH: None,
     }
 
     # Endpoint to send command to
@@ -669,7 +671,7 @@ def extractParams(  # noqa: C901
         params[p.EXPECT_REPLY] = str2int(rawParams[P.EXPECT_REPLY]) == 0
 
     if P.DOWNLOAD in rawParams:
-        params[p.DOWNLOAD] = str2int(rawParams[P.DOWNLOAD]) == 0
+        params[p.DOWNLOAD] = str2int(rawParams[P.DOWNLOAD]) != 0
 
     if P.FAIL_EXCEPTION in rawParams:
         params[p.FAIL_EXCEPTION] = str2int(rawParams[P.FAIL_EXCEPTION]) == 0
