@@ -28,6 +28,12 @@ try:
 except NameError:
     LOADED_VERSION = ""
 
+try:
+    DEFAULT_OTAU
+except NameError:
+    DEFAULT_OTAU = "/config/zigpy_ota"
+
+
 importlib.reload(PARDEFS)
 p = PARDEFS.INTERNAL_PARAMS
 P = PARDEFS.USER_PARAMS
@@ -536,8 +542,6 @@ CMD_TO_INTERNAL_MAP = {
 }
 
 ZHA_DOMAIN = "zha"
-DEFAULT_OTAU = "/config/zigpy_ota"
-
 
 async def async_setup(hass, config):
     """Set up ZHA from config."""
