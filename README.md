@@ -474,7 +474,13 @@ Example of CSV output in /config/csv/testcsv.csv (header may be added in
 the future)
 
 ```csv
-2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,
+2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,,0x20
+```
+
+Fields in this output:
+
+```csv
+ISO8601_Timestamp,cluster_name,attribute_name,value,attr_id,cluster_id,endpoint_id,IEEE,manf,attr_type
 ```
 
 ## `attr_write`: Write(/Read) an attribute value
