@@ -337,6 +337,8 @@ async def attr_write(  # noqa: C901
                     attr_id,
                 )
 
+    event_data["attr_type"] = f"0x{attr_type:02X}"
+
     compare_val = None
 
     if cmd == "attr_write":
@@ -502,6 +504,8 @@ async def attr_write(  # noqa: C901
         fields.append(
             (f"0x{params[p.MANF]:04X}",) if params[p.MANF] is not None else ""
         )
+        fields.append(f"0x{attr_type:02X}")
+
         u.append_to_csvfile(
             fields,
             "csv",
