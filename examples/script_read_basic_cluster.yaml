@@ -27,7 +27,7 @@ sequence:
             current: '{{ ( repeat.index - 1 ) }}'
         - service: system_log.write
           data:
-            logger: entity_name.read_power_script
+            logger: entity_name.read_basic_cluster_script
             level: warning
             message: "{{ 'Read Attribute %u' % (repeat.index, ) }}"
         - service: zha_toolkit.attr_read
