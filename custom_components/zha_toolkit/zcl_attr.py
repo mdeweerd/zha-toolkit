@@ -337,8 +337,6 @@ async def attr_write(  # noqa: C901
                     attr_id,
                 )
 
-    event_data["attr_type"] = f"0x{attr_type:02X}"
-
     compare_val = None
 
     if cmd == "attr_write":
@@ -364,6 +362,9 @@ async def attr_write(  # noqa: C901
             if attr_val is not None:
                 attr = f.Attribute(attr_id, value=attr_val)
                 attr_write_list.append(attr)  # Write list
+
+    if attr_type is not None:
+        event_data["attr_type"] = f"0x{attr_type:02X}"
 
     # True if value that should be written is the equal to the read one
     write_is_equal = (
@@ -504,7 +505,7 @@ async def attr_write(  # noqa: C901
         fields.append(
             f"0x{params[p.MANF]:04X}" if params[p.MANF] is not None else ""
         )
-        fields.append(f"0x{attr_type:02X}")
+        fields.append(f"0x{attr_type:02X}" if attr_type is not None else "")
 
         u.append_to_csvfile(
             fields,
