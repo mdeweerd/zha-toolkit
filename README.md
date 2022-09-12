@@ -23,15 +23,15 @@ Zigpy that are not otherwise available or too limited for some use cases.
 
 ZHA Toolkit can also:
 
-- Serve as a framework to do local low-level coding. zha-toolkit reloads
-  its python modules - including user custom modules - on each call,
-  applying code changes immediately.
+- Serve as a framework to do local low-level coding. ZHA Toolkit applies
+  code changes immediately by reloading its python modules on each call,
+  including the user custom modules.
 
 - Provide access to some higher-level commands such as ZNP backup (and
   restore).
 
 - Make it easier to perform one-time operations where (some) Zigbee
-  knowledge is sufficient and avoiding the need to understand the inner
+  knowledge is sufficient and avoid the need to understand the inner
   workings of ZHA or Zigpy (methods, quirks, etc).
 
 - Download Firmware referenced in
@@ -117,19 +117,22 @@ ZHA Toolkit can also:
 
 # Setup
 
-ZHA-Toolkit uses the well-known HACS installation mechanism. It is
+ZHA Toolkit uses the well-known HACS installation mechanism. It is
 recommended to use HACS which facilitates the installation of many other
 custom components as well.
 
-The component files need to be added to your `custom_components` directory
-either manually or using [HACS](https://hacs.xyz/docs/setup/prerequisites)
-([Tutorial](https://codingcyclist.medium.com/how-to-install-any-custom-component-from-github-in-less-than-5-minutes-ad84e6dc56ff)).
-If you already have HACS, simply look for "ZHA Toolkit" under Integrations
-to add it (you still need to do the next step).
+If you already have [HACS](https://hacs.xyz/docs/setup/prerequisites)
+([Tutorial](https://codingcyclist.medium.com/how-to-install-any-custom-component-from-github-in-less-than-5-minutes-ad84e6dc56ff)),
+simply look for "ZHA Toolkit" under Integrations to add it.
+
 ![image](https://user-images.githubusercontent.com/1504752/156879928-e81560e1-1c10-4daf-8c17-c1f0bba0828f.png)
 
-Then, the integration is only available in Home Assistant after adding the
-next line to `configuration.yaml`, and restarting Home Assistant.
+If you are not using HACS, you need add the `custom_components/zha_toolkit`
+to your `custom_components` directory.
+
+In all cases (HACS or manual), the ZHA Toolkit integration is only active
+on your Home Assistance instance after adding next line to
+`configuration.yaml`, and restarting Home Assistant.
 
 ```yaml
 zha_toolkit:
@@ -143,7 +146,8 @@ than the log.
 Logging will help verify that the commands you send have the desired
 effect.
 
-Add/update the logger configuration (in the `configuration.yaml` file):
+{#logging}Add/update the logger configuration (in the `configuration.yaml`
+file):
 
 ```yaml
 logger:
@@ -156,7 +160,7 @@ logger:
 
 You can also change the log configuration dynamically by calling the
 `logger.setlevel` service. Example that sets the debug level for this
-`zha_toolkit` component and for zigpy.zcl\` (which helps to see some
+`zha_toolkit` component and for `zigpy.zcl` (which helps to see some
 information about actual ZCL frames sent). This method allows you to enable
 debug logging only for a limited duration :
 
@@ -166,9 +170,6 @@ data:
   custom_components.zha_toolkit: debug
   zigpy.zcl: debug
 ```
-
-For sleepy devices (on a battery) you may need to wake them up just after
-sending the command so that they can receive it.
 
 # Automations
 
@@ -233,6 +234,11 @@ documentation updates.
   [zhaquirks](https://github.com/zigpy/zha-device-handlers/tree/dev/zhaquirks)
   for hints about available attributes (available ones, meaning of their
   values)
+- Wake up sleepy devices (generally devices on a battery) just after
+  sending a command so that they can receive it. It's also recommended to
+  set the `tries` parameter to a fairly high number for these devices (in
+  some cases over a 100 tries (more than 10 minutes) are needed to
+  successfully communicate with a sleepy device).
 
 # Common options
 
@@ -241,7 +247,8 @@ documentation updates.
 In almost all commands you need to provide a reference to the device that
 you want to control.
 
-```
+```yaml
+service: zha_toolkit.SOME_SERVICE
   # Valid possibilities for the `ieee` address
   # The full IEEE address:
   ieee: 00:12:4b:00:24:42:d1:dc
@@ -283,9 +290,9 @@ events.
 By listening for the event, you can see the list of groups that is found
 when using `zha_toolkit.get_groups` for instance.\
 Otherwise you need to
-set the debug level and watch the `home-assistant.log`. That can be useful
-if you do a lot of service calls in sequence and you want to look back what
-happened.
+\[set the debug level)(#logging) and watch the `home-assistant.log`. That
+can be useful if you do a lot of service calls in sequence and you want to
+look back what happened.
 
 You can also simply always enable debugging for `zha_toolkit` if you use it
 sporadically - it is quite verbose and tends to fill up the logs if you use
@@ -467,7 +474,13 @@ Example of CSV output in /config/csv/testcsv.csv (header may be added in
 the future)
 
 ```csv
-2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,
+2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,,0x20
+```
+
+Fields in this output:
+
+```csv
+ISO8601_Timestamp,cluster_name,attribute_name,value,attr_id,cluster_id,endpoint_id,IEEE,manf,attr_type
 ```
 
 ## `attr_write`: Write(/Read) an attribute value
