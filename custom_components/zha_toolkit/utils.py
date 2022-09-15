@@ -158,6 +158,7 @@ def get_radiotype(app):
         except Exception:  # nosec
             pass
 
+        LOGGER.debug("Did not recognize _api '%s'", type(app._api))
         # try:
         #    from zigpy_cc.api import API
         #    if isinstance(app._api, API):
