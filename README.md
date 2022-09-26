@@ -143,10 +143,10 @@ Before restarting, you may also want to enable debug verbosity.
 service, there is no really good way to inform the user about errors other
 than the log.
 
-Logging will help verify that the commands you send have the desired
+<a id="logging" />Logging will help verify that the commands you send have the desired
 effect.
 
-{#logging}Add/update the logger configuration (in the `configuration.yaml`
+Add/update the logger configuration (in the `configuration.yaml`
 file):
 
 ```yaml
