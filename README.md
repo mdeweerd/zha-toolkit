@@ -290,7 +290,7 @@ events.
 By listening for the event, you can see the list of groups that is found
 when using `zha_toolkit.get_groups` for instance.\
 Otherwise you need to
-\[set the debug level)(#logging) and watch the `home-assistant.log`. That
+[set the debug level)(#logging) and watch the `home-assistant.log`. That
 can be useful if you do a lot of service calls in sequence and you want to
 look back what happened.
 
