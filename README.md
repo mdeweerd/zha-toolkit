@@ -143,10 +143,10 @@ Before restarting, you may also want to enable debug verbosity.
 service, there is no really good way to inform the user about errors other
 than the log.
 
-Logging will help verify that the commands you send have the desired
+<a id="logging" />Logging will help verify that the commands you send have the desired
 effect.
 
-{#logging}Add/update the logger configuration (in the `configuration.yaml`
+Add/update the logger configuration (in the `configuration.yaml`
 file):
 
 ```yaml
@@ -290,7 +290,7 @@ events.
 By listening for the event, you can see the list of groups that is found
 when using `zha_toolkit.get_groups` for instance.\
 Otherwise you need to
-\[set the debug level)(#logging) and watch the `home-assistant.log`. That
+[set the debug level)(#logging) and watch the `home-assistant.log`. That
 can be useful if you do a lot of service calls in sequence and you want to
 look back what happened.
 
