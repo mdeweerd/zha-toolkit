@@ -56,7 +56,7 @@ async def download_koenkk_ota(listener, ota_dir):
     ]:
         manfs[info["manufacturer_code"]] = True
 
-    LOGGER.debug("Get Koenkk FW list")
+    LOGGER.debug(f"Get Koenkk FW list and check for manfs {manfs.keys()!r}")
     new_fw_info = {}
     async with aiohttp.ClientSession() as req:
         async with req.get(KOENKK_LIST_URL) as rsp:
@@ -65,22 +65,27 @@ async def download_koenkk_ota(listener, ota_dir):
                 if fw_info["url"]:
                     filename = fw_info["url"].split("/")[-1]
                     # Try to get fw corresponding to device manufacturers
+                    fw_manf = fw_info["manufacturerCode"]
+		    
                     if (
-                        fw_info["manufacturerCode"] in manfs
+                        fw_manf in manfs
                         and filename not in ota_files_on_disk
                     ):
-                        LOGGER.debug("OTA file to download: '%s'", filename)
+                        LOGGER.debug(
+			    "OTA file to download for manf %u (0x%04X): '%s'",
+			    fw_manf, fw_manf, filename
+			)
                         new_fw_info[filename] = fw_info
 
     for filename, fw_info in new_fw_info.items():
         async with aiohttp.ClientSession() as req:
             url = fw_info["url"]
             try:
-                LOGGER.debug("Get '%s'", url)
+                out_filename = os.path.join(ota_dir, filename)
+
+                LOGGER.info("Download '%s' to '%s'", url, out_filename)
                 async with req.get(url) as rsp:
                     data = await rsp.read()
-
-                out_filename = os.path.join(ota_dir, filename)
 
                 with open(out_filename, "wb") as ota_file:
                     LOGGER.debug("Try to write '%s'", out_filename)
