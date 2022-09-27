@@ -372,10 +372,13 @@ def get_cluster_from_params(
         params[p.EP_ID] = find_endpoint(dev, cluster_id)
 
     if params[p.EP_ID] not in dev.endpoints:
-        msg = f"No endpoint {params[p.EP_ID]} and no cluster 0x{cluster_id:04X} for '{dev.ieee!r}'"
+        msg = (
+            f"No endpoint {params[p.EP_ID]}"
+            f" and no cluster 0x{cluster_id:04X}"
+            f" for '{dev.ieee!r}'"
+        )
         LOGGER.error(msg)
         raise Exception(msg)
-
 
     cluster = None
     if cluster_id not in dev.endpoints[params[p.EP_ID]].in_clusters:

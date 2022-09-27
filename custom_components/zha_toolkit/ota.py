@@ -107,7 +107,11 @@ async def ota_notify(
         else:
             ota_dir = DEFAULT_OTAU
 
-        LOGGER.debug("OTA image download requested - default:%s, effective: %s", DEFAULT_OTAU, ota_dir)
+        LOGGER.debug(
+            "OTA image download requested - default:%s, effective: %s",
+            DEFAULT_OTAU,
+            ota_dir,
+        )
 
         await download_koenkk_ota(listener, ota_dir)
 
