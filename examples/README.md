@@ -1,5 +1,7 @@
 ## Read Attributes from Basic Cluster to CSV and state
 
+(Note: scripts can be called as a service)
+
 - `script_read_basic_cluster.yaml`:\
   Script to add to HA (Configuration >
   Scripts):
@@ -20,6 +22,17 @@
 2022-02-17T18:27:36.352902+00:00,Basic,model,TS0505A,0x0005,0x0000,1,60:a4:23:ff:fe:91:fc:9a,
 2022-02-17T18:27:36.488601+00:00,Basic,date_code,,0x0006,0x0000,1,60:a4:23:ff:fe:91:fc:9a,
 ```
+
+## Configure temperature reports by TRV or Thermometer
+
+(Note: scripts can be called as a service)
+
+- `script_TRV_setTemperatureReporting.yaml`:\
+  Script to configure a TRV to
+  report 5 minutes or when temperature changed by 0.2°C.
+- `script_Thermometer_setReporting.yaml`:\
+  Script to configure a
+  Thermometer to report 5 minutes or when temperature changed by 0.2°C.
 
 ## Download firmware from different sources.
 

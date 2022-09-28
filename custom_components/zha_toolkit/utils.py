@@ -158,6 +158,7 @@ def get_radiotype(app):
         except Exception:  # nosec
             pass
 
+        LOGGER.debug("Did not recognize _api '%s'", type(app._api))
         # try:
         #    from zigpy_cc.api import API
         #    if isinstance(app._api, API):
@@ -361,18 +362,22 @@ def get_cluster_from_params(
     correspondence to values provided in params
     """
 
-    # Get best endpoint
-    if params[p.EP_ID] is None or params[p.EP_ID] == "":
-        params[p.EP_ID] = find_endpoint(dev, params[p.CLUSTER_ID])
-
-    if params[p.EP_ID] not in dev.endpoints:
-        msg = f"Endpoint {params[p.EP_ID]} not found for '{dev.ieee!r}'"
-        LOGGER.error(msg)
-        raise Exception(msg)
-
     cluster_id = params[p.CLUSTER_ID]
     if not isinstance(cluster_id, int):
         msg = f"Cluster must be numeric {cluster_id}"
+        raise Exception(msg)
+
+    # Get best endpoint
+    if params[p.EP_ID] is None or params[p.EP_ID] == "":
+        params[p.EP_ID] = find_endpoint(dev, cluster_id)
+
+    if params[p.EP_ID] not in dev.endpoints:
+        msg = (
+            f"No endpoint {params[p.EP_ID]}"
+            f" and no cluster 0x{cluster_id:04X}"
+            f" for '{dev.ieee!r}'"
+        )
+        LOGGER.error(msg)
         raise Exception(msg)
 
     cluster = None

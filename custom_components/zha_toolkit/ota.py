@@ -101,12 +101,17 @@ async def ota_notify(
 ):
     event_data["PAR"] = params
     if params[p.DOWNLOAD]:
-        LOGGER.debug("OTA image download requested")
         # Download FW from koenkk's list
         if params[p.PATH]:
             ota_dir = params[p.PATH]
         else:
             ota_dir = DEFAULT_OTAU
+
+        LOGGER.debug(
+            "OTA image download requested - default:%s, effective: %s",
+            DEFAULT_OTAU,
+            ota_dir,
+        )
 
         await download_koenkk_ota(listener, ota_dir)
 
