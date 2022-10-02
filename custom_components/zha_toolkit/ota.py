@@ -18,6 +18,9 @@ KOENKK_LIST_URL = (
     "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json"
 )
 
+SONOFF_LIST_URL = (
+    "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
+)
 
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
@@ -94,6 +97,75 @@ async def download_koenkk_ota(listener, ota_dir):
                 LOGGER.warning("Exception getting '%s': %s", url, e)
 
 
+async def download_sonoff_ota(listener, ota_dir):
+    # Get all FW files that were already downloaded.
+    # The files usually have the FW version in their name, making them unique.
+    ota_glob_expr = [
+        "*.ZIGBEE",
+        "*.OTA",
+        "*.sbl-ota",
+        "*.bin",
+        "*.ota",
+        "*.zigbee",
+    ]
+
+    # Dictionary to do more efficient lookups
+    LOGGER.debug("List OTA files available on file system")
+    ota_files_on_disk = {}
+    for glob_expr in ota_glob_expr:
+        for path in [
+            os.path.basename(x) for x in glob(os.path.join(ota_dir, glob_expr))
+        ]:
+            ota_files_on_disk[path] = True
+
+    # LOGGER.debug(f"OTA files on disk {ota_files_on_disk!r}")
+
+    # Get manufacturers
+    manfs = {}
+    for info in [
+        device.zha_device_info for device in listener.devices.values()
+    ]:
+        manfs[info["manufacturer_code"]] = True
+
+    LOGGER.debug(f"Get SONOFF FW list and check for manfs {manfs.keys()!r}")
+    new_fw_info = {}
+    async with aiohttp.ClientSession() as req:
+        async with req.get(SONOFF_LIST_URL) as rsp:
+            data = json.loads(await rsp.read())
+            for fw_info in data:
+                if fw_info["fw_binary_url"]:
+                    filename = fw_info["fw_binary_url"].split("/")[-1]
+                    # Try to get fw corresponding to device manufacturers
+                    fw_manf = fw_info["fw_manufacturer_id"]
+                    fw_model_id = fw_info["model_id"]
+		    
+		    # Note: could check against model id in the future
+                    if (
+                        fw_manf in manfs
+                        and filename not in ota_files_on_disk
+                    ):
+                        LOGGER.debug(
+			    "OTA file to download for manf %u (0x%04X) Model:'%s': '%s'",
+			    fw_manf, fw_manf, fw_model_id, filename
+			)
+                        new_fw_info[filename] = fw_info
+
+    for filename, fw_info in new_fw_info.items():
+        async with aiohttp.ClientSession() as req:
+            url = fw_info["fw_binary_url"]
+            try:
+                out_filename = os.path.join(ota_dir, filename)
+
+                LOGGER.info("Download '%s' to '%s'", url, out_filename)
+                async with req.get(url) as rsp:
+                    data = await rsp.read()
+
+                with open(out_filename, "wb") as ota_file:
+                    LOGGER.debug("Try to write '%s'", out_filename)
+                    ota_file.write(data)
+            except Exception as e:
+                LOGGER.warning("Exception getting '%s': %s", url, e)
+
 async def ota_update_images(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
@@ -119,6 +191,7 @@ async def ota_notify(
         )
 
         await download_koenkk_ota(listener, ota_dir)
+        await download_sonoff_ota(listener, ota_dir)
 
     # Update internal image database
     await ota_update_images(
