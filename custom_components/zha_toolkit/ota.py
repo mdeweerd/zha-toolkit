@@ -18,9 +18,8 @@ KOENKK_LIST_URL = (
     "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json"
 )
 
-SONOFF_LIST_URL = (
-    "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
-)
+SONOFF_LIST_URL = "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
+
 
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
@@ -69,15 +68,14 @@ async def download_koenkk_ota(listener, ota_dir):
                     filename = fw_info["url"].split("/")[-1]
                     # Try to get fw corresponding to device manufacturers
                     fw_manf = fw_info["manufacturerCode"]
-		    
-                    if (
-                        fw_manf in manfs
-                        and filename not in ota_files_on_disk
-                    ):
+
+                    if fw_manf in manfs and filename not in ota_files_on_disk:
                         LOGGER.debug(
-			    "OTA file to download for manf %u (0x%04X): '%s'",
-			    fw_manf, fw_manf, filename
-			)
+                            "OTA file to download for manf %u (0x%04X): '%s'",
+                            fw_manf,
+                            fw_manf,
+                            filename,
+                        )
                         new_fw_info[filename] = fw_info
 
     for filename, fw_info in new_fw_info.items():
@@ -138,16 +136,17 @@ async def download_sonoff_ota(listener, ota_dir):
                     # Try to get fw corresponding to device manufacturers
                     fw_manf = fw_info["fw_manufacturer_id"]
                     fw_model_id = fw_info["model_id"]
-		    
-		    # Note: could check against model id in the future
-                    if (
-                        fw_manf in manfs
-                        and filename not in ota_files_on_disk
-                    ):
+
+                    # Note: could check against model id in the future
+                    if fw_manf in manfs and filename not in ota_files_on_disk:
                         LOGGER.debug(
-			    "OTA file to download for manf %u (0x%04X) Model:'%s': '%s'",
-			    fw_manf, fw_manf, fw_model_id, filename
-			)
+                            "OTA file to download for manf %u (0x%04X)"
+                            " Model:'%s': '%s'",
+                            fw_manf,
+                            fw_manf,
+                            fw_model_id,
+                            filename,
+                        )
                         new_fw_info[filename] = fw_info
 
     for filename, fw_info in new_fw_info.items():
@@ -165,6 +164,7 @@ async def download_sonoff_ota(listener, ota_dir):
                     ota_file.write(data)
             except Exception as e:
                 LOGGER.warning("Exception getting '%s': %s", url, e)
+
 
 async def ota_update_images(
     app, listener, ieee, cmd, data, service, params, event_data
@@ -231,7 +231,7 @@ async def ota_notify(
             0,  # cmd_id
             *cmd_args,
             # expect_reply = True,
-            tries=params[p.TRIES]
+            tries=params[p.TRIES],
         )
 
     LOGGER.debug("Sent image notify command to 0x%04x: %s", device.nwk, ret)

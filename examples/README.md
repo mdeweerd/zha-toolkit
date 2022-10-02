@@ -29,10 +29,11 @@
 
 - `script_TRV_setTemperatureReporting.yaml`:\
   Script to configure a TRV to
-  report 5 minutes or when temperature changed by 0.2°C.
+  report every 5 minutes or when temperature changed by 0.2°C.
 - `script_Thermometer_setReporting.yaml`:\
   Script to configure a
-  Thermometer to report 5 minutes or when temperature changed by 0.2°C.
+  Thermometer to report every 5 minutes or when temperature changed by
+  0.2°C.
 
 ## Download firmware from different sources.
 
