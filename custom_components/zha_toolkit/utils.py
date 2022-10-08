@@ -8,10 +8,10 @@ import re
 import typing
 from enum import Enum
 
-from homeassistant.const import __version__ as HA_VERSION
-from homeassistant.util.json import save_json
 import packaging
 import packaging.version
+from homeassistant.const import __version__ as HA_VERSION
+from homeassistant.util.json import save_json
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
 from zigpy.util import retryable
@@ -239,7 +239,8 @@ async def get_ieee(app, listener, ref):
         entity_registry = (
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.entity_registry.async_get_registry()
-            if packaging.version.parse(HA_VERSION) < packaging.version.parse("2022.6")
+            if packaging.version.parse(HA_VERSION)
+            < packaging.version.parse("2022.6")
             else listener._hass.helpers.entity_registry.async_get(
                 listener._hass
             )
