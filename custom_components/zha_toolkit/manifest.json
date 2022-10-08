@@ -10,6 +10,8 @@
     "iot_class": "local_polling",
     "issue_tracker": "https://github.com/mdeweerd/zha-toolkit/issues",
     "name": "\ud83e\uddf0 ZHA Toolkit Service",
-    "requirements": [],
+    "requirements": [
+        "packaging>=20.8"
+    ],
     "version": "0.0.0"
 }
