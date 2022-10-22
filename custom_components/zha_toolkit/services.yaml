@@ -636,8 +636,15 @@ bind_ieee:
       selector:
         entity:
           integration: zha
+    endpoint:
+      description: 'Target endpoint (when missing: all endpoints)'
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
     cluster:
-      description: target cluster (or all internally defined ones)
+      description: Target cluster (or all internally defined ones)
       selector:
         number:
           min: 0
@@ -693,6 +700,20 @@ bind_group:
         Target group for binding
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
+      selector:
+        number:
+          min: 0
+          max: 0xFFFF
+          mode: box
+    endpoint:
+      description: 'Target endpoint (when missing: all endpoints)'
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    cluster:
+      description: 'Target cluster (when missing: all internally defined cluster)'
       selector:
         number:
           min: 0

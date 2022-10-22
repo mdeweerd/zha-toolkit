@@ -17,6 +17,7 @@ BINDABLE_OUT_CLUSTERS = [
     0x0300,  # Color Control
 ]
 BINDABLE_IN_CLUSTERS = [
+    0x0006,  # OnOff
     0x0402,  # Temperature
 ]
 
@@ -39,15 +40,26 @@ async def bind_group(
     group_id = u.str2int(data)
     zdo = src_dev.zdo
     src_out_cls = BINDABLE_OUT_CLUSTERS
+    src_in_cls = BINDABLE_IN_CLUSTERS
 
     # find src ep_id
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
+    u_epid = params[p.EP_ID]
+    u_cluster_id = params[p.CLUSTER_ID]
+
+    if u_cluster_id is not None:
+        src_out_cls=[u_cluster_id]
+        src_in_cls=[u_cluster_id]
+
     results: dict[int, list[dict[str, int]]] = {}
     for src_out_cluster in src_out_cls:
         src_epid = None
         for ep_id, ep in src_dev.endpoints.items():
+            if u_epid is not None and ep_id != u_epid:
+	        # Endpoint not selected
+                continue
             if ep_id == 0:
                 continue
             if src_out_cluster in ep.out_clusters:
@@ -77,9 +89,55 @@ async def bind_group(
         bind_result["result"] = res
         results[src_epid].append(bind_result)
         LOGGER.debug(
-            "0x%04x: binding group 0x%04x: %s", src_dev.nwk, group_id, res
+            "0x%04x/0x%02x/0x%04x(OUT): binding group 0x%04x: %s", src_dev.nwk, src_epid, src_in_cluster, group_id, res
         )
 
+    # find src ep_id
+    dst_addr = MultiAddress()
+    dst_addr.addrmode = t.uint8_t(1)
+    dst_addr.nwk = t.uint16_t(group_id)
+    results: dict[int, list[dict[str, int]]] = {}
+
+    if u_cluster_id is not None:
+        src_in_cls=[u_cluster_id]
+
+    for src_in_cluster in src_in_cls:
+        src_epid = None
+        for ep_id, ep in src_dev.endpoints.items():
+            if u_epid is not None and ep_id != u_epid:
+	        # Endpoint not selected
+                continue
+            if ep_id == 0:
+                continue
+            if src_in_cluster in ep.in_clusters:
+                src_epid = ep_id
+                break
+        if not src_epid:
+            LOGGER.debug(
+                "0x%04x: skipping %s cluster (not present)",
+                src_dev.nwk,
+                src_in_cluster,
+            )
+            continue
+        if src_epid not in results:
+            results[src_epid] = []
+        LOGGER.debug(
+            "0x%04x: binding %s, ep: %s, cluster: %s(IN)",
+            src_dev.nwk,
+            str(src_dev.ieee),
+            src_epid,
+            src_in_cluster,
+        )
+        bind_result = {"endpoint_id": src_epid, "cluster_id": src_in_cluster}
+
+        res = await zdo.request(
+            ZDOCmd.Bind_req, src_dev.ieee, src_epid, src_in_cluster, dst_addr
+        )
+        bind_result["result"] = res
+        results[src_epid].append(bind_result)
+        LOGGER.debug(
+            "0x%04x/0x%02x/0x%04x(IN): binding group 0x%04x: %s", src_dev.nwk, src_epid, src_in_cluster, group_id, res
+        )
     event_data["result"] = results
 
 
@@ -158,6 +216,12 @@ async def bind_ieee(
     src_out_clusters = BINDABLE_OUT_CLUSTERS
     src_in_clusters = BINDABLE_IN_CLUSTERS
 
+    u_epid = params[p.EP_ID]
+    u_cluster_id = params[p.CLUSTER_ID]
+    if u_cluster_id is not None:
+        src_out_clusters=[u_cluster_id]
+        src_in_clusters=[u_cluster_id]
+
     # TODO: Filter according to params[p.CLUSTER_ID]
 
     results: dict[int, dict] = {}
@@ -166,7 +230,7 @@ async def bind_ieee(
         src_endpoints = [
             ep_id
             for ep_id, ep in src_dev.endpoints.items()
-            if ep_id != 0 and src_out_cluster in ep.out_clusters
+            if ep_id != 0 and src_out_cluster in ep.out_clusters and (u_epid is None or u_epid==ep_id)
         ]
         LOGGER.debug(
             "0x%04x: got the %s endpoints for %s cluster",
@@ -226,7 +290,7 @@ async def bind_ieee(
         src_endpoints = [
             ep_id
             for ep_id, ep in src_dev.endpoints.items()
-            if ep_id != 0 and src_in_cluster in ep.in_clusters
+            if ep_id != 0 and src_in_cluster in ep.in_clusters and (u_epid is None or u_epid==ep_id)
         ]
         LOGGER.debug(
             "0x%04x: got the %s endpoints for %s cluster",
