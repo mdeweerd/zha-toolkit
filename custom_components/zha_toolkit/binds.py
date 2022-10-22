@@ -17,7 +17,6 @@ BINDABLE_OUT_CLUSTERS = [
     0x0300,  # Color Control
 ]
 BINDABLE_IN_CLUSTERS = [
-    0x0006,  # OnOff
     0x0402,  # Temperature
 ]
 
