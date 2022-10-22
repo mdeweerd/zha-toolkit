@@ -143,11 +143,10 @@ Before restarting, you may also want to enable debug verbosity.
 service, there is no really good way to inform the user about errors other
 than the log.
 
-<a id="logging" />Logging will help verify that the commands you send have the desired
-effect.
+<a id="logging" />Logging will help verify that the commands you send have
+the desired effect.
 
-Add/update the logger configuration (in the `configuration.yaml`
-file):
+Add/update the logger configuration (in the `configuration.yaml` file):
 
 ```yaml
 logger:
@@ -252,8 +251,12 @@ service: zha_toolkit.SOME_SERVICE
   # Valid possibilities for the `ieee` address
   # The full IEEE address:
   ieee: 00:12:4b:00:24:42:d1:dc
+
+service: zha_toolkit.SOME_SERVICE
   # The short network address
   ieee: 0x2F3E
+
+service: zha_toolkit.SOME_SERVICE
   # entity name (one of them)
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
 ```
@@ -290,7 +293,7 @@ events.
 By listening for the event, you can see the list of groups that is found
 when using `zha_toolkit.get_groups` for instance.\
 Otherwise you need to
-[set the debug level)(#logging) and watch the `home-assistant.log`. That
+[set the debug level](#logging) and watch the `home-assistant.log`. That
 can be useful if you do a lot of service calls in sequence and you want to
 look back what happened.
 
@@ -679,9 +682,8 @@ For sleepy devices, you can add the parameter 'tries' which will retry
 until the devices confirms (with success or error)
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.conf_report
 data:
-  command: conf_report
   ieee: 00:12:4b:00:23:b3:da:a5
   # Optional endpoint, when missing will match cluster
   # endpoint: 1
@@ -760,9 +762,8 @@ Example of data available in the event report.
 Read the report configuration of a cluster.
 
 ```yaml
-service: zha_toolkit.read_report_conf
+service: zha_toolkit.conf_report_read
 data:
-  command: conf_report
   ieee: 00:12:4b:00:23:b3:da:a5
   # Optional endpoint, when missing will match cluster
   # endpoint: 1

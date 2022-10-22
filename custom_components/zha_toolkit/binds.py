@@ -422,12 +422,16 @@ async def binds_remove_all(
             if addr_mode == 1:
                 # group
                 src_ieee = t.EUI64.convert(binding["src"])
-                dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
+                cluster_id = u.str2int(binding["cluster_id"])
+
                 dst_addr = MultiAddress()
                 dst_addr.addrmode = addr_mode
                 dst_addr.nwk = t.uint16_t(binding["dst"]["group"])
-                dst_addr.ieee = dst_ieee
-                cluster_id = u.str2int(binding["cluster_id"])
+                if "dst_ieee" in binding["dst"]:
+                    # Probably not useful, but for backward "compatibility"
+                    dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
+                    dst_addr.ieee = dst_ieee
+
                 if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
                     len(clusters) == 0 or cluster_id in clusters
                 ):
