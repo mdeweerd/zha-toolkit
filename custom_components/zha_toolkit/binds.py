@@ -425,7 +425,7 @@ async def binds_remove_all(
             addr_mode = binding["dst"]["addrmode"]
 
             res = None
-            # Note, the code belowe is essentally two times the same
+            # Note, the code belowe is essentially two times the same
             #       but the goal is to make a distinciont between group
             #       and ieee addressing for testing/evolutions.
             if addr_mode == 1:
