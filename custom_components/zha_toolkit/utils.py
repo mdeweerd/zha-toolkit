@@ -257,7 +257,8 @@ async def get_ieee(app, listener, ref):
         device_registry = (
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.device_registry.async_get_registry()
-            if packaging.version.parse(HA_VERSION) < packaging.version.parse("2022.6")
+            if packaging.version.parse(HA_VERSION)
+            < packaging.version.parse("2022.6")
             else listener._hass.helpers.device_registry.async_get(
                 listener._hass
             )
