@@ -49,15 +49,15 @@ async def bind_group(
     u_cluster_id = params[p.CLUSTER_ID]
 
     if u_cluster_id is not None:
-        src_out_cls=[u_cluster_id]
-        src_in_cls=[u_cluster_id]
+        src_out_cls = [u_cluster_id]
+        src_in_cls = [u_cluster_id]
 
     results: dict[int, list[dict[str, int]]] = {}
     for src_out_cluster in src_out_cls:
         src_epid = None
         for ep_id, ep in src_dev.endpoints.items():
             if u_epid is not None and ep_id != u_epid:
-	        # Endpoint not selected
+                # Endpoint not selected
                 continue
             if ep_id == 0:
                 continue
@@ -88,23 +88,24 @@ async def bind_group(
         bind_result["result"] = res
         results[src_epid].append(bind_result)
         LOGGER.debug(
-            "0x%04x/0x%02x/0x%04x(OUT): binding group 0x%04x: %s", src_dev.nwk, src_epid, src_in_cluster, group_id, res
+            "0x%04x/0x%02x/0x%04x(OUT): binding group 0x%04x: %s",
+            src_dev.nwk,
+            src_epid,
+            src_out_cluster,
+            group_id,
+            res,
         )
 
     # find src ep_id
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
-    results: dict[int, list[dict[str, int]]] = {}
-
-    if u_cluster_id is not None:
-        src_in_cls=[u_cluster_id]
 
     for src_in_cluster in src_in_cls:
         src_epid = None
         for ep_id, ep in src_dev.endpoints.items():
             if u_epid is not None and ep_id != u_epid:
-	        # Endpoint not selected
+                # Endpoint not selected
                 continue
             if ep_id == 0:
                 continue
@@ -135,7 +136,12 @@ async def bind_group(
         bind_result["result"] = res
         results[src_epid].append(bind_result)
         LOGGER.debug(
-            "0x%04x/0x%02x/0x%04x(IN): binding group 0x%04x: %s", src_dev.nwk, src_epid, src_in_cluster, group_id, res
+            "0x%04x/0x%02x/0x%04x(IN): binding group 0x%04x: %s",
+            src_dev.nwk,
+            src_epid,
+            src_in_cluster,
+            group_id,
+            res,
         )
     event_data["result"] = results
 
@@ -218,8 +224,8 @@ async def bind_ieee(
     u_epid = params[p.EP_ID]
     u_cluster_id = params[p.CLUSTER_ID]
     if u_cluster_id is not None:
-        src_out_clusters=[u_cluster_id]
-        src_in_clusters=[u_cluster_id]
+        src_out_clusters = [u_cluster_id]
+        src_in_clusters = [u_cluster_id]
 
     # TODO: Filter according to params[p.CLUSTER_ID]
 
@@ -229,7 +235,9 @@ async def bind_ieee(
         src_endpoints = [
             ep_id
             for ep_id, ep in src_dev.endpoints.items()
-            if ep_id != 0 and src_out_cluster in ep.out_clusters and (u_epid is None or u_epid==ep_id)
+            if ep_id != 0
+            and src_out_cluster in ep.out_clusters
+            and (u_epid is None or u_epid == ep_id)
         ]
         LOGGER.debug(
             "0x%04x: got the %s endpoints for %s cluster",
@@ -289,7 +297,9 @@ async def bind_ieee(
         src_endpoints = [
             ep_id
             for ep_id, ep in src_dev.endpoints.items()
-            if ep_id != 0 and src_in_cluster in ep.in_clusters and (u_epid is None or u_epid==ep_id)
+            if ep_id != 0
+            and src_in_cluster in ep.in_clusters
+            and (u_epid is None or u_epid == ep_id)
         ]
         LOGGER.debug(
             "0x%04x: got the %s endpoints for %s cluster",
