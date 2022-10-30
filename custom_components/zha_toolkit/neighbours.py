@@ -30,7 +30,7 @@ async def routes_and_neighbours(
 
     LOGGER.debug("Getting routes and neighbours: %s", service)
     device = app.get_device(ieee=ieee)
-    await _routes_and_neighbours(device, listener)
+    event_data["result"] = await _routes_and_neighbours(device, listener)
 
 
 async def _routes_and_neighbours(device, listener):
@@ -60,6 +60,7 @@ async def _routes_and_neighbours(device, listener):
     LOGGER.debug(
         "Wrote scan results to '%s' and '%s'", routes_name, neighbours_name
     )
+    return {"routes": routes, "neighbours": nbns}
 
 
 async def all_routes_and_neighbours(
@@ -69,6 +70,7 @@ async def all_routes_and_neighbours(
 
     counter = 1
     devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
+    all_routes = {}
     for device in devs:
         LOGGER.debug(
             "%s: Querying routes and neighbours: %s out of %s",
@@ -76,99 +78,68 @@ async def all_routes_and_neighbours(
             counter,
             len(devs),
         )
-        await _routes_and_neighbours(device, listener)
+        all_routes[str(device.ieee)] = await _routes_and_neighbours(
+            device, listener
+        )
         LOGGER.debug("%s: Got %s out of %s", device.ieee, counter, len(devs))
         counter += 1
 
+    event_data["result"] = all_routes
+
+    all_routes_name = os.path.join(
+        listener._hass.config.config_dir,
+        "scans",
+        "all_routes_and_neighbours.json",
+    )
+    save_json(all_routes_name, all_routes)
+
 
 async def async_get_neighbours(device):
-    """Pull neighbor table from a device."""
+    """Pull neighbour table from a device."""
 
-    def _process_neighbor(nbg):
-        """Return dict of a neighbor entry."""
+    def _process_neighbour(nbg):
+        """Return dict of a neighbour entry."""
 
-        class NeighbourType(enum.IntEnum):
-            Coordinator = 0x0
-            Router = 0x1
-            End_Device = 0x2
-            Unknown = 0x3
-
-        class RxOnIdle(enum.IntEnum):
-            Off = 0x0
-            On = 0x1
-            Unknown = 0x2
-
-        class Relation(enum.IntEnum):
-            Parent = 0x0
-            Child = 0x1
-            Sibling = 0x2
-            None_of_the_above = 0x3
-            Previous_Child = 0x4
-
-        class PermitJoins(enum.IntEnum):
-            Not_Accepting = 0x0
-            Accepting = 0x1
-            Unknown = 0x2
-
+        # LOGGER.debug(f"NEIGHBOR: {nbg!r}")
         res = {}
-
-        res["pan_id"] = str(nbg.PanId)
-        res["ieee"] = str(nbg.IEEEAddr)
-
-        raw = nbg.NeighborType & 0x03
-        try:
-            nei_type = NeighbourType(raw).name
-        except ValueError:
-            nei_type = f"undefined_0x{raw:02x}"
-        res["device_type"] = nei_type
-
-        raw = (nbg.NeighborType >> 2) & 0x03
-        try:
-            rx_on = RxOnIdle(raw).name
-        except ValueError:
-            rx_on = f"undefined_0x{raw:02x}"
-        res["rx_on_when_idle"] = rx_on
-
-        raw = (nbg.NeighborType >> 4) & 0x07
-        try:
-            relation = Relation(raw).name
-        except ValueError:
-            relation = f"undefined_0x{raw:02x}"
-        res["relationship"] = relation
-
-        raw = nbg.PermitJoining & 0x02
-        try:
-            joins = PermitJoins(raw).name
-        except ValueError:
-            joins = f"undefined_0x{raw:02x}"
-        res["new_joins_accepted"] = joins
-
-        res["depth"] = nbg.Depth
-        res["lqi"] = nbg.LQI
-
+        res["pan_id"] = str(nbg.extended_pan_id)
+        res["ieee"] = str(nbg.ieee)
+        res["device_type"] = nbg.device_type.name
+        res["rx_on_when_idle"] = nbg.rx_on_when_idle.name
+        res["relationship"] = nbg.relationship.name
+        res["permit_joining"] = nbg.permit_joining.name
+        res["depth"] = nbg.depth
+        res["lqi"] = nbg.lqi
         return res
 
     result = []
     idx = 0
     while True:
-        status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Lqi_req, idx)
-        LOGGER.debug(
-            "%s: neighbor request Status: %s. Response: %r",
-            device.ieee,
-            status,
-            val,
-        )
-        if zdo_t.Status.SUCCESS != status:
-            LOGGER.debug(
-                "%s: device oes not support 'Mgmt_Lqi_req'", device.ieee
+        try:
+            status, val = await device.zdo.request(
+                zdo_t.ZDOCmd.Mgmt_Lqi_req, idx
             )
+            LOGGER.debug(
+                "%s: neighbour request Status: %s. Response: %r",
+                device.ieee,
+                status,
+                val,
+            )
+            if zdo_t.Status.SUCCESS != status:
+                LOGGER.debug(
+                    "%s: device does not support 'Mgmt_Lqi_req'", device.ieee
+                )
+                break
+        except DeliveryError:
+            LOGGER.debug("%s: Could not deliver 'Mgmt_Lqi_req'", device.ieee)
             break
 
-        neighbors = val.NeighborTableList
-        for neighbor in neighbors:
-            result.append(_process_neighbor(neighbor))
+        # LOGGER.debug(f"NEIGHBORS: {val!r}")
+        neighbours = val.neighbor_table_list
+        for neighbour in neighbours:
+            result.append(_process_neighbour(neighbour))
             idx += 1
-        if idx >= val.Entries:
+        if idx >= val.entries:
             break
         await asyncio.sleep(uniform(1.0, 1.5))
 
@@ -205,16 +176,28 @@ async def async_get_routes(device):
     routes = []
     idx = 0
     while True:
-        status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Rtg_req, idx)
-        LOGGER.debug(
-            "%s: route request Status:%s. Routes: %r", device.ieee, status, val
-        )
-        if zdo_t.Status.SUCCESS != status:
-            LOGGER.debug(
-                "%s: Does not support 'Mgmt_rtg_req': %s", device.ieee, status
+        try:
+            status, val = await device.zdo.request(
+                zdo_t.ZDOCmd.Mgmt_Rtg_req, idx
             )
+            LOGGER.debug(
+                "%s: route request Status:%s. Routes: %r",
+                device.ieee,
+                status,
+                val,
+            )
+            if zdo_t.Status.SUCCESS != status:
+                LOGGER.debug(
+                    "%s: Does not support 'Mgmt_rtg_req': %s",
+                    device.ieee,
+                    status,
+                )
+                break
+        except DeliveryError:
+            LOGGER.debug("%s: Could not deliver 'Mgmt_rtg_req'", device.ieee)
             break
 
+        LOGGER.debug(f"Mgmt_Rtg_rsp: {val!r}")
         for route in val.RoutingTableList:
             routes.append(_process_route(route))
             idx += 1

@@ -1,4 +1,3 @@
----
 # Describes the format for available zha services
 execute:
   description: >-
@@ -340,6 +339,35 @@ add_to_group:
     fail_exception:
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+all_routes_and_neigbours:
+  description: Scan for all routes and neighbours, results saved to config/scans/...
+  fields:
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 attr_read:
@@ -1121,6 +1149,43 @@ get_groups:
     fail_exception:
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+get_routes_and_neigbours:
+  description: Scan for all routes and neighbours, results saved to config/scans/...
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address of the node
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    expect_reply:
+      description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 get_zll_groups:
