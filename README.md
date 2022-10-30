@@ -199,12 +199,13 @@ test the service first before adding them to an automation.
 Go to Developer Tools > Services in your instance :
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
-Choose `zha_toolkit.execute` as the service.\
-Most parameters can be set
-using the UI, there are some cases where you may want to enable Yaml entry
-\- you'll have some more flexibility and all parameters fit in your browser
-view. On the other hand, the UI interface makes it easier to select the
-entity. You can switch back and forth!
+Choose the generic service `zha_toolkit.execute` or - more convenient - the
+specific `zha_toolkit.<COMMAND>` as the service.\
+Most parameters can be
+set using the UI, there are some cases where you may want to enable Yaml
+entry - you'll have some more flexibility and all parameters fit in your
+browser view. On the other hand, the UI interface makes it easier to select
+the entity. You can switch back and forth!
 
 There are several examples below for different commands. You can copy/paste
 them to start from.
@@ -251,11 +252,15 @@ service: zha_toolkit.SOME_SERVICE
   # Valid possibilities for the `ieee` address
   # The full IEEE address:
   ieee: 00:12:4b:00:24:42:d1:dc
+```
 
+```yaml
 service: zha_toolkit.SOME_SERVICE
   # The short network address
   ieee: 0x2F3E
+```
 
+```yaml
 service: zha_toolkit.SOME_SERVICE
   # entity name (one of them)
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
@@ -498,9 +503,8 @@ logging is active, this will be visible in the `home_assistant.log`. The
 last read this can be written to a state.
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.attr_write
 data:
-  command: attr_write
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # The endpoint is optional - when missing tries to find endpoint matching the cluster
   endpoint: 11
@@ -808,10 +812,9 @@ The result is also added to the event data in the event\['data'\]\['scan'\]
 field
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.scan_device
 data:
   ieee: 00:12:4b:00:22:08:ed:1a
-  command: scan_device
   # Optional: endpoint to scan, when missing: all known endpoints
   # endpoint: 1
   # Optional: endpoints to scan, when missing: all known endpoints
@@ -821,9 +824,8 @@ data:
 Scan using the entity name:
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.scan_device
 data:
-  command: scan_device
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
 ```
 
@@ -927,12 +929,10 @@ than the core that has though release procedures and is not as easily
 modifiable as a `custom_component`.
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.zcl_cmd
 data:
   # Device IEEE address - mandatory
   ieee: 5c:02:72:ff:fe:92:c2:5d
-  # Service command - mandatory
-  command: zcl_cmd
   # Command id - mandatory
   cmd: 0
   # Cluster id - mandatory
@@ -955,10 +955,9 @@ data:
 ### `zcl_cmd` Example: Send `on` command to an OnOff Cluster.
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.zcl_cmd
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
-  command: zcl_cmd
   cmd: 1
   cluster: 6
   endpoint: 11
@@ -1203,9 +1202,8 @@ You can use the blueprint to setup daily backup:
 The name of that backup is according to the format
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.ezsp_backup
 data:
-  command: ezsp_backup
   # Optional command_data, string added to the basename.
   # With this example the backup is written to `nwk_backup_20220105.json`
   command_data: _20220105
