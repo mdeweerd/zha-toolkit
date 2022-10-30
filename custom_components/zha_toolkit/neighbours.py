@@ -78,45 +78,27 @@ async def all_routes_and_neighbours(
             counter,
             len(devs),
         )
-        all_routes[str(device.ieee)]=await _routes_and_neighbours(device, listener)
+        all_routes[str(device.ieee)] = await _routes_and_neighbours(
+            device, listener
+        )
         LOGGER.debug("%s: Got %s out of %s", device.ieee, counter, len(devs))
         counter += 1
 
-    result_data["result"]=all_routes
+    event_data["result"] = all_routes
 
     all_routes_name = os.path.join(
-        listener._hass.config.config_dir, "scans", "all_routes_and_neighbours.json"
+        listener._hass.config.config_dir,
+        "scans",
+        "all_routes_and_neighbours.json",
     )
     save_json(all_routes_name, all_routes)
+
 
 async def async_get_neighbours(device):
     """Pull neighbour table from a device."""
 
     def _process_neighbour(nbg):
         """Return dict of a neighbour entry."""
-
-        class NeighbourType(enum.IntEnum):
-            Coordinator = 0x0
-            Router = 0x1
-            End_Device = 0x2
-            Unknown = 0x3
-
-        class RxOnIdle(enum.IntEnum):
-            Off = 0x0
-            On = 0x1
-            Unknown = 0x2
-
-        class Relation(enum.IntEnum):
-            Parent = 0x0
-            Child = 0x1
-            Sibling = 0x2
-            None_of_the_above = 0x3
-            Previous_Child = 0x4
-
-        class PermitJoins(enum.IntEnum):
-            Not_Accepting = 0x0
-            Accepting = 0x1
-            Unknown = 0x2
 
         # LOGGER.debug(f"NEIGHBOR: {nbg!r}")
         res = {}
@@ -134,7 +116,9 @@ async def async_get_neighbours(device):
     idx = 0
     while True:
         try:
-            status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Lqi_req, idx)
+            status, val = await device.zdo.request(
+                zdo_t.ZDOCmd.Mgmt_Lqi_req, idx
+            )
             LOGGER.debug(
                 "%s: neighbour request Status: %s. Response: %r",
                 device.ieee,
@@ -147,9 +131,7 @@ async def async_get_neighbours(device):
                 )
                 break
         except DeliveryError:
-            LOGGER.debug(
-                "%s: Could not deliver 'Mgmt_Lqi_req'", device.ieee
-            )
+            LOGGER.debug("%s: Could not deliver 'Mgmt_Lqi_req'", device.ieee)
             break
 
         # LOGGER.debug(f"NEIGHBORS: {val!r}")
@@ -195,19 +177,24 @@ async def async_get_routes(device):
     idx = 0
     while True:
         try:
-            status, val = await device.zdo.request(zdo_t.ZDOCmd.Mgmt_Rtg_req, idx)
+            status, val = await device.zdo.request(
+                zdo_t.ZDOCmd.Mgmt_Rtg_req, idx
+            )
             LOGGER.debug(
-                "%s: route request Status:%s. Routes: %r", device.ieee, status, val
+                "%s: route request Status:%s. Routes: %r",
+                device.ieee,
+                status,
+                val,
             )
             if zdo_t.Status.SUCCESS != status:
                 LOGGER.debug(
-                    "%s: Does not support 'Mgmt_rtg_req': %s", device.ieee, status
+                    "%s: Does not support 'Mgmt_rtg_req': %s",
+                    device.ieee,
+                    status,
                 )
                 break
         except DeliveryError:
-            LOGGER.debug(
-                "%s: Could not deliver 'Mgmt_rtg_req'", device.ieee
-            )
+            LOGGER.debug("%s: Could not deliver 'Mgmt_rtg_req'", device.ieee)
             break
 
         LOGGER.debug(f"Mgmt_Rtg_rsp: {val!r}")
