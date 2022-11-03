@@ -613,7 +613,7 @@ data:
 
 Get the bindings from the device.\
 Listen to the event, or enable debug and
-check the log to get the information.\\
+check the log to get the information.
 
 ```yaml
 service: zha_toolkit.binds_get

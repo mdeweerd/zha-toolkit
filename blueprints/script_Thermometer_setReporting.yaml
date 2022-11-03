@@ -1,0 +1,36 @@
+iblueprint:
+  domain: script
+  name: Zigbee Thermometer Configure Reporting
+  description: A script that configures the reporting of a zigbee thermometer.
+  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/script_Thermometer_setReporting.yaml
+  fields:
+    entity_name:
+      name: entity_name
+      description: A Zigbee Entity (all entities of the device resolve to the same address)
+      required: true
+      selector:
+        entity:
+          integration: zha
+sequence:
+  - service: zha_toolkit.conf_report
+    data:
+      ieee: "{{ entity_name }}"
+      cluster: 1026
+      attribute: 0
+      tries: 100
+      event_done: zha_done
+      reportable_change: 20
+      max_interval: 300
+      min_interval: 19
+  - service: zha_toolkit.conf_report_read
+    data:
+      ieee: "{{ entity_name }}"
+      cluster: 1026
+      attribute: 0
+      tries: 100
+      event_done: zha_done
+mode: restart
+icon: mdi:thermometer-check
+description: >-
+  This script configures the selected Zigbee Thermometer to report its
+  temperature at least every 5 minutes or every 0.2°C whichever occurs first.

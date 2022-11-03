@@ -1,0 +1,41 @@
+iblueprint:
+  domain: script
+  name: Zigbee Thermometer Configure Reporting
+  description: A script that configures the reporting of a zigbee thermometer.  You can listen on the 'zha_done' event to see some of the configuration results
+  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/script_Thermometer_setReporting.yaml
+  fields:
+    entity_name:
+      name: Ally TRV Device
+      description: A Danfoss Ally Thermostatic Regulation Valve (TRV) to configure
+      selector:
+        device:
+          manufacturer: Danfoss
+          entity:
+            domain: climate
+            integration: zha
+sequence:
+  - alias: "Configure reporting"
+    service: zha_toolkit.conf_report
+    data:
+      ieee: "{{ entity_name }}"
+      cluster: 1026
+      attribute: 0
+      tries: 100
+      event_done: zha_done
+      reportable_change: 20
+      max_interval: 300
+      min_interval: 19
+  - alias: "Read back reporting configuration, for debugging"
+    service: zha_toolkit.conf_report_read
+    data:
+      ieee: "{{ entity_name }}"
+      cluster: 1026
+      attribute: 0
+      tries: 100
+      event_done: zha_done
+mode: restart
+icon: mdi:thermometer-check
+description: >-
+  This script configures the selected Danfoss Ally TRV.
+  Report temperature at least every 5 minutes or every 0.2°C whichever occurs first.
+  Enable the window open detection setting.

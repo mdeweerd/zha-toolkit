@@ -1,0 +1,80 @@
+---
+blueprint:
+  domain: automation
+  name: Ally Temp Update
+  description: 'Update Danfoss Ally TRV external temperature with min/max refresh
+    rate Original source: https://community.home-assistant.io/t/danfoss-ally-trv-working-with-remote-temp-sensor/276686/149'
+  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/danfoss_ally_remote_temperature.yaml
+  input:
+    ally_device:
+      name: Ally TRV Device
+      description: Temperature reading will be sent to this device
+      selector:
+        device:
+          manufacturer: Danfoss
+          entity:
+            domain: climate
+    min_update_minutes:
+      name: Minimum update interval
+      description: >
+        Updates will not be sent if time from last update is less than minimum interval.
+        Normally 30 min for uncovered, 5 min for covered.
+      selector:
+        number:
+          max: 360
+          min: 1
+          unit_of_measurement: minutes
+          mode: box
+    max_update_minutes:
+      name: Maximum update interval
+      description: >
+        Updates must be sent at least every 30 minutes for covered radiators,
+        and 3 hours for uncovered radiators.
+        Set to 30 min or 150 min.
+      selector:
+        number:
+          max: 180
+          min: 1
+          unit_of_measurement: minutes
+          mode: box
+    temp_sensor_id:
+      name: Temperature Sensor
+      description: External sensor from which the temperature will be read. Expects
+        data format 12.3 (corresponding to °C)
+      selector:
+        entity:
+          domain: sensor
+          device_class: temperature
+variables:
+  device: !input ally_device
+  ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+  min_update_minutes: !input min_update_minutes
+  temp_sensor_id: !input temp_sensor_id
+trigger:
+  - platform: state
+    entity_id:
+      - !input temp_sensor_id
+  - platform: homeassistant
+    event: start
+condition:
+  - condition: template
+    value_template: >
+      {{ as_timestamp(now()) - as_timestamp(state_attr(this.entity_id,'last_triggered'),0)|int
+      >= (60 * min_update_minutes) }}
+action:
+  - alias: Repeat until restarted to report temperature, or expired max_update delay
+    repeat:
+      while: true
+      sequence:
+        - alias: Write remote temperature to Danfoss Ally
+          service: zha_toolkit.attr_write
+          data:
+            ieee: '{{ ally_device }}'
+            cluster_id: 0x0201
+            attribute: 0x4015
+            value: '{{ (states(temp_sensor_id) | float * 100) | round(0)}}'
+        - alias: Wait until the maximum update delay expires (automation restarts
+            when temperature changes before)
+          delay:
+            minutes: !input max_update_minutes
+mode: restart
