@@ -215,6 +215,10 @@ async def bind_ieee(
         raise ValueError("'ieee' and 'data' required")
 
     src_dev = app.get_device(ieee=ieee)
+    if data in [0, False]:
+        # when command_data is set to 0 or false, bind to coordinator
+        data = app.ieee
+
     dst_dev = await u.get_device(app, listener, data)
 
     zdo = src_dev.zdo
