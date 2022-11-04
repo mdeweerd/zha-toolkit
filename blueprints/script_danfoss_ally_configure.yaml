@@ -1,0 +1,55 @@
+---
+blueprint:
+  domain: script
+  name: Danfoss Ally TRV configuration
+  description: A script that configures the reporting of a Danfoss Ally TRV.  zigbee
+    thermometer.  You can listen on the 'zha_done' event to see some of the configuration
+    results.  Sets report configuration and enables window open function.
+  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/script_danfoss_ally_configure.yaml
+  input:
+    device_ref:
+      name: Ally TRV Device
+      description: A Danfoss Ally Thermostatic Regulation Valve (TRV) to configure
+      selector:
+        device:
+          manufacturer: Danfoss
+          entity:
+            domain: climate
+            integration: zha
+variables:
+  device: !input device_ref
+  ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+sequence:
+  - alias: Configure reporting of local_temperature in Thermostat cluster
+    service: zha_toolkit.conf_report
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 0x0201
+      attribute: 0
+      tries: 100
+      event_done: zha_done
+      reportable_change: 20
+      max_interval: 300
+      min_interval: 19
+  - alias: Read back reporting configuration, for debugging
+    service: zha_toolkit.conf_report_read
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 0x0201
+      attribute: 0
+      tries: 100
+      event_done: zha_done
+  - alias: Enable close window functionality
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16387
+      attr_val: 0
+      manf: 4678
+mode: restart
+icon: mdi:thermometer-check
+description: >-
+  This script configures the selected Danfoss Ally TRV.
+  Report temperature at least every 5 minutes or every 0.2°C whichever occurs first.
+  Enable the window open detection setting.
