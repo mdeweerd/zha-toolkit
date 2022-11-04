@@ -66,7 +66,7 @@ condition:
 action:
   - alias: Repeat until restarted to report temperature, or expired max_update delay
     repeat:
-      while: "{{ true }}"
+      while: "{{ 1 == 1 }}"
       sequence:
         - alias: Write remote temperature to Danfoss Ally
           service: zha_toolkit.attr_write

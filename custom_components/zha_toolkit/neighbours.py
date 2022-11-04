@@ -32,6 +32,17 @@ async def routes_and_neighbours(
     device = app.get_device(ieee=ieee)
     event_data["result"] = await _routes_and_neighbours(device, listener)
 
+    ieee_tail = "".join([f"{o:02X}" for o in device.ieee])
+
+    fname = os.path.join(
+        listener._hass.config.config_dir,
+        "scans",
+        f"routes_and_neighbours_{ieee_tail}.json",
+    )
+    save_json(fname, event_data["result"])
+
+    LOGGER.debug("Wrote scan results to '%s'", fname)
+
 
 async def _routes_and_neighbours(device, listener):
     try:
@@ -44,22 +55,6 @@ async def _routes_and_neighbours(device, listener):
     except asyncio.TimeoutError:
         nbns = []
 
-    ieee_tail = "".join([f"{o:02x}" for o in device.ieee])
-    file_suffix = f"_{ieee_tail}.txt"
-
-    routes_name = os.path.join(
-        listener._hass.config.config_dir, "scans", "routes" + file_suffix
-    )
-    save_json(routes_name, routes)
-
-    neighbours_name = os.path.join(
-        listener._hass.config.config_dir, "scans", "neighbours" + file_suffix
-    )
-    save_json(neighbours_name, nbns)
-
-    LOGGER.debug(
-        "Wrote scan results to '%s' and '%s'", routes_name, neighbours_name
-    )
     return {"routes": routes, "neighbours": nbns}
 
 
@@ -104,6 +99,7 @@ async def async_get_neighbours(device):
         res = {}
         res["pan_id"] = str(nbg.extended_pan_id)
         res["ieee"] = str(nbg.ieee)
+        res["nwk"] = str(nbg.nwk)
         res["device_type"] = nbg.device_type.name
         res["rx_on_when_idle"] = nbg.rx_on_when_idle.name
         res["relationship"] = nbg.relationship.name
