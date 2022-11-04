@@ -47,11 +47,25 @@ blueprint:
           min: 1
           unit_of_measurement: minutes
           mode: box
+    temperature_offset:
+      name: Temperature offset to apply to temperature measured by sensor
+      description: >
+        When the offset is -1.5 and the value measured by the sensor is 20 °C, then
+        the temperature provide to the TRV will be 18.5 °C.
+      default: 0
+      selector:
+        number:
+          max: 4.0
+          min: -4.0
+          step: 0.1
+          unit_of_measurement: °C
+          mode: box
 variables:
   device: !input ally_device
   ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
   min_update_minutes: !input min_update_minutes
   temp_sensor_id: !input temp_sensor_id
+  temp_offset: !input temperature_offset
 trigger:
   - platform: state
     entity_id:
@@ -66,7 +80,7 @@ condition:
 action:
   - alias: Repeat until restarted to report temperature, or expired max_update delay
     repeat:
-      while: "{{ 1 == 1 }}"
+      while: '{{ 1 == 1 }}'
       sequence:
         - alias: Write remote temperature to Danfoss Ally
           service: zha_toolkit.attr_write
@@ -74,7 +88,8 @@ action:
             ieee: '{{ ieee }}'
             cluster: 0x0201
             attribute: 0x4015
-            attr_val: '{{ (states(temp_sensor_id) | float * 100) | round(0)}}'
+            attr_val: '{{ (states(temp_sensor_id) | float * 100) + temp_offset
+              | round(0)}}'
         - alias: Wait until the maximum update delay expires (automation restarts
             when temperature changes before)
           delay:
