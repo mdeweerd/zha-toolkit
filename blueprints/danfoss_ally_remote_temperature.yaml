@@ -65,6 +65,7 @@ variables:
   ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
   min_update_minutes: !input min_update_minutes
   temp_sensor_id: !input temp_sensor_id
+  temp_offset: !input temperature_offset
 trigger:
   - platform: state
     entity_id:
@@ -87,8 +88,7 @@ action:
             ieee: '{{ ieee }}'
             cluster: 0x0201
             attribute: 0x4015
-            attr_val: '{{ (states(temp_sensor_id) + temperature_offset | float * 100)
-              | round(0)}}'
+            attr_val: '{{ (states(temp_sensor_id) + temp_offset | float * 100) | round(0)}}'
         - alias: Wait until the maximum update delay expires (automation restarts
             when temperature changes before)
           delay:
