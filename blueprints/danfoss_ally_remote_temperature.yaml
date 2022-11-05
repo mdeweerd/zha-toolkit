@@ -87,7 +87,7 @@ action:
             ieee: '{{ ieee }}'
             cluster: 0x0201
             attribute: 0x4015
-            attr_val: '{{ (states(temp_sensor_id) | float * 100) + temperature_offset
+            attr_val: '{{ (states(temp_sensor_id) + temperature_offset | float * 100)
               | round(0)}}'
         - alias: Wait until the maximum update delay expires (automation restarts
             when temperature changes before)
