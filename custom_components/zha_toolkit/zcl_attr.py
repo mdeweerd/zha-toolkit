@@ -84,15 +84,13 @@ async def my_read_reporting_configuration_multiple(
 
     # Exception is propagated to caller if any
     res = await self._read_reporting_configuration(
-        t.List[f.ReadReportingConfigRecord](cfg),
-        **kwargs
+        t.List[f.ReadReportingConfigRecord](cfg), **kwargs
     )
 
     try:
         LOGGER.warning("Read reporting with %s result %s", cfg, res)
     except Exception as e:
         LOGGER.debug("Error when reporting result of Read Report %r", e)
-    
 
     # Parse configure reporting result for unsupported attributes
     records = res[0]
@@ -101,16 +99,20 @@ async def my_read_reporting_configuration_multiple(
         and not (len(records) == 1 and records[0].status == f.Status.SUCCESS)
         and len(records) >= 0
     ):
-      try:
-        failed = [
-            r.attrid
-            for r in records
-            if r.status == f.Status.UNSUPPORTED_ATTRIBUTE
-        ]
-        for attr in failed:
-            self.add_unsupported_attribute(attr)
-      except Exception as e:
-        LOGGER.error("Issue when reading ReadReportingConfig result %r", records)
+        try:
+            failed = [
+                r.attrid
+                for r in records
+                if r.status == f.Status.UNSUPPORTED_ATTRIBUTE
+            ]
+            for attr in failed:
+                self.add_unsupported_attribute(attr)
+        except Exception as e:
+            LOGGER.error(
+                "Issue when reading ReadReportingConfig result %r : %r",
+                records,
+                e,
+            )
     return res
 
 
@@ -147,7 +149,7 @@ async def conf_report_read(
             0x08,  # Command id
             schema,  # Schema
             param,
-	    manufacturer=params[p.MANF],  # Added, not tested
+            manufacturer=params[p.MANF],  # Added, not tested
             expect_reply=True,
         )
 
@@ -197,11 +199,16 @@ async def conf_report_read(
                     }
                     try:
                         r_conf["type"] = f"0x{rcfg.datatype:02X}"
-                        r_conf["min_interval"] = rcfg.min_interval,
-                        r_conf["max_interval"] = rcfg.max_interval,
-                        #r_conf["reportable_change"] = rcfg.reportable_change,
+                        r_conf["min_interval"] = (rcfg.min_interval,)
+                        r_conf["max_interval"] = (rcfg.max_interval,)
+                        # r_conf["reportable_change"] = rcfg.reportable_change,
                     except Exception as e:  # nosec
-                        LOGGER.error("Issue when reading AttributesReportingConfig result %r %r", rcfg, e)
+                        LOGGER.error(
+                            "Issue when reading AttributesReportingConfig"
+                            " result %r %r",
+                            rcfg,
+                            e,
+                        )
                     try:
                         # Try to add name of the attribute
                         attr_name = cluster.attributes.get(

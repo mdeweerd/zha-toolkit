@@ -108,7 +108,7 @@ def normalize_filename(filename: str) -> str:
     Normalize filename so that slashes and other problematic
     characters are replaced with hyphen
     """
-    result="".join([c if re.match(r"[\w.]", c) else "-" for c in filename])
+    result = "".join([c if re.match(r"[\w.]", c) else "-" for c in filename])
     LOGGER.debug(f"Normalize {filename}->{result}")
     return "".join([c if re.match(r"[\w.]", c) else "-" for c in filename])
 
