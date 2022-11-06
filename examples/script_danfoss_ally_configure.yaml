@@ -1,0 +1,137 @@
+---
+alias: Danfoss Ally TRV configuration
+sequence:
+  - variables:
+      ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+      default_tries: 3
+  - alias: Configure reporting of local_temperature in Thermostat cluster
+    service: zha_toolkit.conf_report
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 0
+      tries: '{{ default_tries}}'
+      event_done: zha_done
+      reportable_change: 20
+      max_interval: 300
+      min_interval: 19
+  - alias: Read back reporting configuration, for debugging
+    service: zha_toolkit.conf_report_read
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 0
+      tries: '{{ default_tries}}'
+      event_done: zha_done
+  - alias: Set Display rotation
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 516
+      attribute: 16384
+      attr_val: '{{ 0 if view_direction else 1 }}'
+      manf: 4678
+      event_done: zha_done
+      tries: '{{ default_tries}}'
+      csvout: danfoss_config.csv
+  - alias: Set open window detection
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16465
+      attr_val: '{{ 1 if enable_open_window else 0 }}'
+      manf: 4678
+      event_done: zha_done
+      tries: '{{ default_tries}}'
+      csvout: danfoss_config.csv
+  - alias: Check if window open reporting is configured, for debugging
+    service: zha_toolkit.conf_report_read
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16465
+      manf: 4678
+      tries: '{{ default_tries}}'
+      event_done: zha_done
+  - alias: Set TRV orientation (horizontal/vertical)
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16404
+      attr_val: '{{ 1 if orientation else 0 }}'
+      manf: 4678
+      event_done: zha_done
+      tries: '{{ default_tries}}'
+      csvout: danfoss_config.csv
+description: >-
+  A script that configures a Danfoss Ally TRV zigbee thermostat.  You can listen
+  on the 'zha_done' event to see some of the configuration results.  Sets report
+  configuration and enables window open function.
+fields:
+  device:
+    name: Ally TRV Device
+    description: A Danfoss Ally Thermostatic Regulation Valve (TRV) to configure
+    required: true
+    selector:
+      device:
+        manufacturer: Danfoss
+        entity:
+          domain: climate
+          integration: zha
+  set_min_temperature:
+    name: Min user temperature
+    description: The minimum temperature a user can set
+    default: 8
+    example: 8
+    required: true
+    selector:
+      number:
+        min: 8
+        max: 22
+        step: 0.5
+        unit_of_measurement: °C
+        mode: box
+  set_max_temperature:
+    name: Max user temperature
+    description: The maximum temperature a user can set
+    default: 22
+    example: 22
+    required: true
+    selector:
+      number:
+        min: 8
+        max: 22
+        step: 0.5
+        unit_of_measurement: °C
+        mode: box
+  enable_open_window:
+    name: Enable open window detection
+    description: When true, the valve detects open window and stops heating
+    default: true
+    example: true
+    required: true
+    selector:
+      boolean:
+  view_direction:
+    name: Viewing direction/display rotation
+    description: >-
+      * When true, the text can be read when looking towards the valve (factory
+      default), * When false, the text can be read when looking from the valve.
+    default: true
+    example: true
+    required: true
+    selector:
+      boolean:
+  orientation:
+    name: TRV orientation
+    description: >-
+      - When false, mounted horizontaly, - When true, mounted vertically. This
+      selects the temperature gradient measured in the valve on radiator.
+    default: false
+    required: true
+    selector:
+      boolean:
+mode: single
+icon: mdi:thermostat
