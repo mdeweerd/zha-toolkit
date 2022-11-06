@@ -2,10 +2,14 @@
 blueprint:
   domain: script
   name: Danfoss Ally TRV configuration
-  description: A script that configures the reporting of a Danfoss Ally TRV.  zigbee
-    thermometer.  You can listen on the 'zha_done' event to see some of the configuration
-    results.  Sets report configuration and enables window open function.
-  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/script_danfoss_ally_configure.yaml
+  description: "IMPORTANT NOTE:  This blueprint is provided as an example. In practice\
+    \ having a blueprint for a script does not seem of much use, if you think it is\
+    \ useful discuss about it in a github discussion or issue!\nUse the script in\
+    \ the example directory instead\nA script that configures the reporting of a Danfoss\
+    \ Ally TRV.  zigbee thermometer.  You can listen on the 'zha_done' event to see\
+    \ some of the configuration results.  Sets report configuration and enables window\
+    \ open function."
+  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/blueprint_danfoss_ally_configure_script.yaml
   input:
     device_ref:
       name: Ally TRV Device
