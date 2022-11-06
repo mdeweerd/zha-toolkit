@@ -108,7 +108,7 @@ def normalize_filename(filename: str) -> str:
     Normalize filename so that slashes and other problematic
     characters are replaced with hyphen
     """
-    return "".join([c if re.match(r"\w", c) else "-" for c in filename])
+    return "".join([c if re.match(r"\w\.", c) else "-" for c in filename])
 
 
 class RadioType(Enum):
