@@ -168,6 +168,19 @@ execute:
       example: other_attr
       selector:
         text:
+    state_value_template:
+      description: >-
+        When defined, the read attribute is converted using this template before writing it to the state.      example:
+        "{{ value / 100 }}"
+      selector:
+        text:
+    force_update:
+      description: >
+        Force an update event when the state is written
+        When not set or false, if the state value is unchanged, the update may not trigger an automation.
+      example: true
+      selector:
+        boolean:
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
@@ -432,6 +445,19 @@ attr_read:
       example: other_attr
       selector:
         text:
+    state_value_template:
+      description: >-
+        When defined, the read attribute is converted using this template before writing it to the state.      example:
+        "{{ value / 100 }}"
+      selector:
+        text:
+    force_update:
+      description: >
+        Force an update event when the state is written
+        When not set or false, if the state value is unchanged, the update may not trigger an automation.
+      example: true
+      selector:
+        boolean:
     event_success:
       description: Event name in case of success
       example: my_read_success_trigger_event
