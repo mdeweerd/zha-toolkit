@@ -439,7 +439,7 @@ async def binds_remove_all(
 
                 dst_addr = MultiAddress()
                 dst_addr.addrmode = addr_mode
-                dst_addr.nwk = t.uint16_t(binding["dst"]["group"])
+                dst_addr.nwk = t.uint16_t(u.str2int(binding["dst"]["group"]))
                 if "dst_ieee" in binding["dst"]:
                     # Probably not useful, but for backward "compatibility"
                     dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
