@@ -73,6 +73,6 @@ action:
     service: zha_toolkit.ha_set_state
     data:
       state_id: '{{ temp_sensor_id }}'
-      attr_val: '{{ ((states(temp_sensor_id)|round(2)) + 0.001) }}
+      attr_val: '{{ (states(temp_sensor_id)|round(2)) + 0.001 }}'
 
 mode: single
