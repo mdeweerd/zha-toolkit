@@ -69,4 +69,10 @@ action:
       changes before)
     delay:
       minutes: !input min_update_minutes
+  - alias: Fake small change in temperature so that the next sensor update triggers an update/change event
+    service: zha_toolkit.ha_set_state
+    data:
+      state_id: '{{ temp_sensor_id }}'
+      attr_val: '{{ ((states(temp_sensor_id)|round(2)) + 0.001) }}
+
 mode: single
