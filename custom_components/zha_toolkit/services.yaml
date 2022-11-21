@@ -1254,6 +1254,80 @@ get_zll_groups:
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
+ha_set_state:
+  description: Set/update a Home Assistant state
+  fields:
+    attr_val:
+      description: value to write to the state (or use in the template)
+      required: true
+      selector:
+        text:
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    state_id:
+      description: >-
+        Name of state to write the read attribute value to
+      example: sensor.example
+      required: true
+      selector:
+        text:
+    state_attr:
+      description: >-
+        When defined, attribute in state_id to write the read attribute
+        value to.  Write to state value when missing (and state_id is defined)
+      example: other_attr
+      selector:
+        text:
+    state_value_template:
+      description: >-
+        When defined, used as a template expression.
+        For example "value + 10" will be internally interpreted as "{{ value + 10 }}" where 'value' is substituted with the value for 'attr_val'
+      example: value + 10
+      selector:
+        text:
+    allow_create:
+      description: >-
+        Allow state creation (given by state_id) if it does not exist
+      selector:
+        boolean:
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    csvout:
+      description: >-
+        Filename of CSV to write the update state information to.  Written to 'csv' directory.
+      example: ../web/mystatecsv.csv
+      selector:
+        text:
+    csvlabel:
+      description: Label to designate value written (in CSV file)
+      example: Updated from zha_toolkit.ha_set_state
+      selector:
+        text:
 handle_join:
   description: >-
     Handle join (ZHA should re-interrogate the device as on new join)

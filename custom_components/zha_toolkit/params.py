@@ -70,6 +70,7 @@ class SERVICE_consts:  # pylint: disable=too-few-public-methods
     GET_ZLL_GROUPS = "get_zll_groups"
     ZHA_DEVICES = "zha_devices"
     HANDLE_JOIN = "handle_join"
+    HA_SET_STATE = "ha_set_state"
     IEEE_PING = "ieee_ping"
     LEAVE = "leave"
     MISC_REINITIALIZE = "misc_reinitialize"
