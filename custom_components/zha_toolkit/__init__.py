@@ -57,7 +57,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ATTR_TYPE): vol.Any(
                 int, cv.string
             ),  # String is for later
-            vol.Optional(P.ATTR_VAL): vol.Any(cv.string, int, list),
+            vol.Optional(P.ATTR_VAL): vol.Any(cv.string, float, int, list),
             vol.Optional(P.CODE): vol.Any(
                 list, cv.string
             ),  # list is for later
@@ -317,7 +317,8 @@ SERVICE_SCHEMAS = {
         {
             vol.Required(P.ATTR_VAL): vol.Any(
                 list,
-                vol.Coerce(int),
+                float,
+                int,
                 cv.string,
             ),
             vol.Required(P.STATE_ID): cv.string,

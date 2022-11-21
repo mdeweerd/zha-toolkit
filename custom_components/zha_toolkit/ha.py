@@ -30,9 +30,10 @@ async def ha_set_state(  # noqa: C901
         raise ValueError("'state_id' is required")
 
     if params[p.STATE_ATTR] is not None:
-        state_field = (f"{params[p.STATE_ID]}[{params[p.STATE_ATTR]}]",)
+        state_field = f"{params[p.STATE_ID]}[{params[p.STATE_ATTR]}]"
     else:
-        state_field = (f"{params[p.STATE_ID]}",)
+        state_field = f"{params[p.STATE_ID]}"
+
     LOGGER.debug(
         "Set state '%s' -> %s",
         state_field,
