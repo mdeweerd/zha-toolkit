@@ -57,7 +57,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ATTR_TYPE): vol.Any(
                 int, cv.string
             ),  # String is for later
-            vol.Optional(P.ATTR_VAL): vol.Any(cv.string, int, list),
+            vol.Optional(P.ATTR_VAL): vol.Any(cv.string, float, int, list),
             vol.Optional(P.CODE): vol.Any(
                 list, cv.string
             ),  # list is for later
@@ -71,6 +71,10 @@ SERVICE_SCHEMAS = {
             ),  # Arguments to command
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
+            # Template can't be used for check:
+            # vol.Optional(P.STATE_VALUE_TEMPLATE): cv.template,
+            vol.Optional(P.STATE_VALUE_TEMPLATE): cv.string,
+            vol.Optional(P.FORCE_UPDATE): cv.boolean,
             vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
             vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
@@ -119,6 +123,8 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
+            vol.Optional(P.STATE_VALUE_TEMPLATE): cv.string,
+            vol.Optional(P.FORCE_UPDATE): cv.boolean,
             vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.OUTCSV): cv.string,
             vol.Optional(P.CSVLABEL): cv.string,
@@ -147,6 +153,8 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.EXPECT_REPLY): cv.boolean,
             vol.Optional(P.STATE_ID): cv.string,
             vol.Optional(P.STATE_ATTR): cv.string,
+            vol.Optional(P.STATE_VALUE_TEMPLATE): cv.template,
+            vol.Optional(P.FORCE_UPDATE): cv.boolean,
             vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
             vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
@@ -302,6 +310,24 @@ SERVICE_SCHEMAS = {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
+    S.HA_SET_STATE: vol.Schema(
+        {
+            vol.Required(P.ATTR_VAL): vol.Any(
+                list,
+                float,
+                int,
+                cv.string,
+            ),
+            vol.Required(P.STATE_ID): cv.string,
+            vol.Optional(P.STATE_ATTR): cv.string,
+            vol.Optional(P.STATE_VALUE_TEMPLATE): cv.string,
+            vol.Optional(P.FORCE_UPDATE): cv.boolean,
+            vol.Optional(P.ALLOW_CREATE): cv.boolean,
+            vol.Optional(P.OUTCSV): cv.string,
+            vol.Optional(P.CSVLABEL): cv.string,
         },
         extra=vol.ALLOW_EXTRA,
     ),

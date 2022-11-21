@@ -612,6 +612,8 @@ def extractParams(  # noqa: C901
         p.ARGS: [],
         p.STATE_ID: None,
         p.STATE_ATTR: None,
+        p.STATE_VALUE_TEMPLATE: None,
+        p.FORCE_UPDATE: False,
         p.ALLOW_CREATE: False,
         p.EVT_SUCCESS: None,
         p.EVT_FAIL: None,
@@ -726,10 +728,19 @@ def extractParams(  # noqa: C901
     if P.STATE_ATTR in rawParams:
         params[p.STATE_ATTR] = rawParams[P.STATE_ATTR]
 
+    if P.STATE_VALUE_TEMPLATE in rawParams:
+        params[p.STATE_VALUE_TEMPLATE] = rawParams[P.STATE_VALUE_TEMPLATE]
+
     if P.ALLOW_CREATE in rawParams:
         allow = str2int(rawParams[P.ALLOW_CREATE])
         params[p.ALLOW_CREATE] = (allow is not None) and (
             (allow is True) or (allow == 1)
+        )
+
+    if P.FORCE_UPDATE in rawParams:
+        force_update = str2int(rawParams[P.FORCE_UPDATE])
+        params[p.FORCE_UPDATE] = (force_update is not None) and (
+            (force_update is True) or (force_update == 1)
         )
 
     if P.EVENT_DONE in rawParams:

@@ -1,0 +1,78 @@
+---
+blueprint:
+  domain: automation
+  name: Ally Temp Update Min Delay
+  description: Update Danfoss Ally TRV external temperature with min refresh rate
+  source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/danfoss_ally_remote_temperature_min_delay.yaml
+  input:
+    ally_device:
+      name: Ally TRV Device
+      description: Temperature reading will be sent to this device
+      selector:
+        device:
+          manufacturer: Danfoss
+          entity:
+            domain: climate
+    temp_sensor_id:
+      name: Temperature Sensor
+      description: External sensor from which the temperature will be read. Expects
+        data format 12.3 (corresponding to °C)
+      selector:
+        entity:
+          device_class: temperature
+    min_update_minutes:
+      name: Minimum update interval
+      description: >
+        Updates will not be sent if time from last update is less than minimum interval.
+        Normally 30 min for uncovered, 5 min for covered.
+      default: 5
+      selector:
+        number:
+          max: 299
+          min: 1
+          unit_of_measurement: minutes
+          mode: box
+    temperature_offset:
+      name: Temperature offset to apply to temperature measured by sensor
+      description: >
+        When the offset is -1.5 and the value measured by the sensor is 20 °C, then
+        the temperature provide to the TRV will be 18.5 °C.
+      default: 0
+      selector:
+        number:
+          max: 4.0
+          min: -4.0
+          step: 0.1
+          unit_of_measurement: °C
+          mode: box
+variables:
+  device: !input ally_device
+  ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+  min_update_minutes: !input min_update_minutes
+  temp_sensor_id: !input temp_sensor_id
+  temp_offset: !input temperature_offset
+trigger:
+  - platform: state
+    entity_id:
+      - !input temp_sensor_id
+action:
+  - alias: Write remote temperature to Danfoss Ally
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 0x0201
+      attribute: 0x4015
+      attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0)
+        }}'
+      read_before_write: false
+  - alias: Wait until the minimum update delay expires (automation restarts when temperature
+      changes before)
+    delay:
+      minutes: !input min_update_minutes
+  - alias: Fake small change in temperature so that the next sensor update triggers an update/change event
+    service: zha_toolkit.ha_set_state
+    data:
+      state_id: '{{ temp_sensor_id }}'
+      attr_val: '{{ (states(temp_sensor_id)|round(2)) + 0.001 }}'
+
+mode: single

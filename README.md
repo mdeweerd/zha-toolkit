@@ -106,6 +106,7 @@ ZHA Toolkit can also:
     - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [User method](#user-method)
+    - [`ha_set_state` - Update HA state](#ha_set_state---update-ha-state)
   - [Manufacturers](#manufacturers)
     - [Tuya](#tuya)
       - [`tuya_magic` - Tuya Magic spell](#tuya_magic---tuya-magic-spell)
@@ -1487,6 +1488,34 @@ ideas, and you can examine the other methods to see how you can use ZHA.
 This is a powerful tool to develop your own custom tool, and propose it for
 inclusion in the `zha-toolkit` when it's ready and of potential use to
 others.
+
+### `ha_set_state` - Update HA state
+
+Set/update any Home Assistant state.
+
+```yaml
+service: zha_toolkit.ha_set_state
+data:
+  fail_exception: true
+  state_id: sensor.mysensor
+  attr_val: 10
+  # optional Parameters
+  state_attr: some_attribute
+  allow_create: true
+  state_value_template: value + 2
+  csvout: set_state.csv
+  csvlabel: Example reason
+```
+
+`state_value_template` is a template(-like) expression that is interpreted
+where `attr_val` is available as `value` and `attr_value`. This a template
+expression without the curly parentheses (`{{ }}`). Unfortunately
+`{{ value }}` is expanded before the zha service code is entered disabling
+the dynamic evaluation of value which is why the curly parenthesis are
+omitted.
+
+This is not strictly a `zha` specific tool, but useful in some scripting
+situations.
 
 ## Manufacturers
 
