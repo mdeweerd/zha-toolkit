@@ -65,7 +65,7 @@ action:
       attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0)
         }}'
       read_before_write: false
-      write_if_equal: false
+      write_if_equal: true
       fail_exception: true
       tries: 3
   - alias: Wait until the minimum update delay expires (automation restarts when temperature
