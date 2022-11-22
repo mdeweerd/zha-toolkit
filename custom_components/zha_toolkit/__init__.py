@@ -591,12 +591,14 @@ async def async_setup(hass, config):
             LOGGER.debug(
                 "hass.data['zha']['zha_gateway'] is None,"
                 " not initializing zha_toolkit"
+                " - zha_toolkit needs zha (not deconz, not zigbee2mqtt)."
             )
             return True
     except KeyError:
         LOGGER.debug(
             "hass.data['zha']['zha_gateway'] missing,"
             " not initializing zha_toolkit"
+            " - zha_toolkit needs zha (not deconz, not zigbee2mqtt)."
         )
         return True
 
