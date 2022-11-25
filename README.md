@@ -250,7 +250,7 @@ you want to control.
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
-  # Valid possibilities for the `ieee` address
+  # Valid possibilities for the ieee address
   # The full IEEE address:
   ieee: "00:12:4b:00:24:42:d1:dc"
 ```
@@ -1391,11 +1391,11 @@ firmware images will be placed.
 will trigger the device to request this update from the coordinator (in
 this case zigpy).
 
-Prior to notifying the device, `ota_notify` will request all image provides
-to update the list of available images. By default, this is only done on
-startup, so when you add a new image to your local directory or when a new
-update is available from a third party, you'd have to restart HA. But with
-`ota_notify` no restart is required.
+Prior to notifying the device, `ota_notify` will request all image
+providers to update the list of available images. By default, this is only
+done on startup, so when you add a new image to your local directory or
+when a new update is available from a third party, you'd have to restart
+HA. But with `ota_notify` no restart is required.
 
 For details on how to setup your images sources, check the
 [zigpy wiki section](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates#enabling-ota-updates).
