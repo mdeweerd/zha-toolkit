@@ -252,7 +252,7 @@ you want to control.
 service: zha_toolkit.SOME_SERVICE
   # Valid possibilities for the `ieee` address
   # The full IEEE address:
-  ieee: 00:12:4b:00:24:42:d1:dc
+  ieee: "00:12:4b:00:24:42:d1:dc"
 ```
 
 ```yaml
@@ -1372,11 +1372,20 @@ data:
 
 ### `ota_notify`
 
+`ota_notify` helps you update the firmware of a zigbee device without
+restarting Home Assistant. It can use the already available firmware
+images, or download them using
+[Koenkk/zigbee-OTA](https://github.com/Koenkk/zigbee-OTA)'s list and
+resources. It also notifies the device that it should issue a request to be
+updated. That launches the update process.
+
 `OTA` is the acronym for "Over the Air" and we implicitly add "update" or
 "upgrade".
 
 You must have configured the
 [otau_directory](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates).
+This is where ZHA/zigpy looks for firmware images, and where downloaded
+firmware images will be placed.
 
 `ota_notify` will indicate to the device that an update is available, which
 will trigger the device to request this update from the coordinator (in
@@ -1404,9 +1413,9 @@ data:
   # Reference of the device that should be notified about an update.
   # Using one of the entity/sensor names is so much easier !
   ieee: sensor.lixee_zlinky_tic_00000000_electrical_measurement
-  # Optional, when true download data from https://github.com/Koenkk/zigbee-OTA
+  # Optional, when true download images from info at https://github.com/Koenkk/zigbee-OTA
   download: true
-  # Optional, directory to write OTA files to (default: HA configuration)
+  # Optional, directory to write OTA files to (default: same as ZHA configuration)
   path: /config/zb_ota
 ```
 
