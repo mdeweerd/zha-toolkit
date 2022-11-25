@@ -250,19 +250,22 @@ you want to control.
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
+data:
   # Valid possibilities for the ieee address
   # The full IEEE address:
-  ieee: "00:12:4b:00:24:42:d1:dc"
+  ieee: 00:12:4b:00:24:42:d1:dc
 ```
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
+data:
   # The short network address
   ieee: 0x2F3E
 ```
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
+data:
   # entity name (one of them)
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
 ```
@@ -282,7 +285,8 @@ All commands support setting event names. When set, these events are
 generated at the end of the command execution.
 
 ```yaml
-zha_toolkit.SERVICE_NAME:
+service: zha_toolkit.SERVICE_NAME
+data:
   # You can set the next events to use as a trigger.
   # The event data has the result of the command
   event_success: my_read_success_trigger_event
@@ -310,7 +314,8 @@ it often.
 ## Raise an exception on failure
 
 ```yaml
-zha_toolkit.SERVICE_CALL:
+service: zha_toolkit.SERVICE_CALL
+data:
   fail_exception: true
 ```
 
@@ -325,7 +330,8 @@ turn red in case the zigbee transaction result is not `SUCCESS`, then add
 ## Tries
 
 ```yaml
-zha_toolkit.SERVICE_CALL:
+service: zha_toolkit.SERVICE_CALL
+data:
   tries: 10
 ```
 
