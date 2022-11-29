@@ -250,19 +250,22 @@ you want to control.
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
-  # Valid possibilities for the `ieee` address
+data:
+  # Valid possibilities for the ieee address
   # The full IEEE address:
   ieee: 00:12:4b:00:24:42:d1:dc
 ```
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
+data:
   # The short network address
   ieee: 0x2F3E
 ```
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
+data:
   # entity name (one of them)
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
 ```
@@ -282,7 +285,8 @@ All commands support setting event names. When set, these events are
 generated at the end of the command execution.
 
 ```yaml
-zha_toolkit.SERVICE_NAME:
+service: zha_toolkit.SERVICE_NAME
+data:
   # You can set the next events to use as a trigger.
   # The event data has the result of the command
   event_success: my_read_success_trigger_event
@@ -310,7 +314,8 @@ it often.
 ## Raise an exception on failure
 
 ```yaml
-zha_toolkit.SERVICE_CALL:
+service: zha_toolkit.SERVICE_CALL
+data:
   fail_exception: true
 ```
 
@@ -325,7 +330,8 @@ turn red in case the zigbee transaction result is not `SUCCESS`, then add
 ## Tries
 
 ```yaml
-zha_toolkit.SERVICE_CALL:
+service: zha_toolkit.SERVICE_CALL
+data:
   tries: 10
 ```
 
@@ -1372,21 +1378,30 @@ data:
 
 ### `ota_notify`
 
+`ota_notify` helps you update the firmware of a zigbee device without
+restarting Home Assistant. It can use the already available firmware
+images, or download them using
+[Koenkk/zigbee-OTA](https://github.com/Koenkk/zigbee-OTA)'s list and
+resources. It also notifies the device that it should issue a request to be
+updated. That launches the update process.
+
 `OTA` is the acronym for "Over the Air" and we implicitly add "update" or
 "upgrade".
 
 You must have configured the
 [otau_directory](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates).
+This is where ZHA/zigpy looks for firmware images, and where downloaded
+firmware images will be placed.
 
 `ota_notify` will indicate to the device that an update is available, which
 will trigger the device to request this update from the coordinator (in
 this case zigpy).
 
-Prior to notifying the device, `ota_notify` will request all image provides
-to update the list of available images. By default, this is only done on
-startup, so when you add a new image to your local directory or when a new
-update is available from a third party, you'd have to restart HA. But with
-`ota_notify` no restart is required.
+Prior to notifying the device, `ota_notify` will request all image
+providers to update the list of available images. By default, this is only
+done on startup, so when you add a new image to your local directory or
+when a new update is available from a third party, you'd have to restart
+HA. But with `ota_notify` no restart is required.
 
 For details on how to setup your images sources, check the
 [zigpy wiki section](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates#enabling-ota-updates).
@@ -1404,9 +1419,9 @@ data:
   # Reference of the device that should be notified about an update.
   # Using one of the entity/sensor names is so much easier !
   ieee: sensor.lixee_zlinky_tic_00000000_electrical_measurement
-  # Optional, when true download data from https://github.com/Koenkk/zigbee-OTA
+  # Optional, when true download images from info at https://github.com/Koenkk/zigbee-OTA
   download: true
-  # Optional, directory to write OTA files to (default: HA configuration)
+  # Optional, directory to write OTA files to (default: same as ZHA configuration)
   path: /config/zb_ota
 ```
 
