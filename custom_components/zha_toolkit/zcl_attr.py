@@ -6,7 +6,7 @@ import logging
 
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
-from zigpy.exceptions import DeliveryError, ControllerException
+from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
@@ -220,7 +220,12 @@ async def conf_report_read(
                         pass
 
                     event_data["result_conf"].append(r_conf)
-        except (DeliveryError, ControllerException, asyncio.CancelledError, asyncio.TimeoutError):
+        except (
+            DeliveryError,
+            ControllerException,
+            asyncio.CancelledError,
+            asyncio.TimeoutError,
+        ):
             continue
         except Exception as e:
             triesToGo = 0  # Stop loop
@@ -272,7 +277,12 @@ async def conf_report(
             event_data["success"] = (
                 result_conf[0][0].status == f.Status.SUCCESS
             )
-        except (DeliveryError, ControllerException, asyncio.CancelledError, asyncio.TimeoutError):
+        except (
+            DeliveryError,
+            ControllerException,
+            asyncio.CancelledError,
+            asyncio.TimeoutError,
+        ):
             continue
         except Exception as e:
             triesToGo = 0  # Stop loop
