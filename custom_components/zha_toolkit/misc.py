@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 import zigpy.types as t
-from zigpy.exceptions import DeliveryError
+from zigpy.exceptions import DeliveryError, ControllerException
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
@@ -166,7 +166,7 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
                 # event_data["success"] = (
                 #     resf[0][0].status == f.Status.SUCCESS
                 # )
-            except (DeliveryError, asyncio.TimeoutError) as d:
+            except (DeliveryError, ControllerException, asyncio.TimeoutError) as d:
                 event_data["errors"].append(repr(d))
                 continue
             except Exception as e:  # Catch all others

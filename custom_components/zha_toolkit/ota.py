@@ -7,7 +7,7 @@ from glob import glob
 import aiohttp
 from pkg_resources import parse_version
 from zigpy import __version__ as zigpy_version
-from zigpy.exceptions import DeliveryError
+from zigpy.exceptions import DeliveryError, ControllerException
 from zigpy.util import retryable
 
 from . import DEFAULT_OTAU
@@ -22,7 +22,7 @@ SONOFF_LIST_URL = "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
 
 
 @retryable(
-    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
+    (DeliveryError, ControllerException, asyncio.CancelledError, asyncio.TimeoutError), tries=3
 )
 async def wrapper(cmd, *args, **kwargs):
     return await cmd(*args, **kwargs)
