@@ -25,7 +25,7 @@ blueprint:
       description: >
         Updates will not be sent if time from last update is less than minimum interval.
         Normally 30 min for uncovered, 5 min for covered.
-      default: 5
+      default: 30
       selector:
         number:
           max: 299
@@ -62,6 +62,7 @@ action:
       ieee: '{{ ieee }}'
       cluster: 0x0201
       attribute: 0x4015
+      manf: 4678
       attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0)
         }}'
       read_before_write: false
