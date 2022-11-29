@@ -5,7 +5,7 @@ import logging
 import re
 
 from zigpy import types as t
-from zigpy.exceptions import DeliveryError, ControllerException
+from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.util import retryable
 
 from . import utils as u
@@ -15,7 +15,13 @@ LOGGER = logging.getLogger(__name__)
 
 
 @retryable(
-    (DeliveryError, ControllerException, asyncio.CancelledError, asyncio.TimeoutError), tries=3
+    (
+        DeliveryError,
+        ControllerException,
+        asyncio.CancelledError,
+        asyncio.TimeoutError,
+    ),
+    tries=3,
 )
 async def read_attr(cluster, attrs, manufacturer=None):
     return await cluster.read_attributes(
