@@ -8,14 +8,20 @@ from random import uniform
 
 import zigpy.zdo.types as zdo_t
 from homeassistant.util.json import save_json
-from zigpy.exceptions import DeliveryError
+from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.util import retryable
 
 LOGGER = logging.getLogger(__name__)
 
 
 @retryable(
-    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=5
+    (
+        DeliveryError,
+        ControllerException,
+        asyncio.CancelledError,
+        asyncio.TimeoutError,
+    ),
+    tries=5,
 )
 def wrapper(cmd, *args, **kwargs):
     return cmd(*args, **kwargs)

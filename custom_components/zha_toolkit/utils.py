@@ -13,7 +13,7 @@ import packaging.version
 from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.util.json import save_json
 from zigpy import types as t
-from zigpy.exceptions import DeliveryError
+from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.util import retryable
 from zigpy.zcl import foundation as f
 
@@ -769,7 +769,13 @@ def extractParams(  # noqa: C901
 # The zigpy library does not offer retryable on read_attributes.
 # Add it ourselves
 @retryable(
-    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
+    (
+        DeliveryError,
+        ControllerException,
+        asyncio.CancelledError,
+        asyncio.TimeoutError,
+    ),
+    tries=1,
 )
 async def cluster_read_attributes(
     cluster, attrs, manufacturer=None
