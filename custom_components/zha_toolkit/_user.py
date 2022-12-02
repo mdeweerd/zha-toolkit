@@ -116,4 +116,4 @@ async def user_tuya_magic(
     # Magic spell - part 2 (skipped - does not seem to be needed)
     # attr_to_write={0xffde:13}
     # basic_cluster.write_attributes(attr_to_write, tries=3)
- 
+
