@@ -51,32 +51,50 @@ variables:
   min_update_minutes: !input min_update_minutes
   temp_sensor_id: !input temp_sensor_id
   temp_offset: !input temperature_offset
+  temperature: "{{ states(temp_sensor_id) }}"
 trigger:
   - platform: state
     entity_id:
       - !input temp_sensor_id
+  - platform: event
+    event_type: homeassistant_start
+    id: ha_restart
+condition:
+  - condition: template
+    value_template: '{{ temperature != -32768 }}'
 action:
+  - alias: Fake small change in temperature so that the next sensor update triggers an update/change event in case the write fails
+    service: zha_toolkit.ha_set_state
+    data:
+      state_id: '{{ temp_sensor_id }}'
+      attr_val: '{{ (temperature|round(2)) - 0.001 }}'
   - alias: Write remote temperature to Danfoss Ally
     service: zha_toolkit.attr_write
     data:
       ieee: '{{ ieee }}'
       cluster: 0x0201
       attribute: 0x4015
-      manf: 4678
+      manf: 0x1246
       attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0)
         }}'
       read_before_write: false
       write_if_equal: true
       fail_exception: true
       tries: 3
-  - alias: Wait until the minimum update delay expires (automation restarts when temperature
-      changes before)
+  - alias: Wait until the minimum update delay expires (the automation blocks itself because it is in single mode)
     delay:
       minutes: !input min_update_minutes
-  - alias: Fake small change in temperature so that the next sensor update triggers an update/change event
-    service: zha_toolkit.ha_set_state
-    data:
-      state_id: '{{ temp_sensor_id }}'
-      attr_val: '{{ (states(temp_sensor_id)|round(2)) + 0.001 }}'
-
+  - alias: Set slightly changed temperature if it is valid to force update.  Otherwise, a valid temperature will trigger anyway.
+    if:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: !input temp_sensor_id
+            state: "-32768"
+    then:
+      - alias: Fake small change in temperature so that the next sensor update triggers an update/change event
+        service: zha_toolkit.ha_set_state
+        data:
+          state_id: '{{ temp_sensor_id }}'
+          attr_val: '{{ (states(temp_sensor_id)|round(2)) + 0.001 }}'
 mode: single
