@@ -1,0 +1,28 @@
+---
+alias: '[Lighting] Update on/off states'
+description: >-
+  Request on/off state of all ZHA lights.
+  This allows to cope with lights that do not notify their state as expected.
+  In particular, when batch/group on/off commands are executes, the light states
+  are not updated in Home Assistant.
+  The result of the read requests will "force" Home Assistant to update.
+  You can call this script in an automation triggered by the group action, or on a
+  timely basis.
+  (Original script by @HarvsG in https://github.com/mdeweerd/zha-toolkit/issues/113#issuecomment-1335616201)
+trigger: []
+condition: []
+action:
+  - repeat:
+      for_each: >-
+        {{states.light | map(attribute='entity_id') | select('in',
+        integration_entities('zha')) | list }}
+      sequence:
+        - continue_on_error: true
+          service: zha_toolkit.attr_read
+          data:
+            ieee: '{{ repeat.item }}'
+            cluster: 6
+            attribute: 0
+            fail_exception: false
+            tries: 3
+mode: single
