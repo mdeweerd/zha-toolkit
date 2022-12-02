@@ -20,7 +20,6 @@ blueprint:
         data format 12.3 (corresponding to °C)
       selector:
         entity:
-          domain: sensor
           device_class: temperature
     min_update_minutes:
       name: Minimum update interval
@@ -89,7 +88,7 @@ action:
             cluster: 0x0201
             attribute: 0x4015
             attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0) }}'
-            read_before_write: false
+            manf: 4678
         - alias: Wait until the maximum update delay expires (automation restarts
             when temperature changes before)
           delay:
