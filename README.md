@@ -889,7 +889,7 @@ data:
 Sets the time and DST configuration for a Time Cluster from HA's current
 time and default timezone.
 
-The TimeStatus attribute is not set. You likely need to set it to 1
+The TimeStatus attribute is not set. You likely need to set it to 2
 (synchronized).
 
 Before and after writing, the attributes are read from the cluster and
