@@ -13,7 +13,7 @@
     "requirements": [
         "packaging>=20.8",
         "pytz",
-        "bisect"
+        "pycopy-bisect"
     ],
     "version": "0.0.0"
 }
