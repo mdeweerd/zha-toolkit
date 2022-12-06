@@ -11,7 +11,9 @@
     "issue_tracker": "https://github.com/mdeweerd/zha-toolkit/issues",
     "name": "\ud83e\uddf0 ZHA Toolkit Service",
     "requirements": [
-        "packaging>=20.8"
+        "packaging>=20.8",
+        "pytz",
+        "bisect"
     ],
     "version": "0.0.0"
 }

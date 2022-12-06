@@ -74,6 +74,7 @@ class SERVICE_consts:  # pylint: disable=too-few-public-methods
     IEEE_PING = "ieee_ping"
     LEAVE = "leave"
     MISC_REINITIALIZE = "misc_reinitialize"
+    MISC_SETTIME = "misc_settime"
     OTA_NOTIFY = "ota_notify"
     REJOIN = "rejoin"
     REGISTER_SERVICES = "register_services"

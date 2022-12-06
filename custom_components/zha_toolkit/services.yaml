@@ -41,6 +41,7 @@ execute:
             - ieee_ping
             - leave
             - misc_reinitialize
+            - misc_settime
             - ota_notify
             - rejoin
             - remove_all_groups
@@ -1497,6 +1498,64 @@ misc_reinitialize:
       selector:
         entity:
           integration: zha
+misc_settime:
+  description: Set Time Cluster attributes (Time, DST - except TimeStatus)
+  fields:
+    ieee:
+      description: >-
+        Entity name,\ndevice name, or\nIEEE address
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
+    endpoint:
+      description: target endpoint
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    tries:
+      description: Number of times the zigbee packet should be attempted
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    event_success:
+      description: Event name in case of success
+      example: my_read_success_trigger_event
+      selector:
+        text:
+    event_fail:
+      description: Event name in case of failure
+      example: my_read_fail_trigger_event
+      selector:
+        text:
+    event_done:
+      description: >-
+        Event name when the service call did all its work (either success
+        or failure).  Has event data with relevant attributes.
+      example: my_read_done_trigger_event
+      selector:
+        text:
+    fail_exception:
+      description: >-
+        Throw exception when success==False, useful to stop scripts, automations
+      selector:
+        boolean:
+    read_before_write:
+      description: >-
+        Read attributes before writing them
+      selector:
+        boolean:
+    read_after_write:
+      description: >-
+        Read attribute after writing.  Can be used to ensure the values
+        match.  Defaults to True
+      selector:
+        boolean:
 ota_notify:
   description: Notify a device that an update is available, after triggering ota image
     providers to fetch new images.

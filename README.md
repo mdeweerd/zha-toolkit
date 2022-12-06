@@ -75,6 +75,7 @@ ZHA Toolkit can also:
   - [Join & Network presence related](#join--network-presence-related)
     - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
     - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
+  - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
     - [`leave`](#leave)
     - [`rejoin`](#rejoin)
     - [`zdo_join_with_code`](#zdo_join_with_code)
@@ -881,6 +882,35 @@ service: zha_toolkit.misc_reinitialize
 data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
+```
+
+## `misc_settime`: Set attributes of a Time Cluster
+
+Sets the time and DST configuration for a Time Cluster from HA's current
+time and default timezone.
+
+The TimeStatus attribute is not set. You likely need to set it to 1
+(synchronized).
+
+Before and after writing, the attributes are read from the cluster and
+available in the event data, unless options disable these reads.
+
+```yaml
+service: zha_toolkit.attr_write
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # The endpoint is optional - when missing tries to find endpoint matching the cluster
+  endpoint: 11
+  # You can set the next events to use as a trigger.
+  # The event data has the result of the command (currently attr_read, attr_write)
+  event_success: my_read_success_trigger_event
+  event_fail: my_read_fail_trigger_event
+  event_done: my_read_done_trigger_event
+  # Settings for attr_write
+  # Read attribute before writing it (defaults to True)
+  read_before_write: true
+  # Read attribute after writing it (defaults to True)
+  read_after_write: true
 ```
 
 ### `leave`
