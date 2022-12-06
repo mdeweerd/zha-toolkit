@@ -43,7 +43,7 @@ sequence:
       attr_val: '{{ 1 if enable_open_window else 0 }}'
       manf: 4678
       event_done: zha_done
-      tries: '{{ default_tries}}'
+      tries: '{{ default_tries }}'
       csvout: danfoss_config.csv
   - alias: Check if window open reporting is configured, for debugging
     service: zha_toolkit.conf_report_read
@@ -52,7 +52,7 @@ sequence:
       cluster: 513
       attribute: 16465
       manf: 4678
-      tries: '{{ default_tries}}'
+      tries: '{{ default_tries }}'
       event_done: zha_done
   - alias: Set TRV orientation (horizontal/vertical)
     service: zha_toolkit.attr_write
@@ -63,7 +63,51 @@ sequence:
       attr_val: '{{ 1 if orientation else 0 }}'
       manf: 4678
       event_done: zha_done
+      tries: '{{ default_tries }}'
+      csvout: danfoss_config.csv
+  - alias: Set time
+    service: zha_toolkit.misc_settime
+    data:
+      ieee: '{{ ieee }}'
+      event_done: zha_done
+      tries: '{{ default_tries }}'
+      csvout: danfoss_config.csv
+  - alias: Set time status to synchronised
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 10
+      attribute: 1
+      attr_val: 2
+      tries: '{{ default_tries }}'
+      csvout: danfoss_config.csv
+  - alias: Set covered mode
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16406
+      attr_val: '{{ 1 if covered else 0 }}'
+      manf: 4678
       tries: '{{ default_tries}}'
+      csvout: danfoss_config.csv
+  - alias: Check heat request reporting configuration
+    service: zha_toolkit.conf_report_read
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16433
+      manf: 4678
+      tries: '{{ default_tries }}'
+      event_done: zha_done
+  - alias: Read Heat Supply Request
+    service: zha_toolkit.attr_read
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 16433
+      manf: 4678
+      tries: '{{ default_tries }}'
       csvout: danfoss_config.csv
 description: >-
   A script that configures a Danfoss Ally TRV zigbee thermostat.  You can listen
@@ -130,6 +174,17 @@ fields:
       - When false, mounted horizontaly, - When true, mounted vertically. This
       selects the temperature gradient measured in the valve on radiator.
     default: false
+    example: false
+    required: true
+    selector:
+      boolean:
+  covered:
+    name: TRV covered setting
+    description: >-
+      - When true, the radiator is covered (you should use the automation to
+      send temperature for external thermometer).
+    default: false
+    example: false
     required: true
     selector:
       boolean:
