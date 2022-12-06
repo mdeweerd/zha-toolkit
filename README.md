@@ -896,10 +896,10 @@ Before and after writing, the attributes are read from the cluster and
 available in the event data, unless options disable these reads.
 
 ```yaml
-service: zha_toolkit.attr_write
+service: zha_toolkit.misc_settime
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
-  # The endpoint is optional - when missing tries to find endpoint matching the cluster
+  # The endpoint is optional - by default the endpoint containing the Time Cluster
   endpoint: 11
   # You can set the next events to use as a trigger.
   # The event data has the result of the command (currently attr_read, attr_write)
