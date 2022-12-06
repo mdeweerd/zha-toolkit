@@ -12,8 +12,7 @@
     "name": "\ud83e\uddf0 ZHA Toolkit Service",
     "requirements": [
         "packaging>=20.8",
-        "pytz",
-        "pycopy-bisect"
+        "pytz"
     ],
     "version": "0.0.0"
 }
