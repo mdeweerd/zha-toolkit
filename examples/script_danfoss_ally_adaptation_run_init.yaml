@@ -1,0 +1,134 @@
+alias: Danfoss Ally Start Adaptation Run
+description: >-
+  This script resets the adaptation status of the valve by unmounting and
+  remounting the valve.  It then tries to initiate an adaptation run
+  immediately.
+sequence:
+  - variables:
+      ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+      csv: danfoss_adaptation_run.csv
+      default_tries: 3
+  - alias: Set the valve in mounting mode
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16403
+      attr_val: 1
+      manf: 4678
+      read_before_write: false
+      csvout: "{{ csv }}"
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - alias: Wait until the device is in mounting mode (short press)
+    repeat:
+      until:
+        - condition: template
+          value_template: "{{ is_state_attr('var.allyscript', device + 'mounting', 0) }}"
+      sequence:
+        - delay:
+            hours: 0
+            minutes: 0
+            seconds: 2
+            milliseconds: 0
+          alias: Wait between successive reads
+        - alias: Read mount status (should be false)
+          service: zha_toolkit.attr_read
+          data:
+            ieee: "{{ ieee }}"
+            cluster: 513
+            attribute: 16402
+            manf: 4678
+            csvout: "{{ csv }}"
+            tries: "{{ default_tries}}"
+            event_done: zha_done
+            state_id: var.allyscript
+            state_attr: "{{ device + 'mounting' }}"
+            allow_create: true
+  - alias: Wait until the user mounts the device
+    repeat:
+      until:
+        - condition: template
+          value_template: "{{ is_state_attr('var.allyscript', device + 'mounting', 0) }}"
+      sequence:
+        - delay:
+            hours: 0
+            minutes: 0
+            seconds: 2
+            milliseconds: 0
+          alias: Wait between successive reads
+        - alias: Read mount status (should be false)
+          service: zha_toolkit.attr_read
+          data:
+            ieee: "{{ ieee }}"
+            cluster: 513
+            attribute: 16402
+            manf: 4678
+            csvout: "{{ csv }}"
+            tries: "{{ default_tries}}"
+            event_done: zha_done
+            state_id: var.allyscript
+            state_attr: "{{ device + 'mounting' }}"
+            allow_create: true
+  - alias: Read the adaptation status (should not be 2)
+    service: zha_toolkit.attr_read
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16461
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Set Adaptation Run control to automatic
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16460
+      attr_val: 1
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Initiate Adaptation Run
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16460
+      attr_val: 1
+      manf: 4678
+      read_before_write: false
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Wait a bit
+    delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - alias: Read the adaptation status (Expected to be 1, but not observed as such).
+    service: zha_toolkit.attr_read
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16461
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+mode: restart
+fields:
+  device:
+    name: Ally TRV Device
+    description: A Danfoss Ally Thermostatic Regulation Valve (TRV) to configure
+    required: true
+    default: 7d16a871a8caa808d80e23f5d92ca65d
+    selector:
+      device:
+        manufacturer: Danfoss
+        entity:
+          domain: climate
+          integration: zha
