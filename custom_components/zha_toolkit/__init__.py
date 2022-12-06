@@ -368,6 +368,17 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
+    S.MISC_SETTIME: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.ENDPOINT): vol.Range(0, 255),
+            vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
+            vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.OTA_NOTIFY: vol.Schema(
         {
             vol.Required(ATTR_IEEE): vol.Any(

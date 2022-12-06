@@ -195,3 +195,103 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
 
     event_data["result"] = res
     LOGGER.debug("%s -> %s: leave and rejoin result: %s", src, ieee, res)
+
+
+async def misc_settime(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+
+    from bisect import bisect
+    from datetime import datetime
+
+    import pytz
+    from homeassistant.util.dt import DEFAULT_TIME_ZONE, utcnow
+
+    LOGGER.debug(f"Default time zone {DEFAULT_TIME_ZONE}")
+    tz = pytz.timezone(str(DEFAULT_TIME_ZONE))
+
+    utc_time = utcnow().astimezone(pytz.UTC).replace(tzinfo=None)
+    index = bisect(
+        tz._utc_transition_times, utc_time  # type:ignore[union-attr]
+    )
+
+    if index is not None:
+        if (
+            tz._utc_transition_times[index]  # type:ignore[union-attr]
+            .replace(tzinfo=pytz.UTC)
+            .astimezone(tz)
+            .dst()
+            .total_seconds()
+            == 0
+        ):
+            # First date must be start of dst period
+            index = index - 1
+
+        dst1_obj = tz._utc_transition_times[index]  # type:ignore[union-attr]
+        dst2_obj = tz._utc_transition_times[  # type:ignore[union-attr]
+            index + 1
+        ]
+        epoch2000 = datetime(2000, 1, 1, tzinfo=None)
+        dst1 = (dst1_obj - epoch2000).total_seconds()
+        dst2 = (dst2_obj - epoch2000).total_seconds()
+        dst1_aware = tz._utc_transition_times[  # type:ignore[union-attr]
+            index
+        ].replace(tzinfo=pytz.UTC)
+        dst2_aware = tz._utc_transition_times[  # type:ignore[union-attr]
+            index + 1
+        ].replace(tzinfo=pytz.UTC)
+
+        dst1_local = dst1_aware.astimezone(tz)
+        dst2_local = dst2_aware.astimezone(tz)
+
+        dst_shift = dst1_local.dst().total_seconds()
+        utc_offset = dst2_local.utcoffset().total_seconds()
+
+        LOGGER.debug(
+            f"Next dst changes {dst1_obj} .. {dst2_obj}"
+            f" EPOCH 2000 {dst1} .. {dst2}"
+        )
+        LOGGER.debug(
+            f"Local {dst1_local} {dst2_local} in {tz}"
+            f" {dst1_local.dst().total_seconds()}"
+            f" {dst2_local.dst().total_seconds()}"
+        )
+        LOGGER.debug(f"UTC OFFSET: {utc_offset}  DST OFFSET: {dst_shift}")
+
+        dev = app.get_device(ieee=ieee)
+        params[p.CLUSTER_ID] = 0x000A  # Time Cluster
+        cluster = u.get_cluster_from_params(dev, params, event_data)
+
+        # Prepare read and write lists
+        attr_read_list = [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+        ]  # Time, Timestatus, Timezone, DstStart, DstEnd, DstShift
+
+        if params[p.READ_BEFORE_WRITE]:
+            event_data["read_before"] = await cluster.read_attributes(
+                attr_read_list
+            )
+
+        EPOCH2000_TIMESTAMP = 946684800
+        utctime_towrite = utcnow().timestamp() - EPOCH2000_TIMESTAMP
+        attr_write_list = {
+            0x0000: utctime_towrite,  # Time
+            0x0002: utc_offset,  # Timezone - int32
+            0x0003: dst1,  # DstStart - uint32
+            0x0004: dst2,  # DstEnd - uint32
+            0x0005: dst_shift,  # DstEnd - uint32
+        }
+
+        event_data["result_write"] = await cluster.write_attributes(
+            attr_write_list
+        )
+
+        if params[p.READ_AFTER_WRITE]:
+            event_data["read_after"] = await cluster.read_attributes(
+                attr_read_list
+            )
