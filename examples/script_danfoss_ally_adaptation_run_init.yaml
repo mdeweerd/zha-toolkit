@@ -1,0 +1,127 @@
+alias: Danfoss Ally Start Adaptation Run
+description: >-
+  This script resets the adaptation status of the valve by unmounting and
+  remounting the valve.  It then tries to initiate an adaptation run
+  immediately.
+sequence:
+  - variables:
+      ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+      csv: danfoss_adaptation_run.csv
+      default_tries: 3
+  - alias: Set the valve in mounting mode
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16403
+      attr_val: 0
+      manf: 4678
+      read_before_write: false
+      csvout: "{{ csv }}"
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - alias: Allow the valve to consider it is not mounted
+    delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - alias: Initiate Adaptation Run
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16460
+      attr_val: 1
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Set the valve as mounted
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16403
+      attr_val: 1
+      manf: 4678
+      read_before_write: false
+      csvout: "{{ csv }}"
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - alias: Allow the valve to consider it is mounted
+    delay:
+      hours: 0
+      minutes: 0
+      seconds: 15
+      milliseconds: 0
+  - alias: Read mount status (should be false)
+    service: zha_toolkit.attr_read
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16402
+      manf: 4678
+      csvout: "{{ csv }}"
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - alias: Read the adaptation status (should not be 2)
+    service: zha_toolkit.attr_read
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16461
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Set Adaptation Run control to automatic
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16460
+      attr_val: 1
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Initiate Adaptation Run
+    service: zha_toolkit.attr_write
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16460
+      attr_val: 1
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+  - alias: Wait a bit
+    delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - alias: Read the adaptation status (Expected to be 1, but not observed as such).
+    service: zha_toolkit.attr_read
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 513
+      attribute: 16461
+      manf: 4678
+      tries: "{{ default_tries}}"
+      csvout: "{{ csv }}"
+      event_done: zha_done
+mode: restart
+fields:
+  device:
+    name: Ally TRV Device
+    description: A Danfoss Ally Thermostatic Regulation Valve (TRV) to configure
+    required: true
+    selector:
+      device:
+        manufacturer: Danfoss
+        entity:
+          domain: climate
+          integration: zha
