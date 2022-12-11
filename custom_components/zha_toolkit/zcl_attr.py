@@ -4,6 +4,7 @@ import asyncio
 import importlib
 import logging
 
+from homeassistant.helpers.template import Template
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
@@ -316,6 +317,10 @@ async def attr_write(  # noqa: C901
     attr_write_list: list[f.Attribute] = []
     attr_read_list = []
 
+    state_template_str = params[p.STATE_VALUE_TEMPLATE]
+
+    use_cache = params[p.USE_CACHE]
+
     # Decode attribute(s)
     #  Currently only one attribute is possible, but the parameter
     #  format could allow for multiple attributes for instance by
@@ -339,6 +344,14 @@ async def attr_write(  # noqa: C901
         or (len(attr_write_list) == 0)
         or (cmd != S.ATTR_WRITE)
     ):
+      if use_cache:
+        if attr_id in cluster._attr_cache:
+            result_read = ({attr_id:cluster._attr_cache[attr_id]},{})
+            LOGGER.debug(f"Got attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X} from cache: {result_read!r}")
+        else:
+            LOGGER.debug("Attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X} not in cache")
+            success = False
+      else:
         LOGGER.debug("Request attr read %s", attr_read_list)
         # pylint: disable=unexpected-keyword-arg
         result_read = await u.cluster_read_attributes(
@@ -487,6 +500,10 @@ async def attr_write(  # noqa: C901
         if len(result_read[1]) == 0 and len(result_read[0]) == 1:
             # No error and one result
             for attr_id, val in result_read[0].items():
+                if state_template_str is not None:
+                    template = Template("{{ " + state_template_str + " }}", listener._hass)
+                    val = template.async_render(value=val, attr_val=val)
+
                 if params[p.STATE_ATTR] is not None:
                     LOGGER.debug(
                         "Set state %s[%s] -> %s from attr_id %s",

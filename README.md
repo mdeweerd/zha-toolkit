@@ -456,6 +456,8 @@ data:
   # endpoint: 1
   cluster: 0xb04
   attribute: 0x50f
+  # Optional, read the value from memory cache, do not make a zigbee read request.
+  use_cache: true
   # Optional, state to write the read value to
   state_id: sensor.test
   # Optional, state attribute to write the value to, when missing: writes state itself
@@ -473,7 +475,7 @@ data:
   csvlabel: MyAttributeLabel
 ```
 
-Example: read with write to CSV file
+### Example: read with write to CSV file
 
 ```yaml
 service: zha_toolkit.execute
@@ -486,18 +488,43 @@ data:
   csvout: testcsv.csv
 ```
 
-Example of CSV output in /config/csv/testcsv.csv (header may be added in
+### Example of CSV output in /config/csv/testcsv.csv (header may be added in
 the future)
 
 ```csv
 2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,,0x20
 ```
 
+
 Fields in this output:
 
 ```csv
 ISO8601_Timestamp,cluster_name,attribute_name,value,attr_id,cluster_id,endpoint_id,IEEE,manf,attr_type
 ```
+
+### Example, read value from cache in state
+
+This example reads the raw temperature value from cache into a state attribute value.
+
+The purpose of this example is to get the unrounded reported value from a temperature sensor.
+
+A battery powered temperature sensor is often sleepy and doing a real attribute read may need many tries.
+
+So this technique allows reading the value from the attribute cache. 
+It does not use the attribute cache database table, but tries to get the value from the in-memory cache.
+
+```yaml
+service: zha_toolkit.attr_read
+data:
+  ieee: sensor.temperature_chambre_x_temperature_2
+  cluster: 1026
+  attribute: 0
+  use_cache: true
+  state_id: sensor.temperature_chambre_x_temperature_2
+  state_attr: raw_degc
+  state_value_template: value/100
+```
+
 
 ## `attr_write`: Write(/Read) an attribute value
 

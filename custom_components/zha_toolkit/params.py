@@ -35,6 +35,7 @@ class USER_PARAMS_consts:  # pylint: disable=too-few-public-methods
     CSVLABEL = "csvlabel"
     DOWNLOAD = "download"
     PATH = "path"
+    USE_CACHE = "use_cache"
 
 
 class SERVICE_consts:  # pylint: disable=too-few-public-methods
@@ -131,6 +132,7 @@ class INTERNAL_PARAMS_consts:  # pylint: disable=too-few-public-methods
     CSV_LABEL = "csvlabel"
     DOWNLOAD = "download"
     PATH = "path"
+    USE_CACHE = "use_cache"
 
 
 INTERNAL_PARAMS = INTERNAL_PARAMS_consts()
