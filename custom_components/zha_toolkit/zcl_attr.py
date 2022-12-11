@@ -344,40 +344,52 @@ async def attr_write(  # noqa: C901
         or (len(attr_write_list) == 0)
         or (cmd != S.ATTR_WRITE)
     ):
-      if use_cache:
-        if attr_id in cluster._attr_cache:
-            result_read = ({attr_id:cluster._attr_cache[attr_id]},{})
-            LOGGER.debug(f"Got attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X} from cache: {result_read!r}")
-        else:
-            LOGGER.debug("Attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X} not in cache")
-            success = False
-      else:
-        LOGGER.debug("Request attr read %s", attr_read_list)
-        # pylint: disable=unexpected-keyword-arg
-        result_read = await u.cluster_read_attributes(
-            cluster,
-            attr_read_list,
-            manufacturer=params[p.MANF],
-            tries=params[p.TRIES],
-        )
-        LOGGER.debug("Reading attr result (attrs, status): %s", result_read)
-        success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
-
-        # Try to get attribute type
-        if success and (attr_id in result_read[0]):
-            python_type = type(result_read[0][attr_id])
-            found_attr_type = f.DATA_TYPES.pytype_to_datatype_id(python_type)
-            LOGGER.debug("Type determined from read: 0x%02x", found_attr_type)
-
-            if attr_type is None:
-                attr_type = found_attr_type
-            elif attr_type != found_attr_type:
-                LOGGER.warning(
-                    "Type determined from read "
-                    "different from requested: 0x%02X <> 0x%02X",
-                    found_attr_type,
-                    attr_id,
+        if use_cache:
+            if attr_id in cluster._attr_cache:
+                result_read = ({attr_id: cluster._attr_cache[attr_id]}, {})
+                LOGGER.debug(
+                    f"Got attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X}"
+                    f" from cache: {result_read!r}"
                 )
+            else:
+                LOGGER.debug(
+                    f"Attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X}"
+                    " not in cache"
+                )
+                success = False
+        else:
+            LOGGER.debug("Request attr read %s", attr_read_list)
+            # pylint: disable=unexpected-keyword-arg
+            result_read = await u.cluster_read_attributes(
+                cluster,
+                attr_read_list,
+                manufacturer=params[p.MANF],
+                tries=params[p.TRIES],
+            )
+            LOGGER.debug(
+                "Reading attr result (attrs, status): %s", result_read
+            )
+            success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
+
+            # Try to get attribute type
+            if success and (attr_id in result_read[0]):
+                python_type = type(result_read[0][attr_id])
+                found_attr_type = f.DATA_TYPES.pytype_to_datatype_id(
+                    python_type
+                )
+                LOGGER.debug(
+                    "Type determined from read: 0x%02x", found_attr_type
+                )
+
+                if attr_type is None:
+                    attr_type = found_attr_type
+                elif attr_type != found_attr_type:
+                    LOGGER.warning(
+                        "Type determined from read "
+                        "different from requested: 0x%02X <> 0x%02X",
+                        found_attr_type,
+                        attr_id,
+                    )
 
     compare_val = None
 
@@ -502,13 +514,24 @@ async def attr_write(  # noqa: C901
             for attr_id, val in result_read[0].items():
                 if state_template_str is not None:
                     if val is None:
-                        LOGGER.debug("Value is None and template active, do not set Set state %s[%s]", params[p.STATE_ID], params[p.STATE_ATTR])
+                        LOGGER.debug(
+                            "Value is None and template active,"
+                            " do not set state %s[%s]",
+                            params[p.STATE_ID],
+                            params[p.STATE_ATTR],
+                        )
 
-                    template = Template("{{ " + state_template_str + " }}", listener._hass)
+                    template = Template(
+                        "{{ " + state_template_str + " }}", listener._hass
+                    )
                     try:
                         val = template.async_render(value=val, attr_val=val)
                     except Exception as e:
-                        LOGGER.debug("Issue when computing template %r, skip setting state", e)
+                        LOGGER.debug(
+                            "Issue when computing template (%r),"
+                            " skip setting state",
+                            e,
+                        )
                         success = False
                         continue
 
