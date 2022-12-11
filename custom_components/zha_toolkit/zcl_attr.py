@@ -501,8 +501,16 @@ async def attr_write(  # noqa: C901
             # No error and one result
             for attr_id, val in result_read[0].items():
                 if state_template_str is not None:
+                    if val is None:
+                        LOGGER.debug("Value is None and template active, do not set Set state %s[%s]", params[p.STATE_ID], params[p.STATE_ATTR])
+
                     template = Template("{{ " + state_template_str + " }}", listener._hass)
-                    val = template.async_render(value=val, attr_val=val)
+                    try:
+                        val = template.async_render(value=val, attr_val=val)
+                    except Exception as e:
+                        LOGGER.debug("Issue when computing template %r, skip setting state", e)
+                        success = False
+                        continue
 
                 if params[p.STATE_ATTR] is not None:
                     LOGGER.debug(
