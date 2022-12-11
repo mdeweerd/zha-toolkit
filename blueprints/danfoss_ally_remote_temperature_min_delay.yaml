@@ -51,7 +51,7 @@ variables:
   min_update_minutes: !input min_update_minutes
   temp_sensor_id: !input temp_sensor_id
   temp_offset: !input temperature_offset
-  temperature: "{{ states(temp_sensor_id) }}"
+  temperature: '{{ states(temp_sensor_id) }}'
 trigger:
   - platform: state
     entity_id:
@@ -63,7 +63,25 @@ condition:
   - condition: template
     value_template: '{{ temperature != -32768 }}'
 action:
-  - alias: Fake small change in temperature so that the next sensor update triggers an update/change event in case the write fails
+  - alias: Store ZHA reported temperature in state attribute
+    service: zha_toolkit.ha_set_state
+    data:
+      state_id: '{{ temp_sensor_id }}'
+      state_attr: best_val
+      attr_val: '{{ (temperature|round(2)) }}'
+  - alias: Try to get more precise temperature (should work if zigbee temperature
+      sensor)
+    service: zha_toolkit.attr_read
+    data:
+      ieee: '{{ temp_sensor_id }}'
+      use_cache: true
+      cluster: 1026
+      attribute: 0
+      state_id: '{{ temp_sensor_id }}'
+      state_attr: best_val
+      state_value_template: value/100
+  - alias: Fake small change in temperature so that the next sensor update triggers
+      an update/change event in case the write fails
     service: zha_toolkit.ha_set_state
     data:
       state_id: '{{ temp_sensor_id }}'
@@ -75,24 +93,27 @@ action:
       cluster: 0x0201
       attribute: 0x4015
       manf: 0x1246
-      attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0)
-        }}'
+      attr_val: '{{ (((state_attr(temp_sensor_id, "best_val")|float) + temp_offset)
+        * 100) | round(0) }}'
       read_before_write: false
       write_if_equal: true
       fail_exception: true
       tries: 3
-  - alias: Wait until the minimum update delay expires (the automation blocks itself because it is in single mode)
+  - alias: Wait until the minimum update delay expires (the automation blocks itself
+      because it is in single mode)
     delay:
       minutes: !input min_update_minutes
-  - alias: Set slightly changed temperature if it is valid to force update.  Otherwise, a valid temperature will trigger anyway.
+  - alias: Set slightly changed temperature if it is valid to force update.  Otherwise,
+      a valid temperature will trigger anyway.
     if:
       - condition: not
         conditions:
           - condition: state
             entity_id: !input temp_sensor_id
-            state: "-32768"
+            state: '-32768'
     then:
-      - alias: Fake small change in temperature so that the next sensor update triggers an update/change event
+      - alias: Fake small change in temperature so that the next sensor update triggers
+          an update/change event
         service: zha_toolkit.ha_set_state
         data:
           state_id: '{{ temp_sensor_id }}'

@@ -626,6 +626,7 @@ def extractParams(  # noqa: C901
         p.CSV_LABEL: None,
         p.DOWNLOAD: None,
         p.PATH: None,
+        p.USE_CACHE: False,
     }
 
     # Endpoint to send command to
@@ -742,6 +743,9 @@ def extractParams(  # noqa: C901
         params[p.FORCE_UPDATE] = (force_update is not None) and (
             (force_update is True) or (force_update == 1)
         )
+
+    if P.USE_CACHE in rawParams:
+        params[p.USE_CACHE] = str2bool(rawParams[P.USE_CACHE])
 
     if P.EVENT_DONE in rawParams:
         params[p.EVT_DONE] = rawParams[P.EVENT_DONE]

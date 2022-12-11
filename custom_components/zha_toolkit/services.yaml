@@ -1,3 +1,4 @@
+---
 # Describes the format for available zha services
 execute:
   description: >-
@@ -171,14 +172,23 @@ execute:
         text:
     state_value_template:
       description: >-
-        When defined, the read attribute is converted using this template before writing it to the state.      example:
+        When defined, the read attribute is converted using this template before writing
+        it to the state.      example:
         "{{ value / 100 }}"
       selector:
         text:
     force_update:
       description: >
         Force an update event when the state is written
-        When not set or false, if the state value is unchanged, the update may not trigger an automation.
+        When not set or false, if the state value is unchanged, the update may not
+        trigger an automation.
+      example: true
+      selector:
+        boolean:
+    use_cache:
+      description: >
+        Use zigpy attribute cache to get the value of an attribute.
+        (Does not send a zigbee packet to read the attribute)
       example: true
       selector:
         boolean:
@@ -448,14 +458,23 @@ attr_read:
         text:
     state_value_template:
       description: >-
-        When defined, the read attribute is converted using this template before writing it to the state.      example:
+        When defined, the read attribute is converted using this template before writing
+        it to the state.      example:
         "{{ value / 100 }}"
       selector:
         text:
     force_update:
       description: >
         Force an update event when the state is written
-        When not set or false, if the state value is unchanged, the update may not trigger an automation.
+        When not set or false, if the state value is unchanged, the update may not
+        trigger an automation.
+      example: true
+      selector:
+        boolean:
+    use_cache:
+      description: >
+        Use zigpy attribute cache to get the value of an attribute.
+        (Does not send a zigbee packet to read the attribute)
       example: true
       selector:
         boolean:
@@ -555,6 +574,13 @@ attr_write:
       required: true
       selector:
         text:
+    use_cache:
+      description: >
+        Use zigpy attribute cache to get the value of an attribute.
+        (Does not send a zigbee packet to read the attribute)
+      example: true
+      selector:
+        boolean:
     tries:
       description: Number of times the zigbee packet should be attempted
       selector:
@@ -1287,7 +1313,8 @@ ha_set_state:
     state_value_template:
       description: >-
         When defined, used as a template expression.
-        For example "value + 10" will be internally interpreted as "{{ value + 10 }}" where 'value' is substituted with the value for 'attr_val'
+        For example "value + 10" will be internally interpreted as "{{ value + 10 }}"
+        where 'value' is substituted with the value for 'attr_val'
       example: value + 10
       selector:
         text:
@@ -1320,7 +1347,8 @@ ha_set_state:
         boolean:
     csvout:
       description: >-
-        Filename of CSV to write the update state information to.  Written to 'csv' directory.
+        Filename of CSV to write the update state information to.  Written to 'csv'
+        directory.
       example: ../web/mystatecsv.csv
       selector:
         text:

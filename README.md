@@ -63,6 +63,9 @@ ZHA Toolkit can also:
   - [Tries](#tries)
 - [Service commands](#service-commands)
   - [`attr_read`: Read an attribute value](#attr_read-read-an-attribute-value)
+    - [Example: read with write to CSV file](#example-read-with-write-to-csv-file)
+    - [Example of CSV output in /config/csv/testcsv.csv (header may be added in](#example-of-csv-output-in-configcsvtestcsvcsv-header-may-be-added-in)
+    - [Example, read value from cache in state](#example-read-value-from-cache-in-state)
   - [`attr_write`: Write(/Read) an attribute value](#attr_write-writeread-an-attribute-value)
   - [Binding related](#binding-related)
     - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
@@ -457,6 +460,8 @@ data:
   # endpoint: 1
   cluster: 0xb04
   attribute: 0x50f
+  # Optional, read the value from memory cache, do not make a zigbee read request.
+  use_cache: true
   # Optional, state to write the read value to
   state_id: sensor.test
   # Optional, state attribute to write the value to, when missing: writes state itself
@@ -474,7 +479,7 @@ data:
   csvlabel: MyAttributeLabel
 ```
 
-Example: read with write to CSV file
+### Example: read with write to CSV file
 
 ```yaml
 service: zha_toolkit.execute
@@ -487,7 +492,8 @@ data:
   csvout: testcsv.csv
 ```
 
-Example of CSV output in /config/csv/testcsv.csv (header may be added in
+### Example of CSV output in /config/csv/testcsv.csv (header may be added in
+
 the future)
 
 ```csv
@@ -499,6 +505,38 @@ Fields in this output:
 ```csv
 ISO8601_Timestamp,cluster_name,attribute_name,value,attr_id,cluster_id,endpoint_id,IEEE,manf,attr_type
 ```
+
+### Example, read value from cache in state
+
+This example reads the raw temperature value from cache into a state
+attribute value.
+
+The purpose of this example is to get the unrounded reported value from a
+temperature sensor.
+
+A battery powered temperature sensor is often sleepy and doing a real
+attribute read may need many tries.
+
+So this technique allows reading the value from the attribute cache. It
+does not use the attribute cache database table, but tries to get the value
+from the in-memory cache.
+
+```yaml
+service: zha_toolkit.attr_read
+data:
+  ieee: sensor.temperature_chambre_x_temperature_2
+  cluster: 1026
+  attribute: 0
+  use_cache: true
+  state_id: sensor.temperature_chambre_x_temperature_2
+  state_attr: raw_degc
+  state_value_template: value/100
+```
+
+For a real use case, see the example
+[danfoss_ally_remote_temperature_min_delay.yaml](blueprints/danfoss_ally_remote_temperature_min_delay.yaml)
+where the automation attempts to read the temperature from the zigbee cache
+to get more precision (0.01°C) as ZHA rounds values to 0.1°C.
 
 ## `attr_write`: Write(/Read) an attribute value
 
