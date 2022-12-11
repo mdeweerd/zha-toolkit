@@ -1,4 +1,5 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
+![hacs_installs](https://img.shields.io/badge/dynamic/json?label=HACS%20installs&query=%24.zha_toolkit.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
@@ -916,17 +917,17 @@ data:
 Sets the time and DST configuration for a Time Cluster from HA's current
 time and default timezone.
 
-The TimeStatus attribute is not set. You likely need to set it to 1
+The TimeStatus attribute is not set. You likely need to set it to 2
 (synchronized).
 
 Before and after writing, the attributes are read from the cluster and
 available in the event data, unless options disable these reads.
 
 ```yaml
-service: zha_toolkit.attr_write
+service: zha_toolkit.misc_settime
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
-  # The endpoint is optional - when missing tries to find endpoint matching the cluster
+  # The endpoint is optional - by default the endpoint containing the Time Cluster
   endpoint: 11
   # You can set the next events to use as a trigger.
   # The event data has the result of the command (currently attr_read, attr_write)
