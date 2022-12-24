@@ -63,9 +63,9 @@ ZHA Toolkit can also:
   - [Tries](#tries)
 - [Service commands](#service-commands)
   - [`attr_read`: Read an attribute value](#attr_read-read-an-attribute-value)
-    - [Example: read with write to CSV file](#example-read-with-write-to-csv-file)
-    - [Example of CSV output in /config/csv/testcsv.csv (header may be added in](#example-of-csv-output-in-configcsvtestcsvcsv-header-may-be-added-in)
-    - [Example, read value from cache in state](#example-read-value-from-cache-in-state)
+    - [Example: attribute read with write to CSV file](#example-attribute-read-with-write-to-csv-file)
+    - [Example of CSV output](#example-of-csv-output)
+    - [Example, read attribute value from cache in HA state](#example-read-attribute-value-from-cache-in-ha-state)
   - [`attr_write`: Write(/Read) an attribute value](#attr_write-writeread-an-attribute-value)
   - [Binding related](#binding-related)
     - [`bind_ieee`: Bind matching cluster to another device](#bind_ieee-bind-matching-cluster-to-another-device)
@@ -479,12 +479,11 @@ data:
   csvlabel: MyAttributeLabel
 ```
 
-### Example: read with write to CSV file
+### Example: attribute read with write to CSV file
 
 ```yaml
-service: zha_toolkit.execute
+service: zha_toolkit.attr_read
 data:
-  command: attr_read
   ieee: light.texasinstruments_ti_samplelight_d77add01_level_light_color_on_off
   event_done: zha_done
   attribute: 0
@@ -492,9 +491,10 @@ data:
   csvout: testcsv.csv
 ```
 
-### Example of CSV output in /config/csv/testcsv.csv (header may be added in
+### Example of CSV output
 
-the future)
+Below is the result in `/config/csv/testcsv.csv` produced by the
+`attr_read` shown above.
 
 ```csv
 2022-02-01T00:10:50.202707+00:00,zcl_version,1,0x0000,0x0000,11,00:12:4b:00:01:dd:7a:d7,,0x20
@@ -506,9 +506,9 @@ Fields in this output:
 ISO8601_Timestamp,cluster_name,attribute_name,value,attr_id,cluster_id,endpoint_id,IEEE,manf,attr_type
 ```
 
-### Example, read value from cache in state
+### Example, read attribute value from cache in HA state
 
-This example reads the raw temperature value from cache into a state
+This example reads the raw temperature value from cache into a home state
 attribute value.
 
 The purpose of this example is to get the unrounded reported value from a
