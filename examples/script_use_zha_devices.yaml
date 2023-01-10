@@ -1,0 +1,24 @@
+alias: Loop over zha_devices, extract some data so system log
+sequence:
+  - parallel:
+      - sequence:
+        - wait_for_trigger:
+            - platform: event
+              event_type: zha_devices_ready
+        - service: system_log.write
+          data:
+            logger: zha_devices
+            level: error
+            message: "{{ \"Got event %s\" % ( wait.trigger.event.data.devices ) }}"
+        - repeat:
+            for_each: "{{ wait.trigger.event.data.devices }}"
+            sequence:
+              - service: system_log.write
+                data:
+                  logger: zha_devices
+                  level: error
+                  message: "{{ \"Item '%s' Power: %s\" % ( repeat.item.name, repeat.item.lqi ) }}"
+      - service: zha_toolkit.zha_devices
+        data:
+          event_done: zha_devices_ready
+mode: single
