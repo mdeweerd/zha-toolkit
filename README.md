@@ -1521,6 +1521,9 @@ tap_action:
   url_path: /local/devices.csv
 ```
 
+See [script_use_zha_devices.yaml](examples/script_use_zha_devices.yaml) to
+see how you can loop over the device list provided in the event data.
+
 ### `register_services`: Reregister ZHA-Toolkit services
 
 The services may have evolved after an update of the code and calling
