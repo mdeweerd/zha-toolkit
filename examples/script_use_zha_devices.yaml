@@ -1,0 +1,39 @@
+---
+alias: Loop over zha_devices, extract some device data
+sequence:
+  - parallel:
+      - sequence:
+          - wait_for_trigger:
+              - platform: event
+                event_type: zha_devices_ready
+          - service: system_log.write
+            data:
+              logger: zha_devices
+              level: error
+              message: '{{ "Got event %s" % ( wait.trigger.event.data.devices ) }}'
+          - service: system_log.write
+            alias: List unavailable only
+            data:
+              logger: zha_devices
+              level: error
+              message: >
+                {% set ns = namespace(names=[]) %}
+                {% for item in wait.trigger.event.data.devices if not item.available %}
+                  {% set ns.names = ns.names + [ "'%s'" % (item.name) ] %}
+                {% endfor %}
+                Items: {{ ns.names | join(', ') }}
+          - repeat:
+              for_each: '{{ wait.trigger.event.data.devices }}'
+              sequence:
+                - service: system_log.write
+                  data:
+                    logger: zha_devices
+                    level: error
+                    message: >-
+                      {{ "Item '%s' Power: %s dBm Available: %s" % (
+                        repeat.item.name, repeat.item.rssi, repeat.item.available
+                      ) }}
+      - service: zha_toolkit.zha_devices
+        data:
+          event_done: zha_devices_ready
+mode: single
