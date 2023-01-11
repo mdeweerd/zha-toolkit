@@ -11,6 +11,17 @@ sequence:
               logger: zha_devices
               level: error
               message: '{{ "Got event %s" % ( wait.trigger.event.data.devices ) }}'
+          - service: system_log.write
+            alias: List unavailable only
+            data:
+              logger: zha_devices
+              level: error
+              message: >
+                {% set ns = namespace(names=[]) %}
+                {% for item in wait.trigger.event.data.devices if not item.available %}
+                  {% set ns.names = ns.names + [ "'%s'" % (item.name) ] %}
+                {% endfor %}
+                Items: {{ ns.names | join(', ') }}
           - repeat:
               for_each: '{{ wait.trigger.event.data.devices }}'
               sequence:
@@ -18,7 +29,10 @@ sequence:
                   data:
                     logger: zha_devices
                     level: error
-                    message: "{{ \"Item '%s' Power: %s dBm Available: %s\" % ( repeat.item.name, repeat.item.rssi, repeat.item.available ) }}"
+                    message: >-
+                      {{ "Item '%s' Power: %s dBm Available: %s" % (
+                        repeat.item.name, repeat.item.rssi, repeat.item.available
+                      ) }}
       - service: zha_toolkit.zha_devices
         data:
           event_done: zha_devices_ready
