@@ -1015,7 +1015,7 @@ conf_report:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1094,7 +1094,7 @@ conf_report_read:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1179,7 +1179,7 @@ get_groups:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1256,7 +1256,7 @@ get_zll_groups:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1293,7 +1293,7 @@ ha_set_state:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     state_id:
@@ -1439,7 +1439,7 @@ rejoin:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1485,7 +1485,7 @@ leave:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1548,7 +1548,7 @@ misc_settime:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1612,7 +1612,7 @@ ota_notify:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1667,7 +1667,7 @@ remove_all_groups:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1723,7 +1723,7 @@ remove_from_group:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1780,7 +1780,7 @@ remove_group:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1820,6 +1820,13 @@ scan_device:
     endpoint:
       description: Target endpoint, or list of endpoints
       example: 1
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    tries:
+      description: Number of times a zigbee packet is repeated when no response
       selector:
         number:
           min: 1
@@ -1878,7 +1885,7 @@ unbind_coordinator:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
@@ -1924,7 +1931,7 @@ tuya_magic:
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
-          min: 0
+          min: 1
           max: 255
           mode: box
     event_success:
