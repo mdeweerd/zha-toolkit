@@ -76,7 +76,6 @@ ZHA Toolkit can also:
   - [`conf_report_read`: Read configured reporting](#conf_report_read-read-configured-reporting)
   - [`scan_device`: Scan a device/Read all attribute values](#scan_device-scan-a-deviceread-all-attribute-values)
   - [`zdo_scan_now`: Do a topology scan](#zdo_scan_now-do-a-topology-scan)
-  - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
   - [Join & Network presence related](#join--network-presence-related)
     - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
     - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
@@ -107,10 +106,11 @@ ZHA Toolkit can also:
     - [`znp_restore`: Restore ZNP network data](#znp_restore-restore-znp-network-data)
   - [Miscellaneous](#miscellaneous)
     - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
+  - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
     - [`ota_notify`](#ota_notify)
     - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
-    - [User method](#user-method)
+  - [User method](#user-method)
     - [`ha_set_state` - Update HA state](#ha_set_state---update-ha-state)
   - [Manufacturers](#manufacturers)
     - [Tuya](#tuya)
@@ -888,35 +888,6 @@ data:
   command: zdo_scan_now
 ```
 
-## `misc_settime`: Set attributes of a Time Cluster
-
-Sets the time and DST configuration for a Time Cluster from HA's current
-time and default timezone.
-
-The TimeStatus attribute is not set. You likely need to set it to 2
-(synchronized).
-
-Before and after writing, the attributes are read from the cluster and
-available in the event data, unless options disable these reads.
-
-```yaml
-service: zha_toolkit.misc_settime
-data:
-  ieee: 5c:02:72:ff:fe:92:c2:5d
-  # The endpoint is optional - by default the endpoint containing the Time Cluster
-  endpoint: 11
-  # You can set the next events to use as a trigger.
-  # The event data has the result of the command (currently attr_read, attr_write)
-  event_success: my_read_success_trigger_event
-  event_fail: my_read_fail_trigger_event
-  event_done: my_read_done_trigger_event
-  # Settings for attr_write
-  # Read attribute before writing it (defaults to True)
-  read_before_write: true
-  # Read attribute after writing it (defaults to True)
-  read_after_write: true
-```
-
 ## Join & Network presence related
 
 ### `handle_join`: Handle join - rediscover device
@@ -1447,6 +1418,35 @@ data:
   command_data: _20220105
 ```
 
+## `misc_settime`: Set attributes of a Time Cluster
+
+Sets the time and DST configuration for a Time Cluster from HA's current
+time and default timezone.
+
+The TimeStatus attribute is not set. You likely need to set it to 2
+(synchronized).
+
+Before and after writing, the attributes are read from the cluster and
+available in the event data, unless options disable these reads.
+
+```yaml
+service: zha_toolkit.misc_settime
+data:
+  ieee: 5c:02:72:ff:fe:92:c2:5d
+  # The endpoint is optional - by default the endpoint containing the Time Cluster
+  endpoint: 11
+  # You can set the next events to use as a trigger.
+  # The event data has the result of the command (currently attr_read, attr_write)
+  event_success: my_read_success_trigger_event
+  event_fail: my_read_fail_trigger_event
+  event_done: my_read_done_trigger_event
+  # Settings for attr_write
+  # Read attribute before writing it (defaults to True)
+  read_before_write: true
+  # Read attribute after writing it (defaults to True)
+  read_after_write: true
+```
+
 ### `ota_notify`
 
 `ota_notify` helps you update the firmware of a zigbee device without
@@ -1542,7 +1542,7 @@ interfaces.
 service: zha_toolkit.register_services
 ```
 
-### User method
+## User method
 
 You can add your own Python commands in `local/user.py`. Your file is
 reloaded on each call and will survive updates because it's inside the
