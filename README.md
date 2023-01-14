@@ -106,7 +106,7 @@ ZHA Toolkit can also:
     - [`znp_restore`: Restore ZNP network data](#znp_restore-restore-znp-network-data)
   - [Miscellaneous](#miscellaneous)
     - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
-  - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
+    - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
     - [`ota_notify`](#ota_notify)
     - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
@@ -1418,7 +1418,7 @@ data:
   command_data: _20220105
 ```
 
-## `misc_settime`: Set attributes of a Time Cluster
+### `misc_settime`: Set attributes of a Time Cluster
 
 Sets the time and DST configuration for a Time Cluster from HA's current
 time and default timezone.
