@@ -151,7 +151,7 @@ execute:
           max: 1
           mode: box
     tries:
-      description: Number of times the zigbee packet should be attempted
+      description: Number of times a zigbee packet is repeated when no response
       selector:
         number:
           min: 0

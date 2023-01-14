@@ -866,6 +866,8 @@ data:
   # endpoint: 1
   # Optional: endpoints to scan, when missing: all known endpoints
   endpoint: [1, 2]
+  # Optional: tries  Default:3 higher is useful for sleepy devices
+  tries: 100
 ```
 
 Scan using the entity name:

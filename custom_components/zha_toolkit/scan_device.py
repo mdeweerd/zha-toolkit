@@ -36,7 +36,7 @@ async def wrapper(cmd, *args, **kwargs):
     return await cmd(*args, **kwargs)
 
 
-async def scan_results(device, endpoints=None, manufacturer=None):
+async def scan_results(device, endpoints=None, manufacturer=None, tries=3):
     """Construct scan results from information available in device"""
     result: dict[str, str | list | None] = {
         "ieee": str(device.ieee),
@@ -84,7 +84,9 @@ async def scan_results(device, endpoints=None, manufacturer=None):
                 LOGGER.debug(
                     "Scanning endpoint #%i with manf '%r'", epid, manufacturer
                 )
-                endpoint.update(await scan_endpoint(ep, manufacturer))
+                endpoint.update(
+                    await scan_endpoint(ep, manufacturer, tries=tries)
+                )
                 if not u.isManf(manufacturer) and u.isManf(ep.manufacturer_id):
                     LOGGER.debug(
                         "Scanning endpoint #%i with manf '%r'",
@@ -92,7 +94,9 @@ async def scan_results(device, endpoints=None, manufacturer=None):
                         ep.manufacturer_id,
                     )
                     endpoint.update(
-                        await scan_endpoint(ep, ep.manufacturer_id)
+                        await scan_endpoint(
+                            ep, ep.manufacturer_id, tries=tries
+                        )
                     )
             ep_result.append(endpoint)
 
@@ -100,7 +104,7 @@ async def scan_results(device, endpoints=None, manufacturer=None):
     return result
 
 
-async def scan_endpoint(ep, manufacturer=None):
+async def scan_endpoint(ep, manufacturer=None, tries=3):
     result = {}
     clusters = {}
     for cluster in ep.in_clusters.values():
@@ -111,7 +115,7 @@ async def scan_endpoint(ep, manufacturer=None):
         )
         key = f"0x{cluster.cluster_id:04x}"
         clusters[key] = await scan_cluster(
-            cluster, is_server=True, manufacturer=manufacturer
+            cluster, is_server=True, manufacturer=manufacturer, tries=tries
         )
     result["in_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
 
@@ -124,20 +128,20 @@ async def scan_endpoint(ep, manufacturer=None):
         )
         key = f"0x{cluster.cluster_id:04x}"
         clusters[key] = await scan_cluster(
-            cluster, is_server=True, manufacturer=manufacturer
+            cluster, is_server=True, manufacturer=manufacturer, tries=tries
         )
     result["out_clusters"] = dict(sorted(clusters.items(), key=lambda k: k[0]))
     return result
 
 
-async def scan_cluster(cluster, is_server=True, manufacturer=None):
+async def scan_cluster(cluster, is_server=True, manufacturer=None, tries=3):
     if is_server:
         cmds_gen = "commands_generated"
         cmds_rec = "commands_received"
     else:
         cmds_rec = "commands_generated"
         cmds_gen = "commands_received"
-    attributes = await discover_attributes_extended(cluster, None)
+    attributes = await discover_attributes_extended(cluster, None, tries=tries)
     LOGGER.debug("scan_cluster attributes (none): %s", attributes)
     if u.isManf(manufacturer):
         LOGGER.debug(
@@ -146,7 +150,9 @@ async def scan_cluster(cluster, is_server=True, manufacturer=None):
             attributes,
         )
         attributes.update(
-            await discover_attributes_extended(cluster, manufacturer)
+            await discover_attributes_extended(
+                cluster, manufacturer, tries=tries
+            )
         )
 
     # LOGGER.debug("scan_cluster attributes: %s", attributes)
@@ -156,12 +162,16 @@ async def scan_cluster(cluster, is_server=True, manufacturer=None):
         "title": cluster.name,
         "name": cluster.ep_attribute,
         "attributes": attributes,
-        cmds_rec: await discover_commands_received(cluster, is_server),
-        cmds_gen: await discover_commands_generated(cluster, is_server),
+        cmds_rec: await discover_commands_received(
+            cluster, is_server, tries=tries
+        ),
+        cmds_gen: await discover_commands_generated(
+            cluster, is_server, tries=tries
+        ),
     }
 
 
-async def discover_attributes_extended(cluster, manufacturer=None):
+async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
     from zigpy.zcl import foundation
 
     LOGGER.debug("Discovering attributes extended")
@@ -177,6 +187,7 @@ async def discover_attributes_extended(cluster, manufacturer=None):
                 attr_id,  # Start attribute identifier
                 16,  # Number of attributes to discover in this request
                 manufacturer=manufacturer,
+                tries=tries,
             )
             await asyncio.sleep(0.2)
         except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
@@ -248,7 +259,9 @@ async def discover_attributes_extended(cluster, manufacturer=None):
     while chunk:
         try:
             chunk = sorted(chunk)
-            success, failed = await read_attr(cluster, chunk, manufacturer)
+            success, failed = await read_attr(
+                cluster, chunk, manufacturer, tries=tries
+            )
             LOGGER.debug(
                 "Reading attr success: %s, failed %s", success, failed
             )
@@ -272,7 +285,9 @@ async def discover_attributes_extended(cluster, manufacturer=None):
     return {f"0x{a_id:04x}": result[a_id] for a_id in sorted(result)}
 
 
-async def discover_commands_received(cluster, is_server, manufacturer=None):
+async def discover_commands_received(
+    cluster, is_server, manufacturer=None, tries=3
+):
     from zigpy.zcl.foundation import Status
 
     LOGGER.debug("Discovering commands received")
@@ -288,6 +303,7 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
                 cmd_id,  # Start index of commands to discover
                 16,  # Number of commands to discover
                 manufacturer=manufacturer,
+                tries=tries,
             )
             await asyncio.sleep(0.2)
         except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
@@ -327,7 +343,9 @@ async def discover_commands_received(cluster, is_server, manufacturer=None):
     return dict(sorted(result.items(), key=lambda k: k[0]))
 
 
-async def discover_commands_generated(cluster, is_server, manufacturer=None):
+async def discover_commands_generated(
+    cluster, is_server, manufacturer=None, tries=3
+):
     from zigpy.zcl.foundation import Status
 
     LOGGER.debug("Discovering commands generated")
@@ -343,6 +361,7 @@ async def discover_commands_generated(cluster, is_server, manufacturer=None):
                 cmd_id,  # Start index of commands to discover
                 16,  # Number of commands to discover this run
                 manufacturer=manufacturer,
+                tries=tries,
             )
             await asyncio.sleep(0.2)
         except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
@@ -393,6 +412,7 @@ async def scan_device(
 
     endpoints = params[p.EP_ID]
     manf = params[p.MANF]
+    tries = params[p.TRIES]
 
     if endpoints is None:
         endpoints = []
@@ -403,7 +423,9 @@ async def scan_device(
 
     endpoints = sorted(set(endpoints))  # Uniqify and sort
 
-    scan = await scan_results(device, endpoints, manufacturer=manf)
+    scan = await scan_results(
+        device, endpoints, manufacturer=manf, tries=tries
+    )
 
     event_data["scan"] = scan
 
