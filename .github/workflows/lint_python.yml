@@ -5,20 +5,24 @@ jobs:
   lint_python:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        # with:
-        #  ref: ${{ github.head_ref }}
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.extract_branch.outputs.branch }}
+          fetch-depth: 0
       - uses: actions/setup-python@v2
       - run: pip install --upgrade pip wheel
       - run: >-
           pip install bandit black codespell flake8 flake8-2020 flake8-bugbear
-          flake8-comprehensions isort mypy pytest pyupgrade safety
+          flake8-comprehensions mccabe pycodestyle pyflakes mypy pytest pyupgrade safety
       - run: bandit --recursive --skip B101,B311 .
       - run: black --check . || true
       - run: codespell --ignore-words-list="hass"
       - run: >-
-          flake8 . --count --ignore W503 --max-complexity=20
-          --max-line-length=184 --show-source --statistics
+          flake8 . --count --show-source --statistics
       - run: isort --check-only --profile black . || true
       - run: pip install -r requirements.txt || pip install --editable . || true
       - run: mkdir --parents --verbose .mypy_cache
@@ -27,7 +31,7 @@ jobs:
           true
       - run: pytest . || true
       # - run: pytest --doctest-modules . || true
-      - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
+      - run: shopt -s globstar && pyupgrade --py37-plus **/*.py || true
       - run: safety check
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
