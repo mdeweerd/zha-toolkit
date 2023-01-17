@@ -2,7 +2,7 @@
 alias: Danfoss Ally TRV configuration
 sequence:
   - variables:
-      ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+      ieee: "{{ (device_attr(device, 'identifiers')|list)[0][1] }}"
       default_tries: 3
   - alias: Configure reporting of local_temperature in Thermostat cluster
     service: zha_toolkit.conf_report
@@ -10,7 +10,7 @@ sequence:
       ieee: '{{ ieee }}'
       cluster: 513
       attribute: 0
-      tries: '{{ default_tries}}'
+      tries: '{{ default_tries }}'
       event_done: zha_done
       reportable_change: 20
       max_interval: 300
@@ -21,8 +21,26 @@ sequence:
       ieee: '{{ ieee }}'
       cluster: 513
       attribute: 0
-      tries: '{{ default_tries}}'
+      tries: '{{ default_tries }}'
       event_done: zha_done
+  - alias: Set lower limit for setpoint
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 21
+      attr_val: '{{ ( set_min_temperature | float * 100) | int }}'
+      tries: '{{ default_tries }}'
+      csvout: danfoss_config.csv
+  - alias: Set upper limit for setpoint
+    service: zha_toolkit.attr_write
+    data:
+      ieee: '{{ ieee }}'
+      cluster: 513
+      attribute: 22
+      attr_val: '{{ ( set_max_temperature | float * 100) | int }}'
+      tries: '{{ default_tries }}'
+      csvout: danfoss_config.csv
   - alias: Set Display rotation
     service: zha_toolkit.attr_write
     data:
@@ -32,7 +50,7 @@ sequence:
       attr_val: '{{ 0 if view_direction else 1 }}'
       manf: 4678
       event_done: zha_done
-      tries: '{{ default_tries}}'
+      tries: '{{ default_tries }}'
       csvout: danfoss_config.csv
   - alias: Set open window detection
     service: zha_toolkit.attr_write
@@ -50,7 +68,7 @@ sequence:
     data:
       ieee: '{{ ieee }}'
       cluster: 513
-      attribute: 16465
+      attribute: 16384
       manf: 4678
       tries: '{{ default_tries }}'
       event_done: zha_done
