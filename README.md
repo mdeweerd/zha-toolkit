@@ -107,7 +107,7 @@ ZHA Toolkit can also:
   - [Miscellaneous](#miscellaneous)
     - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
     - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
-    - [`ota_notify`](#ota_notify)
+    - [`ota_notify` - Download/Trigger Device FW update](#ota_notify---downloadtrigger-device-fw-update)
     - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
   - [User method](#user-method)
@@ -1447,7 +1447,7 @@ data:
   read_after_write: true
 ```
 
-### `ota_notify`
+### `ota_notify` - Download/Trigger Device FW update
 
 `ota_notify` helps you update the firmware of a zigbee device without
 restarting Home Assistant. It can use the already available firmware
