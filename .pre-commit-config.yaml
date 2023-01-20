@@ -132,6 +132,8 @@ repos:
     hooks:
       - id: mypy
         args:
+          # - --verbose
+          # - --config-file=setup.cfg
           - --ignore-missing-imports
           - --install-types
           - --non-interactive
