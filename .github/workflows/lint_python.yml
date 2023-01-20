@@ -33,7 +33,8 @@ jobs:
       - run: shopt -s globstar && pyupgrade --py37-plus **/*.py || true
       # Safety checks identifies issues in python packages - too much hassle.
       # - run: safety check
-      - uses: pre-commit.ci/action@v3.0.0
+      # Not maintained:
+      # - uses: pre-commit.ci/action@v3.0.0
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: '[Bot] lint_python - formatting updates!'
