@@ -4,6 +4,7 @@
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Open ZHA-Toolit inside your Home Assistant Community Store (HACS).](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
 
 [ZHA Toolkit](https://github.com/mdeweerd/zha-toolkit) (Zigbee Home
 Assistant Toolkit) is a custom service for "rare" Zigbee operations using
@@ -12,9 +13,10 @@ the
 in [Home Assistant](https://www.home-assistant.io/) (an open source home
 automation software).
 
-You can add ZHA Toolkit to Home Assistant using
-[HACS (Home Assistant Community Store)](https://hacs.xyz/). ZHA Toolkit is
-available in HACS' default repository list.
+You can
+[add ZHA Toolkit to Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
+using [HACS (Home Assistant Community Store)](https://hacs.xyz/). ZHA
+Toolkit is available in HACS' default repository list.
 
 ## Purpose
 
@@ -129,7 +131,9 @@ custom components as well.
 
 If you already have [HACS](https://hacs.xyz/docs/setup/prerequisites)
 ([Tutorial](https://codingcyclist.medium.com/how-to-install-any-custom-component-from-github-in-less-than-5-minutes-ad84e6dc56ff)),
-simply look for "ZHA Toolkit" under Integrations to add it.
+simply look for "ZHA Toolkit" under Integrations or
+[click this redirection](https://my.home-assistant.io/redirect/hacs_repository/?owner=hacs&repository=integration)
+to add it.
 
 ![image](https://user-images.githubusercontent.com/1504752/156879928-e81560e1-1c10-4daf-8c17-c1f0bba0828f.png)
 
