@@ -1,5 +1,5 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-![hacs_installs](https://img.shields.io/badge/dynamic/json?label=HACS%20installs&query=%24.zha_toolkit.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)
+![hacs_installs](https://img.shields.io/badge/dynamic/json?label=Installs%28Reported%29&query=%24.zha_toolkit.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
