@@ -650,14 +650,21 @@ The default list of binding clusters is currently as follows:
 ### `bind_ieee`: Bind matching cluster to another device
 
 Bind all available default and matching clusters from `ieee` to
-`command_data` on all endpoints.
+`command_data` on all endpoints. By defaault only binds clusters in the
+internal list, i.e. OnOff, Level and Color Control clusters.
+
+If you set the `cluster`, you can bind another cluster type and only that
+cluster will be bound (both in and out clusters).
+
+Use `binds_get` to verify that the configuration worked.
 
 ```yaml
 service: zha_toolkit.bind_ieee
 data:
   ieee: entity.my_thermostat_entity
   command_data: 00:12:4b:00:22:08:ed:1a
-
+  # Optional, if you want to bind a cluster not internally selected.
+  cluster: 0x0006
 ```
 
 ### `binds_get`: Get binding table from the device
@@ -692,7 +699,7 @@ data:
   # Optional - name of generated event when done
   event_done: zhat_event
   # Optional - Cluster or list of clusters for which to remove bindings
-  #cluster: [ 0x0006, 0x0300]
+  # cluster: [ 0x0006, 0x0300]
   # Optional
   tries: 100
 ```
@@ -714,7 +721,7 @@ data:
   # Optional - name of generated event when done
   event_done: zhat_event
   # Optional - Cluster or list of clusters for which to remove bindings
-  #cluster: [ 0x0006, 0x0300]
+  # cluster: [ 0x0006, 0x0300]
   # Optional
   tries: 100
 ```
