@@ -650,8 +650,14 @@ The default list of binding clusters is currently as follows:
 ### `bind_ieee`: Bind matching cluster to another device
 
 Bind all available default and matching clusters from `ieee` to
-`command_data` on all endpoints. By defaault only binds clusters in the
+`command_data` on all endpoints.\
+Binds to the coordinator if
+`command_data` is not set or 0.\
+By default only binds cluster types in the
 internal list, i.e. OnOff, Level and Color Control clusters.
+
+The cluster must exist on both devices, except when the coordinator is the
+target.
 
 If you set the `cluster`, you can bind another cluster type and only that
 cluster will be bound (both in and out clusters).
@@ -662,6 +668,7 @@ Use `binds_get` to verify that the configuration worked.
 service: zha_toolkit.bind_ieee
 data:
   ieee: entity.my_thermostat_entity
+  # Optional, when not set or 0, bind to the coordinator.
   command_data: 00:12:4b:00:22:08:ed:1a
   # Optional, if you want to bind a cluster not internally selected.
   cluster: 0x0006

@@ -219,6 +219,8 @@ async def bind_ieee(
         # when command_data is set to 0 or false, bind to coordinator
         data = app.ieee
 
+    isCoordinatorTarget = str(data) == str(app.ieee)
+
     dst_dev = await u.get_device(app, listener, data)
 
     zdo = src_dev.zdo
@@ -244,7 +246,7 @@ async def bind_ieee(
             and (u_epid is None or u_epid == ep_id)
         ]
         LOGGER.debug(
-            "0x%04x: got the %s endpoints for %s cluster",
+            "0x%04X: got endpoints %s for out-cluster 0x%04X",
             src_dev.nwk,
             src_endpoints,
             src_out_cluster,
@@ -252,7 +254,7 @@ async def bind_ieee(
 
         if not src_endpoints:
             LOGGER.debug(
-                "0x%04x: skipping %0x04X cluster as non present",
+                "0x%04X: skipping out-cluster 0x%04X as non present",
                 src_dev.nwk,
                 src_out_cluster,
             )
@@ -266,7 +268,7 @@ async def bind_ieee(
         for ep_id, ep in dst_dev.endpoints.items():
             if ep_id == 0:
                 continue
-            if src_out_cluster in ep.in_clusters:
+            if isCoordinatorTarget or (src_out_cluster in ep.in_clusters):
                 dst_epid = ep_id
                 break
         if not dst_epid:
@@ -275,7 +277,7 @@ async def bind_ieee(
 
         for src_ep in src_endpoints:
             LOGGER.debug(
-                "0x%04x: binding %s, ep: %s, cluster: 0x%04X to %s dev %s ep",
+                "0x%04x: binding %s/EP:%s, out-cluster 0x%04X to %s/EP:%s",
                 src_dev.nwk,
                 str(src_dev.ieee),
                 src_ep,
@@ -306,7 +308,7 @@ async def bind_ieee(
             and (u_epid is None or u_epid == ep_id)
         ]
         LOGGER.debug(
-            "0x%04x: got the %s endpoints for %s cluster",
+            "0x%04X: got endpoints %s for in cluster 0x%04X",
             src_dev.nwk,
             src_endpoints,
             src_in_cluster,
@@ -314,7 +316,7 @@ async def bind_ieee(
 
         if not src_endpoints:
             LOGGER.debug(
-                "0x%04x: skipping %0x04X cluster as non present",
+                "0x%04X: skipping in-cluster 0x%04X as non present",
                 src_dev.nwk,
                 src_in_cluster,
             )
@@ -323,12 +325,12 @@ async def bind_ieee(
         dst_addr.addrmode = t.uint8_t(3)
         dst_addr.ieee = dst_dev.ieee
 
-        # find dest ep
+        # Find dest ep, accept first EP if coordinator
         dst_epid = None
         for ep_id, ep in dst_dev.endpoints.items():
             if ep_id == 0:
                 continue
-            if src_in_cluster in ep.out_clusters:
+            if isCoordinatorTarget or (src_in_cluster in ep.out_clusters):
                 dst_epid = ep_id
                 break
         if not dst_epid:
@@ -337,7 +339,7 @@ async def bind_ieee(
 
         for src_ep in src_endpoints:
             LOGGER.debug(
-                "0x%04x: binding %s, ep: %s, cluster: 0x%04X to %s dev %s ep",
+                "0x%04X: binding %s/EP:%s, in-cluster: 0x%04X to %s/EP:%s",
                 src_dev.nwk,
                 str(src_dev.ieee),
                 src_ep,
@@ -359,13 +361,14 @@ async def bind_ieee(
             bind_result["result"] = res
             results[src_ep] = bind_result
             LOGGER.debug(
-                "0x%04x: binding ieee %s: %s",
+                "0x%04X: binding ieee %s: %s",
                 src_dev.nwk,
                 str(dst_dev.ieee),
                 res,
             )
 
     event_data["result"] = results
+    event_data["success"] = len(results) != 0
 
 
 async def unbind_coordinator(
@@ -429,8 +432,8 @@ async def binds_remove_all(
             addr_mode = binding["dst"]["addrmode"]
 
             res = None
-            # Note, the code belowe is essentially two times the same
-            #       but the goal is to make a distinciont between group
+            # Note, the code below is essentially two times the same
+            #       but the goal is to make a distincion between group
             #       and ieee addressing for testing/evolutions.
             if addr_mode == 1:
                 # group
