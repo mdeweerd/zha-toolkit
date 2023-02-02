@@ -236,7 +236,7 @@ documentation updates.
 - Use `home_assistant.log` to see what happened.
 - Check this README.
 - Check the
-  [Github issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
+  [Github open and closed issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
 - Check the
   [Home Assistant Forum](https://community.home-assistant.io/search?q=zha_toolkit)
 - Check the [examples directory](examples)
