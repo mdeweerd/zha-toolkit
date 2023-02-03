@@ -454,4 +454,5 @@ async def scan_device(
         fname=file_name,
         desc="scan results",
         listener=listener,
+        normalize_name=True,
     )

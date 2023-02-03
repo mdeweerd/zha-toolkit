@@ -236,7 +236,7 @@ documentation updates.
 - Use `home_assistant.log` to see what happened.
 - Check this README.
 - Check the
-  [Github issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
+  [Github open and closed issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
 - Check the
   [Home Assistant Forum](https://community.home-assistant.io/search?q=zha_toolkit)
 - Check the [examples directory](examples)
@@ -1525,6 +1525,8 @@ service: zha_toolkit.zha_devices
 data:
   # Optional list of fields to write to the CSV, all non-list fields by default.
   command_data: [name, ieee, rssi, lqi]
+  # Optional, field the list is sorted by (example: sort by signal strength)
+  csvlabel: rssi
   csvout: ../www/devices.csv
   event_done: zha_devices
 ```

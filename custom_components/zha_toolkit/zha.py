@@ -19,12 +19,15 @@ async def zha_devices(
         params[p.CSV_LABEL], str
     ):
         try:
-            # Lambda function gets column and returns false if None
-            # This make compares possible for ints)
+            # Lambda function gets column and returns False if None
+            # This makes compares possible for ints)
             devices = sorted(
                 devices,
                 key=lambda item: (  # pylint: disable=C3002
-                    lambda a: (a is None, a)
+                    lambda a: (
+                        a is None,
+                        str.lower(a) if isinstance(a, str) else a,
+                    )
                 )(item[params[p.CSV_LABEL]]),
             )
         except Exception:  # nosec

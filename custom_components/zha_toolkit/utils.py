@@ -407,23 +407,8 @@ def get_cluster_from_params(
     return cluster
 
 
-def write_json_to_file(data, subdir, fname, desc, listener=None):
-    if listener is None or subdir == "local":
-        base_dir = os.path.dirname(__file__)
-    else:
-        base_dir = listener._hass.config.config_dir
-
-    out_dir = os.path.join(base_dir, subdir)
-    if not os.path.isdir(out_dir):
-        os.mkdir(out_dir)
-
-    file_name = os.path.join(out_dir, normalize_filename(fname))
-    save_json(file_name, data)
-    LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
-
-
-def append_to_csvfile(
-    fields, subdir, fname, desc, listener=None, overwrite=False
+def write_json_to_file(
+    data, subdir, fname, desc, listener=None, normalize_name=False
 ):
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
@@ -434,7 +419,37 @@ def append_to_csvfile(
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-    file_name = os.path.join(out_dir, normalize_filename(fname))
+    if normalize_name:
+        file_name = os.path.join(out_dir, normalize_filename(fname))
+    else:
+        file_name = os.path.join(out_dir, fname)
+
+    save_json(file_name, data)
+    LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
+
+
+def append_to_csvfile(
+    fields,
+    subdir,
+    fname,
+    desc,
+    listener=None,
+    overwrite=False,
+    normalize_name=False,
+):
+    if listener is None or subdir == "local":
+        base_dir = os.path.dirname(__file__)
+    else:
+        base_dir = listener._hass.config.config_dir
+
+    out_dir = os.path.join(base_dir, subdir)
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
+
+    if normalize_name:
+        file_name = os.path.join(out_dir, normalize_filename(fname))
+    else:
+        file_name = os.path.join(out_dir, fname)
 
     import csv
 
