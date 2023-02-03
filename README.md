@@ -1525,8 +1525,8 @@ service: zha_toolkit.zha_devices
 data:
   # Optional list of fields to write to the CSV, all non-list fields by default.
   command_data: [name, ieee, rssi, lqi]
-  # Optional, sorts the list according to this field
-  csvlabel: name
+  # Optional, field the list is sorted by (example: sort by signal strength)
+  csvlabel: rssi
   csvout: ../www/devices.csv
   event_done: zha_devices
 ```
