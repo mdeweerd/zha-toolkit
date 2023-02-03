@@ -24,7 +24,10 @@ async def zha_devices(
             devices = sorted(
                 devices,
                 key=lambda item: (  # pylint: disable=C3002
-                    lambda a: (a is None, a)
+                    lambda a: (
+                        a is None,
+                        str.lower(a) if isinstance(a, str) else a,
+                    )
                 )(item[params[p.CSV_LABEL]]),
             )
         except Exception:  # nosec
