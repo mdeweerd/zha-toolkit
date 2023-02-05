@@ -125,7 +125,9 @@ repos:
       - id: pylint
         args:
           - --reports=no
-          - --py-version=3.9
+          - --py-version=3.10
+        additional_dependencies:
+          - homeassistant-stubs==2023.2.1
         # exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.991
@@ -142,3 +144,4 @@ repos:
           - --show-error-context
         additional_dependencies:
           - zigpy==0.43.0
+          - homeassistant-stubs==2023.2.1
