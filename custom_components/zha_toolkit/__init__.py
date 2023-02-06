@@ -607,17 +607,17 @@ async def async_setup(hass, config):
         pass
 
     try:
-        if hass.data["zha"]["zha_gateway"] is None:
+        if hass.data["zha"] is None:
             LOGGER.error(
                 "Not initializing zha_toolkit: "
-                "hass.data['zha']['zha_gateway'] is None,"
+                "hass.data['zha'] is None,"
                 " - zha_toolkit needs zha (not deconz, not zigbee2mqtt)."
             )
             return True
     except KeyError:
         LOGGER.error(
             "Not initializing zha_toolkit: "
-            "Missing hass.data['zha']['zha_gateway']"
+            "Missing hass.data['zha']"
             " - zha_toolkit needs zha (not deconz, not zigbee2mqtt)."
         )
         return True
@@ -630,12 +630,20 @@ async def async_setup(hass, config):
 
 def register_services(hass):  # noqa: C901
     global LOADED_VERSION  # pylint: disable=global-statement
-    zha_gw = hass.data["zha"]["zha_gateway"]
+    hass_ref = hass
 
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
         global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
+
+        try:
+            zha_gw = hass_ref.data["zha"]["zha_gateway"]
+        except KeyError:
+            LOGGER.error(
+                "Missing hass.data['zha']['zha_gateway'] - not running %s",
+                service,
+            )
 
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
@@ -660,8 +668,7 @@ def register_services(hass):  # noqa: C901
                 u.getVersion(),
             )
             await command_handler_register_services(
-                zha_gw.application_controller,
-                zha_gw,
+                hass,
                 None,  # ieee,
                 None,  # cmd,
                 None,  # cmd_data,
@@ -850,7 +857,7 @@ async def reload_services_yaml(hass):
 # To register services when modifying while system is online
 #
 async def command_handler_register_services(
-    app, listener, ieee, cmd, data, service, params, event_data
+    hass, ieee, cmd, data, service, params, event_data
 ):
-    register_services(listener._hass)
-    await reload_services_yaml(listener._hass)
+    register_services(hass)
+    await reload_services_yaml(hass)
