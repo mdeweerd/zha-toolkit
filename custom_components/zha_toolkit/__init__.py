@@ -667,15 +667,7 @@ def register_services(hass):  # noqa: C901
                 LOADED_VERSION,
                 u.getVersion(),
             )
-            await command_handler_register_services(
-                hass,
-                None,  # ieee,
-                None,  # cmd,
-                None,  # cmd_data,
-                None,  # Not needed
-                params={},  # params Not needed
-                event_data={},  # event_data Not needed
-            )
+            await _register_services(hass)
 
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
@@ -853,11 +845,15 @@ async def reload_services_yaml(hass):
         async_set_service_schema(hass, DOMAIN, s, s_desc)
 
 
+async def _register_services(hass):
+    register_services(hass)
+    await reload_services_yaml(hass)
+
+
 #
 # To register services when modifying while system is online
 #
 async def command_handler_register_services(
-    hass, ieee, cmd, data, service, params, event_data
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
-    register_services(hass)
-    await reload_services_yaml(hass)
+    await _register_services(listener._hass)

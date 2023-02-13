@@ -145,3 +145,4 @@ repos:
         additional_dependencies:
           - zigpy==0.43.0
           - homeassistant-stubs==2023.2.1
+          - pydantic
