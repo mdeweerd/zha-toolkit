@@ -1,5 +1,6 @@
 import inspect
 import logging
+from typing import Any
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
@@ -15,6 +16,7 @@ ERR005_NOT_OUT_CLUSTER = "Out cluster 0x%04X not found for '%s', endpoint %s"
 
 async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
     from zigpy import types as t
+    from zigpy.zcl import foundation
 
     # Verify parameter presence
 
@@ -80,6 +82,8 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
             # Cluster is found
             cluster = endpoint.in_clusters[cluster_id]
 
+            # Change command specification ourselves ...
+
             if (cluster_id == 5) and (cmd_id == 0):
                 org_cluster_cmd_defs[0] = cluster.server_commands[0]
                 cluster.server_commands[0] = (
@@ -93,8 +97,26 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     ),
                     False,
                 )
+            elif cmd_id not in cluster.server_commands:
+
+                cmd_schema: list[Any] = []
+
+                if cmd_args is not None:
+                    cmd_schema = [t.uint8_t] * len(cmd_args)
+
+                cmd_def = foundation.ZCLCommandDef(
+                    name=f"zha_toolkit_dummy_cmd{cmd_id}",
+                    id=cmd_id,
+                    schema=cmd_schema,
+                    direction=foundation.Direction.Client_to_Server,
+                    is_manufacturer_specific=(manf is not None),
+                )
+
+                org_cluster_cmd_defs[cmd_id] = None
+                cluster.server_commands[cmd_id] = cmd_def
+
             if "tries" in inspect.getfullargspec(cluster.command)[0]:
-                await cluster.command(
+                event_data["cmd_reply"] = await cluster.command(
                     cmd_id,
                     *cmd_args,
                     manufacturer=manf,
@@ -102,7 +124,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     tries=tries,
                 )
             else:
-                await cluster.command(
+                event_data["cmd_reply"] = await cluster.command(
                     cmd_id,
                     *cmd_args,
                     manufacturer=manf,
@@ -120,7 +142,9 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
             cluster = endpoint.out_clusters[cluster_id]
 
             # Note: client_command not tested
-            await cluster.client_command(cmd_id, *cmd_args, manufacturer=manf)
+            event_data["cmd_reply"] = await cluster.client_command(
+                cmd_id, *cmd_args, manufacturer=manf
+            )
     except Exception as e:
         caught_e = e
     finally:
@@ -128,9 +152,16 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
         # LOGGER.debug("replaced %s", org_cluster_cmd_defs)
         for key, cmd_def in org_cluster_cmd_defs.items():
             if is_in_cluster:
-                cluster.server_commands[key] = cmd_def
+                if cmd_def is not None:
+                    cluster.server_commands[key] = cmd_def
+                else:
+                    del cluster.server_commands[key]
+
             else:
-                cluster.client_commands[key] = cmd_def
+                if cmd_def is not None:
+                    cluster.client_commands[key] = cmd_def
+                else:
+                    del cluster.client_commands[key]
         if caught_e is not None:
             raise caught_e
 
