@@ -102,7 +102,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                 cmd_schema: list[Any] = []
 
                 if cmd_args is not None:
-                    cmd_schema = t.uint8_t * len(cmd_args)
+                    cmd_schema = [t.uint8_t] * len(cmd_args)
 
                 cmd_def = foundation.ZCLCommandDef(
                     name=f"zha_toolkit_dummy_cmd{cmd_id}",
