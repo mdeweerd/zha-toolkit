@@ -707,16 +707,23 @@ def extractParams(  # noqa: C901
 
     if P.ARGS in rawParams:
         cmd_args = []
-        for val in rawParams[P.ARGS]:
-            LOGGER.debug("cmd arg %s", val)
-            lval = str2int(val)
-            if isinstance(lval, list):
-                # Convert list to List of uint8_t
-                lval = t.List[t.uint8_t]([t.uint8_t(i) for i in lval])
-                # Convert list to LVList structure
-                # lval = t.LVList(lval)
-            cmd_args.append(lval)
-            LOGGER.debug("cmd converted arg %s", lval)
+        rawArgs = rawParams[P.ARGS]
+        if rawArgs is not None:
+            try:
+                iter(rawParams)
+            except ValueError:
+                rawArgs = [rawArgs]
+
+            for val in rawParams[P.ARGS]:
+                LOGGER.debug("cmd arg %s", val)
+                lval = str2int(val)
+                if isinstance(lval, list):
+                    # Convert list to List of uint8_t
+                    lval = t.List[t.uint8_t]([t.uint8_t(i) for i in lval])
+                    # Convert list to LVList structure
+                    # lval = t.LVList(lval)
+                cmd_args.append(lval)
+                LOGGER.debug("cmd converted arg %s", lval)
         params[p.ARGS] = cmd_args
 
     if P.MIN_INTRVL in rawParams:
