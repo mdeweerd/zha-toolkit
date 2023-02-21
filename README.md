@@ -1,4 +1,5 @@
-<img src="icon/icon.svg" height=24> [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
+<img src="icon/icon.svg" height=24>
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 ![hacs_installs](https://img.shields.io/badge/dynamic/json?label=Installs%28Reported%29&query=%24.zha_toolkit.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)![zha_installs](https://img.shields.io/badge/dynamic/json?label=vs.ZHA%20Installs&query=%24.current.integrations.zha&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fdata.json)
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
@@ -7,11 +8,12 @@
 [![Open ZHA-Toolit inside your Home Assistant Community Store (HACS).](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
 
 [ZHA Toolkit](https://github.com/mdeweerd/zha-toolkit) (Zigbee Home
-Assistant Toolkit) is a custom service for "rare" Zigbee operations using
-the
+Assistant Toolkit) helps go beyond some limitations when using the
 [ZHA integration component](https://www.home-assistant.io/integrations/zha)
 in [Home Assistant](https://www.home-assistant.io/) (an open source home
-automation software).
+automation software). It does so by providing extra methods to execute
+Zigbee requests and helps bridge between ZHA functionality and Home
+Assistant.
 
 You can
 [add ZHA Toolkit to Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
@@ -58,6 +60,8 @@ ZHA Toolkit can also:
 - [Automations](#automations)
 - [Using `zha-toolkit`](#using-zha-toolkit)
 - [General recommendations](#general-recommendations)
+- [Zigbee crash course](#zigbee-crash-course)
+  - [Zigbee, ZHA, zha-device-quirks, zigpy, ZHA-toolkit](#zigbee-zha-zha-device-quirks-zigpy-zha-toolkit)
 - [Common options](#common-options)
   - [`ieee`: A reference to the device](#ieee-a-reference-to-the-device)
   - [Events](#events)
@@ -229,12 +233,12 @@ documentation updates.
 
 # General recommendations
 
-- Set the log level to debug ([See Setup](#setup))
+- Check this README.
 - Use [`scan_device`](#scan_device-scan-a-deviceread-all-attribute-values)
   to find out more about your device.
 - Use events to see what happens.
 - Use `home_assistant.log` to see what happened.
-- Check this README.
+- Set the log level to debug ([See Setup](#setup)) to get more facts.
 - Check the
   [Github open and closed issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
 - Check the
@@ -250,12 +254,130 @@ documentation updates.
   some cases over a 100 tries (more than 10 minutes) are needed to
   successfully communicate with a sleepy device).
 
+# Zigbee crash course
+
+This crash course's wording may deviate from Zigbee's wording.
+
+Access to a Zigbee device's functionality is organised in Endpoints that
+contain "Clusters". An Endpoint will represent some major function of your
+device.
+
+For instance if your device has two switches, there should be an Endpoint
+for each switch function.\
+If your device has a temperature sensor and a
+humidity sensor, you may have an endpoint for each.\
+An Endpoint can also
+represent some "administrative" Zigbee functionality such as Over The Air
+(OTA) updates or Green Power functionality.
+
+Endpoints are organised in clusters that have attributes and commands
+mostly defined in the Zigbee Cluster Library specification. The
+manufacturer can extend these predefined attributes and commands with their
+own.\
+Attributes allow you to define how the device should function, or
+let's you read or set the state or data from your device. For instance you
+may write a temperature setpoint used by the device to regulate the heat in
+a room. And you may read an attribute to know how much power was already
+delivered by your power outlet.\
+Commands let you control your device. For
+instance there are commands to turn a switch on and off. Sometimes you'll
+write an attribute to "command" your device, sometimes you can use a
+command or write an attribute to to the same thing.\
+Attributes have a type
+\- there are quite a few of them. For instance there are boolean attributes,
+unsigned and signed byte attributes, up to arrays, timestamps and more.
+(Most of the time zha-toolkit and zha will find the type without your
+help.)
+
+Home Assistant uses your Zigbee USB key or Zigbee gateway which contains
+the Zigbee Coordinator. The Coordinator is the "central" node in your
+network.
+
+The actions of reading or writing attributes, and commands are often
+initiated from the Coordinator. Commands can also be sent by zigbee devices
+\- for example a switch telling a light bulb to turn on or off.
+
+To avoid traffic on the network by "polling" devices through read requests
+to know their internal state, devices can be (pre-)configured to report
+their internal state to other devices (including the coordinator) in the
+network.
+
+In addition to a reporting configuration, the devices must also be "bound"
+to the devices or groups that they will report this data to. That is where
+"Binding" comes in play.
+
+Binding a device can imply telling that device that the information from
+one of its clusters must be reported to an endpoint on another device or to
+a specific group number. The latter (group) makes it "belong" to that group
+as a data or command provider.\
+Binding may also imply that you tell an
+endpoint on a device to react to commands that are sent to a certain group
+number. So if you've added a switch's endpoint to a group, and several
+light bulbs to that group as well, then the switch will command many bulbs.
+
+When Home Assistant's ZHA integration accepts a new device in the network,
+it will send an initial configuration to this devices. This will mostly
+setup reporting configurations and bindings to ensure that the devices
+notifies the Coordinator about it's state changes or useful "data" changes
+such as instantaneous consumption metrics or simply to inform that the
+light was switched on.
+
+Zigbee routers are a hidden force in the Zigbee network as they relay
+messages from one device to another as a way to bridge longer distances,
+and to temporarily store messages for battery powered devices that only
+wake up from time to time. Messages are generally stored for about 6
+seconds.
+
+A battery powered device is a sleepy device, and it is likely for some of
+those that your data requests and commands are lost before the devices
+"checks in" on pending requests. To ensure success, these requests must be
+actively repeated until the sleepy device replies - this is where the
+`tries` parameter helps.
+
+You should also know that in some cases you need to provide the
+manufacturer id to access a manufacturer specific attribute or execute a
+manufacturer specific command.
+
+## Zigbee, ZHA, zha-device-quirks, zigpy, ZHA-toolkit
+
+ZHA and zha-device-quirks and zigpy intend to wrap the zigbee attribute
+operations and commands so that the device features are immediately usable
+in Home Assistant. The quality of these integrations and libraries are
+ensured through unit tests. `zigpy` is a library/gateway that bridges the
+gap between python and the zigbee coordinator hardware. ZHA interfaces
+zigpy with Home Assistant. The zha-device-quirks library is delivered at
+the same time as ZHA and adapts "quirky" device behavior to interface with
+Home Assistant through ZHA. "Quirky" device behavior means that a device is
+providing functionality not or not as anticipated in the Zigbee
+specifications.
+
+ZHA-Toolkit is there to help with using device functionalities that are not
+fully supported yet in ZHA, or help implement scripts and automations that
+are not part of the main focus of the ZHA integration. There currently are
+no test cases - so there is less quality assurance and a function might
+accidentally drop at some point. It is not autonomously listening in on
+Zigbee messages to generate Home Assistant events for instance, but you can
+use it to poll devices and update state values directly, or send commands
+you can't send through ZHA. ZHA-Toolkit can help with diagnostics and
+device configurations.
+
 # Common options
 
 ## `ieee`: A reference to the device
 
 In almost all commands you need to provide a reference to the device that
 you want to control.
+
+Easiest, use an entity name:
+
+```yaml
+service: zha_toolkit.SOME_SERVICE
+data:
+  # entity name (one of them)
+  ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
+```
+
+Harder, find and use the IEEE address:
 
 ```yaml
 service: zha_toolkit.SOME_SERVICE
@@ -265,18 +387,14 @@ data:
   ieee: 00:12:4b:00:24:42:d1:dc
 ```
 
+Even more difficult, find and use the devices' short address, which may
+change over time.
+
 ```yaml
 service: zha_toolkit.SOME_SERVICE
 data:
   # The short network address
   ieee: 0x2F3E
-```
-
-```yaml
-service: zha_toolkit.SOME_SERVICE
-data:
-  # entity name (one of them)
-  ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
 ```
 
 The `ieee` address can be the IEEE address, the short network address
@@ -285,13 +403,32 @@ The `ieee` address can be the IEEE address, the short network address
 aware that the network address can change over time but it is shorter to
 enter if you know it.
 
-The same also applies to the `command_data` field when it is used to
-designate a device.
+There is no universal "best" way of selecting the device.
+
+- The IEEE address is the only reference that does not change over time.
+- The entity name is surely easiest to find. While as a user you can change
+  it, it is also somewhat stable when you replace a device - you could keep
+  the same entity name for a difference device.
+- The short address might be shorter to type if you already know it, but do
+  not rely on it if you scripts needs to continue to work over time.
+
+Sometime the `command_data` field provides a reference to a device (for
+instance, when binding one device to another). It has the same flexibility
+as the `ieee` argument.
 
 ## Events
 
-All commands support setting event names. When set, these events are
-generated at the end of the command execution.
+Events in Home Assistant are a way to trigger or proceed in automations and
+scripts, and convey data.
+
+All zha-toolkit commands support setting event names that are fired at the
+the end of the command execution.
+
+You can interactively listen for events in the Developer Tools>Events page
+which is a good way to check the result of a zha-toolkit service that you
+start in another tab of your browser.
+
+You can set the event names as follows:
 
 ```yaml
 service: zha_toolkit.SERVICE_NAME
@@ -441,8 +578,10 @@ IEEE address found.
 }
 ```
 
-Services that are not documented below yet (not including undocumented ezsp
-commands):
+Home Assistant evolved and now shows the event data as a yaml structure.
+
+Services that are not documented in the sections that follow below (not
+including undocumented ezsp commands):
 
 - `all_routes_and_neighbours`
 - `bind_group`
