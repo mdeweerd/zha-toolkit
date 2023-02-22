@@ -344,25 +344,26 @@ manufacturer specific command.
 ## Zigbee, ZHA, zha-device-quirks, zigpy, ZHA-toolkit
 
 ZHA and zha-device-quirks and zigpy intend to wrap the zigbee attribute
-operations and commands so that the device features are immediately usable
-in Home Assistant. The quality of these integrations and libraries are
-ensured through unit tests. `zigpy` is a library/gateway that bridges the
-gap between python and the zigbee coordinator hardware. ZHA interfaces
-zigpy with Home Assistant. The zha-device-quirks library is delivered at
-the same time as ZHA and adapts "quirky" device behavior to interface with
-Home Assistant through ZHA. "Quirky" device behavior means that a device is
-providing functionality not or not as anticipated in the Zigbee
-specifications.
+operations and commands so that the Zigbee device features are immediately
+usable in Home Assistant. The quality of these integrations and libraries
+are ensured through unit tests.
 
-ZHA-Toolkit is there to help with using device functionalities that are not
-fully supported yet in ZHA, or help implement scripts and automations that
-are not part of the main focus of the ZHA integration. There currently are
-no test cases - so there is less quality assurance and a function might
-accidentally drop at some point. It is not autonomously listening in on
-Zigbee messages to generate Home Assistant events for instance, but you can
-use it to poll devices and update state values directly, or send commands
-you can't send through ZHA. ZHA-Toolkit can help with diagnostics and
-device configurations.
+- `zigpy` is a library/gateway that bridges the gap between python and the
+  zigbee coordinator hardware.
+- ZHA interfaces zigpy with Home Assistant.
+- The zha-device-quirks library is delivered at the same time as ZHA and
+  adapts "quirky" device behavior to interface with Home Assistant through
+  ZHA. "Quirky" device behavior means that a device is providing
+  functionality not or not as anticipated in the Zigbee specifications.
+- ZHA-Toolkit is there to help with using device functionalities that are
+  not fully supported yet in ZHA, or help implement scripts and automations
+  that are not part of the main focus of the ZHA integration. There
+  currently are no test cases - so there is less quality assurance and a
+  function might accidentally drop at some point. It is not autonomously
+  listening in on Zigbee messages to generate Home Assistant events for
+  instance, but you can use it to poll devices and update state values
+  directly, or send commands you can't send through ZHA. ZHA-Toolkit can
+  help with diagnostics and device configurations.
 
 # Common options
 
