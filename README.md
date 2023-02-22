@@ -1,5 +1,4 @@
-<img src="icon/icon.svg" height=24/>&nbsp;
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration) 
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 ![hacs_installs](https://img.shields.io/badge/dynamic/json?label=Installs%28Reported%29&query=%24.zha_toolkit.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)![zha_installs](https://img.shields.io/badge/dynamic/json?label=vs.ZHA%20Installs&query=%24.current.integrations.zha&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fdata.json)
 ![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
@@ -271,23 +270,27 @@ represent some "administrative" Zigbee functionality such as Over The Air
 (OTA) updates or Green Power functionality.
 
 Endpoints are organised in clusters that have attributes and commands
-mostly defined in the Zigbee Cluster Library specification. The
-manufacturer can extend these predefined attributes and commands with their
-own.\
-Attributes allow you to define how the device should function, or
-let's you read or set the state or data from your device. For instance you
-may write a temperature setpoint used by the device to regulate the heat in
-a room. And you may read an attribute to know how much power was already
-delivered by your power outlet.\
-Commands let you control your device. For
-instance there are commands to turn a switch on and off. Sometimes you'll
-write an attribute to "command" your device, sometimes you can use a
-command or write an attribute to to the same thing.\
-Attributes have a type
-\- there are quite a few of them. For instance there are boolean attributes,
-unsigned and signed byte attributes, up to arrays, timestamps and more.
-(Most of the time zha-toolkit and zha will find the type without your
-help.)
+mostly defined in the Zigbee Cluster Library specification. A Cluster
+represents some kind of "unatary" functionality of the device such as
+"On/Off", "Temperature Measurement", "Color Control". These are combined in
+an endpoint - for example a light bulb that you can turn On and Off and for
+which you can set the color and that also measures the room temperature.
+The manufacturer can extend these clusters with predefined attributes and
+commands with their own.\
+Attributes allow you to define how the device
+should function, or let's you read or set the state or data from your
+device. For instance you may write a temperature setpoint used by the
+device to regulate the heat in a room. And you may read an attribute to
+know how much power was already delivered by your power outlet.\
+Commands
+let you control your device. For instance there are commands to turn a
+switch on and off. Sometimes you'll write an attribute to "command" your
+device, sometimes you can use a command or write an attribute to to the
+same thing.\
+Attributes have a type - there are quite a few of them. For
+instance there are boolean attributes, unsigned and signed byte attributes,
+up to arrays, timestamps and more. (Most of the time zha-toolkit and zha
+will find the type without your help.)
 
 Home Assistant uses your Zigbee USB key or Zigbee gateway which contains
 the Zigbee Coordinator. The Coordinator is the "central" node in your
