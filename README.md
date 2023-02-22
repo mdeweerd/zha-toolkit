@@ -60,7 +60,7 @@ ZHA Toolkit can also:
 - [Using `zha-toolkit`](#using-zha-toolkit)
 - [General recommendations](#general-recommendations)
 - [Zigbee crash course](#zigbee-crash-course)
-  - [Zigbee, ZHA, zha-device-quirks, zigpy, ZHA-toolkit](#zigbee-zha-zha-device-quirks-zigpy-zha-toolkit)
+  - [Zigbee, ZHA, zha-device-handlers, zigpy, ZHA-toolkit](#zigbee-zha-zha-device-handlers-zigpy-zha-toolkit)
 - [Common options](#common-options)
   - [`ieee`: A reference to the device](#ieee-a-reference-to-the-device)
   - [Events](#events)
@@ -341,9 +341,9 @@ You should also know that in some cases you need to provide the
 manufacturer id to access a manufacturer specific attribute or execute a
 manufacturer specific command.
 
-## Zigbee, ZHA, zha-device-quirks, zigpy, ZHA-toolkit
+## Zigbee, ZHA, zha-device-handlers, zigpy, ZHA-toolkit
 
-ZHA and zha-device-quirks and zigpy intend to wrap the zigbee attribute
+[ZHA](https://github.com/home-assistant/core/tree/dev/homeassistant/components/zha) and [zha-device-handlers](https://github.com/zigpy/zha-device-handlers/tree/dev/zhaquirks) and [zigpy](https://github.com/zigpy/zigpy) intend to wrap the zigbee attribute
 operations and commands so that the Zigbee device features are immediately
 usable in Home Assistant. The quality of these integrations and libraries
 are ensured through unit tests.
