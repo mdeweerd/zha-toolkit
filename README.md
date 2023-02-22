@@ -258,12 +258,12 @@ documentation updates.
 This crash course's wording may deviate from Zigbee's wording.
 
 Access to a Zigbee device's functionality is organised in Endpoints that
-contain "Clusters". An Endpoint will represent some major function of your
+contain "Clusters". An Endpoint will represent some major function of a
 device.
 
-For instance if your device has two switches, there should be an Endpoint
+For instance if the device has two switches, there should be an Endpoint
 for each switch function.\
-If your device has a temperature sensor and a
+If the device has a temperature sensor and a
 humidity sensor, you may have an endpoint for each.\
 An Endpoint can also
 represent some "administrative" Zigbee functionality such as Over The Air
@@ -278,23 +278,22 @@ which you can set the color and that also measures the room temperature.
 The manufacturer can extend these clusters with predefined attributes and
 commands with their own.\
 Attributes allow you to define how the device
-should function, or let's you read or set the state or data from your
-device. For instance you may write a temperature setpoint used by the
-device to regulate the heat in a room. And you may read an attribute to
-know how much power was already delivered by your power outlet.\
-Commands
-let you control your device. For instance there are commands to turn a
-switch on and off. Sometimes you'll write an attribute to "command" your
-device, sometimes you can use a command or write an attribute to to the
-same thing.\
-Attributes have a type - there are quite a few of them. For
-instance there are boolean attributes, unsigned and signed byte attributes,
-up to arrays, timestamps and more. (Most of the time zha-toolkit and zha
-will find the type without your help.)
+should function, or let's you read or set the state or data from a device.
+For instance you may write a temperature setpoint used by the device to
+regulate the heat in a room. And you may read an attribute to know how much
+power was already delivered by a power outlet.\
+Commands let you control a
+device. For instance there are commands to turn a switch on and off.
+Sometimes you'll write an attribute to "command" a device, sometimes you
+can use a command or write an attribute to to the same thing.\
+Attributes
+have a type - there are quite a few of them. For instance there are boolean
+attributes, unsigned and signed byte attributes, up to arrays, timestamps
+and more. (Most of the time zha-toolkit and zha will find the type without
+your help.)
 
-Home Assistant uses your Zigbee USB key or Zigbee gateway which contains
-the Zigbee Coordinator. The Coordinator is the "central" node in your
-network.
+Home Assistant uses a Zigbee USB key or Zigbee gateway which contains the
+Zigbee Coordinator. The Coordinator is the "central" node in the network.
 
 The actions of reading or writing attributes, and commands are often
 initiated from the Coordinator. Commands can also be sent by zigbee devices
@@ -332,10 +331,10 @@ wake up from time to time. Messages are generally stored for about 6
 seconds.
 
 A battery powered device is a sleepy device, and it is likely for some of
-those that your data requests and commands are lost before the devices
-"checks in" on pending requests. To ensure success, these requests must be
-actively repeated until the sleepy device replies - this is where the
-`tries` parameter helps.
+those that data requests and commands are lost before the devices "checks
+in" on pending requests. To ensure success, these requests must be actively
+repeated until the sleepy device replies - this is where the `tries`
+parameter helps.
 
 You should also know that in some cases you need to provide the
 manufacturer id to access a manufacturer specific attribute or execute a
