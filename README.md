@@ -342,10 +342,13 @@ manufacturer specific command.
 
 ## Zigbee, ZHA, zha-device-handlers, zigpy, ZHA-toolkit
 
-[ZHA](https://github.com/home-assistant/core/tree/dev/homeassistant/components/zha) and [zha-device-handlers](https://github.com/zigpy/zha-device-handlers/tree/dev/zhaquirks) and [zigpy](https://github.com/zigpy/zigpy) intend to wrap the zigbee attribute
-operations and commands so that the Zigbee device features are immediately
-usable in Home Assistant. The quality of these integrations and libraries
-are ensured through unit tests.
+[ZHA](https://github.com/home-assistant/core/tree/dev/homeassistant/components/zha)
+and
+[zha-device-handlers](https://github.com/zigpy/zha-device-handlers/tree/dev/zhaquirks)
+and [zigpy](https://github.com/zigpy/zigpy) intend to wrap the zigbee
+attribute operations and commands so that the Zigbee device features are
+immediately usable in Home Assistant. The quality of these integrations and
+libraries are ensured through unit tests.
 
 - `zigpy` is a library/gateway that bridges the gap between python and the
   zigbee coordinator hardware.
@@ -805,6 +808,17 @@ If you set the `cluster`, you can bind another cluster type and only that
 cluster will be bound (both in and out clusters).
 
 Use `binds_get` to verify that the configuration worked.
+
+It's possible to attempt binding specific end points between `ieee` and
+`command_data`.\
+Endpoint for `ieee` can be provided by `endpoint`.\
+If
+it's not specified then all endpoints on `ieee` are considered.\
+Endpoint
+for `command_data` can be provided by `dst_endpoint`. If it's not specified
+then all endpoints on `command_data` are considered\
+and the first one that
+matches cluster-wise will be picked.\\
 
 ```yaml
 service: zha_toolkit.bind_ieee

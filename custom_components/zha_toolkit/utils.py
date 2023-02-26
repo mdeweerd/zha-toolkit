@@ -612,6 +612,7 @@ def extractParams(  # noqa: C901
     params: dict[str, None | int | str | list[int | str] | bytes] = {
         p.CMD_ID: None,
         p.EP_ID: None,
+        p.DST_EP_ID: None,
         p.CLUSTER_ID: None,
         p.ATTR_ID: None,
         p.ATTR_TYPE: None,
@@ -647,6 +648,10 @@ def extractParams(  # noqa: C901
     # Endpoint to send command to
     if P.ENDPOINT in rawParams:
         params[p.EP_ID] = str2int(rawParams[P.ENDPOINT])
+
+    # Destination endpoint to send command to
+    if P.DST_ENDPOINT in rawParams:
+        params[p.DST_EP_ID] = str2int(rawParams[P.DST_ENDPOINT])
 
     # Cluster to send command to
     if P.CLUSTER in rawParams:
