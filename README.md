@@ -809,16 +809,16 @@ cluster will be bound (both in and out clusters).
 
 Use `binds_get` to verify that the configuration worked.
 
-It's possible to attempt binding specific end points between `ieee` and
+It's possible to attempt binding specific endpoints between `ieee` and
 `command_data`.\
-Endpoint for `ieee` can be provided by `endpoint`.\
-If
-it's not specified then all endpoints on `ieee` are considered.\
-Endpoint
-for `command_data` can be provided by `dst_endpoint`. If it's not specified
-then all endpoints on `command_data` are considered\
-and the first one that
-matches cluster-wise will be picked.\\
+The endpoint for `ieee` (source) can be provided by
+`endpoint`.\
+If it's not specified then all endpoints on `ieee` are
+considered.\
+Endpoint for `command_data` (destination) can be provided by
+`dst_endpoint`. If it's not specified then all endpoints on `command_data`
+are considered\
+and the first one that matches cluster-wise will be picked.
 
 ```yaml
 service: zha_toolkit.bind_ieee
@@ -828,6 +828,10 @@ data:
   command_data: 00:12:4b:00:22:08:ed:1a
   # Optional, if you want to bind a cluster not internally selected.
   cluster: 0x0006
+  # Optional: source endpoint (for ieee)
+  endpoint: 2
+  # Optional: destination endpoint (for command_data)
+  dst_endpoint: 3
 ```
 
 ### `binds_get`: Get binding table from the device

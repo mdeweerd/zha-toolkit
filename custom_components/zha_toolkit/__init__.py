@@ -50,6 +50,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(ATTR_COMMAND_DATA): vol.Any(list, cv.string),
             vol.Optional(P.CMD): cv.string,
             vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
+            vol.Optional(P.DST_ENDPOINT): vol.Any(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Optional(P.ATTRIBUTE): vol.Any(
                 vol.Range(0, 0xFFFF), cv.string
