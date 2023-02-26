@@ -1,6 +1,7 @@
 # Badges showing number of downloads per version
 
 - ![badge latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
+- ![badge v0.8.35](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.8.35/total.svg)
 - ![badge v0.8.34](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.8.34/total.svg)
 - ![badge v0.8.33](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.8.33/total.svg)
 - ![badge v0.8.32](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.8.32/total.svg)
