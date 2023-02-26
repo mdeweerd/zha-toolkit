@@ -190,6 +190,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.CLUSTER): vol.Any(
                 vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
             ),
+            vol.Optional(P.DST_ENDPOINT): vol.Range(0, 255),
         },
         extra=vol.ALLOW_EXTRA,
     ),
