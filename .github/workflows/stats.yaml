@@ -16,9 +16,15 @@ jobs:
           ref: ${{ steps.extract_branch.outputs.branch }}
           fetch-depth: 0
       - run: ${{ github.workspace }}/.github/scripts/gen_stats.sh
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit updated resources
+        uses: test-room-7/action-update-file@v1
         with:
-          commit_message: '[Bot] stats - Update STATS.md'
+          file-path: STATS.md
+          commit-msg: '[Bot] stats - Update STATS.md'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: stefanzweifel/git-auto-commit-action@v4
+      #   with:
+          # commit_message: '[Bot] stats - Update STATS.md'
           # commit_user_name: stats
           # commit_user_email: stats@nill
           # commit_author: STATS BOT <stats>
