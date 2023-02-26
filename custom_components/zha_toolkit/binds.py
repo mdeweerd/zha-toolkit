@@ -228,6 +228,7 @@ async def bind_ieee(
     src_in_clusters = BINDABLE_IN_CLUSTERS
 
     u_epid = params[p.EP_ID]
+    u_dst_epid = params[p.DST_EP_ID]
     u_cluster_id = params[p.CLUSTER_ID]
     if u_cluster_id is not None:
         src_out_clusters = [u_cluster_id]
@@ -268,7 +269,8 @@ async def bind_ieee(
         for ep_id, ep in dst_dev.endpoints.items():
             if ep_id == 0:
                 continue
-            if isCoordinatorTarget or (src_out_cluster in ep.in_clusters):
+            if (isCoordinatorTarget or (src_out_cluster in ep.in_clusters)) and
+               (u_dst_epid is None or u_dst_epid == ep_id):
                 dst_epid = ep_id
                 break
         if not dst_epid:

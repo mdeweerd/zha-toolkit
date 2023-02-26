@@ -97,6 +97,13 @@ execute:
           min: 1
           max: 255
           mode: box
+    dst_endpoint:
+      description: destination endpoint
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
     cluster:
       description: target cluster
       selector:
@@ -719,6 +726,13 @@ bind_ieee:
           integration: zha
     endpoint:
       description: 'Target endpoint (when missing: all endpoints)'
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    dst_endpoint:
+      description: 'Destination endpoint (when missing: first that fits cluster-wise)'
       selector:
         number:
           min: 1
