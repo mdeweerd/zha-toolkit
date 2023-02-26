@@ -649,7 +649,7 @@ def extractParams(  # noqa: C901
     if P.ENDPOINT in rawParams:
         params[p.EP_ID] = str2int(rawParams[P.ENDPOINT])
 
-    # Destination endpoint to send command to
+    # Destination endpoint (e.g., target of data/cmds in bind_ieee)
     if P.DST_ENDPOINT in rawParams:
         params[p.DST_EP_ID] = str2int(rawParams[P.DST_ENDPOINT])
 
