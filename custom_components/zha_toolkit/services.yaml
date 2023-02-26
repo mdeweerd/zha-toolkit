@@ -732,7 +732,7 @@ bind_ieee:
           max: 255
           mode: box
     dst_endpoint:
-      description: 'Destination endpoint (when missing: first that fits cluster-wise )'
+      description: 'Destination endpoint (when missing: first EP with matching cluster)'
       selector:
         number:
           min: 1
