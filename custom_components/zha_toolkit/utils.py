@@ -186,28 +186,55 @@ def get_radio(app):
 
 
 def get_radio_version(app):
+    # pylint: disable=R0911
     if hasattr(app, "_znp"):
         import zigpy_znp
 
-        return zigpy_znp.__version__
+        if hasattr(zigpy_znp, "__version__"):
+            return zigpy_znp.__version__
+
+        import pkg_resources
+
+        return pkg_resources.get_distribution("zigpy_znp").version
     if hasattr(app, "_ezsp"):
         import bellows
 
-        return bellows.__version__
+        if hasattr(bellows, "__version__"):
+            return bellows.__version__
+
+        import pkg_resources
+
+        return pkg_resources.get_distribution("bellows").version
     if hasattr(app, "_api"):
         rt = get_radiotype(app)
         if rt == RadioType.DECONZ:
             import zigpy_deconz
 
-            return zigpy_deconz.__version__
+            if hasattr(zigpy_deconz, "__version__"):
+                return zigpy_deconz.__version__
+
+            import pkg_resources
+
+            return pkg_resources.get_distribution("zigpy_deconz").version
         if rt == RadioType.ZIGATE:
             import zigpy_zigate
 
-            return zigpy_zigate.__version__
+            if hasattr(zigpy_zigate, "__version__"):
+                return zigpy_zigate.__version__
+
+            import pkg_resources
+
+            return pkg_resources.get_distribution("zigpy_zigate").version
         if rt == RadioType.XBEE:
             import zigpy_xbee
 
-            return zigpy_xbee.__version__
+            if hasattr(zigpy_xbee, "__version__"):
+                return zigpy_xbee.__version__
+
+            import pkg_resources
+
+            return pkg_resources.get_distribution("zigpy_xbee").version
+
         # if rt == RadioType.ZIGPY_CC:
         #     import zigpy_cc
         #     return zigpy_cc.__version__
