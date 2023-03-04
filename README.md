@@ -4,7 +4,7 @@
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![Open ZHA-Toolit inside your Home Assistant Community Store (HACS).](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
+[![Open ZHA-Toolkit inside your Home Assistant Community Store (HACS).](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
 
 [ZHA Toolkit](https://github.com/mdeweerd/zha-toolkit) (Zigbee Home
 Assistant Toolkit) helps go beyond some limitations when using the
