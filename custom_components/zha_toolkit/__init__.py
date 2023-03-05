@@ -187,7 +187,7 @@ SERVICE_SCHEMAS = {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
-            vol.Required(ATTR_COMMAND_DATA): cv.string,
+            vol.Optional(ATTR_COMMAND_DATA): cv.string,
             vol.Optional(P.CLUSTER): vol.Any(
                 vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
             ),

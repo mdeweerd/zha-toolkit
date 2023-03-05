@@ -211,8 +211,8 @@ async def unbind_group(
 async def bind_ieee(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    if ieee is None or data is None:
-        raise ValueError("'ieee' and 'data' required")
+    if ieee is None:
+        raise ValueError("'ieee' required")
 
     src_dev = app.get_device(ieee=ieee)
     if data in [0, False, "0", None]:
