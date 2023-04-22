@@ -140,8 +140,11 @@ to add it.
 
 ![image](https://user-images.githubusercontent.com/1504752/156879928-e81560e1-1c10-4daf-8c17-c1f0bba0828f.png)
 
-If you are not using HACS, you need add the `custom_components/zha_toolkit`
-to your `custom_components` directory.
+If you are not using HACS, you need add the files in
+`custom_components/zha_toolkit`. See
+[installNoHacsFromZip.sh](scripts/installNoHacsFromZip.sh) and
+[installNoHacsWithGit.sh](scripts/installNoHacsWithGit.sh) for possible
+procedures.
 
 In all cases (HACS or manual), the ZHA Toolkit integration is only active
 on your Home Assistance instance after adding next line to
