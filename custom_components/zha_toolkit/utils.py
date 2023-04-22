@@ -12,6 +12,8 @@ import packaging
 import packaging.version
 from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.util.json import save_json
+from pkg_resources import parse_version
+from zigpy import __version__ as zigpy_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.util import retryable
@@ -505,11 +507,15 @@ def get_attr_id(cluster, attribute):
 def get_attr_type(cluster, attr_id):
     """Get type for attribute in cluster, or None if not found"""
     try:
-        return f.DATA_TYPES.pytype_to_datatype_id(
-            cluster.attributes.get(attr_id, (None, f.Unknown))[1]
-        )
+        attr_def = cluster.attributes.get(attr_id, (None, f.Unknown))
+        if is_zigpy_ge("0.50.0") and isinstance(attr_def, f.ZCLAttributeDef):
+            attr_type = attr_def.type
+        else:
+            attr_type = attr_def[1]
+
+        return f.DATA_TYPES.pytype_to_datatype_id(attr_type)
     except Exception:  # nosec
-        pass
+        LOGGER.debug("Could not find type for %s in %r", attr_id, cluster)
 
     return None
 
@@ -858,3 +864,9 @@ def get_local_dir() -> str:
     if not os.path.isdir(local_dir):
         os.mkdir(local_dir)
     return local_dir
+
+
+def is_zigpy_ge(version: str) -> bool:
+    """Test if zigpy library is newer than version"""
+    # Example version value: "0.45.0"
+    return parse_version(zigpy_version) >= parse_version(version)

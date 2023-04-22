@@ -7,6 +7,7 @@ import re
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.util import retryable
+from zigpy.zcl import foundation
 
 from . import utils as u
 from .params import INTERNAL_PARAMS as p
@@ -172,8 +173,6 @@ async def scan_cluster(cluster, is_server=True, manufacturer=None, tries=3):
 
 
 async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
-    from zigpy.zcl import foundation
-
     LOGGER.debug("Discovering attributes extended")
     result = {}
     to_read = []
@@ -210,12 +209,19 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
                 attr_id,
             )
             break
-        LOGGER.debug("Cluster %s attr_rec: %s", cluster.cluster_id, rsp)
+        LOGGER.debug("Cluster %s attr_recs: %s", cluster.cluster_id, rsp)
         for attr_rec in rsp:  # Get attribute information from response
             attr_id = attr_rec.attrid
-            attr_name = cluster.attributes.get(
+            attr_id = attr_rec.attrid
+            attr_def = cluster.attributes.get(
                 attr_rec.attrid, (str(attr_rec.attrid), None)
-            )[0]
+            )
+            if u.is_zigpy_ge("0.50.0") and isinstance(
+                attr_def, foundation.ZCLAttributeDef
+            ):
+                attr_name = attr_def.name
+            else:
+                attr_name = attr_def[0]
             attr_type = foundation.DATA_TYPES.get(attr_rec.datatype)
             access_acl = t.uint8_t(attr_rec.acl)
 
@@ -320,10 +326,16 @@ async def discover_commands_received(
             )
             break
         for cmd_id in rsp:
-            cmd_data = cluster.server_commands.get(
+            cmd_def = cluster.server_commands.get(
                 cmd_id, (str(cmd_id), "not_in_zcl", None)
             )
-            cmd_name, cmd_args, _ = cmd_data
+            if u.is_zigpy_ge("0.50.0") and isinstance(
+                cmd_def, foundation.ZCLCommandDef
+            ):
+                cmd_name = cmd_def.name
+                cmd_args = cmd_def.schema
+            else:
+                cmd_name, cmd_args, _ = cmd_def
 
             if not isinstance(cmd_args, str):
                 try:
@@ -377,10 +389,17 @@ async def discover_commands_generated(
             )
             break
         for cmd_id in rsp:
-            cmd_data = cluster.client_commands.get(
+            cmd_def = cluster.client_commands.get(
                 cmd_id, (str(cmd_id), "not_in_zcl", None)
             )
-            cmd_name, cmd_args, _ = cmd_data
+            if u.is_zigpy_ge("0.50.0") and isinstance(
+                cmd_def, foundation.ZCLCommandDef
+            ):
+                cmd_name = cmd_def.name
+                cmd_args = cmd_def.schema
+            else:
+                cmd_name, cmd_args, _ = cmd_def
+
             if not isinstance(cmd_args, str):
                 try:
                     cmd_args = [arg.__name__ for arg in cmd_args]

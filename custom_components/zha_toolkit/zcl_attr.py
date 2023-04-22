@@ -212,9 +212,16 @@ async def conf_report_read(
                         )
                     try:
                         # Try to add name of the attribute
-                        attr_name = cluster.attributes.get(
+                        attr_def = cluster.attributes.get(
                             attr_id, (str(attr_id), None)
-                        )[0]
+                        )
+                        if u.is_zigpy_ge("0.50.0") and isinstance(
+                            attr_def, f.ZCLAttributeDef
+                        ):
+                            attr_name = attr_def.name
+                        else:
+                            attr_name = attr_def[0]
+
                         if attr_name is not None and attr_name != "":
                             r_conf["attr"] = attr_name
                     except Exception:  # nosec
@@ -565,9 +572,15 @@ async def attr_write(  # noqa: C901
             attr_name = params[p.CSV_LABEL]
         else:
             try:
-                attr_name = cluster.attributes.get(
+                attr_def = cluster.attributes.get(
                     attr_id, (str(attr_id), None)
-                )[0]
+                )
+                if u.is_zigpy_ge("0.50.0") and isinstance(
+                    attr_def, f.ZCLAttributeDef
+                ):
+                    attr_name = attr_def.name
+                else:
+                    attr_name = attr_def[0]
             except Exception:
                 attr_name = attr_id
 
