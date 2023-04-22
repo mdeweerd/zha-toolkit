@@ -4,7 +4,7 @@
 ![Downloads latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
 ![Downloads](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/total)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![Open ZHA-Toolit inside your Home Assistant Community Store (HACS).](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
+[![Open ZHA-Toolkit inside your Home Assistant Community Store (HACS).](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mdeweerd&repository=zha-toolkit&category=integration)
 
 [ZHA Toolkit](https://github.com/mdeweerd/zha-toolkit) (Zigbee Home
 Assistant Toolkit) helps go beyond some limitations when using the
@@ -257,47 +257,57 @@ documentation updates.
 
 This crash course's wording may deviate from Zigbee's wording.
 
-Access to a Zigbee device's functionality is organised in Endpoints that
-contain "Clusters". An Endpoint will represent some major function of a
-device.
+To start, we can say that there is a network oriented view, and a device
+oriented view.
 
-For instance if the device has two switches, there should be an Endpoint
-for each switch function.\
-If the device has a temperature sensor and a
-humidity sensor, you may have an endpoint for each.\
-An Endpoint can also
-represent some "administrative" Zigbee functionality such as Over The Air
-(OTA) updates or Green Power functionality.
+The network has one coordinator (the key or device that your Home Assistant
+instance is controlling), and several other devices that are classified as
+Routers and End Devices.\
+Only permanently powered devices can be routers.
+Everything can be an End Device.
 
-Endpoints are organised in clusters that have attributes and commands
-mostly defined in the Zigbee Cluster Library specification. A Cluster
-represents some kind of "unatary" functionality of the device such as
-"On/Off", "Temperature Measurement", "Color Control". These are combined in
-an endpoint - for example a light bulb that you can turn On and Off and for
-which you can set the color and that also measures the room temperature.
-The manufacturer can extend these clusters with predefined attributes and
-commands with their own.\
-Attributes allow you to define how the device
-should function, or let's you read or set the state or data from a device.
-For instance you may write a temperature setpoint used by the device to
-regulate the heat in a room. And you may read an attribute to know how much
-power was already delivered by a power outlet.\
-Commands let you control a
-device. For instance there are commands to turn a switch on and off.
-Sometimes you'll write an attribute to "command" a device, sometimes you
-can use a command or write an attribute to to the same thing.\
-Attributes
-have a type - there are quite a few of them. For instance there are boolean
-attributes, unsigned and signed byte attributes, up to arrays, timestamps
-and more. (Most of the time zha-toolkit and zha will find the type without
-your help.)
+A router will (store and) forward messages. Devices either reply to
+requests, or they communicate (report) autnomously if they have a reporting
+configuration and configured bindings. A reporting configuration defines
+when the device should communicate attribute changes. Bindings define what
+other device or group these changes should be communicated to. Commands
+(such as those resulting from a button press) are also subject to bindings.
 
-Home Assistant uses a Zigbee USB key or Zigbee gateway which contains the
-Zigbee Coordinator. The Coordinator is the "central" node in the network.
+A device is internally organised into Endpoints. And endpoint could be
+viewed as a grouping of all the configurations and values for a
+function.\
+For instance if the device has two switches, there should be an
+Endpoint for each switch function.\
+If the device has a temperature sensor
+and a humidity sensor, you may have an endpoint for each.\
+An Endpoint can
+also represent some "administrative" Zigbee functionality such as Over The
+Air (OTA) updates or Green Power functionality.
+
+The Attributes associated with the Endpoints let's you control the
+configuration, or get values for the current state (on/off, temperature,
+etc).\
+Attributes are grouped into Clusters that represent a small reusable
+set of "features" such the On/Off state, the Color control, a temperature
+measurement, energy metering, etc.\\
+
+In practice the Clusters are "defined" on the Endpoints and the full
+address of an Attribute is IEEE address/EndpointID/ClusterID/AttributeID.
+The IEEE Address is a 64 bit number (8 bytes), the EndpointID a byte
+(1-254), the ClusterID and AttributeID each a word (two bytes) often
+expressed as a hex number such as 0x0400.
+
+Attributes are typed. For instance there are boolean attributes, unsigned
+and signed byte attributes, up to arrays, timestamps and more. (Most of the
+time zha-toolkit and zha will find the type without your help.)
+
+The Zigbee Cluster Library document (ZCL) defines "standard" attributes and
+their organisation in clusters, and what liberty the manufacturers have to
+add other attributes that are not defined in the ZCL.
 
 The actions of reading or writing attributes, and commands are often
 initiated from the Coordinator. Commands can also be sent by zigbee devices
-\- for example a switch telling a light bulb to turn on or off.
+--- for example a switch telling a light bulb to turn on or off.
 
 To avoid traffic on the network by "polling" devices through read requests
 to know their internal state, devices can be (pre-)configured to report

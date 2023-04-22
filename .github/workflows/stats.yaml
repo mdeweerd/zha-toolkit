@@ -12,9 +12,9 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ steps.extract_branch.outputs.branch }}
-          fetch-depth: 0
+        #with:
+        #  ref: ${{ steps.extract_branch.outputs.branch }}
+        #  fetch-depth: 0
       - run: ${{ github.workspace }}/.github/scripts/gen_stats.sh
       - name: Commit updated resources
         uses: test-room-7/action-update-file@v1
