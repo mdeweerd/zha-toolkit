@@ -12,5 +12,5 @@ cd config/
 # To update:
 (
     cd zha-toolkit
-    cd git pull
+    git pull
 )
