@@ -378,7 +378,8 @@ async def discover_commands_generated(
             await asyncio.sleep(0.2)
         except (ValueError, DeliveryError, asyncio.TimeoutError) as ex:
             LOGGER.error(
-                "Failed to discover generated 0x%04X commands starting %s. Error: %s",
+                "Failed to discover generated 0x%04X commands"
+                " starting %s. Error: %s",
                 cluster.cluster_id,
                 cmd_id,
                 ex,

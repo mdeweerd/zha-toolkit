@@ -24,8 +24,10 @@ from .params import USER_PARAMS as P
 LOGGER = logging.getLogger(__name__)
 
 if packaging.version.parse(HA_VERSION) < packaging.version.parse("2023.4"):
+    # pylint: disable=ungrouped-imports
     from homeassistant.util.json import save_json
 else:
+    # pylint: disable=ungrouped-imports
     from homeassistant.helpers.json import save_json
 
 if typing.TYPE_CHECKING:
