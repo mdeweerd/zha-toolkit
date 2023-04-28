@@ -11,7 +11,6 @@ from enum import Enum
 import packaging
 import packaging.version
 from homeassistant.const import __version__ as HA_VERSION
-from homeassistant.util.json import save_json
 from pkg_resources import parse_version
 from zigpy import __version__ as zigpy_version
 from zigpy import types as t
@@ -23,6 +22,13 @@ from .params import INTERNAL_PARAMS as p
 from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
+
+if packaging.version.parse(HA_VERSION) < packaging.version.parse("2023.4"):
+    # pylint: disable=ungrouped-imports
+    from homeassistant.util.json import save_json
+else:
+    # pylint: disable=ungrouped-imports
+    from homeassistant.helpers.json import save_json
 
 if typing.TYPE_CHECKING:
     VERSION_TIME: float = 0.0

@@ -113,7 +113,7 @@ ZHA Toolkit can also:
     - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
     - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
     - [`ota_notify` - Download/Trigger Device FW update](#ota_notify---downloadtrigger-device-fw-update)
-    - [`zha_devices`: Device List Information to Event or CSV](#zha_devices-device-list-information-to-event-or-csv)
+    - [`zha_devices`: Device Information to Event or CSV](#zha_devices-device-information-to-event-or-csv)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [`ha_set_state` - Update HA state](#ha_set_state---update-ha-state)
   - [User method](#user-method)
@@ -1687,11 +1687,17 @@ data:
   path: /config/zb_ota
 ```
 
-### `zha_devices`: Device List Information to Event or CSV
+### `zha_devices`: Device Information to Event or CSV
 
-Write information from currently known ZHA devices to a CSV file. You also
-get this data in the 'devices' field of the generated events which allows
-you to get information about endpoints and services as well.
+Get Device information as event data or in a CSV file.
+
+You can select the data fields in the CSV and the event data through the
+command_data parameter. If you do not provide a list, a default list is
+used for the CSV file, and all available data is provided in the devices
+field of the event data.
+
+You also get this data in the 'devices' field of the generated events which
+allows you to get information about endpoints and services as well.
 
 ```yaml
 service: zha_toolkit.zha_devices
