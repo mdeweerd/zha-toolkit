@@ -711,11 +711,24 @@ Before and after writing, the value is read from the attribute. If debug
 logging is active, this will be visible in the `home_assistant.log`. The
 last read this can be written to a state.
 
+Note that the format/typing of the value for `attr_val` depends on the
+attribute type. `uint*`, `int*` and `enum*` types can be specified as
+numbers, most other types must be specified as an array of bytes or a
+string. If you are not sure how to represent the value, you could do an
+`attr_read` first while observing the `event_done` event to check how the
+`attr_val` is returned upon read.
+
+In the yaml example detailing the available parameters to `attr_write` it
+is shown how to specify the value for an `octet_string` as an array/list.
+
 ```yaml
 service: zha_toolkit.attr_write
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
-  # The endpoint is optional - when missing tries to find endpoint matching the cluster
+  # The endpoint is optional,
+  # when missing, attr_write will find the endpoint
+  # by matching the cluster which works if there is
+  # only one endpoint with that cluster.
   endpoint: 11
   cluster: 0x1706
   attribute: 0x0000
