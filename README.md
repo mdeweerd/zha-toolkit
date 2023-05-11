@@ -258,100 +258,94 @@ documentation updates.
 
 # Zigbee crash course
 
-This crash course's wording may deviate from Zigbee's wording.
+Note: this crash course's wording may deviate from Zigbee's wording.
 
-To start, we can say that there is a network oriented view, and a device
-oriented view.
+Zigbee is a wireless communication protocol used for creating networks of
+devices. To understand Zigbee, we can look at it from two perspectives: the
+network-oriented view and the device-oriented view.
 
-The network has one coordinator (the key or device that your Home Assistant
-instance is controlling), and several other devices that are classified as
-Routers and End Devices.\
-Only permanently powered devices can be routers.
-Everything can be an End Device.
+From a network perspective, there is a coordinator, which is the main
+device controlling the network (often your Home Assistant instance), and
+there are other devices categorized as routers and end devices.\
+Routers
+are permanently powered devices that store and forward messages, while end
+devices can be any type of device. End devices can reply to requests and
+communicate autonomously if they have reporting configurations and bindings
+set up. Reporting configurations determine when a device should communicate
+attribute changes, and bindings specify which device or group should
+receive these changes.\
+Commands, such as those triggered by a button
+press, can also be bound to specific devices or groups.
 
-A router will (store and) forward messages. Devices either reply to
-requests, or they communicate (report) autnomously if they have a reporting
-configuration and configured bindings. A reporting configuration defines
-when the device should communicate attribute changes. Bindings define what
-other device or group these changes should be communicated to. Commands
-(such as those resulting from a button press) are also subject to bindings.
+From a device perspective, devices are organized into endpoints.\
+An
+endpoint represents a function or feature of the device. For example, a
+device with two switches would have an endpoint for each switch function,
+and a device with a temperature and humidity sensor may have an endpoint
+for each sensor.\
+Endpoints can also represent Zigbee-specific
+functionalities like Over The Air (OTA) updates or Green Power
+functionality.
 
-A device is internally organised into Endpoints. And endpoint could be
-viewed as a grouping of all the configurations and values for a
-function.\
-For instance if the device has two switches, there should be an
-Endpoint for each switch function.\
-If the device has a temperature sensor
-and a humidity sensor, you may have an endpoint for each.\
-An Endpoint can
-also represent some "administrative" Zigbee functionality such as Over The
-Air (OTA) updates or Green Power functionality.
+Each endpoint has attributes associated with it.\
+Attributes allow you to
+control the configuration of the device or retrieve values for its current
+state, such as on/off status or temperature readings.\
+Attributes are
+grouped into clusters, which are reusable sets of features.\
+Clusters
+represent things like on/off state, color control, temperature measurement,
+energy metering, and more.
 
-The Attributes associated with the Endpoints let's you control the
-configuration, or get values for the current state (on/off, temperature,
-etc).\
-Attributes are grouped into Clusters that represent a small reusable
-set of "features" such the On/Off state, the Color control, a temperature
-measurement, energy metering, etc.\\
+In practice, clusters are defined on endpoints, and each attribute has a
+unique address consisting of the IEEE address (a 64-bit number), the
+endpoint ID (a byte), the cluster ID (a two byte word), and the attribute
+ID (a two byte word as well).
 
-In practice the Clusters are "defined" on the Endpoints and the full
-address of an Attribute is IEEE address/EndpointID/ClusterID/AttributeID.
-The IEEE Address is a 64 bit number (8 bytes), the EndpointID a byte
-(1-254), the ClusterID and AttributeID each a word (two bytes) often
-expressed as a hex number such as 0x0400.
+Attributes have different types, such as boolean, unsigned and signed byte,
+arrays, timestamps, and more. Most of the time, the attribute type can be
+generally determined automatically by tools like zha-toolkit and ZHA.
 
-Attributes are typed. For instance there are boolean attributes, unsigned
-and signed byte attributes, up to arrays, timestamps and more. (Most of the
-time zha-toolkit and zha will find the type without your help.)
+The Zigbee Cluster Library (ZCL) document defines standard attributes and
+their organization in clusters. Manufacturers also have the freedom to add
+their own attributes that are not defined in the ZCL.
 
-The Zigbee Cluster Library document (ZCL) defines "standard" attributes and
-their organisation in clusters, and what liberty the manufacturers have to
-add other attributes that are not defined in the ZCL.
+Commands and attribute read/write operations are typically initiated from
+the coordinator. However, Zigbee devices can also send commands to other
+devices, like a switch instructing a light bulb to turn on or off.
 
-The actions of reading or writing attributes, and commands are often
-initiated from the Coordinator. Commands can also be sent by zigbee devices
---- for example a switch telling a light bulb to turn on or off.
+To avoid excessive network traffic caused by constantly polling devices for
+their internal state, devices can be configured to report their state
+changes to other devices in the network.\
+This reporting is accompanied by
+bindings, which specify the devices or groups that should receive the data.
 
-To avoid traffic on the network by "polling" devices through read requests
-to know their internal state, devices can be (pre-)configured to report
-their internal state to other devices (including the coordinator) in the
-network.
+Binding can also make an endpoint on a device respond to commands sent to a
+specific group.\
+For example, if you add a switch's endpoint and multiple
+light bulbs to a group, the switch can control all the bulbs in that group.
 
-In addition to a reporting configuration, the devices must also be "bound"
-to the devices or groups that they will report this data to. That is where
-"Binding" comes in play.
+When a new device is added to a Zigbee network through Home Assistant's ZHA
+integration, an initial configuration is sent to the device. This
+configuration sets up reporting and binding settings to ensure that the
+device notifies the coordinator about its state changes or any relevant
+data changes, such as energy consumption metrics or simply informing that a
+light has been switched on.
 
-Binding a device can imply telling that device that the information from
-one of its clusters must be reported to an endpoint on another device or to
-a specific group number. The latter (group) makes it "belong" to that group
-as a data or command provider.\
-Binding may also imply that you tell an
-endpoint on a device to react to commands that are sent to a certain group
-number. So if you've added a switch's endpoint to a group, and several
-light bulbs to that group as well, then the switch will command many bulbs.
+Zigbee routers play an important role in the network by relaying messages
+between devices, bridging longer distances, and temporarily storing
+messages for battery-powered devices that wake up periodically. Messages
+are typically stored for around 6 seconds.
 
-When Home Assistant's ZHA integration accepts a new device in the network,
-it will send an initial configuration to this devices. This will mostly
-setup reporting configurations and bindings to ensure that the devices
-notifies the Coordinator about it's state changes or useful "data" changes
-such as instantaneous consumption metrics or simply to inform that the
-light was switched on.
+Battery-powered devices are considered "sleepy" devices because they
+conserve energy by sleeping most of the time. However, this can lead to
+data requests and commands being lost if the device is asleep when they are
+sent. To ensure successful communication, requests may need to be actively
+repeated until the sleepy device wakes up and responds.
 
-Zigbee routers are a hidden force in the Zigbee network as they relay
-messages from one device to another as a way to bridge longer distances,
-and to temporarily store messages for battery powered devices that only
-wake up from time to time. Messages are generally stored for about 6
-seconds.
-
-A battery powered device is a sleepy device, and it is likely for some of
-those that data requests and commands are lost before the devices "checks
-in" on pending requests. To ensure success, these requests must be actively
-repeated until the sleepy device replies - this is where the `tries`
-parameter helps.
-
-You should also know that in some cases you need to provide the
-manufacturer id to access a manufacturer specific attribute or execute a
-manufacturer specific command.
+In some cases, it is necessary to provide the manufacturer ID to access a
+manufacturer-specific attribute or execute a manufacturer-specific command
+to use features or functionalities specific to the device manufacturer,
 
 ## Zigbee, ZHA, zha-device-handlers, zigpy, ZHA-toolkit
 
