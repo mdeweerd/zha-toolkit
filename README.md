@@ -1709,6 +1709,8 @@ allows you to get information about endpoints and services as well.
 ```yaml
 service: zha_toolkit.zha_devices
 data:
+  # Optional: Device to report on, by default all devices are in the report
+  ieee: sensor.my_zha_sensor
   # Optional list of fields to write to the CSV, all non-list fields by default.
   command_data: [name, ieee, rssi, lqi]
   # Optional, field the list is sorted by (example: sort by signal strength)

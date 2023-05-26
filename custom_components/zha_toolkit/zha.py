@@ -46,6 +46,11 @@ async def zha_devices(
         #  'endpoints'
 
     devices = [device.zha_device_info for device in listener.devices.values()]
+
+    if ieee is not None:
+        # Select only the device with the given address
+        devices = [d for d in devices if d["ieee"] == ieee]
+
     # Set default value for 'devices' in event_data,
     # may be slimmed down.  Ensures that devices is set in case
     # an exception occurs.

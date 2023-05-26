@@ -2142,8 +2142,17 @@ znp_backup:
       selector:
         boolean:
 zha_devices:
-  description: Export IEEE device information to CSV file or Event
+  description: Export device information to CSV file or Event
   fields:
+    ieee:
+      description: >-
+        Optional Entity name,\ndevice name, or IEEE address of the device to
+        provide details for.  By dfault: all devices
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: false
+      selector:
+        entity:
+          integration: zha
     command_data:
       description: List of columns for csv file
       example: [ieee, lqi, name]
