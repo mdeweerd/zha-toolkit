@@ -219,9 +219,10 @@ async def bind_ieee(
         # when command_data is set to 0 or false, bind to coordinator
         data = app.ieee
 
-    isCoordinatorTarget = str(data) == str(app.ieee)
-
     dst_dev = await u.get_device(app, listener, data)
+
+    # Coordinator has nwk address 0
+    isCoordinatorTarget = dst_dev.nwk == 0x0000
 
     zdo = src_dev.zdo
     src_out_clusters = BINDABLE_OUT_CLUSTERS

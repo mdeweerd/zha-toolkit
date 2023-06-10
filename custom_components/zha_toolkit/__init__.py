@@ -343,7 +343,11 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.ZHA_DEVICES: vol.Schema(
-        {},
+        {
+            vol.Optional(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.HANDLE_JOIN: vol.Schema(

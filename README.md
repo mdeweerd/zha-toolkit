@@ -303,8 +303,8 @@ endpoint ID (a byte), the cluster ID (a two byte word), and the attribute
 ID (a two byte word as well).
 
 Attributes have different types, such as boolean, unsigned and signed byte,
-arrays, timestamps, and more. Most of the time, the attribute type can be
-generally determined automatically by tools like zha-toolkit and ZHA.
+arrays, timestamps, and more. In most cases, the attribute type can be
+determined automatically by tools like zha-toolkit and ZHA.
 
 The Zigbee Cluster Library (ZCL) document defines standard attributes and
 their organization in clusters. Manufacturers also have the freedom to add
@@ -1709,6 +1709,8 @@ allows you to get information about endpoints and services as well.
 ```yaml
 service: zha_toolkit.zha_devices
 data:
+  # Optional: Device to report on, by default all devices are in the report
+  ieee: sensor.my_zha_sensor
   # Optional list of fields to write to the CSV, all non-list fields by default.
   command_data: [name, ieee, rssi, lqi]
   # Optional, field the list is sorted by (example: sort by signal strength)
