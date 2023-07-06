@@ -6,7 +6,6 @@ import re
 
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
-from zigpy.util import retryable
 from zigpy.zcl import foundation
 
 from . import utils as u
@@ -15,7 +14,7 @@ from .params import INTERNAL_PARAMS as p
 LOGGER = logging.getLogger(__name__)
 
 
-@retryable(
+@u.retryable(
     (
         DeliveryError,
         ControllerException,
@@ -30,7 +29,7 @@ async def read_attr(cluster, attrs, manufacturer=None):
     )
 
 
-@retryable(
+@u.retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
 )
 async def wrapper(cmd, *args, **kwargs):
