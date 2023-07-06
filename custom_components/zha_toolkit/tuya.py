@@ -18,7 +18,7 @@ async def tuya_magic(
     # Magic spell - part 1
     attr_to_read = [4, 0, 1, 5, 7, 0xFFFE]
     res = await u.cluster_read_attributes(
-        basic_cluster, attr_to_read, tries=params[p.TRIES]
+        basic_cluster, attr_to_read#, tries=params[p.TRIES]
     )
 
     event_data["result"] = res
