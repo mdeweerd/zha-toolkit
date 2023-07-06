@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import functools
 import json
 import logging
 import os
 import re
 import typing
 from enum import Enum
+from typing import Any
 
 import packaging
 import packaging.version
@@ -15,7 +17,6 @@ from pkg_resources import parse_version
 from zigpy import __version__ as zigpy_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
-from zigpy.util import retryable
 from zigpy.zcl import foundation as f
 
 from .params import INTERNAL_PARAMS as p
@@ -832,6 +833,62 @@ def extractParams(  # noqa: C901
         params[p.CSV_LABEL] = rawParams[P.CSVLABEL]
 
     return params
+
+
+#
+# Copied retry and retryable from zigpy < 0.56.0
+#   where "tries" and "delay" were removed
+#  from the wrapper function and hence propagated to the decorated function.
+#
+async def retry(
+    func: typing.Callable[[], typing.Awaitable[typing.Any]],
+    retry_exceptions: typing.Iterable[Any],  # typing.Iterable[BaseException],
+    tries: int = 3,
+    delay: int | float = 0.1,
+) -> typing.Any:
+    """Retry a function in case of exception
+
+    Only exceptions in `retry_exceptions` will be retried.
+    """
+    while True:
+        LOGGER.debug("Tries remaining: %s", tries)
+        try:
+            return await func()
+        except retry_exceptions:  # type:ignore[misc]
+            if tries <= 1:
+                raise
+            tries -= 1
+            await asyncio.sleep(delay)
+
+
+def retryable(
+    retry_exceptions: typing.Iterable[Any],  # typing.Iterable[BaseException]
+    tries: int = 1,
+    delay: float = 0.1,
+) -> typing.Callable:
+    """Return a decorator which makes a function able to be retried
+
+    This adds "tries" and "delay" keyword arguments to the function. Only
+    exceptions in `retry_exceptions` will be retried.
+    """
+
+    def decorator(func: typing.Callable) -> typing.Callable:
+        nonlocal tries, delay
+
+        @functools.wraps(func)
+        def wrapper(*args, tries=tries, delay=delay, **kwargs):
+            if tries <= 1:
+                return func(*args, **kwargs)
+            return retry(
+                functools.partial(func, *args, **kwargs),
+                retry_exceptions,
+                tries=tries,
+                delay=delay,
+            )
+
+        return wrapper
+
+    return decorator
 
 
 # zigpy wrappers

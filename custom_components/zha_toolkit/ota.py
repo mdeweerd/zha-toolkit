@@ -8,9 +8,9 @@ import aiohttp
 from pkg_resources import parse_version
 from zigpy import __version__ as zigpy_version
 from zigpy.exceptions import ControllerException, DeliveryError
-from zigpy.util import retryable
 
 from . import DEFAULT_OTAU
+from . import utils as u
 from .params import INTERNAL_PARAMS as p
 
 LOGGER = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ KOENKK_LIST_URL = (
 SONOFF_LIST_URL = "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
 
 
-@retryable(
+@u.retryable(
     (
         DeliveryError,
         ControllerException,
@@ -30,7 +30,7 @@ SONOFF_LIST_URL = "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
     ),
     tries=3,
 )
-async def wrapper(cmd, *args, **kwargs):
+async def retry_wrapper(cmd, *args, **kwargs):
     return await cmd(*args, **kwargs)
 
 
@@ -232,7 +232,7 @@ async def ota_notify(
         ret = await cluster.image_notify(0, 100)
     else:
         cmd_args = [0, 100]
-        ret = await wrapper(
+        ret = await retry_wrapper(
             cluster.client_command,
             0,  # cmd_id
             *cmd_args,

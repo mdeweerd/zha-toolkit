@@ -8,23 +8,9 @@ from random import uniform
 
 import zigpy.zdo.types as zdo_t
 from homeassistant.util.json import save_json
-from zigpy.exceptions import ControllerException, DeliveryError
-from zigpy.util import retryable
+from zigpy.exceptions import DeliveryError
 
 LOGGER = logging.getLogger(__name__)
-
-
-@retryable(
-    (
-        DeliveryError,
-        ControllerException,
-        asyncio.CancelledError,
-        asyncio.TimeoutError,
-    ),
-    tries=5,
-)
-def wrapper(cmd, *args, **kwargs):
-    return cmd(*args, **kwargs)
 
 
 async def routes_and_neighbours(
