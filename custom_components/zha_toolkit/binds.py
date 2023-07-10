@@ -456,7 +456,8 @@ async def binds_remove_all(
                 if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
                     len(clusters) == 0 or cluster_id in clusters
                 ):
-                    res = await zdo.request(
+                    res = await u.retry_wrapper(
+                        zdo.request,
                         ZDOCmd.Unbind_req,
                         src_ieee,
                         binding["src_ep"],
@@ -482,7 +483,8 @@ async def binds_remove_all(
                 if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
                     len(clusters) == 0 or cluster_id in clusters
                 ):
-                    res = await zdo.request(
+                    res = await u.retry_wrapper(
+                        zdo.request,
                         ZDOCmd.Unbind_req,
                         src_ieee,
                         binding["src_ep"],
@@ -535,8 +537,8 @@ async def binds_get(
 
     while not done:
         # Todo: continue when reply is incomplete (update start index)
-        reply = await zdo.request(
-            ZDOCmd.Mgmt_Bind_req, idx, tries=params[p.TRIES]
+        reply = await u.retry_wrapper(
+            zdo.request, ZDOCmd.Mgmt_Bind_req, idx, tries=params[p.TRIES]
         )
         event_data["replies"].append(reply)
 

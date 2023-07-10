@@ -27,8 +27,10 @@ async def get_groups(
             continue
         try:
             ep_info: dict[str, Any] = {}
-            res = await ep.groups.read_attributes(
-                ["name_support"]  # , tries=params[p.TRIES]
+            res = await u.retry_wrapper(
+                ep.groups.read_attributes,
+                ["name_support"],
+                tries=params[p.TRIES],
             )
             event_data["result"].append(res)
 
@@ -41,9 +43,9 @@ async def get_groups(
                 name_support,
             )
 
-            all_groups = await ep.groups.get_membership(
-                []
-            )  # , tries=params[p.TRIES]
+            all_groups = await u.retry_wrapper(
+                ep.groups.get_membership, [], tries=params[p.TRIES]
+            )
             LOGGER.debug(
                 "Groups on 0x%04X EP %u : %s", src_dev.nwk, ep_id, all_groups
             )
@@ -74,8 +76,11 @@ async def add_group(
             # Skip ZDO or endpoints that are not selected
             continue
         try:
-            res = await ep.groups.add(
-                group_id, f"group {group_id}"  # , tries=params[p.TRIES]
+            res = await u.retry_wrapper(
+                ep.groups.add,
+                group_id,
+                f"group {group_id}",
+                tries=params[p.TRIES],
             )
             result.append(res)
             LOGGER.debug(
