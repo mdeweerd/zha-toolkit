@@ -8,7 +8,6 @@ import os
 import re
 import typing
 from enum import Enum
-from typing import Any
 
 import packaging
 import packaging.version
@@ -842,7 +841,8 @@ def extractParams(  # noqa: C901
 #
 async def retry(
     func: typing.Callable[[], typing.Awaitable[typing.Any]],
-    retry_exceptions: typing.Iterable[Any],  # typing.Iterable[BaseException],
+    retry_exceptions: typing.Iterable[typing.Any]
+    | None = None,  # typing.Iterable[BaseException],
     tries: int = 3,
     delay: int | float = 0.1,
 ) -> typing.Any:
@@ -850,10 +850,22 @@ async def retry(
 
     Only exceptions in `retry_exceptions` will be retried.
     """
+    if retry_exceptions is None:
+        # Default list
+        retry_exceptions = (
+            (
+                DeliveryError,
+                ControllerException,
+                asyncio.CancelledError,
+                asyncio.TimeoutError,
+            ),
+        )
+
     while True:
         LOGGER.debug("Tries remaining: %s", tries)
         try:
             return await func()
+            # pylint: disable-next=catching-non-exception
         except retry_exceptions:  # type:ignore[misc]
             if tries <= 1:
                 raise
@@ -861,8 +873,27 @@ async def retry(
             await asyncio.sleep(delay)
 
 
+async def retry_wrapper(
+    func: typing.Callable,
+    *args,
+    retry_exceptions: typing.Iterable[typing.Any]
+    | None = None,  # typing.Iterable[BaseException],
+    tries: int = 3,
+    delay: int | float = 0.1,
+    **kwargs,
+) -> typing.Any:
+    """Inline callable wrapper for retry"""
+    return await retry(
+        functools.partial(func, *args, **kwargs),
+        retry_exceptions,
+        tries=tries,
+        delay=delay,
+    )
+
+
 def retryable(
-    retry_exceptions: typing.Iterable[Any],  # typing.Iterable[BaseException]
+    retry_exceptions: None
+    | typing.Iterable[typing.Any] = None,  # typing.Iterable[BaseException]
     tries: int = 1,
     delay: float = 0.1,
 ) -> typing.Callable:

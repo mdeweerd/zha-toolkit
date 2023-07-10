@@ -29,13 +29,6 @@ async def read_attr(cluster, attrs, manufacturer=None):
     )
 
 
-@u.retryable(
-    (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=3
-)
-async def wrapper(cmd, *args, **kwargs):
-    return await cmd(*args, **kwargs)
-
-
 async def scan_results(device, endpoints=None, manufacturer=None, tries=3):
     """Construct scan results from information available in device"""
     result: dict[str, str | list | None] = {
@@ -180,7 +173,7 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
 
     while not done:  # Repeat until all attributes are discovered or timeout
         try:
-            done, rsp = await wrapper(
+            done, rsp = await u.retry_wrapper(
                 cluster.discover_attributes_extended,
                 attr_id,  # Start attribute identifier
                 16,  # Number of attributes to discover in this request
@@ -303,7 +296,7 @@ async def discover_commands_received(
 
     while not done:
         try:
-            done, rsp = await wrapper(
+            done, rsp = await u.retry_wrapper(
                 cluster.discover_commands_received,
                 cmd_id,  # Start index of commands to discover
                 16,  # Number of commands to discover
@@ -367,7 +360,7 @@ async def discover_commands_generated(
 
     while not done:
         try:
-            done, rsp = await wrapper(
+            done, rsp = await u.retry_wrapper(
                 cluster.discover_commands_generated,
                 cmd_id,  # Start index of commands to discover
                 16,  # Number of commands to discover this run

@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import os
@@ -7,7 +6,6 @@ from glob import glob
 import aiohttp
 from pkg_resources import parse_version
 from zigpy import __version__ as zigpy_version
-from zigpy.exceptions import ControllerException, DeliveryError
 
 from . import DEFAULT_OTAU
 from . import utils as u
@@ -19,19 +17,6 @@ KOENKK_LIST_URL = (
 )
 
 SONOFF_LIST_URL = "https://zigbee-ota.sonoff.tech/releases/upgrade.json"
-
-
-@u.retryable(
-    (
-        DeliveryError,
-        ControllerException,
-        asyncio.CancelledError,
-        asyncio.TimeoutError,
-    ),
-    tries=3,
-)
-async def retry_wrapper(cmd, *args, **kwargs):
-    return await cmd(*args, **kwargs)
 
 
 async def download_koenkk_ota(listener, ota_dir):
@@ -232,7 +217,7 @@ async def ota_notify(
         ret = await cluster.image_notify(0, 100)
     else:
         cmd_args = [0, 100]
-        ret = await retry_wrapper(
+        ret = await u.retry_wrapper(
             cluster.client_command,
             0,  # cmd_id
             *cmd_args,
