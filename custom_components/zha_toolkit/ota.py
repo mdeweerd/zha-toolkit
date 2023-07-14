@@ -4,8 +4,6 @@ import os
 from glob import glob
 
 import aiohttp
-from pkg_resources import parse_version
-from zigpy import __version__ as zigpy_version
 
 from . import DEFAULT_OTAU
 from . import utils as u
@@ -213,7 +211,7 @@ async def ota_notify(
     LOGGER.debug("Configured reporting: %s", ret)
 
     ret = None
-    if parse_version(zigpy_version) < parse_version("0.45.0"):
+    if not u.is_zigpy_ge("0.45.0"):
         ret = await cluster.image_notify(0, 100)
     else:
         cmd_args = [0, 100]
