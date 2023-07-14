@@ -211,7 +211,7 @@ async def ota_notify(
     basic = device.endpoints[cluster.endpoint.endpoint_id].basic
     await u.retry_wrapper(basic.bind, tries=tries)
     ret = await u.retry_wrapper(
-        basic.configure_reporting, "sw_build_id", 0, 1800, 1
+        basic.configure_reporting, "sw_build_id", 0, 1800, 1, tries=tries
     )
     LOGGER.debug("Configured reporting: %s", ret)
 
@@ -225,7 +225,7 @@ async def ota_notify(
             0,  # cmd_id
             *cmd_args,
             # expect_reply = True,
-            tries=params[p.TRIES],
+            tries=tries,
         )
 
     LOGGER.debug("Sent image notify command to 0x%04x: %s", device.nwk, ret)
