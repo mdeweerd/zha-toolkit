@@ -35,6 +35,16 @@ if typing.TYPE_CHECKING:
     MANIFEST: dict[str, str | list[str]] = {}
 
 
+def getHaVersion() -> str:
+    """Get HA Version"""
+    return HA_VERSION
+
+
+def getZigpyVersion() -> str:
+    """Get zigpy Version"""
+    return ZIGPY_VERSION
+
+
 def getVersion() -> str:
     # pylint: disable=global-variable-undefined,used-before-assignment
     # pylint: disable=global-statement
@@ -200,18 +210,14 @@ def get_radio_version(app):
         if hasattr(zigpy_znp, "__version__"):
             return zigpy_znp.__version__
 
-        import pkg_resources
-
-        return pkg_resources.get_distribution("zigpy_znp").version
+        return get_distribution("zigpy_znp").version
     if hasattr(app, "_ezsp"):
         import bellows
 
         if hasattr(bellows, "__version__"):
             return bellows.__version__
 
-        import pkg_resources
-
-        return pkg_resources.get_distribution("bellows").version
+        return get_distribution("bellows").version
     if hasattr(app, "_api"):
         rt = get_radiotype(app)
         if rt == RadioType.DECONZ:
@@ -220,27 +226,21 @@ def get_radio_version(app):
             if hasattr(zigpy_deconz, "__version__"):
                 return zigpy_deconz.__version__
 
-            import pkg_resources
-
-            return pkg_resources.get_distribution("zigpy_deconz").version
+            return get_distribution("zigpy_deconz").version
         if rt == RadioType.ZIGATE:
             import zigpy_zigate
 
             if hasattr(zigpy_zigate, "__version__"):
                 return zigpy_zigate.__version__
 
-            import pkg_resources
-
-            return pkg_resources.get_distribution("zigpy_zigate").version
+            return get_distribution("zigpy_zigate").version
         if rt == RadioType.XBEE:
             import zigpy_xbee
 
             if hasattr(zigpy_xbee, "__version__"):
                 return zigpy_xbee.__version__
 
-            import pkg_resources
-
-            return pkg_resources.get_distribution("zigpy_xbee").version
+            return get_distribution("zigpy_xbee").version
 
         # if rt == RadioType.ZIGPY_CC:
         #     import zigpy_cc
@@ -960,4 +960,4 @@ def get_local_dir() -> str:
 def is_zigpy_ge(version: str) -> bool:
     """Test if zigpy library is newer than version"""
     # Example version value: "0.45.0"
-    return parse_version(ZIGPY_VERSION) >= parse_version(version)
+    return parse_version(getZigpyVersion()) >= parse_version(version)

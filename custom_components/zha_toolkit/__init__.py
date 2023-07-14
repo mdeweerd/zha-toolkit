@@ -3,7 +3,6 @@ import logging
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-import zigpy
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 
@@ -701,7 +700,7 @@ def register_services(hass):  # noqa: C901
         # Preload event_data
         event_data = {
             "zha_toolkit_version": u.getVersion(),
-            "zigpy_version": zigpy.__version__,
+            "zigpy_version": u.getZigpyVersion(),
             "zigpy_rf_version": u.get_radio_version(app),
             "ieee_org": ieee_str,
             "ieee": str(ieee),

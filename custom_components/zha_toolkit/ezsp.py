@@ -336,10 +336,6 @@ async def ezsp_backup(
 
     from bellows.cli import backup as bellows_backup
 
-    # from pkg_resources import parse_version
-    # bellows_version = bellows.__version__
-    # use_click = (parse_version(bellows_version)>parse_version("0.3.1"))
-
     try:
         # Network is already initialised, fake result for backup function
         org_network_init = app._ezsp.networkInit
