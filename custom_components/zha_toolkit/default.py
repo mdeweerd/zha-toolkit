@@ -1,12 +1,19 @@
 import importlib
 import logging
+import sys
 
 LOGGER = logging.getLogger(__name__)
 
 
 async def default(app, listener, ieee, cmd, data, service, params, event_data):
-    """Default handler that delegates CORE_ACTION to CORE.PY/CORE_ACTION"""
-    import sys
+    """Default handler that delegates CORE_ACTION to CORE.py/ACTION"""
+
+    # This defaults handler enables adding new handler methods
+    # by adding a file such as "CORE.py" containing the
+    # ACTION.  The corresponding service name is "CORE_ACTION".
+    #
+    # This avoids having to add the mapping in __init__.py
+    # and also allows the user to freely add new services.
 
     # get our package name to know where to load from
     package_name = vars(sys.modules[__name__])["__package__"]

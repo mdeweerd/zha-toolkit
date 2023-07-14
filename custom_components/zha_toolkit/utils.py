@@ -9,8 +9,6 @@ import re
 import typing
 from enum import Enum
 
-import packaging
-import packaging.version
 from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
@@ -21,10 +19,10 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
-HA_VERSION = get_distribution('homeassistant').version
-ZIGPY_VERSION = get_distribution('zigpy').version
+HA_VERSION = get_distribution("homeassistant").version
+ZIGPY_VERSION = get_distribution("zigpy").version
 
-if packaging.version.parse(HA_VERSION) < packaging.version.parse("2023.4"):
+if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
     from homeassistant.util.json import save_json
 else:
@@ -277,8 +275,7 @@ async def get_ieee(app, listener, ref):
         entity_registry = (
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.entity_registry.async_get_registry()
-            if packaging.version.parse(HA_VERSION)
-            < packaging.version.parse("2022.6")
+            if parse_version(HA_VERSION) < parse_version("2022.6")
             else listener._hass.helpers.entity_registry.async_get(
                 listener._hass
             )
@@ -295,8 +292,7 @@ async def get_ieee(app, listener, ref):
         device_registry = (
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.device_registry.async_get_registry()
-            if packaging.version.parse(HA_VERSION)
-            < packaging.version.parse("2022.6")
+            if parse_version(HA_VERSION) < parse_version("2022.6")
             else listener._hass.helpers.device_registry.async_get(
                 listener._hass
             )
