@@ -182,6 +182,9 @@ async def ota_notify(
         await download_koenkk_ota(listener, ota_dir)
         await download_sonoff_ota(listener, ota_dir)
 
+    # Get tries
+    tries = params[p.TRIES]
+
     # Update internal image database
     await ota_update_images(
         app, listener, ieee, cmd, data, service, params, event_data
@@ -206,8 +209,10 @@ async def ota_notify(
         LOGGER.debug("No OTA cluster found")
         return
     basic = device.endpoints[cluster.endpoint.endpoint_id].basic
-    await basic.bind()
-    ret = await basic.configure_reporting("sw_build_id", 0, 1800, 1)
+    await u.retry_wrapper(basic.bind, tries=tries)
+    ret = await u.retry_wrapper(
+        basic.configure_reporting, "sw_build_id", 0, 1800, 1
+    )
     LOGGER.debug("Configured reporting: %s", ret)
 
     ret = None

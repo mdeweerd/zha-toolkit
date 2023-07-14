@@ -25,7 +25,16 @@ async def leave(app, listener, ieee, cmd, data, service, params, event_data):
 
     parent = await u.get_device(app, listener, data)
 
-    res = await parent.zdo.request(zdo_t.ZDOCmd.Mgmt_Leave_req, ieee, 0x02)
+    # Get tries
+    tries = params[p.TRIES]
+
+    res = await u.retry_wrapper(
+        parent.zdo.request,
+        zdo_t.ZDOCmd.Mgmt_Leave_req,
+        ieee,
+        0x02,
+        tries=tries,
+    )
     event_data["result_leave"] = res
     LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", parent.nwk, res)
 
@@ -42,13 +51,18 @@ async def ieee_ping(
     # The device is the parent device
     dev = app.get_device(ieee)
 
+    # Get tries
+    tries = params[p.TRIES]
+
     LOGGER.debug("running 'ieee_ping' command to 0x%s", dev.nwk)
 
-    res = await dev.zdo.request(
+    res = await u.retry_wrapper(
+        dev.zdo.request,
         zdo_t.ZDOCmd.IEEE_addr_req,
         dev.nwk,  # nwk_addr_of_interest
         0x00,  # request_type (0=single device response)
         0x00,  # Start index
+        tries=tries,
     )
     event_data["result_ping"] = res
     LOGGER.debug("0x%04x: IEEE_addr_req: %s", dev.nwk, res)
@@ -68,6 +82,7 @@ async def zdo_join_with_code(
     #    + b"\xD7\x76\x0D\x5C\xAD\x63\x7F\x69\xCC"
     # )
     code = params[p.CODE]
+    # Note: Router is awake, there is no need for "tries"
     res = await app.permit_with_key(node, code, 60)
     link_key = bt.EmberKeyData(b"ZigBeeAlliance09")
     res = await app._ezsp.addTransientLinkKey(node, link_key)
