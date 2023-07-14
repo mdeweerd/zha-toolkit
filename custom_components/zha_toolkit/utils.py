@@ -11,9 +11,7 @@ from enum import Enum
 
 import packaging
 import packaging.version
-from homeassistant.const import __version__ as HA_VERSION
-from pkg_resources import parse_version
-from zigpy import __version__ as zigpy_version
+from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.zcl import foundation as f
@@ -22,6 +20,9 @@ from .params import INTERNAL_PARAMS as p
 from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
+
+HA_VERSION = get_distribution('homeassistant').version
+ZIGPY_VERSION = get_distribution('zigpy').version
 
 if packaging.version.parse(HA_VERSION) < packaging.version.parse("2023.4"):
     # pylint: disable=ungrouped-imports
@@ -963,4 +964,4 @@ def get_local_dir() -> str:
 def is_zigpy_ge(version: str) -> bool:
     """Test if zigpy library is newer than version"""
     # Example version value: "0.45.0"
-    return parse_version(zigpy_version) >= parse_version(version)
+    return parse_version(ZIGPY_VERSION) >= parse_version(version)
