@@ -4,5 +4,5 @@
 #
 service: script.1645121662206
 data:
-  entity_name: button.tz3000_dbou1ap4_ts0505a_9afc91fe_identify
+  entity_name: button.bureau_identify
   csv: ../www/lidl_basic_cluster.csv
