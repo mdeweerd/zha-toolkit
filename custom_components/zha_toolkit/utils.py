@@ -850,12 +850,10 @@ async def retry(
     if retry_exceptions is None:
         # Default list
         retry_exceptions = (
-            (
-                DeliveryError,
-                ControllerException,
-                asyncio.CancelledError,
-                asyncio.TimeoutError,
-            ),
+            DeliveryError,
+            ControllerException,
+            asyncio.CancelledError,
+            asyncio.TimeoutError,
         )
 
     while True:
