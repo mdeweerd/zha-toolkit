@@ -637,6 +637,11 @@ def register_services(hass):  # noqa: C901
     global LOADED_VERSION  # pylint: disable=global-statement
     hass_ref = hass
 
+    is_response_data_supported = u.is_ha_ge("2023.7.0")
+
+    if is_response_data_supported:
+        from home_assistant.core import ServiceCall
+
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
@@ -737,8 +742,9 @@ def register_services(hass):  # noqa: C901
         LOGGER.debug("Handler: %s", handler)
 
         handler_exception = None
+        handler_result = None
         try:
-            await handler(
+            handler_result = await handler(
                 zha_gw.application_controller,
                 zha_gw,
                 ieee,
@@ -779,6 +785,13 @@ def register_services(hass):  # noqa: C901
         if not event_data["success"] and params[p.FAIL_EXCEPTION]:
             raise Exception("Success expected, but failed")
 
+        if is_response_data_supported:
+            if service.return_response:
+                if handler_result is None:
+                    return event_data
+
+                return handler_result
+
     # Set up all service schemas
     for key, value in SERVICE_SCHEMAS.items():
         value.extend(COMMON_SCHEMA)
@@ -787,12 +800,22 @@ def register_services(hass):  # noqa: C901
             # by denying this option
             value.extend(DENY_COMMAND_SCHEMA)
         LOGGER.debug(f"Add service {DOMAIN}.{key}")
-        hass.services.async_register(
-            DOMAIN,
-            key,
-            toolkit_service,
-            schema=value,
-        )
+        if is_response_data_supported:
+            # See https://developers.home-assistant.io/docs/dev_101_services/#response-data
+            hass.services.async_register(
+                DOMAIN,
+                key,
+                toolkit_service,
+                schema=value,
+                supports_response=ServiceCall.OPTIONAL,  # type:ignore[undefined-variable]
+            )
+        else:
+            hass.services.async_register(
+                DOMAIN,
+                key,
+                toolkit_service,
+                schema=value,
+            )
 
     LOADED_VERSION = u.getVersion()
 
@@ -823,7 +846,7 @@ async def command_handler_default(
         if cmd in CMD_TO_INTERNAL_MAP:
             cmd = CMD_TO_INTERNAL_MAP.get(cmd)
 
-        await default.default(
+        return await default.default(
             app, listener, ieee, cmd, data, service, params, event_data
         )
 
