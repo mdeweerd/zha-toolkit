@@ -310,7 +310,11 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.GET_ROUTES_AND_NEIGHBOURS: vol.Schema(
-        {},
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
         extra=vol.ALLOW_EXTRA,
     ),
     S.GET_ZLL_GROUPS: vol.Schema(
