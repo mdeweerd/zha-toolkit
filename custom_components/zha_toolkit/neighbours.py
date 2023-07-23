@@ -13,7 +13,7 @@ from zigpy.exceptions import DeliveryError
 LOGGER = logging.getLogger(__name__)
 
 
-async def routes_and_neighbours(
+async def get_routes_and_neighbours(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     if ieee is None:
