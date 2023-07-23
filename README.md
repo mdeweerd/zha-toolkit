@@ -235,7 +235,7 @@ result of that call available under `VAR_NAME`.\
 You can verify what the
 service returns interactively. Example of an attribute read:
 
-![Service Response Example](ServiceResponse.png)
+![Service Response Example](images/ServiceResponse.png)
 
 Not all available commands are documented. The undocumented ones were in
 the original repository.\
