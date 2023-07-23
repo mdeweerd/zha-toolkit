@@ -2,7 +2,6 @@
 alias: Loop over zha_devices, extract some device data.  For HA>=2023.7
 sequence:
   - service: zha_toolkit.zha_devices
-    data:
     response_variable: dev_data
   - service: system_log.write
     data:
