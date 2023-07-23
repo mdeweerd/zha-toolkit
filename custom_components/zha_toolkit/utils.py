@@ -460,6 +460,11 @@ def write_json_to_file(
     LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
 
 
+def helper_save_json(file_name: str, data: typing.Any):
+    """Helper because the actual method depends on the HA version"""
+    save_json(file_name, data)
+
+
 def append_to_csvfile(
     fields,
     subdir,
