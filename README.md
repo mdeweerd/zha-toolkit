@@ -792,8 +792,8 @@ data:
   ieee: entity.my_thermostat_entity
   cluster: 0x201
   attribute: occupied_heating_setpoint
-  attr_val: "{% set t = states('sensor.tgt_temperature') %}{{ [(t|int+50) % 2300,2000]|max\
-    \ if is_number(t) else 2150 }}"
+  attr_val: "{% set t = states('sensor.tgt_temperature') %}{{ [(t|int+50) % 2300,2000]|max
+    if is_number(t) else 2150 }}"
   state_id: sensor.tgt_temperature
   allow_create: true
   read_before_write: false

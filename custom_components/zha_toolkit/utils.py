@@ -275,7 +275,7 @@ async def get_ieee(app, listener, ref):
         entity_registry = (
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.entity_registry.async_get_registry()
-            if parse_version(HA_VERSION) < parse_version("2022.6")
+            if not is_ha_ge("2022.6")
             else listener._hass.helpers.entity_registry.async_get(
                 listener._hass
             )
@@ -292,7 +292,7 @@ async def get_ieee(app, listener, ref):
         device_registry = (
             # Deprecated >= 2022.6.0
             await listener._hass.helpers.device_registry.async_get_registry()
-            if parse_version(HA_VERSION) < parse_version("2022.6")
+            if not is_ha_ge("2022.6")
             else listener._hass.helpers.device_registry.async_get(
                 listener._hass
             )
@@ -458,6 +458,11 @@ def write_json_to_file(
 
     save_json(file_name, data)
     LOGGER.debug(f"Finished writing {desc} in '{file_name}'")
+
+
+def helper_save_json(file_name: str, data: typing.Any):
+    """Helper because the actual method depends on the HA version"""
+    save_json(file_name, data)
 
 
 def append_to_csvfile(
@@ -959,3 +964,8 @@ def is_zigpy_ge(version: str) -> bool:
     """Test if zigpy library is newer than version"""
     # Example version value: "0.45.0"
     return parse_version(getZigpyVersion()) >= parse_version(version)
+
+
+def is_ha_ge(version: str) -> bool:
+    """Test if zigpy library is newer than version"""
+    return parse_version(getHaVersion()) >= parse_version(version)
