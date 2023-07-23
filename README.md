@@ -226,6 +226,17 @@ the entity. You can switch back and forth!
 There are several examples below for different commands. You can copy/paste
 them to start from.
 
+The services now provide the data as
+[response data](https://www.home-assistant.io/blog/2023/07/05/release-20237/#services-can-now-respond)
+\- they are still provided as event_data.\
+Adding
+`response_variable: VAR_NAME` to a `zha_toolkit` service call will make the
+result of that call available under `VAR_NAME`.\
+You can verify what the
+service returns interactively. Example of an attribute read:
+
+![Service Response Example](ServiceResponse.png)
+
 Not all available commands are documented. The undocumented ones were in
 the original repository.\
 Some of these undocumented commands seem to be
@@ -1733,6 +1744,12 @@ tap_action:
 
 See [script_use_zha_devices.yaml](examples/script_use_zha_devices.yaml) to
 see how you can loop over the device list provided in the event data.
+
+See
+[script_use_zha_devices_response.yaml](examples/script_use_zha_devices_response.yaml)
+shows how a new method available since Home Assistant 2023.7 that allows us
+to avoid the complexity of event_data by using the response from the
+zha-toolkit service.
 
 ### `register_services`: Reregister ZHA-Toolkit services
 
