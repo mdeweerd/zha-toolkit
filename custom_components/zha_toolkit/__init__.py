@@ -644,7 +644,7 @@ def register_services(hass):  # noqa: C901
     is_response_data_supported = u.is_ha_ge("2023.7.0")
 
     if is_response_data_supported:
-        from home_assistant.core import ServiceCall
+        from homeassistant.core import ServiceCall, SupportsResponse
 
     async def toolkit_service(service):
         """Run command from toolkit module."""
@@ -811,7 +811,7 @@ def register_services(hass):  # noqa: C901
                 key,
                 toolkit_service,
                 schema=value,
-                supports_response=ServiceCall.OPTIONAL,  # type:ignore[undefined-variable]
+                supports_response=SupportsResponse.OPTIONAL,  # type:ignore[undefined-variable]
             )
         else:
             hass.services.async_register(
