@@ -7,8 +7,9 @@ import os
 from random import uniform
 
 import zigpy.zdo.types as zdo_t
-from . import utils as u
 from zigpy.exceptions import DeliveryError
+
+from . import utils as u
 
 LOGGER = logging.getLogger(__name__)
 
