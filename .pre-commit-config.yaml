@@ -64,6 +64,14 @@ repos:
     rev: v6.2.1
     hooks:
       - id: beautysh
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.5
+    hooks:
+      - id: shellcheck
+        files: ^[^\.].*\.sh$
+        # Change the entry to make this work on cygwin
+        args: [-x,-e,SC2086,-e,SC2004,-e,SC2207,-e,SC2002,-e,SC2116]
+        # args: ["--severity=warning"]  # Optionally only show errors and warnings
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.3.1
     hooks:

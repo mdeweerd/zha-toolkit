@@ -1,0 +1,34 @@
+---
+alias: Loop over zha_devices, extract some device data.  For HA>=2023.7
+sequence:
+  - service: zha_toolkit.zha_devices
+    data:
+    response_variable: dev_data
+  - service: system_log.write
+    data:
+      logger: zha_devices
+      level: error
+      message: '{{ "Got device_data %s" % ( dev_data.devices ) }}'
+  - service: system_log.write
+    alias: List unavailable only
+    data:
+      logger: zha_devices
+      level: error
+      message: >
+        {% set ns = namespace(names=[]) %}
+        {% for item in dev_data.devices if not item.available %}
+          {% set ns.names = ns.names + [ "'%s'" % (item.name) ] %}
+        {% endfor %}
+        Items: {{ ns.names | join(', ') }}
+  - repeat:
+      for_each: '{{ dev_data.devices }}'
+      sequence:
+        - service: system_log.write
+          data:
+            logger: zha_devices
+            level: error
+            message: >-
+              {{ "Item '%s' Power: %s dBm Available: %s" % (
+                repeat.item.name, repeat.item.rssi, repeat.item.available
+              ) }}
+mode: single

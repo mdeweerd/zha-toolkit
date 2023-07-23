@@ -29,9 +29,10 @@
 
 # List all FW files that were already downloaded.
 # The files usually have the FW version in their name, making them unique.
-ls *.ZIGBEE *.OTA *.sbl-ota *.bin *.ota *.zigbee > existing.list
+ls -- *.ZIGBEE *.OTA *.sbl-ota *.bin *.ota *.zigbee > existing.list
 
 # Get and filter the list from Koenk's list, download the files
+# shellcheck disable=SC2016
 curl https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/index.json |\
     jq -r '.[] |.url' |\
     grep -v -f existing.list |\

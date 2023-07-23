@@ -1,8 +1,8 @@
 #!/bin/bash
-cd config/
+cd config/ || exit
 (
     git clone -n --depth=1 --filter=tree:0 https://github.com/mdeweerd/zha-toolkit.git
-    cd zha-toolkit
+    cd zha-toolkit || exit
     git sparse-checkout set --no-cone custom_components
     git checkout
 )
@@ -11,6 +11,6 @@ cd config/
 )
 # To update:
 (
-    cd zha-toolkit
+    cd zha-toolkit || exit
     git pull
 )

@@ -1,9 +1,9 @@
 #!/bin/bash
 # To update / install :
-cd config
+cd config || exit
 (
     mkdir -p custom_components/zha_toolkit
-    cd custom_components/zha_toolkit
+    cd custom_components/zha_toolkit || exit
     rm zha-toolkit.zip >& /dev/null
     curl -s https://api.github.com/repos/mdeweerd/zha-toolkit/releases/latest \
         | grep "browser_download_url.*/zha-toolkit.zip" \
