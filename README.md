@@ -63,6 +63,7 @@ ZHA Toolkit can also:
   - [Zigbee, ZHA, zha-device-handlers, zigpy, ZHA-toolkit](#zigbee-zha-zha-device-handlers-zigpy-zha-toolkit)
 - [Common options](#common-options)
   - [`ieee`: A reference to the device](#ieee-a-reference-to-the-device)
+  - [Response data](#response-data)
   - [Events](#events)
   - [Raise an exception on failure](#raise-an-exception-on-failure)
   - [Tries](#tries)
@@ -113,7 +114,7 @@ ZHA Toolkit can also:
     - [`backup`: Backup the coordinator](#backup-backup-the-coordinator)
     - [`misc_settime`: Set attributes of a Time Cluster](#misc_settime-set-attributes-of-a-time-cluster)
     - [`ota_notify` - Download/Trigger Device FW update](#ota_notify---downloadtrigger-device-fw-update)
-    - [`zha_devices`: Device Information to Event or CSV](#zha_devices-device-information-to-event-or-csv)
+    - [`zha_devices`: Device Information to Event or CSV or Script variable](#zha_devices-device-information-to-event-or-csv-or-script-variable)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [`ha_set_state` - Update HA state](#ha_set_state---update-ha-state)
   - [User method](#user-method)
@@ -225,17 +226,6 @@ the entity. You can switch back and forth!
 
 There are several examples below for different commands. You can copy/paste
 them to start from.
-
-The services now provide the data as
-[response data](https://www.home-assistant.io/blog/2023/07/05/release-20237/#services-can-now-respond)
-\- they are still provided as event_data.\
-Adding
-`response_variable: VAR_NAME` to a `zha_toolkit` service call will make the
-result of that call available under `VAR_NAME`.\
-You can verify what the
-service returns interactively. Example of an attribute read:
-
-![Service Response Example](images/ServiceResponse.png)
 
 Not all available commands are documented. The undocumented ones were in
 the original repository.\
@@ -439,6 +429,27 @@ There is no universal "best" way of selecting the device.
 Sometime the `command_data` field provides a reference to a device (for
 instance, when binding one device to another). It has the same flexibility
 as the `ieee` argument.
+
+## Response data
+
+The zha-toolkit services return their results as
+[response data](https://www.home-assistant.io/blog/2023/07/05/release-20237/#services-can-now-respond)
+for Home Assistant installations that have at least version 2023.7 .
+
+This response is available in automations and script by adding
+`response_variable: VAR_NAME` to the `zha_toolkit` service call. That will
+make the data available under VAR_NAME inside the automation or script.\
+An
+example using the response data can be found in
+[script_use_zha_devices_response.yaml](examples/script_use_zha_devices_response.yaml).
+
+The response data feature of Home Assistant also makes the response
+available when calling the service interactively.\
+The image below shows a
+an interactive attribute read using the zha-toolkit service attr_read. The
+response data is shown in Yaml format when the call finishes.
+
+![Service Response Example](images/ServiceResponse.png)
 
 ## Events
 
@@ -1705,7 +1716,7 @@ data:
   path: /config/zb_ota
 ```
 
-### `zha_devices`: Device Information to Event or CSV
+### `zha_devices`: Device Information to Event or CSV or Script variable
 
 Get Device information as event data or in a CSV file.
 
