@@ -1,11 +1,13 @@
 ---
 # Describes the format for available zha services
 execute:
+  name: Execute any zha toolkit service
   description: >-
     Execute ZHA Toolkit service (Examine the documentation or code to know
     which parameters are needed)
   fields:
     command:
+      name: Command name
       description: Command name
       example: scan_device
       required: true
@@ -63,13 +65,14 @@ execute:
             - znp_nvram_restore
             - znp_restore
     ieee:
-      description: "Entity name,\ndevice name, or\nIEEE address of the node to execute\n\
-        command"
+      name: Device reference
+      description: Entity name, device name, or IEEE address of the node to execute          command
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
           integration: zha
     command_data:
+      name: Command data
       description: >-
         data for the command (specific command. Example, second IEEE address
         for binding)
@@ -77,6 +80,7 @@ execute:
       selector:
         text:
     manf:
+      name: Manufacturer_id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -84,6 +88,7 @@ execute:
           max: 0xFFFF
           mode: box
     cmd:
+      name: Command Id
       description: Command Id (zcl_cmd)
       selector:
         number:
@@ -91,6 +96,7 @@ execute:
           max: 255
           mode: box
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -98,6 +104,7 @@ execute:
           max: 255
           mode: box
     dst_endpoint:
+      name: Destination Endpoint
       description: destination endpoint
       selector:
         number:
@@ -105,6 +112,7 @@ execute:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: target cluster
       selector:
         number:
@@ -112,6 +120,7 @@ execute:
           max: 0xFFFF
           mode: box
     attribute:
+      name: Attribute Id
       description: target attribute id (or name, accepted in most cases)
       selector:
         number:
@@ -119,6 +128,7 @@ execute:
           max: 0xFFFF
           mode: box
     attr_type:
+      name: Attribute Type
       description: Attribute type (to write, ...)
       selector:
         number:
@@ -126,10 +136,12 @@ execute:
           max: 0xFFFF
           mode: box
     attr_val:
+      name: Attribute Value
       description: Attribute value to write
       selector:
         text:
     min_interval:
+      name: Minimum Report Interval
       description: Minimum report interval (seconds)
       selector:
         number:
@@ -137,6 +149,7 @@ execute:
           max: 0xFFFF
           mode: box
     max_interval:
+      name: Maximum Report Interval
       description: Maximum report interval (seconds)
       selector:
         number:
@@ -144,6 +157,7 @@ execute:
           max: 0xFFFF
           mode: box
     reportable_change:
+      name: Minimum Reportable Change
       description: Minimum change before reporting
       selector:
         number:
@@ -151,6 +165,7 @@ execute:
           max: 65535
           mode: box
     dir:
+      name: Direction
       description: Direction indicator, according to command
       selector:
         number:
@@ -158,6 +173,7 @@ execute:
           max: 1
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -165,12 +181,14 @@ execute:
           max: 255
           mode: box
     state_id:
+      name: State Id
       description: >-
         When defined, name of state to write the read attribute value to
       example: sensor.example
       selector:
         text:
     state_attr:
+      name: State Attribute
       description: >-
         When defined, attribute in state_id to write the read attribute
         value to.  Write to state value when missing (and state_id is defined)
@@ -178,13 +196,15 @@ execute:
       selector:
         text:
     state_value_template:
+      name: State Value Template
       description: >-
         When defined, the read attribute is converted using this template before writing
-        it to the state.      example:
-        "{{ value / 100 }}"
+        it to the state.
+      example: "{{ value / 100 }}"
       selector:
         text:
     force_update:
+      name: Force Update
       description: >
         Force an update event when the state is written
         When not set or false, if the state value is unchanged, the update may not
@@ -193,6 +213,7 @@ execute:
       selector:
         boolean:
     use_cache:
+      name: Use Cache
       description: >
         Use zigpy attribute cache to get the value of an attribute.
         (Does not send a zigbee packet to read the attribute)
@@ -200,16 +221,19 @@ execute:
       selector:
         boolean:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -217,15 +241,18 @@ execute:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     allow_create:
+      name: Allow Create
       description: Allow state creation (given by state_id) if it does not exist
       selector:
         boolean:
     read_before_write:
+      name: Read Before Write
       description: >-
         Read attribute before writing it (used with attr_write).  When
         the read value matches the value to write, no write is done.
@@ -233,28 +260,33 @@ execute:
       selector:
         boolean:
     read_after_write:
+      name: Read After Write
       description: >-
         Read attribute after writing.  Can be used to ensure the values
         match.  Defaults to True
       selector:
         boolean:
     write_if_equal:
+      name: Write If Equal
       description: >-
         Force writing the attribute even if the read attribute already
         matches.  Defaults to False
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
     csvout:
+      name: CSV Filename
       description: >-
         Filename of CSV to write read data to.  Written to 'csv' directory
       example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
+      name: CSV Label
       description: Label to use for read value (in CSV file)
       example: SecretAttributeName
       selector:
