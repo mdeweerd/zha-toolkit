@@ -359,6 +359,7 @@ add_group:
       selector:
         boolean:
 add_to_group:
+  name: Add device to group
   description: Add device to group
   fields:
     ieee:
@@ -666,6 +667,7 @@ attr_write:
       selector:
         text:
     use_cache:
+      name: Use Cache
       description: >
         Use zigpy attribute cache to get the value of an attribute.
         (Does not send a zigbee packet to read the attribute)
@@ -768,9 +770,11 @@ attr_write:
       selector:
         text:
 backup:
+  name: Backup Coordinator Data
   description: Backup coordinator data (znp, bellows/ezsp)
   fields:
     command_data:
+      name: Backup File Suffix
       description: Suffix for backup file
       example: _bathroom_added
       selector:
@@ -893,6 +897,7 @@ bind_ieee:
       selector:
         boolean:
 bind_group:
+  name: Bind Clusters From Device to Device
   description: Bind clusters from ieee device to command_data device
   fields:
     ieee:
@@ -1311,6 +1316,7 @@ ezsp_backup:
   description: Backup coordinator data (bellows/ezsp)
   fields:
     command_data:
+      name: Backup File Suffix
       description: Suffix for backup file
       example: _bathroom_added
       selector:
@@ -2233,6 +2239,7 @@ unbind_coordinator:
       selector:
         boolean:
 tuya_magic:
+  name: Cast Tuya Magic Spell
   description: >-
     Do Tuya magic spell (= make most Tuya devices work normally)
   fields:
