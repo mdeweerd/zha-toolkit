@@ -1,1 +1,1495 @@
-{"services": {"add_group": {"description": "Add group to endpoint groups list of device.  May be equivalent to `add_to_group`", "fields": {"command_data": {"description": "Group id to add"}, "endpoint": {"description": "endpoint to get information for (all endpoints when not set)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "add_to_group": {"description": "Add device to group", "fields": {"command_data": {"description": "Group id to remove"}, "endpoint": {"description": "endpoint to remove group from (or all EP if not set)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "all_routes_and_neigbours": {"description": "Scan for all routes and neighbours, results saved to config/scans/...", "fields": {"event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}}}, "attr_read": {"description": "Read Attribute (ZHA-Toolkit)", "fields": {"allow_create": {"description": "Allow state creation (given by state_id) if it does not exist"}, "attribute": {"description": "target attribute id (or name, accepted in most cases)"}, "cluster": {"description": "target cluster"}, "csvlabel": {"description": "Label to use for read value (in CSV file)"}, "csvout": {"description": "Filename of CSV to write read data to.  Written to 'csv' directory"}, "endpoint": {"description": "target endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "force_update": {"description": "Force an update event when the state is written When not set  or false, if the state value is unchanged, the update may not trigger  an automation. "}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "manf": {"description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"}, "state_attr": {"description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)"}, "state_id": {"description": "When defined, name of state to write the read attribute value to"}, "state_value_template": {"description": "When defined, the read attribute is converted using this template before writing it to the state."}, "tries": {"description": "Number of times the zigbee packet should be attempted"}, "use_cache": {"description": "Use zigpy attribute cache to get the value of an attribute.  (Does not send a zigbee packet to read the attribute) "}}}, "attr_write": {"description": "Write Attribute (ZHA-Toolkit)", "fields": {"allow_create": {"description": "Allow state creation (given by state_id) if it does not exist"}, "attr_type": {"description": "Attribute type (to write, ...)"}, "attr_val": {"description": "Attribute value to write"}, "attribute": {"description": "target attribute id (or name, accepted in most cases)"}, "cluster": {"description": "target cluster"}, "csvlabel": {"description": "Label to use for read value (in CSV file)"}, "csvout": {"description": "Filename of CSV to write read data to.  Written to 'csv' directory"}, "endpoint": {"description": "target endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "manf": {"description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"}, "read_after_write": {"description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"}, "read_before_write": {"description": "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done. Defaults to True."}, "state_attr": {"description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)"}, "state_id": {"description": "When defined, name of state to write the read attribute value to"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}, "use_cache": {"description": "Use zigpy attribute cache to get the value of an attribute.  (Does not send a zigbee packet to read the attribute) "}, "write_if_equal": {"description": "Force writing the attribute even if the read attribute already matches.  Defaults to False"}}}, "backup": {"description": "Backup coordinator data (znp, bellows/ezsp)", "fields": {"command_data": {"description": "Suffix for backup file"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}}}, "bind_group": {"description": "Bind clusters from ieee device to command_data device", "fields": {"cluster": {"description": "Target cluster (when missing: all internally defined cluster)"}, "command_data": {"description": "Target group for binding"}, "endpoint": {"description": "Target endpoint (when missing: all endpoints)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "bind_ieee": {"description": "Bind clusters from ieee device to command_data device", "fields": {"cluster": {"description": "Target cluster (or all internally defined ones)"}, "command_data": {"description": "Binding target (Entity name, device name, or IEEE address of the node to execute command).  Defaults to coordinator"}, "dst_endpoint": {"description": "Destination endpoint (when missing: first EP with matching cluster)"}, "endpoint": {"description": "Target endpoint (when missing: all endpoints)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "binds_get": {"description": "Get binding table from device.", "fields": {"event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "binds_remove_all": {"description": "Remove (Unbind) all bindings from device", "fields": {"cluster": {"description": "When provided, remove only bindings for this cluster or list of clusters ( single value or list. Example: 0x0200 or [ 0x200, 0x300] ) Otherwise\\: removes bindings for all clusters"}, "command_data": {"description": "When provided, remove only bindings towards this device (Entity name, device name, or IEEE address of the binding destination)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "conf_report": {"description": "Configure attribute reporting You can set a high value for tries (100 or more) for sleepy devices.\"", "fields": {"attribute": {"description": "target attribute id (or name, accepted in most cases)"}, "cluster": {"description": "target cluster"}, "endpoint": {"description": "target endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command\""}, "manf": {"description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"}, "max_interval": {"description": "Maximum report interval (seconds)"}, "min_interval": {"description": "Minimum report interval (seconds)"}, "reportable_change": {"description": "Minimum change before reporting"}}}, "conf_report_read": {"description": "Read attribute report configuration You can set a high value for tries (100 or more) for sleepy devices.\"", "fields": {"attribute": {"description": "target attribute id (or name, accepted in most cases),  can be a list"}, "cluster": {"description": "target cluster"}, "endpoint": {"description": "target endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command\""}, "manf": {"description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "execute": {"description": "Execute ZHA Toolkit service (Examine the documentation or code to know which parameters are needed)", "fields": {"allow_create": {"description": "Allow state creation (given by state_id) if it does not exist", "name": "Allow Create"}, "attr_type": {"description": "Attribute type (to write, ...)", "name": "Attribute Type"}, "attr_val": {"description": "Attribute value to write", "name": "Attribute Value"}, "attribute": {"description": "target attribute id (or name, accepted in most cases)", "name": "Attribute Id"}, "cluster": {"description": "target cluster", "name": "Target Cluster"}, "cmd": {"description": "Command Id (zcl_cmd)", "name": "Command Id"}, "command": {"description": "Command name", "name": "Command name"}, "command_data": {"description": "data for the command (specific command. Example, second IEEE address for binding)", "name": "Command data"}, "csvlabel": {"description": "Label to use for read value (in CSV file)", "name": "CSV Label"}, "csvout": {"description": "Filename of CSV to write read data to.  Written to 'csv' directory", "name": "CSV Filename"}, "dir": {"description": "Direction indicator, according to command", "name": "Direction"}, "dst_endpoint": {"description": "destination endpoint", "name": "Destination Endpoint"}, "endpoint": {"description": "target endpoint", "name": "Target Endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes.", "name": "Done Event Name"}, "event_fail": {"description": "Event name in case of failure", "name": "Fail Event Name"}, "event_success": {"description": "Event name in case of success", "name": "Success Event Name"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)", "name": "Expect Reply"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations", "name": "Exception When Failure"}, "force_update": {"description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation.", "name": "Force Update"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command", "name": "Device reference"}, "manf": {"description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)", "name": "Manufacturer_id"}, "max_interval": {"description": "Maximum report interval (seconds)", "name": "Maximum Report Interval"}, "min_interval": {"description": "Minimum report interval (seconds)", "name": "Minimum Report Interval"}, "read_after_write": {"description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True", "name": "Read After Write"}, "read_before_write": {"description": "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done. Defaults to True.", "name": "Read Before Write"}, "reportable_change": {"description": "Minimum change before reporting", "name": "Minimum Reportable Change"}, "state_attr": {"description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)", "name": "State Attribute"}, "state_id": {"description": "When defined, name of state to write the read attribute value to", "name": "State Id"}, "state_value_template": {"description": "When defined, the read attribute is converted using this template", "name": "State Value Template"}, "tries": {"description": "Number of times the zigbee packet should be attempted", "name": "Tries"}, "use_cache": {"description": "Use zigpy attribute cache to get the value of an attribute.  (Does not send a zigbee packet to read the attribute)", "name": "Use Cache"}, "write_if_equal": {"description": "Force writing the attribute even if the read attribute already matches.  Defaults to False", "name": "Write If Equal"}}, "name": "Execute any zha toolkit service"}, "ezsp_backup": {"description": "Backup coordinator data (znp, bellows/ezsp)", "fields": {"command_data": {"description": "Suffix for backup file"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}}}, "get_groups": {"description": "Get groups set on the endpoints of the device", "fields": {"endpoint": {"description": "endpoint to get information for (all endpoints when not set)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "get_routes_and_neigbours": {"description": "Scan for all routes and neighbours, results saved to config/scans/...", "fields": {"event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}}}, "get_zll_groups": {"description": "Get groups for zll_cluster (if present)", "fields": {"csvlabel": {"description": "Label to designate value written (in CSV file)"}, "csvout": {"description": "Filename of CSV to write the update state information to.  Written to 'csv' directory."}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}}}, "handle_join": {"description": "Handle join (ZHA should re-interrogate the device as on new join)", "fields": {"command_data": {"description": "Short network address of the device (optional, if known in ZHA)"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}}}, "ieee_ping": {"description": "Ping device", "fields": {"event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Ping: Requests IEEE address (using the known NWK Address)"}}}, "leave": {"description": "Send a Leave request to the device", "fields": {"event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to leave the network"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "misc_reinitialize": {"description": "Reinitialize device", "fields": {"ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command\""}}}, "misc_settime": {"description": "Set Time Cluster attributes (Time, DST - except TimeStatus)", "fields": {"endpoint": {"description": "target endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address"}, "read_after_write": {"description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"}, "read_before_write": {"description": "Read attributes before writing them"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "ota_notify": {"description": "Notify a device that an update is available, after triggering ota image providers to fetch new images.", "fields": {"download": {"description": "When True, download FW from KKoenk's list that possibly matches devices."}, "event_done": {"description": "Event name when the images were updated and the device notified (either success or failure)."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "path": {"description": "Path to write ota image(s) to (defaults to zha:zigpy_config:ota:otau_directory value or /config/zigpy_ota)"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "register_services": {"description": "Reregister zha-toolkit services Useful during development when they are updated in __init__.py"}, "rejoin": {"description": "Send a rejoin request to the device (=leave with rejoin)", "fields": {"command_data": {"description": "Node used to accept the rejoin (Entity name, device name, or IEEE address of the node)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to request rejoin"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "remove_all_groups": {"description": "Remove all groups from (selected) endpoints on device", "fields": {"endpoint": {"description": "endpoint to remove group from (all endpoints when not set)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "remove_from_group": {"description": "Remove device endpoints from group", "fields": {"command_data": {"description": "Group id to remove"}, "endpoint": {"description": "endpoint to remove group from (or all EP if not set)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "remove_group": {"description": "Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`", "fields": {"command_data": {"description": "Group id to remove"}, "endpoint": {"description": "endpoint to remove group from (or all EP if not set)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "scan_device": {"description": "Scan device (result written to file in /config/scans)", "fields": {"endpoint": {"description": "Target endpoint, or list of endpoints"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to execute command"}, "tries": {"description": "Number of times a zigbee packet is repeated when no response"}}}, "zcl_cmd": {"description": "Send cluster command", "fields": {"args": {"description": "Arguments for command when needed (as per zigpy's definition corresponding to Zigbee Library Cluster (ZCL) specification)"}, "cluster": {"description": "target cluster"}, "cmd": {"description": "Command Id to execute"}, "endpoint": {"description": "target endpoint"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to send command to"}, "manf": {"description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"}, "tries": {"description": "Number of times the zigbee packet should be attempted"}}}, "zdo_join_with_code": {"description": "Allow a device to join with a code (bellows radio type only)", "fields": {"code": {"description": "The code the device needs to present"}, "command_data": {"description": "Node used to accept the rejoin (Entity name, device name, or IEEE address of the node)"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Entity name, device name, or IEEE address of the node to request rejoin"}}}, "zha_devices": {"description": "Export device information to CSV file or Event", "fields": {"command_data": {"description": "List of columns for csv file"}, "csvlabel": {"description": "Column to sort table by"}, "csvout": {"description": "Filename of CSV to write read data to.  Written to 'csv' directory"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}, "ieee": {"description": "Optional Entity name, device name, or IEEE address of the device to provide details for.  By dfault: all devices"}}}, "znp_backup": {"description": "Backup coordinator data (znp, bellows/ezsp)", "fields": {"command_data": {"description": "Suffix for backup file"}, "event_done": {"description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."}, "event_fail": {"description": "Event name in case of failure"}, "event_success": {"description": "Event name in case of success"}, "expect_reply": {"description": "Wait for/expect a reply (not used yet)"}, "fail_exception": {"description": "Throw exception when success==False, useful to stop scripts, automations"}}}}}
+{
+    "services": {
+        "execute": {
+            "name": "Execute any zha toolkit service",
+            "description": "Execute ZHA Toolkit service (Examine the documentation or code to know which parameters are needed)",
+            "fields": {
+                "command": {
+                    "name": "Command name",
+                    "description": "Command name"
+                },
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "command_data": {
+                    "name": "Command data",
+                    "description": "data for the command (specific command. Example, second IEEE address for binding)"
+                },
+                "manf": {
+                    "name": "Manufacturer Id",
+                    "description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"
+                },
+                "cmd": {
+                    "name": "Command Id",
+                    "description": "Command Id (zcl_cmd)"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "dst_endpoint": {
+                    "name": "Destination Endpoint",
+                    "description": "destination endpoint"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "target cluster"
+                },
+                "attribute": {
+                    "name": "Attribute Id or Name",
+                    "description": "target attribute id (or name, accepted in most cases)"
+                },
+                "attr_type": {
+                    "name": "Attribute Type",
+                    "description": "Attribute type (to write, ...)"
+                },
+                "attr_val": {
+                    "name": "Attribute Value",
+                    "description": "Attribute value to write"
+                },
+                "min_interval": {
+                    "name": "Minimum Report Interval",
+                    "description": "Minimum report interval (seconds)"
+                },
+                "max_interval": {
+                    "name": "Maximum Report Interval",
+                    "description": "Maximum report interval (seconds)"
+                },
+                "reportable_change": {
+                    "name": "Minimum Reportable Change",
+                    "description": "Minimum change before reporting"
+                },
+                "dir": {
+                    "name": "Direction",
+                    "description": "Direction indicator, according to command"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "state_id": {
+                    "name": "State Id",
+                    "description": "When defined, name of state to write the read attribute value to"
+                },
+                "state_attr": {
+                    "name": "State Attribute",
+                    "description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)"
+                },
+                "state_value_template": {
+                    "name": "State Value Template",
+                    "description": "When defined, the read attribute is converted using this template before writing it to the state."
+                },
+                "force_update": {
+                    "name": "Force Update",
+                    "description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation.\n"
+                },
+                "use_cache": {
+                    "name": "Use Cache",
+                    "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)\n"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "allow_create": {
+                    "name": "Allow Create",
+                    "description": "Allow state creation (given by state_id) if it does not exist"
+                },
+                "read_before_write": {
+                    "name": "Read Before Write",
+                    "description": "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done. Defaults to True."
+                },
+                "read_after_write": {
+                    "name": "Read After Write",
+                    "description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+                },
+                "write_if_equal": {
+                    "name": "Write If Equal",
+                    "description": "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                },
+                "csvout": {
+                    "name": "CSV Filename",
+                    "description": "Filename of CSV to write read data to.  Written to 'csv' directory"
+                },
+                "csvlabel": {
+                    "name": "CSV Label",
+                    "description": "Label to use for read value (in CSV file)"
+                }
+            }
+        },
+        "add_group": {
+            "name": "Add Group",
+            "description": "Add group to endpoint groups list of device.  May be equivalent to `add_to_group`",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "endpoint to get information for (all endpoints when not set)"
+                },
+                "command_data": {
+                    "name": "Group Id",
+                    "description": "Group id to add"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "add_to_group": {
+            "description": "Add device to group",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "endpoint to remove group from (or all EP if not set)"
+                },
+                "command_data": {
+                    "name": "Removed Group Id",
+                    "description": "Group id to remove"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "all_routes_and_neigbours": {
+            "name": "Scan all Routes and Neighbours",
+            "description": "Scan for all routes and neighbours, results saved to config/scans/...",
+            "fields": {
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "attr_read": {
+            "name": "Read Attribute",
+            "description": "Read Attribute",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "manf": {
+                    "name": "Manufacturer Id",
+                    "description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "target cluster"
+                },
+                "attribute": {
+                    "name": "Attribute Id or Name",
+                    "description": "target attribute id (or name, accepted in most cases)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "state_id": {
+                    "name": "state_id",
+                    "description": "When defined, name of state to write the read attribute value to"
+                },
+                "state_attr": {
+                    "name": "State Attribute",
+                    "description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)"
+                },
+                "state_value_template": {
+                    "name": "State Value Template",
+                    "description": "When defined, the read attribute is converted using this template before writing it to the state."
+                },
+                "force_update": {
+                    "name": "Force Update",
+                    "description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation.\n"
+                },
+                "use_cache": {
+                    "name": "Use Cache",
+                    "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)\n"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "allow_create": {
+                    "name": "Allow Create",
+                    "description": "Allow state creation (given by state_id) if it does not exist"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                },
+                "csvout": {
+                    "name": "CSV Filename",
+                    "description": "Filename of CSV to write read data to.  Written to 'csv' directory"
+                },
+                "csvlabel": {
+                    "name": "CSV Label",
+                    "description": "Label to use for read value (in CSV file)"
+                }
+            }
+        },
+        "attr_write": {
+            "name": "Write Attribute",
+            "description": "Write Attribute",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "manf": {
+                    "name": "Manufacturer Id",
+                    "description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "target cluster"
+                },
+                "attribute": {
+                    "name": "Attribute Id or Name",
+                    "description": "target attribute id (or name, accepted in most cases)"
+                },
+                "attr_type": {
+                    "name": "Attribute Type",
+                    "description": "Attribute type (to write, ...)"
+                },
+                "attr_val": {
+                    "name": "Attribute Value",
+                    "description": "Attribute value to write"
+                },
+                "use_cache": {
+                    "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)\n"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "state_id": {
+                    "name": "State Id",
+                    "description": "When defined, name of state to write the read attribute value to"
+                },
+                "state_attr": {
+                    "name": "State Attribute",
+                    "description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "allow_create": {
+                    "name": "Allow Create",
+                    "description": "Allow state creation (given by state_id) if it does not exist"
+                },
+                "read_before_write": {
+                    "name": "Read Before Write",
+                    "description": "Read attribute before writing it (used with attr_write).  When the read value matches the value to write, no write is done. Defaults to True."
+                },
+                "read_after_write": {
+                    "name": "Read After Write",
+                    "description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+                },
+                "write_if_equal": {
+                    "name": "Write If Equal",
+                    "description": "Force writing the attribute even if the read attribute already matches.  Defaults to False"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                },
+                "csvout": {
+                    "name": "CSV Filename",
+                    "description": "Filename of CSV to write read data to.  Written to 'csv' directory"
+                },
+                "csvlabel": {
+                    "name": "CSV Label",
+                    "description": "Label to use for read value (in CSV file)"
+                }
+            }
+        },
+        "backup": {
+            "description": "Backup coordinator data (znp, bellows/ezsp)",
+            "fields": {
+                "command_data": {
+                    "description": "Suffix for backup file"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "bind_ieee": {
+            "name": "Bind Cluster",
+            "description": "Bind clusters from ieee device to command_data device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "command_data": {
+                    "name": "Bind To Device Reference",
+                    "description": "Binding target (Entity name, device name, or IEEE address of the node to execute command).  By default: coordinator"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "Target endpoint (when missing: all endpoints)"
+                },
+                "dst_endpoint": {
+                    "name": "Destination Endpoint",
+                    "description": "Destination endpoint (when missing: first EP with matching cluster)"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "Target cluster (or all internally defined ones)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "bind_group": {
+            "description": "Bind clusters from ieee device to command_data device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "command_data": {
+                    "name": "Target Binding Group",
+                    "description": "Target group for binding"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "Target endpoint (when missing: all endpoints)"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "Target cluster (when missing: all internally defined cluster)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "binds_get": {
+            "name": "Get Binding Table",
+            "description": "Get binding table from device.",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "binds_remove_all": {
+            "name": "Remove All Bindings from Device",
+            "description": "Remove (Unbind) all bindings from device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "command_data": {
+                    "name": "Remove Bindings with This Device",
+                    "description": "When provided, remove only bindings towards this device (Entity name, device name, or IEEE address of the binding destination)"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "When provided, remove only bindings for this cluster or list of clusters ( single value or list. Example: 0x0200 or [ 0x200, 0x300] ) Otherwise\\: removes bindings for all clusters"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "conf_report": {
+            "name": "Configure Attribute Reporting",
+            "description": "Configure attribute reporting. You can set a high value for tries (100 or more) for sleepy devices.\"",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command\""
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "target cluster"
+                },
+                "attribute": {
+                    "name": "Attribute Id or Name",
+                    "description": "target attribute id (or name, accepted in most cases)"
+                },
+                "min_interval": {
+                    "name": "Minimum Report Interval",
+                    "description": "Minimum report interval (seconds)"
+                },
+                "max_interval": {
+                    "name": "Maximum Report Interval",
+                    "description": "Maximum report interval (seconds)"
+                },
+                "reportable_change": {
+                    "name": "Minimum Reportable Change",
+                    "description": "Minimum change before reporting"
+                },
+                "manf": {
+                    "name": "Manufacturer Id",
+                    "description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "conf_report_read": {
+            "name": "Read Report Configuration",
+            "description": "Read attribute report configuration You can set a high value for tries (100 or more) for sleepy devices.\"",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command\""
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "target cluster"
+                },
+                "attribute": {
+                    "name": "Attribute Id or Name",
+                    "description": "target attribute id (or name, accepted in most cases), can be a list"
+                },
+                "manf": {
+                    "name": "Manufacturer Id",
+                    "description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "ezsp_backup": {
+            "name": "Backup Ezsp Coordinator",
+            "description": "Backup coordinator data (bellows/ezsp)",
+            "fields": {
+                "command_data": {
+                    "description": "Suffix for backup file"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "get_groups": {
+            "name": "Get Groups Set On Endpoint",
+            "description": "Get groups set on the endpoints of the device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "endpoint to get information for (all endpoints when not set)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "get_routes_and_neigbours": {
+            "name": "Scan Device's Routes and Neighbours",
+            "description": "Scan for all routes and neighbours, results saved to config/scans/...",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "get_zll_groups": {
+            "name": "Get Groups for ZLL Cluster",
+            "description": "Get groups for zll_cluster (if present)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "ha_set_state": {
+            "name": "Set/Update Home Assistant State",
+            "description": "Set/update a Home Assistant state",
+            "fields": {
+                "attr_val": {
+                    "name": "Attribute Value",
+                    "description": "value to write to the state (or use in the template)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "state_id": {
+                    "name": "state_id",
+                    "description": "Name of state to write the read attribute value to"
+                },
+                "state_attr": {
+                    "name": "State Attribute",
+                    "description": "When defined, attribute in state_id to write the read attribute value to.  Write to state value when missing (and state_id is defined)"
+                },
+                "state_value_template": {
+                    "name": "State Value Template",
+                    "description": "When defined, used as a template expression. For example \"value + 10\" will be internally interpreted as \"{{ value + 10 }}\" where 'value' is substituted with the value for 'attr_val'"
+                },
+                "allow_create": {
+                    "name": "Allow Create",
+                    "description": "Allow state creation (given by state_id) if it does not exist"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "csvout": {
+                    "name": "CSV Filename",
+                    "description": "Filename of CSV to write the update state information to.  Written to 'csv' directory."
+                },
+                "csvlabel": {
+                    "name": "CSV Label",
+                    "description": "Label to designate value written (in CSV file)"
+                }
+            }
+        },
+        "handle_join": {
+            "name": "Handle Join",
+            "description": "Handle join (ZHA should re-interrogate the device as on new join)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "command_data": {
+                    "name": "Short Network Address",
+                    "description": "Short network address of the device (optional, if known in ZHA)"
+                }
+            }
+        },
+        "ieee_ping": {
+            "name": "Ping Device",
+            "description": "Ping device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Ping: Requests IEEE address (using the known NWK Address)"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "rejoin": {
+            "name": "Send Rejoin Request",
+            "description": "Send a rejoin request to the device (=leave with rejoin)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to request rejoin"
+                },
+                "command_data": {
+                    "name": "Node to send the Rejoin",
+                    "description": "Node used to accept the rejoin (Entity name, device name, or IEEE address of the node)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "leave": {
+            "name": "Send Leave Request",
+            "description": "Send a Leave request to the device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to leave the network"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "misc_reinitialize": {
+            "name": "Reinitialize Device",
+            "description": "Reinitialize device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command\""
+                }
+            }
+        },
+        "misc_settime": {
+            "name": "Set Time",
+            "description": "Set Time Cluster attributes (Time, DST - except TimeStatus)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "read_before_write": {
+                    "name": "Read Before Write",
+                    "description": "Read attributes before writing them"
+                },
+                "read_after_write": {
+                    "name": "Read After Write",
+                    "description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+                }
+            }
+        },
+        "ota_notify": {
+            "name": "Trigger Device's Firmware Update",
+            "description": "Notify a device that an update is available, after triggering ota image providers to fetch new images.",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "download": {
+                    "name": "Enable Firmware Download",
+                    "description": "When True, download FW from KKoenk's list that possibly matches devices."
+                },
+                "path": {
+                    "name": "Firmware Directory",
+                    "description": "Path to write ota image(s) to (defaults to zha:zigpy_config:ota:otau_directory value or /config/zigpy_ota)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the images were updated and the device notified (either success or failure)."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "register_services": {
+            "name": "Register Services",
+            "description": "Reregister zha-toolkit services Useful during development when they are updated in __init__.py"
+        },
+        "remove_all_groups": {
+            "name": "Remove All Groups from Endpoint",
+            "description": "Remove all groups from (selected) endpoints on device",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "endpoint to remove group from (all endpoints when not set)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "remove_from_group": {
+            "name": "Remove Endpoints from Group",
+            "description": "Remove device endpoints from group",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "endpoint to remove group from (or all EP if not set)"
+                },
+                "command_data": {
+                    "name": "Group Id",
+                    "description": "Group id to remove"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "remove_group": {
+            "name": "Remove Group from Endpoint",
+            "description": "Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "endpoint to remove group from (or all EP if not set)"
+                },
+                "command_data": {
+                    "name": "Group Id",
+                    "description": "Group id to remove"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        },
+        "scan_device": {
+            "name": "Scan Device",
+            "description": "Scan device (result written to file in /config/scans)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "Target endpoint, or list of endpoints"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times a zigbee packet is repeated when no response"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "unbind_coordinator": {
+            "name": "Remove Bindings to Coordinator",
+            "description": "Remove (Unbind) all bindings from device to the coordinator (your HA Instance)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "When provided, remove only bindings for this cluster or list of clusters ( single value or list. Example: 0x0200 or [ 0x200, 0x300] ) Otherwise\\: removes bindings for all clusters"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "tuya_magic": {
+            "description": "Do Tuya magic spell (= make most Tuya devices work normally)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to execute command"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "zcl_cmd": {
+            "name": "Send Cluster Command",
+            "description": "Send cluster command",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to send\\ command to"
+                },
+                "manf": {
+                    "name": "Manufacturer Id",
+                    "description": "Manufacturer id (0 = No manufacturer id, empty=possibly automatic)"
+                },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "target endpoint"
+                },
+                "cluster": {
+                    "name": "Target Cluster",
+                    "description": "target cluster"
+                },
+                "cmd": {
+                    "name": "Command Id",
+                    "description": "Command Id to execute"
+                },
+                "args": {
+                    "name": "Command Arguments",
+                    "description": "Arguments for command when needed (as per zigpy's definition corresponding to Zigbee Library Cluster (ZCL) specification)"
+                },
+                "tries": {
+                    "name": "Tries",
+                    "description": "Number of times the zigbee packet should be attempted"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "zdo_join_with_code": {
+            "name": "Allow a device to join with a code",
+            "description": "Allow a device to join with a code (bellows radio type only)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Entity name, device name, or IEEE address of the node to request rejoin"
+                },
+                "command_data": {
+                    "name": "Device accepting the Join",
+                    "description": "Node used to accept the rejoin (Entity name, device name, or IEEE address of the node)"
+                },
+                "code": {
+                    "name": "Code",
+                    "description": "The code the device needs to present"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "znp_backup": {
+            "name": "Backup ZNP Coordinator",
+            "description": "Backup coordinator data (znp, bellows/ezsp)",
+            "fields": {
+                "command_data": {
+                    "name": "Backup File Suffix",
+                    "description": "Suffix for backup file"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                },
+                "expect_reply": {
+                    "name": "Expect Reply",
+                    "description": "Wait for/expect a reply (not used yet)"
+                }
+            }
+        },
+        "zha_devices": {
+            "name": "Get/Export Device Information",
+            "description": "Export device information (Response, CSV File, Event)",
+            "fields": {
+                "ieee": {
+                    "name": "Device reference",
+                    "description": "Optional Entity name, device name, or IEEE address of the device to provide details for.  Defaults to all devices"
+                },
+                "command_data": {
+                    "name": "Selected Fields",
+                    "description": "Selected Fields"
+                },
+                "csvout": {
+                    "name": "CSV Filename",
+                    "description": "Filename of CSV to write read data to.  Written to 'csv' directory (can be relative as in example)."
+                },
+                "csvlabel": {
+                    "name": "CSV Sort Column",
+                    "description": "Column to sort table by"
+                },
+                "event_success": {
+                    "name": "Success Event Name",
+                    "description": "Event name in case of success"
+                },
+                "event_fail": {
+                    "name": "Fail Event Name",
+                    "description": "Event name in case of failure"
+                },
+                "event_done": {
+                    "name": "Done Event Name",
+                    "description": "Event name when the service call did all its work (either success or failure).  Has event data with relevant attributes."
+                },
+                "fail_exception": {
+                    "name": "Exception When Failure",
+                    "description": "Throw exception when success==False, useful to stop scripts, automations"
+                }
+            }
+        }
+    }
+}

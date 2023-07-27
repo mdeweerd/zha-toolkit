@@ -66,7 +66,8 @@ execute:
             - znp_restore
     ieee:
       name: Device reference
-      description: Entity name, device name, or IEEE address of the node to execute          command
+      description: Entity name, device name, or IEEE address of the node to execute
+        command
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
@@ -80,7 +81,7 @@ execute:
       selector:
         text:
     manf:
-      name: Manufacturer_id
+      name: Manufacturer Id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -120,7 +121,7 @@ execute:
           max: 0xFFFF
           mode: box
     attribute:
-      name: Attribute Id
+      name: Attribute Id or Name
       description: target attribute id (or name, accepted in most cases)
       selector:
         number:
@@ -200,7 +201,7 @@ execute:
       description: >-
         When defined, the read attribute is converted using this template before writing
         it to the state.
-      example: "{{ value / 100 }}"
+      example: '{{ value / 100 }}'
       selector:
         text:
     force_update:
@@ -292,18 +293,21 @@ execute:
       selector:
         text:
 add_group:
+  name: Add Group
   description: Add group to endpoint groups list of device.  May be equivalent to
     `add_to_group`
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: endpoint to get information for (all endpoints when not set)
       selector:
         number:
@@ -311,6 +315,7 @@ add_group:
           max: 255
           mode: box
     command_data:
+      name: Group Id
       description: Group id to add
       example: 0x0002
       required: true
@@ -320,6 +325,7 @@ add_group:
           max: 0xFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -327,16 +333,19 @@ add_group:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -344,6 +353,7 @@ add_group:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
@@ -352,14 +362,16 @@ add_to_group:
   description: Add device to group
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: endpoint to remove group from (or all EP if not set)
       selector:
         number:
@@ -367,6 +379,7 @@ add_to_group:
           max: 255
           mode: box
     command_data:
+      name: Removed Group Id
       description: Group id to remove
       example: 0x0002
       required: true
@@ -376,6 +389,7 @@ add_to_group:
           max: 0xFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -383,16 +397,19 @@ add_to_group:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -400,24 +417,29 @@ add_to_group:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 all_routes_and_neigbours:
+  name: Scan all Routes and Neighbours
   description: Scan for all routes and neighbours, results saved to config/scans/...
   fields:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -425,20 +447,24 @@ all_routes_and_neigbours:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 attr_read:
-  description: Read Attribute (ZHA-Toolkit)
+  name: Read Attribute
+  description: Read Attribute
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -446,6 +472,7 @@ attr_read:
         entity:
           integration: zha
     manf:
+      name: Manufacturer Id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -453,6 +480,7 @@ attr_read:
           max: 0xFFFF
           mode: box
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -460,6 +488,7 @@ attr_read:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: target cluster
       required: true
       selector:
@@ -468,6 +497,7 @@ attr_read:
           max: 0xFFFF
           mode: box
     attribute:
+      name: Attribute Id or Name
       description: target attribute id (or name, accepted in most cases)
       required: true
       selector:
@@ -476,6 +506,7 @@ attr_read:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -483,12 +514,14 @@ attr_read:
           max: 255
           mode: box
     state_id:
+      name: state_id
       description: >-
         When defined, name of state to write the read attribute value to
       example: sensor.example
       selector:
         text:
     state_attr:
+      name: State Attribute
       description: >-
         When defined, attribute in state_id to write the read attribute
         value to.  Write to state value when missing (and state_id is defined)
@@ -496,13 +529,15 @@ attr_read:
       selector:
         text:
     state_value_template:
+      name: State Value Template
       description: >-
         When defined, the read attribute is converted using this template before writing
-        it to the state.      example:
-        "{{ value / 100 }}"
+        it to the state.
+      example: '{{ value / 100 }}'
       selector:
         text:
     force_update:
+      name: Force Update
       description: >
         Force an update event when the state is written
         When not set or false, if the state value is unchanged, the update may not
@@ -511,6 +546,7 @@ attr_read:
       selector:
         boolean:
     use_cache:
+      name: Use Cache
       description: >
         Use zigpy attribute cache to get the value of an attribute.
         (Does not send a zigbee packet to read the attribute)
@@ -518,16 +554,19 @@ attr_read:
       selector:
         boolean:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -535,36 +574,43 @@ attr_read:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     allow_create:
+      name: Allow Create
       description: >-
         Allow state creation (given by state_id) if it does not exist
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
     csvout:
+      name: CSV Filename
       description: >-
         Filename of CSV to write read data to.  Written to 'csv' directory
       example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
+      name: CSV Label
       description: Label to use for read value (in CSV file)
       example: SecretAttributeName
       selector:
         text:
 attr_write:
-  description: Write Attribute (ZHA-Toolkit)
+  name: Write Attribute
+  description: Write Attribute
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute\
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -572,6 +618,7 @@ attr_write:
         entity:
           integration: zha
     manf:
+      name: Manufacturer Id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -579,6 +626,7 @@ attr_write:
           max: 0xFFFF
           mode: box
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -586,6 +634,7 @@ attr_write:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: target cluster
       required: true
       selector:
@@ -594,6 +643,7 @@ attr_write:
           max: 0xFFFF
           mode: box
     attribute:
+      name: Attribute Id or Name
       description: target attribute id (or name, accepted in most cases)
       required: true
       selector:
@@ -602,6 +652,7 @@ attr_write:
           max: 0xFFFF
           mode: box
     attr_type:
+      name: Attribute Type
       description: Attribute type (to write, ...)
       selector:
         number:
@@ -609,6 +660,7 @@ attr_write:
           max: 0xFFFF
           mode: box
     attr_val:
+      name: Attribute Value
       description: Attribute value to write
       required: true
       selector:
@@ -621,6 +673,7 @@ attr_write:
       selector:
         boolean:
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -628,12 +681,14 @@ attr_write:
           max: 255
           mode: box
     state_id:
+      name: State Id
       description: >-
         When defined, name of state to write the read attribute value to
       example: sensor.example
       selector:
         text:
     state_attr:
+      name: State Attribute
       description: >-
         When defined, attribute in state_id to write the read attribute
         value to.  Write to state value when missing (and state_id is defined)
@@ -641,16 +696,19 @@ attr_write:
       selector:
         text:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -658,16 +716,19 @@ attr_write:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     allow_create:
+      name: Allow Create
       description: >-
         Allow state creation (given by state_id) if it does not exist
       selector:
         boolean:
     read_before_write:
+      name: Read Before Write
       description: >-
         Read attribute before writing it (used with attr_write).  When
         the read value matches the value to write, no write is done.
@@ -675,28 +736,33 @@ attr_write:
       selector:
         boolean:
     read_after_write:
+      name: Read After Write
       description: >-
         Read attribute after writing.  Can be used to ensure the values
         match.  Defaults to True
       selector:
         boolean:
     write_if_equal:
+      name: Write If Equal
       description: >-
         Force writing the attribute even if the read attribute already
         matches.  Defaults to False
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
     csvout:
+      name: CSV Filename
       description: >-
         Filename of CSV to write read data to.  Written to 'csv' directory
       example: ../web/mycsv.csv
       selector:
         text:
     csvlabel:
+      name: CSV Label
       description: Label to use for read value (in CSV file)
       example: SecretAttributeName
       selector:
@@ -710,16 +776,19 @@ backup:
       selector:
         text:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -727,20 +796,24 @@ backup:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 bind_ieee:
+  name: Bind Cluster
   description: Bind clusters from ieee device to command_data device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -748,6 +821,7 @@ bind_ieee:
         entity:
           integration: zha
     command_data:
+      name: Bind To Device Reference
       description: 'Binding target (Entity name, device name, or IEEE address of the
         node to execute command).  By default: coordinator'
       example: 00:0d:6f:00:05:7d:2d:34
@@ -756,6 +830,7 @@ bind_ieee:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: 'Target endpoint (when missing: all endpoints)'
       selector:
         number:
@@ -763,6 +838,7 @@ bind_ieee:
           max: 255
           mode: box
     dst_endpoint:
+      name: Destination Endpoint
       description: 'Destination endpoint (when missing: first EP with matching cluster)'
       selector:
         number:
@@ -770,6 +846,7 @@ bind_ieee:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: Target cluster (or all internally defined ones)
       selector:
         number:
@@ -777,6 +854,7 @@ bind_ieee:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -784,16 +862,19 @@ bind_ieee:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -801,11 +882,13 @@ bind_ieee:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
@@ -813,8 +896,9 @@ bind_group:
   description: Bind clusters from ieee device to command_data device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -822,6 +906,7 @@ bind_group:
         entity:
           integration: zha
     command_data:
+      name: Target Binding Group
       description: >-
         Target group for binding
       example: 00:0d:6f:00:05:7d:2d:34
@@ -832,6 +917,7 @@ bind_group:
           max: 0xFFFF
           mode: box
     endpoint:
+      name: Target Endpoint
       description: 'Target endpoint (when missing: all endpoints)'
       selector:
         number:
@@ -839,6 +925,7 @@ bind_group:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: 'Target cluster (when missing: all internally defined cluster)'
       selector:
         number:
@@ -846,6 +933,7 @@ bind_group:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -853,16 +941,19 @@ bind_group:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -870,21 +961,25 @@ bind_group:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 binds_get:
+  name: Get Binding Table
   description: >-
     Get binding table from device.
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -892,6 +987,7 @@ binds_get:
         entity:
           integration: zha
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -899,16 +995,19 @@ binds_get:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -916,21 +1015,25 @@ binds_get:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 binds_remove_all:
+  name: Remove All Bindings from Device
   description: >-
     Remove (Unbind) all bindings from device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -938,17 +1041,19 @@ binds_remove_all:
         entity:
           integration: zha
     command_data:
+      name: Remove Bindings with This Device
       description: >-
-        When provided, remove only bindings towards this device\n(Entity name,\ndevice
-        name, or\nIEEE address of the binding destination)
+        When provided, remove only bindings towards this device (Entity name, device
+        name, or IEEE address of the binding destination)
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
           integration: zha
     cluster:
+      name: Target Cluster
       description: >-
-        When provided, remove only bindings for this cluster or list of clusters\n(
-        single value or list.\nExample: 0x0200 or [ 0x200, 0x300] )
+        When provided, remove only bindings for this cluster or list of clusters (
+        single value or list. Example: 0x0200 or [ 0x200, 0x300] )
         Otherwise\: removes bindings for all clusters
       selector:
         number:
@@ -956,6 +1061,7 @@ binds_remove_all:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -963,16 +1069,19 @@ binds_remove_all:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -980,22 +1089,26 @@ binds_remove_all:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 conf_report:
+  name: Configure Attribute Reporting
   description: >-
-    Configure attribute reporting\nYou can set a high value for tries
+    Configure attribute reporting. You can set a high value for tries
     (100 or more) for sleepy devices."
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command"
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1003,6 +1116,7 @@ conf_report:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -1010,6 +1124,7 @@ conf_report:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: target cluster
       required: true
       selector:
@@ -1018,6 +1133,7 @@ conf_report:
           max: 0xFFFF
           mode: box
     attribute:
+      name: Attribute Id or Name
       description: target attribute id (or name, accepted in most cases)
       required: true
       selector:
@@ -1026,6 +1142,7 @@ conf_report:
           max: 0xFFFF
           mode: box
     min_interval:
+      name: Minimum Report Interval
       description: Minimum report interval (seconds)
       required: true
       selector:
@@ -1034,6 +1151,7 @@ conf_report:
           max: 0xFFFF
           mode: box
     max_interval:
+      name: Maximum Report Interval
       description: Maximum report interval (seconds)
       required: true
       selector:
@@ -1042,6 +1160,7 @@ conf_report:
           max: 0xFFFF
           mode: box
     reportable_change:
+      name: Minimum Reportable Change
       description: Minimum change before reporting
       required: true
       selector:
@@ -1050,6 +1169,7 @@ conf_report:
           max: 65535
           mode: box
     manf:
+      name: Manufacturer Id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -1057,6 +1177,7 @@ conf_report:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1064,16 +1185,19 @@ conf_report:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1081,22 +1205,26 @@ conf_report:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 conf_report_read:
+  name: Read Report Configuration
   description: >-
-    Read attribute report configuration\nYou can set a high value for tries
+    Read attribute report configuration You can set a high value for tries
     (100 or more) for sleepy devices."
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command"
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1104,6 +1232,7 @@ conf_report_read:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -1111,6 +1240,7 @@ conf_report_read:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: target cluster
       required: true
       selector:
@@ -1119,8 +1249,9 @@ conf_report_read:
           max: 0xFFFF
           mode: box
     attribute:
+      name: Attribute Id or Name
       description: >-
-        target attribute id (or name, accepted in most cases),\n
+        target attribute id (or name, accepted in most cases),
         can be a list
       required: true
       selector:
@@ -1129,6 +1260,7 @@ conf_report_read:
           max: 0xFFFF
           mode: box
     manf:
+      name: Manufacturer Id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -1136,6 +1268,7 @@ conf_report_read:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1143,16 +1276,19 @@ conf_report_read:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1160,16 +1296,19 @@ conf_report_read:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 ezsp_backup:
-  description: Backup coordinator data (znp, bellows/ezsp)
+  name: Backup Ezsp Coordinator
+  description: Backup coordinator data (bellows/ezsp)
   fields:
     command_data:
       description: Suffix for backup file
@@ -1177,16 +1316,19 @@ ezsp_backup:
       selector:
         text:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1194,26 +1336,31 @@ ezsp_backup:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 get_groups:
+  name: Get Groups Set On Endpoint
   description: Get groups set on the endpoints of the device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: endpoint to get information for (all endpoints when not set)
       selector:
         number:
@@ -1221,6 +1368,7 @@ get_groups:
           max: 255
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1228,16 +1376,19 @@ get_groups:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1245,32 +1396,38 @@ get_groups:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 get_routes_and_neigbours:
+  name: Scan Device's Routes and Neighbours
   description: Scan for all routes and neighbours, results saved to config/scans/...
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1278,26 +1435,31 @@ get_routes_and_neigbours:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 get_zll_groups:
+  name: Get Groups for ZLL Cluster
   description: Get groups for zll_cluster (if present)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1305,16 +1467,19 @@ get_zll_groups:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1322,19 +1487,23 @@ get_zll_groups:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 ha_set_state:
+  name: Set/Update Home Assistant State
   description: Set/update a Home Assistant state
   fields:
     attr_val:
+      name: Attribute Value
       description: value to write to the state (or use in the template)
       required: true
       selector:
         text:
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1342,6 +1511,7 @@ ha_set_state:
           max: 255
           mode: box
     state_id:
+      name: state_id
       description: >-
         Name of state to write the read attribute value to
       example: sensor.example
@@ -1349,6 +1519,7 @@ ha_set_state:
       selector:
         text:
     state_attr:
+      name: State Attribute
       description: >-
         When defined, attribute in state_id to write the read attribute
         value to.  Write to state value when missing (and state_id is defined)
@@ -1356,6 +1527,7 @@ ha_set_state:
       selector:
         text:
     state_value_template:
+      name: State Value Template
       description: >-
         When defined, used as a template expression.
         For example "value + 10" will be internally interpreted as "{{ value + 10 }}"
@@ -1364,21 +1536,25 @@ ha_set_state:
       selector:
         text:
     allow_create:
+      name: Allow Create
       description: >-
         Allow state creation (given by state_id) if it does not exist
       selector:
         boolean:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1386,11 +1562,13 @@ ha_set_state:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     csvout:
+      name: CSV Filename
       description: >-
         Filename of CSV to write the update state information to.  Written to 'csv'
         directory.
@@ -1398,17 +1576,20 @@ ha_set_state:
       selector:
         text:
     csvlabel:
+      name: CSV Label
       description: Label to designate value written (in CSV file)
       example: Updated from zha_toolkit.ha_set_state
       selector:
         text:
 handle_join:
+  name: Handle Join
   description: >-
     Handle join (ZHA should re-interrogate the device as on new join)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1416,6 +1597,7 @@ handle_join:
         entity:
           integration: zha
     command_data:
+      name: Short Network Address
       description: >-
         Short network address of the device (optional, if known in ZHA)
       selector:
@@ -1424,9 +1606,11 @@ handle_join:
           max: 0xFFFF
           mode: box
 ieee_ping:
+  name: Ping Device
   description: Ping device
   fields:
     ieee:
+      name: Device reference
       description: >-
         Ping: Requests IEEE address (using the known NWK Address)
       example: 00:0d:6f:00:05:7d:2d:34
@@ -1435,16 +1619,19 @@ ieee_ping:
         entity:
           integration: zha
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1452,35 +1639,41 @@ ieee_ping:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 rejoin:
+  name: Send Rejoin Request
   description: >-
     Send a rejoin request to the device (=leave with rejoin)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to request rejoin
+        Entity name, device name, or IEEE address of the node to request rejoin
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     command_data:
+      name: Node to send the Rejoin
       description: >-
-        Node used to accept the rejoin (Entity name,\ndevice name, or\nIEEE address
+        Node used to accept the rejoin (Entity name, device name, or IEEE address
         of the node)
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
           integration: zha
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1488,16 +1681,19 @@ rejoin:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1505,21 +1701,25 @@ rejoin:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 leave:
+  name: Send Leave Request
   description: >-
     Send a Leave request to the device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to leave
+        Entity name, device name, or IEEE address of the node to leave
         the network
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1527,6 +1727,7 @@ leave:
         entity:
           integration: zha
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1534,16 +1735,19 @@ leave:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1551,20 +1755,24 @@ leave:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 misc_reinitialize:
+  name: Reinitialize Device
   description: Reinitialize device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command"
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1572,17 +1780,20 @@ misc_reinitialize:
         entity:
           integration: zha
 misc_settime:
+  name: Set Time
   description: Set Time Cluster attributes (Time, DST - except TimeStatus)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address
+        Entity name, device name, or IEEE address
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -1590,6 +1801,7 @@ misc_settime:
           max: 255
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1597,16 +1809,19 @@ misc_settime:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1614,28 +1829,33 @@ misc_settime:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     read_before_write:
+      name: Read Before Write
       description: >-
         Read attributes before writing them
       selector:
         boolean:
     read_after_write:
+      name: Read After Write
       description: >-
         Read attribute after writing.  Can be used to ensure the values
         match.  Defaults to True
       selector:
         boolean:
 ota_notify:
+  name: Trigger Device's Firmware Update
   description: Notify a device that an update is available, after triggering ota image
     providers to fetch new images.
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: entity.name_of_zigbee_device
       required: true
@@ -1643,17 +1863,20 @@ ota_notify:
         entity:
           integration: zha
     download:
+      name: Enable Firmware Download
       description: >-
         When True, download FW from KKoenk's list that possibly matches devices.
       selector:
         boolean:
     path:
+      name: Firmware Directory
       description: >-
         Path to write ota image(s) to (defaults to zha:zigpy_config:ota:otau_directory
         value or /config/zigpy_ota)
       selector:
         text:
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1661,16 +1884,19 @@ ota_notify:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: ota_notify_success
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: ota_notify_fail
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the images were updated and the device notified (either success
         or failure).
@@ -1678,30 +1904,36 @@ ota_notify:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 register_services:
+  name: Register Services
   description: >-
-    Reregister zha-toolkit services\nUseful during development when they
+    Reregister zha-toolkit services Useful during development when they
     are updated in __init__.py
 remove_all_groups:
+  name: Remove All Groups from Endpoint
   description: Remove all groups from (selected) endpoints on device
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: endpoint to remove group from (all endpoints when not set)
       selector:
         number:
@@ -1709,6 +1941,7 @@ remove_all_groups:
           max: 255
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1716,16 +1949,19 @@ remove_all_groups:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1733,22 +1969,26 @@ remove_all_groups:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 remove_from_group:
+  name: Remove Endpoints from Group
   description: Remove device endpoints from group
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: endpoint to remove group from (or all EP if not set)
       selector:
         number:
@@ -1756,6 +1996,7 @@ remove_from_group:
           max: 255
           mode: box
     command_data:
+      name: Group Id
       description: Group id to remove
       example: 0x0002
       required: true
@@ -1765,6 +2006,7 @@ remove_from_group:
           max: 0xFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1772,16 +2014,19 @@ remove_from_group:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1789,23 +2034,27 @@ remove_from_group:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 remove_group:
+  name: Remove Group from Endpoint
   description: Remove group from endpoint groups list of device.  May be equivalent
     to `remove_from_group`
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node
+        Entity name, device name, or IEEE address of the node
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: endpoint to remove group from (or all EP if not set)
       selector:
         number:
@@ -1813,6 +2062,7 @@ remove_group:
           max: 255
           mode: box
     command_data:
+      name: Group Id
       description: Group id to remove
       example: 0x0002
       required: true
@@ -1822,6 +2072,7 @@ remove_group:
           max: 0xFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1829,16 +2080,19 @@ remove_group:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1846,16 +2100,19 @@ remove_group:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
 scan_device:
+  name: Scan Device
   description: Scan device (result written to file in /config/scans)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1863,6 +2120,7 @@ scan_device:
         entity:
           integration: zha
     endpoint:
+      name: Target Endpoint
       description: Target endpoint, or list of endpoints
       example: 1
       selector:
@@ -1871,6 +2129,7 @@ scan_device:
           max: 255
           mode: box
     tries:
+      name: Tries
       description: Number of times a zigbee packet is repeated when no response
       selector:
         number:
@@ -1878,16 +2137,19 @@ scan_device:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1895,21 +2157,25 @@ scan_device:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 unbind_coordinator:
+  name: Remove Bindings to Coordinator
   description: >-
     Remove (Unbind) all bindings from device to the coordinator (your HA Instance)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1917,9 +2183,10 @@ unbind_coordinator:
         entity:
           integration: zha
     cluster:
+      name: Target Cluster
       description: >-
-        When provided, remove only bindings for this cluster or list of clusters\n(
-        single value or list.\nExample: 0x0200 or [ 0x200, 0x300] )
+        When provided, remove only bindings for this cluster or list of clusters (
+        single value or list. Example: 0x0200 or [ 0x200, 0x300] )
         Otherwise\: removes bindings for all clusters
       selector:
         number:
@@ -1927,6 +2194,7 @@ unbind_coordinator:
           max: 0xFFFF
           mode: box
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1934,16 +2202,19 @@ unbind_coordinator:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1951,11 +2222,13 @@ unbind_coordinator:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
@@ -1964,8 +2237,9 @@ tuya_magic:
     Do Tuya magic spell (= make most Tuya devices work normally)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to execute
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -1973,6 +2247,7 @@ tuya_magic:
         entity:
           integration: zha
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -1980,16 +2255,19 @@ tuya_magic:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -1997,20 +2275,24 @@ tuya_magic:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 zcl_cmd:
+  name: Send Cluster Command
   description: Send cluster command
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to send\
+        Entity name, device name, or IEEE address of the node to send\
         command to
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
@@ -2018,6 +2300,7 @@ zcl_cmd:
         entity:
           integration: zha
     manf:
+      name: Manufacturer Id
       description: Manufacturer id (0 = No manufacturer id, empty=possibly automatic)
       selector:
         number:
@@ -2025,6 +2308,7 @@ zcl_cmd:
           max: 0xFFFF
           mode: box
     endpoint:
+      name: Target Endpoint
       description: target endpoint
       selector:
         number:
@@ -2032,6 +2316,7 @@ zcl_cmd:
           max: 255
           mode: box
     cluster:
+      name: Target Cluster
       description: target cluster
       required: true
       selector:
@@ -2040,6 +2325,7 @@ zcl_cmd:
           max: 0xFFFF
           mode: box
     cmd:
+      name: Command Id
       description: Command Id to execute
       required: true
       selector:
@@ -2048,12 +2334,14 @@ zcl_cmd:
           max: 0xFF
           mode: box
     args:
+      name: Command Arguments
       description: Arguments for command when needed (as per zigpy's definition corresponding
         to Zigbee Library Cluster (ZCL) specification)
       example: [1, abcd, 3]
       selector:
         text:
     tries:
+      name: Tries
       description: Number of times the zigbee packet should be attempted
       selector:
         number:
@@ -2061,16 +2349,19 @@ zcl_cmd:
           max: 255
           mode: box
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -2078,35 +2369,41 @@ zcl_cmd:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 zdo_join_with_code:
+  name: Allow a device to join with a code
   description: >-
     Allow a device to join with a code (bellows radio type only)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Entity name,\ndevice name, or\nIEEE address of the node to request rejoin
+        Entity name, device name, or IEEE address of the node to request rejoin
       example: 00:0d:6f:00:05:7d:2d:34
       required: true
       selector:
         entity:
           integration: zha
     command_data:
+      name: Device accepting the Join
       description: >-
-        Node used to accept the rejoin (Entity name,\ndevice name, or\nIEEE address
+        Node used to accept the rejoin (Entity name, device name, or IEEE address
         of the node)
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
         entity:
           integration: zha
     code:
+      name: Code
       description: >-
         The code the device needs to present
       example: '01234567'
@@ -2114,16 +2411,19 @@ zdo_join_with_code:
       selector:
         text:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -2131,33 +2431,40 @@ zdo_join_with_code:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 znp_backup:
+  name: Backup ZNP Coordinator
   description: Backup coordinator data (znp, bellows/ezsp)
   fields:
     command_data:
+      name: Backup File Suffix
       description: Suffix for backup file
       example: _bathroom_added
       selector:
         text:
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -2165,32 +2472,38 @@ znp_backup:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
     expect_reply:
+      name: Expect Reply
       description: Wait for/expect a reply (not used yet)
       selector:
         boolean:
 zha_devices:
-  description: Export device information to CSV file or Event
+  name: Get/Export Device Information
+  description: Export device information (Response, CSV File, Event)
   fields:
     ieee:
+      name: Device reference
       description: >-
-        Optional Entity name,\ndevice name, or IEEE address of the device to
-        provide details for.  By dfault: all devices
+        Optional Entity name, device name, or IEEE address of the device to
+        provide details for.  Defaults to all devices
       example: 00:0d:6f:00:05:7d:2d:34
       required: false
       selector:
         entity:
           integration: zha
     command_data:
-      description: List of columns for csv file
+      name: Selected Fields
+      description: Selected Fields
       example: [ieee, lqi, name]
       selector:
         text:
     csvout:
+      name: CSV Filename
       description: >-
         Filename of CSV to write read data to.  Written to 'csv' directory
         (can be relative as in example).
@@ -2198,6 +2511,7 @@ zha_devices:
       selector:
         text:
     csvlabel:
+      name: CSV Sort Column
       description: Column to sort table by
       example: lqi
       selector:
@@ -2221,16 +2535,19 @@ zha_devices:
             - device_reg_id
             - area_id
     event_success:
+      name: Success Event Name
       description: Event name in case of success
       example: my_read_success_trigger_event
       selector:
         text:
     event_fail:
+      name: Fail Event Name
       description: Event name in case of failure
       example: my_read_fail_trigger_event
       selector:
         text:
     event_done:
+      name: Done Event Name
       description: >-
         Event name when the service call did all its work (either success
         or failure).  Has event data with relevant attributes.
@@ -2238,6 +2555,7 @@ zha_devices:
       selector:
         text:
     fail_exception:
+      name: Exception When Failure
       description: >-
         Throw exception when success==False, useful to stop scripts, automations
       selector:
