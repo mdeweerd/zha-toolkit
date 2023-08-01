@@ -251,9 +251,11 @@ documentation updates.
 - Check this README.
 - Use [`scan_device`](#scan_device-scan-a-deviceread-all-attribute-values)
   to find out more about your device.
-- Use events to see what happens.
-- Use `home_assistant.log` to see what happened.
-- Set the log level to debug ([See Setup](#setup)) to get more facts.
+- Use the Service Response to see what happens.
+- Use Events to see what happens (if you can't use the service Response).
+- Use `home-assistant.log` to see what happened.
+- Set the log level to debug
+  ([See Setup](#setting-logger-verbosity-dynamically) to get more facts.
 - Check the
   [Github open and closed issues](https://github.com/mdeweerd/zha-toolkit/issues?q=is%3Aissue)
 - Check the
