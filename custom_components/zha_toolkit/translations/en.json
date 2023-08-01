@@ -9,7 +9,7 @@
                     "description": "Command name"
                 },
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "command_data": {
@@ -139,7 +139,7 @@
             "description": "Add group to endpoint groups list of device.  May be equivalent to `add_to_group`",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "endpoint": {
@@ -177,7 +177,7 @@
             "description": "Add device to group",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "endpoint": {
@@ -241,7 +241,7 @@
             "description": "Read Attribute",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "manf": {
@@ -265,7 +265,7 @@
                     "description": "Number of times the zigbee packet should be attempted"
                 },
                 "state_id": {
-                    "name": "state_id",
+                    "name": "State Id",
                     "description": "When defined, name of state to write the read attribute value to"
                 },
                 "state_attr": {
@@ -323,7 +323,7 @@
             "description": "Write Attribute",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "manf": {
@@ -447,7 +447,7 @@
             "description": "Bind clusters from ieee device to command_data device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "command_data": {
@@ -497,7 +497,7 @@
             "description": "Bind clusters from ieee device to command_data device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "command_data": {
@@ -543,7 +543,7 @@
             "description": "Get binding table from device.",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "tries": {
@@ -577,7 +577,7 @@
             "description": "Remove (Unbind) all bindings from device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "command_data": {
@@ -619,7 +619,7 @@
             "description": "Configure attribute reporting. You can set a high value for tries (100 or more) for sleepy devices.\"",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command\""
                 },
                 "endpoint": {
@@ -681,7 +681,7 @@
             "description": "Read attribute report configuration You can set a high value for tries (100 or more) for sleepy devices.\"",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command\""
                 },
                 "endpoint": {
@@ -761,7 +761,7 @@
             "description": "Get groups set on the endpoints of the device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "endpoint": {
@@ -795,7 +795,7 @@
             "description": "Scan for all routes and neighbours, results saved to config/scans/...",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "event_success": {
@@ -825,7 +825,7 @@
             "description": "Get groups for zll_cluster (if present)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "tries": {
@@ -909,7 +909,7 @@
             "description": "Handle join (ZHA should re-interrogate the device as on new join)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "command_data": {
@@ -923,7 +923,7 @@
             "description": "Ping device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Ping: Requests IEEE address (using the known NWK Address)"
                 },
                 "event_success": {
@@ -953,7 +953,7 @@
             "description": "Send a rejoin request to the device (=leave with rejoin)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to request rejoin"
                 },
                 "command_data": {
@@ -991,7 +991,7 @@
             "description": "Send a Leave request to the device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to leave the network"
                 },
                 "tries": {
@@ -1025,7 +1025,7 @@
             "description": "Reinitialize device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command\""
                 }
             }
@@ -1035,7 +1035,7 @@
             "description": "Set Time Cluster attributes (Time, DST - except TimeStatus)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address"
                 },
                 "endpoint": {
@@ -1077,7 +1077,7 @@
             "description": "Notify a device that an update is available, after triggering ota image providers to fetch new images.",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "download": {
@@ -1123,7 +1123,7 @@
             "description": "Remove all groups from (selected) endpoints on device",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "endpoint": {
@@ -1157,7 +1157,7 @@
             "description": "Remove device endpoints from group",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "endpoint": {
@@ -1195,7 +1195,7 @@
             "description": "Remove group from endpoint groups list of device.  May be equivalent to `remove_from_group`",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node"
                 },
                 "endpoint": {
@@ -1233,7 +1233,7 @@
             "description": "Scan device (result written to file in /config/scans)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "endpoint": {
@@ -1271,7 +1271,7 @@
             "description": "Remove (Unbind) all bindings from device to the coordinator (your HA Instance)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "cluster": {
@@ -1309,7 +1309,7 @@
             "description": "Do Tuya magic spell (= make most Tuya devices work normally)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
                 "tries": {
@@ -1343,7 +1343,7 @@
             "description": "Send cluster command",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to send\\ command to"
                 },
                 "manf": {
@@ -1397,7 +1397,7 @@
             "description": "Allow a device to join with a code (bellows radio type only)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to request rejoin"
                 },
                 "command_data": {
@@ -1465,7 +1465,7 @@
             "description": "Export device information (Response, CSV File, Event)",
             "fields": {
                 "ieee": {
-                    "name": "Device reference",
+                    "name": "Device Reference",
                     "description": "Optional Entity name, device name, or IEEE address of the device to provide details for.  Defaults to all devices"
                 },
                 "command_data": {
