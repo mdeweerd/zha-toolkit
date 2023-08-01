@@ -56,6 +56,10 @@ ZHA Toolkit can also:
   - [Highlights](#highlights)
 - [Table of Contents](#table-of-contents)
 - [Setup](#setup)
+  - ["Downloading" zha-toolkit to the `custom_components` directory](#downloading-zha-toolkit-to-the-custom_components-directory)
+  - [Enabling zha-toolkit](#enabling-zha-toolkit)
+  - [Setting permemant logging verbosity](#setting-permemant-logging-verbosity)
+  - [Setting logger verbosity dynamically](#setting-logger-verbosity-dynamically)
 - [Automations](#automations)
 - [Using `zha-toolkit`](#using-zha-toolkit)
 - [General recommendations](#general-recommendations)
@@ -129,6 +133,8 @@ ZHA Toolkit can also:
 
 # Setup
 
+## "Downloading" zha-toolkit to the `custom_components` directory
+
 ZHA Toolkit uses the well-known HACS installation mechanism. It is
 recommended to use HACS which facilitates the installation of many other
 custom components as well.
@@ -147,6 +153,8 @@ If you are not using HACS, you need add the files in
 [installNoHacsWithGit.sh](scripts/installNoHacsWithGit.sh) for possible
 procedures.
 
+## Enabling zha-toolkit
+
 In all cases (HACS or manual), the ZHA Toolkit integration is only active
 on your Home Assistance instance after adding next line to
 `configuration.yaml`, and restarting Home Assistant.
@@ -154,6 +162,8 @@ on your Home Assistance instance after adding next line to
 ```yaml
 zha_toolkit:
 ```
+
+## Setting permemant logging verbosity
 
 Before restarting, you may also want to enable debug verbosity.
 `zha-toolkit` isn't verbose when you use it occasionnaly. As it's a
@@ -173,6 +183,8 @@ logger:
   logs:
     custom_components.zha_toolkit: debug
 ```
+
+## Setting logger verbosity dynamically
 
 You can also change the log configuration dynamically by calling the
 `logger.setlevel` service. Example that sets the debug level for this
