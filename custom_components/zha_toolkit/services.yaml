@@ -425,7 +425,7 @@ add_to_group:
         Throw exception when success==False, useful to stop scripts, automations
       selector:
         boolean:
-all_routes_and_neigbours:
+all_routes_and_neighbours:
   name: Scan all Routes and Neighbours
   description: Scan for all routes and neighbours, results saved to config/scans/...
   fields:
