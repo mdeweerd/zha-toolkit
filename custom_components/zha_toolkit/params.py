@@ -85,6 +85,7 @@ class SERVICE_consts:  # pylint: disable=too-few-public-methods
     REMOVE_GROUP = "remove_group"
     SCAN_DEVICE = "scan_device"
     STATE_VALUE_TEMPLATE = "state_value_template"
+    TUYA_MAGIC = "tuya_magic"
     UNBIND_COORDINATOR = "unbind_coordinator"
     UNBIND_GROUP = "unbind_group"
     ZCL_CMD = "zcl_cmd"

@@ -462,6 +462,14 @@ SERVICE_SCHEMAS = {
         },
         extra=vol.ALLOW_EXTRA,
     ),
+    S.TUYA_MAGIC: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
     S.UNBIND_COORDINATOR: vol.Schema(
         {
             vol.Required(ATTR_IEEE): vol.Any(
