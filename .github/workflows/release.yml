@@ -4,6 +4,7 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   release_zip_file:
@@ -18,8 +19,7 @@ jobs:
         uses: home-assistant/actions/helpers/version@master
 
       - name: Set version number
-        run: >-
-          python3 ${{ github.workspace }}/.github/scripts/update_hacs_manifest.py --version ${{ steps.version.outputs.version }}
+        run: python3 ${{ github.workspace }}/.github/scripts/update_hacs_manifest.py --version ${{ steps.version.outputs.version }}
       - name: Create zip
         run: |
           cd custom_components/zha_toolkit
