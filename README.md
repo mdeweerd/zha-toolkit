@@ -653,6 +653,8 @@ data:
   cluster: 0xb04
   attribute: 0x50f
   # Optional, read the value from memory cache, do not make a zigbee read request.
+  # Can be false, true, 0, 1 or 2 where '2' requests to fallback to a real read
+  # if the value is not in cache.
   use_cache: true
   # Optional, state to write the read value to
   state_id: sensor.test
@@ -712,6 +714,9 @@ attribute read may need many tries.
 So this technique allows reading the value from the attribute cache. It
 does not use the attribute cache database table, but tries to get the value
 from the in-memory cache.
+
+When `use_cache` is 2, an actual read will be executed if the attribute is
+not in cache.
 
 ```yaml
 service: zha_toolkit.attr_read
@@ -786,7 +791,6 @@ data:
   read_after_write: true
   # Write attribute when the read value matches (defaults to False)
   write_if_equal: false
-
 ```
 
 Using the symbolic name of the attribute, and automatic endpoint selection.

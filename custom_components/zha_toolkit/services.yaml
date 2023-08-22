@@ -217,7 +217,9 @@ execute:
       name: Use Cache
       description: >
         Use zigpy attribute cache to get the value of an attribute.
-        (Does not send a zigbee packet to read the attribute)
+        (Does not send a zigbee packet to read the attribute).
+        Can also be 0, 1 or 2, where 2 has a special meaning with attr_write
+        where it falls back to an actual read when the value is not in cache.
       example: true
       selector:
         boolean:
@@ -550,7 +552,9 @@ attr_read:
       name: Use Cache
       description: >
         Use zigpy attribute cache to get the value of an attribute.
-        (Does not send a zigbee packet to read the attribute)
+        (Does not send a zigbee packet to read the attribute).
+        Can also be 0, 1 or 2, where 2 has a special meaning
+        where it falls back to an actual read when the value is not in cache.
       example: true
       selector:
         boolean:
@@ -670,7 +674,10 @@ attr_write:
       name: Use Cache
       description: >
         Use zigpy attribute cache to get the value of an attribute.
-        (Does not send a zigbee packet to read the attribute)
+        (Does not send a zigbee packet to read the attribute).
+        Can also be 0, 1 or 2, where 2 has a special meaning
+        where it falls back to an actual read (when reading before a write)
+        when the value is not in cache.
       example: true
       selector:
         boolean:
