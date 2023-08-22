@@ -12,6 +12,10 @@ from .params import INTERNAL_PARAMS as p
 LOGGER = logging.getLogger(__name__)
 
 
+def add_task_info(event_data, task):
+    event_data["task"] = {"name": task.get_name(), "done": task.done()}
+
+
 async def leave(app, listener, ieee, cmd, data, service, params, event_data):
     if ieee is None or not data:
         raise ValueError("Need 'ieee' and command_data'")
@@ -128,7 +132,7 @@ async def zdo_scan_now(
 
     LOGGER.debug("Scanning topology")
     task = asyncio.create_task(app.topology.scan())
-    event_data["task"] = task
+    add_task_info(event_data, task)
 
 
 async def zdo_flood_parent_annce(
@@ -146,7 +150,7 @@ async def zdo_flood_parent_annce(
         return
 
     flooder_task = asyncio.create_task(_flood_with_parent_annce(app))
-    event_data["task"] = flooder_task
+    add_task_info(event_data, flooder_task)
     app.flooder_task = flooder_task
 
 
