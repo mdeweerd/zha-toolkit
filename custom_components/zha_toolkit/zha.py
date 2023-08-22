@@ -56,6 +56,7 @@ async def zha_devices(
     # may be slimmed down.  Ensures that devices is set in case
     # an exception occurs.
     event_data["devices"] = devices
+    event_data["selectDeviceFields"] = selectDeviceFields
 
     if params[p.CSV_LABEL] is not None and isinstance(
         params[p.CSV_LABEL], str
