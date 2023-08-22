@@ -58,7 +58,7 @@ ZHA Toolkit can also:
 - [Setup](#setup)
   - ["Downloading" zha-toolkit to the `custom_components` directory](#downloading-zha-toolkit-to-the-custom_components-directory)
   - [Enabling zha-toolkit](#enabling-zha-toolkit)
-  - [Setting permemant logging verbosity](#setting-permemant-logging-verbosity)
+  - [Setting permanent logging verbosity](#setting-permanent-logging-verbosity)
   - [Setting logger verbosity dynamically](#setting-logger-verbosity-dynamically)
 - [Automations](#automations)
 - [Using `zha-toolkit`](#using-zha-toolkit)
@@ -163,7 +163,7 @@ on your Home Assistance instance after adding next line to
 zha_toolkit:
 ```
 
-## Setting permemant logging verbosity
+## Setting permanent logging verbosity
 
 Before restarting, you may also want to enable debug verbosity.
 `zha-toolkit` isn't verbose when you use it occasionnaly. As it's a
@@ -471,7 +471,7 @@ Events in Home Assistant are a way to trigger or proceed in automations and
 scripts, and convey data.
 
 All zha-toolkit commands support setting event names that are fired at the
-the end of the command execution.
+end of the command execution.
 
 You can interactively listen for events in the Developer Tools>Events page
 which is a good way to check the result of a zha-toolkit service that you
@@ -653,6 +653,8 @@ data:
   cluster: 0xb04
   attribute: 0x50f
   # Optional, read the value from memory cache, do not make a zigbee read request.
+  # Can be false, true, 0, 1 or 2 where '2' requests to fallback to a real read
+  # if the value is not in cache.
   use_cache: true
   # Optional, state to write the read value to
   state_id: sensor.test
@@ -712,6 +714,9 @@ attribute read may need many tries.
 So this technique allows reading the value from the attribute cache. It
 does not use the attribute cache database table, but tries to get the value
 from the in-memory cache.
+
+When `use_cache` is 2, an actual read will be executed if the attribute is
+not in cache.
 
 ```yaml
 service: zha_toolkit.attr_read
@@ -786,7 +791,6 @@ data:
   read_after_write: true
   # Write attribute when the read value matches (defaults to False)
   write_if_equal: false
-
 ```
 
 Using the symbolic name of the attribute, and automatic endpoint selection.
@@ -930,7 +934,7 @@ data:
 ### `unbind_coordinator`: Remove all bindings to the coordinator
 
 Remove all bindings from the device to the coordinator. Typically, on
-device initialisation Home Assistant sets up bindings with the main
+device initialization Home Assistant sets up bindings with the main
 clusters to that it is informed about state changes.
 
 This command will use `binds_remove_all` and set the coordinator's ieee
@@ -1144,13 +1148,13 @@ data:
 
 `misc_reinitialize` is a pretty dirty (white-hat) hack to reinitialize a
 device by making zigpy think the device is not initialized, and then
-requesting an initialisation.
+requesting an initialization.
 
 This is more than `handle_join` which is not reinitializing much when the
 device is already set up in zigpy.
 
 `misc_reinitialize` sets several device attributes to None and False so
-that the zigpy initialisation code will proceed with initialisation.
+that the zigpy initialization code will proceed with initialization.
 
 ```yaml
 service: zha_toolkit.misc_reinitialize
@@ -1502,7 +1506,7 @@ This section lists the services that specifically target ZNP processors.
 
 ### `znp_nvram_backup`: Backup ZNP NVRAM data
 
-The output is written to the customisation directory as
+The output is written to the customization directory as
 `local/nvram_backup.json` when `command_data` is empty or not provided.
 When `command_data` is provided, it is added just after nvram_backup.
 
@@ -1552,7 +1556,7 @@ service: zha_toolkit.znp_nvram_reset
 Used to transfer to another ZNP key later, backup or simply get network key
 and other info.
 
-The output is written to the customisation directory as
+The output is written to the customization directory as
 `local/nwk_backup.json` when `command_data` is empty or not provided. When
 `command_data` is provided, it is added just after "nwk_backup".
 

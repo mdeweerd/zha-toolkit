@@ -351,7 +351,8 @@ async def attr_write(  # noqa: C901
         or (len(attr_write_list) == 0)
         or (cmd != S.ATTR_WRITE)
     ):
-        if use_cache:
+        if use_cache > 0:
+            # Try to get value from cache
             if attr_id in cluster._attr_cache:
                 result_read = ({attr_id: cluster._attr_cache[attr_id]}, {})
                 LOGGER.debug(
@@ -363,8 +364,11 @@ async def attr_write(  # noqa: C901
                     f"Attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X}"
                     " not in cache"
                 )
-                success = False
-        else:
+                # Fail if not falling back
+                success = use_cache == 1
+        if use_cache == 0 or (  # Pure read
+            result_read is None and use_cache == 2
+        ):  # Not in cache, fall back
             LOGGER.debug("Request attr read %s", attr_read_list)
             # pylint: disable=unexpected-keyword-arg
             result_read = await u.cluster_read_attributes(

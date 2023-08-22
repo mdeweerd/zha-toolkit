@@ -75,7 +75,7 @@ SERVICE_SCHEMAS = {
             # vol.Optional(P.STATE_VALUE_TEMPLATE): cv.template,
             vol.Optional(P.STATE_VALUE_TEMPLATE): cv.string,
             vol.Optional(P.FORCE_UPDATE): cv.boolean,
-            vol.Optional(P.USE_CACHE): cv.boolean,
+            vol.Optional(P.USE_CACHE): vol.Any(vol.Range(0, 2), cv.boolean),
             vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
             vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
@@ -128,7 +128,7 @@ SERVICE_SCHEMAS = {
             # vol.Optional(P.STATE_VALUE_TEMPLATE): cv.template,
             vol.Optional(P.STATE_VALUE_TEMPLATE): cv.string,
             vol.Optional(P.FORCE_UPDATE): cv.boolean,
-            vol.Optional(P.USE_CACHE): cv.boolean,
+            vol.Optional(P.USE_CACHE): vol.Any(vol.Range(0, 2), cv.boolean),
             vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.OUTCSV): cv.string,
             vol.Optional(P.CSVLABEL): cv.string,
@@ -161,7 +161,7 @@ SERVICE_SCHEMAS = {
             # vol.Optional(P.STATE_VALUE_TEMPLATE): cv.template,
             vol.Optional(P.STATE_VALUE_TEMPLATE): cv.string,
             vol.Optional(P.FORCE_UPDATE): cv.boolean,
-            vol.Optional(P.USE_CACHE): cv.boolean,
+            vol.Optional(P.USE_CACHE): vol.Any(vol.Range(0, 2), cv.boolean),
             vol.Optional(P.ALLOW_CREATE): cv.boolean,
             vol.Optional(P.READ_BEFORE_WRITE): cv.boolean,
             vol.Optional(P.READ_AFTER_WRITE): cv.boolean,
@@ -373,6 +373,9 @@ SERVICE_SCHEMAS = {
     S.LEAVE: vol.Schema(
         {
             vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Required(ATTR_COMMAND_DATA): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
         },
