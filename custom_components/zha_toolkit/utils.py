@@ -813,7 +813,7 @@ def extractParams(  # noqa: C901
         )
 
     if P.USE_CACHE in rawParams:
-        params[p.USE_CACHE] = str2bool(rawParams[P.USE_CACHE])
+        params[p.USE_CACHE] = str2int(rawParams[P.USE_CACHE])
 
     if P.EVENT_DONE in rawParams:
         params[p.EVT_DONE] = rawParams[P.EVENT_DONE]
