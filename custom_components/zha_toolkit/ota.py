@@ -4,6 +4,7 @@ import os
 from glob import glob
 
 import aiohttp
+import zigpy
 
 from . import DEFAULT_OTAU
 from . import utils as u
@@ -155,6 +156,25 @@ async def download_sonoff_ota(listener, ota_dir):
                 LOGGER.warning("Exception getting '%s': %s", url, e)
 
 
+async def download_zigpy_ota(app, listener):
+    LOGGER.debug("Zigpy download procedure starting")
+    for _, (ota, _) in app.ota._listeners.items():
+        if isinstance(ota, zigpy.ota.provider.FileStore):
+            # Skip files provider
+            continue
+        await ota.refresh_firmware_list()
+        for image_key, image in ota._cache.items():
+            url = getattr(image, "url", None)
+            LOGGER.error("Try getting %r, %r, %r", image_key, url, image)
+            try:
+                img = await app.ota.get_ota_image(
+                    image_key.manufacturer_id, image_key.image_type, model=None
+                )
+                LOGGER.info("Got image %r", getattr(img, "header", None))
+            except Exception as e:
+                LOGGER.error("%r while getting %r - %s", e, image_key, url)
+
+
 async def ota_update_images(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
@@ -165,20 +185,21 @@ async def ota_update_images(
 async def ota_notify(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
+    LOGGER.error("OTA_notify")
     event_data["PAR"] = params
     if params[p.DOWNLOAD]:
-        # Download FW from koenkk's list
         if params[p.PATH]:
             ota_dir = params[p.PATH]
         else:
             ota_dir = DEFAULT_OTAU
 
         LOGGER.debug(
-            "OTA image download requested - default:%s, effective: %s",
-            DEFAULT_OTAU,
+            "OTA image download to '%s' (Default dir is:'%s')",
             ota_dir,
+            DEFAULT_OTAU,
         )
 
+        await download_zigpy_ota(app, listener)
         await download_koenkk_ota(listener, ota_dir)
         await download_sonoff_ota(listener, ota_dir)
 
