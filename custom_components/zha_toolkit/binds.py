@@ -611,7 +611,7 @@ async def binds_get(
                 bindings[next_idx] = bind_info
                 next_idx += 1
 
-            if next_idx + 1 >= total:
+            if next_idx >= total:
                 done = True
                 success = True
             else:
