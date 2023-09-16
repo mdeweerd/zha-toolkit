@@ -447,6 +447,17 @@ async def binds_remove_all(
             # as the field is not ok.
             tgt_ieee = (await u.get_device(app, listener, data)).ieee
 
+    # Determine endpoints to unbind
+    endpoints = []
+
+    u_endpoint_id = params[p.EP_ID]
+    if u_endpoint_id is not None and u_endpoint_id != "":
+        if not isinstance(u_endpoint_id, list):
+            u_endpoint_id = [u_endpoint_id]
+
+        # unbind user provided endpoints instead
+        endpoints = u_endpoint_id
+
     # Determine clusters to unbind
     clusters = []
 
@@ -478,6 +489,7 @@ async def binds_remove_all(
             if addr_mode == 1:
                 # group
                 src_ieee = t.EUI64.convert(binding["src"])
+                ep_id = u.str2int(binding["src_ep"])
                 cluster_id = u.str2int(binding["cluster_id"])
 
                 dst_addr = MultiAddress()
@@ -488,14 +500,18 @@ async def binds_remove_all(
                     dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
                     dst_addr.ieee = dst_ieee
 
-                if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
-                    len(clusters) == 0 or cluster_id in clusters
-                ):
+                match_filter = (
+                    (tgt_ieee is None or dst_ieee == tgt_ieee)
+                    and (len(endpoints) == 0 or ep_id in endpoints)
+                    and (len(clusters) == 0 or cluster_id in clusters)
+                )
+
+                if match_filter:
                     res = await u.retry_wrapper(
                         zdo.request,
                         ZDOCmd.Unbind_req,
                         src_ieee,
-                        binding["src_ep"],
+                        ep_id,
                         cluster_id,
                         dst_addr,
                         tries=params[p.TRIES],
@@ -511,18 +527,24 @@ async def binds_remove_all(
                 dst_addr.addrmode = addr_mode
                 dst_addr.ieee = dst_ieee
                 dst_addr.endpoint = t.uint8_t(binding["dst"]["dst_ep"])
+                ep_id = u.str2int(binding["src_ep"])
                 cluster_id = u.str2int(binding["cluster_id"])
                 # LOGGER.debug(
                 #     f"filter {tgt_ieee} {dst_ieee} {clusters} {cluster_id}"
                 # )
-                if (tgt_ieee is None or dst_ieee == tgt_ieee) and (
-                    len(clusters) == 0 or cluster_id in clusters
-                ):
+
+                match_filter = (
+                    (tgt_ieee is None or dst_ieee == tgt_ieee)
+                    and (len(endpoints) == 0 or ep_id in endpoints)
+                    and (len(clusters) == 0 or cluster_id in clusters)
+                )
+
+                if match_filter:
                     res = await u.retry_wrapper(
                         zdo.request,
                         ZDOCmd.Unbind_req,
                         src_ieee,
-                        binding["src_ep"],
+                        ep_id,
                         cluster_id,
                         dst_addr,
                         tries=params[p.TRIES],

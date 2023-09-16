@@ -925,8 +925,10 @@ data:
   command_data: 00:12:4b:00:01:6a:41:0c
   # Optional - name of generated event when done
   event_done: zhat_event
+  # Optional - Endpoint or list of endpoints for which to remove bindings
+  # endpoint: [20, 30]
   # Optional - Cluster or list of clusters for which to remove bindings
-  # cluster: [ 0x0006, 0x0300]
+  # cluster: [0x0006, 0x0300]
   # Optional
   tries: 100
 ```
@@ -947,8 +949,10 @@ data:
   ieee: entity.my_thermostat_entity
   # Optional - name of generated event when done
   event_done: zhat_event
+  # Optional - Endpoint or list of endpoints for which to remove bindings
+  # endpoint: [20, 30]
   # Optional - Cluster or list of clusters for which to remove bindings
-  # cluster: [ 0x0006, 0x0300]
+  # cluster: [0x0006, 0x0300]
   # Optional
   tries: 100
 ```
