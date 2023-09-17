@@ -77,7 +77,6 @@ async def zha_devices(
             pass
 
     if doGenerateCSV or selectDeviceFields:
-
         if doGenerateCSV:
             # Write CSV header
             u.append_to_csvfile(

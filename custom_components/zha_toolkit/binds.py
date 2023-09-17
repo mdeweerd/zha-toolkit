@@ -24,7 +24,6 @@ BINDABLE_IN_CLUSTERS = [
 async def bind_group(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-
     LOGGER.debug("running 'bind group' command: %s", service)
     if ieee is None:
         LOGGER.error("missing ieee")

@@ -208,7 +208,6 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
 async def misc_settime(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-
     from bisect import bisect
     from datetime import datetime
 

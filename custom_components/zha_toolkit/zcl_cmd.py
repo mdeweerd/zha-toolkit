@@ -97,7 +97,6 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     False,
                 )
             elif cmd_id not in cluster.server_commands:
-
                 cmd_schema: list[Any] = []
 
                 if cmd_args is not None:

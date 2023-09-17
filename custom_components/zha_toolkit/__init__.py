@@ -23,12 +23,12 @@ DATA_ZHATK = "zha_toolkit"
 LOGGER = logging.getLogger(__name__)
 
 try:
-    LOADED_VERSION
+    LOADED_VERSION  # type:ignore[used-before-def]
 except NameError:
     LOADED_VERSION = ""
 
 try:
-    DEFAULT_OTAU
+    DEFAULT_OTAU   # type:ignore[used-before-def]
 except NameError:
     DEFAULT_OTAU = "/config/zigpy_ota"
 

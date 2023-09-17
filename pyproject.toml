@@ -1,0 +1,5 @@
+[tool.yamlfix]
+# allow_duplicate_keys = true
+#line_length = 280
+line_length = 80
+# none_representation = "null"

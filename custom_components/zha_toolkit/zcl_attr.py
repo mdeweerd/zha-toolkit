@@ -454,7 +454,6 @@ async def attr_write(  # noqa: C901
         )
         and cmd == "attr_write"
     ):
-
         if result_read is not None:
             event_data["read_before"] = result_read
             result_read = None

@@ -138,7 +138,6 @@ async def zdo_scan_now(
 async def zdo_flood_parent_annce(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-
     LOGGER.debug("flooding network with parent annce")
 
     flooder_task = getattr(app, "flooder_task", None)
@@ -155,7 +154,6 @@ async def zdo_flood_parent_annce(
 
 
 async def _flood_with_parent_annce(app):
-
     coord = app.get_device(app.ieee)
 
     while True:
