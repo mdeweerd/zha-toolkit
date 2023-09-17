@@ -584,9 +584,13 @@
                     "name": "Remove Bindings with This Device",
                     "description": "When provided, remove only bindings towards this device (Entity name, device name, or IEEE address of the binding destination)"
                 },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "When provided, remove only bindings for this endpoint or list of endpoints (single value or list. Example: 20 or [20, 30]) Otherwise: removes bindings for all endpoints"
+                },
                 "cluster": {
                     "name": "Target Cluster",
-                    "description": "When provided, remove only bindings for this cluster or list of clusters ( single value or list. Example: 0x0200 or [ 0x200, 0x300] ) Otherwise\\: removes bindings for all clusters"
+                    "description": "When provided, remove only bindings for this cluster or list of clusters (single value or list. Example: 0x0200 or [0x200, 0x300]) Otherwise: removes bindings for all clusters"
                 },
                 "tries": {
                     "name": "Tries",
@@ -1274,9 +1278,13 @@
                     "name": "Device Reference",
                     "description": "Entity name, device name, or IEEE address of the node to execute command"
                 },
+                "endpoint": {
+                    "name": "Target Endpoint",
+                    "description": "When provided, remove only bindings for this endpoint or list of endpoints (single value or list. Example: 20 or [20, 30]) Otherwise: removes bindings for all endpoints"
+                },
                 "cluster": {
                     "name": "Target Cluster",
-                    "description": "When provided, remove only bindings for this cluster or list of clusters ( single value or list. Example: 0x0200 or [ 0x200, 0x300] ) Otherwise\\: removes bindings for all clusters"
+                    "description": "When provided, remove only bindings for this cluster or list of clusters (single value or list. Example: 0x0200 or [0x200, 0x300]) Otherwise: removes bindings for all clusters"
                 },
                 "tries": {
                     "name": "Tries",

@@ -210,6 +210,9 @@ SERVICE_SCHEMAS = {
             vol.Optional(ATTR_COMMAND_DATA): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
+            vol.Optional(P.ENDPOINT): vol.Any(
+                vol.Range(0, 255), [vol.Range(0, 255)]
+            ),
             vol.Optional(P.CLUSTER): vol.Any(
                 vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
             ),
@@ -474,6 +477,9 @@ SERVICE_SCHEMAS = {
         {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+            vol.Optional(P.ENDPOINT): vol.Any(
+                vol.Range(0, 255), [vol.Range(0, 255)]
             ),
             vol.Optional(P.CLUSTER): vol.Any(
                 vol.Range(0, 0xFFFF), [vol.Range(0, 0xFFFF)]
