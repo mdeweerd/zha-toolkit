@@ -185,7 +185,7 @@ async def ota_update_images(
 async def ota_notify(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    LOGGER.error("OTA_notify")
+    LOGGER.debug("OTA_notify")
     event_data["PAR"] = params
     if params[p.DOWNLOAD]:
         if params[p.PATH]:
