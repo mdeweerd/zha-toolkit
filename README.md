@@ -1022,9 +1022,11 @@ Set the minimum and maximum delay between two reports and set the level of
 change required to report a value (before the maximum delay is expired).
 
 This example configures Temperature reporting on a SonOff SNZB-02
-(eWeLink/TH01). Note that you (may) need to press the button on the
-thermometer just after requesting the command (it's a sleepy device and
-does not wake up often).
+(eWeLink/TH01). Note that on some devices you (may) need to press the
+button on the thermometer just after requesting the command (it's a sleepy
+device and does not wake up often). With a temperature sensor it may be
+more appropriate to sure a high temperature rise to force it to report the
+temperature and allow ZHA to send the configuration.
 
 After succeeding the configuration, the minimum delay was actually 20s
 which is likely the measurement period itself. The changes were reported

@@ -201,7 +201,9 @@ async def conf_report_read(
                         r_conf["type"] = f"0x{rcfg.datatype:02X}"
                         r_conf["min_interval"] = (rcfg.min_interval,)
                         r_conf["max_interval"] = (rcfg.max_interval,)
-                        # r_conf["reportable_change"] = rcfg.reportable_change,
+                        r_conf["reportable_change"] = (
+                            getattr(rcfg, "reportable_change", None),
+                        )
                     except Exception as e:  # nosec
                         LOGGER.error(
                             "Issue when reading AttributesReportingConfig"
