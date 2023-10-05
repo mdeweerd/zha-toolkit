@@ -671,9 +671,12 @@ def register_services(hass):  # noqa: C901
         global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
 
         zha = hass_ref.data["zha"]
-        zha_gw: Optional[ZHAGateway] = zha.get("gateway", None)
-        if zha_gw is None:
+        zha_gw: Optional[ZHAGateway] = None
+        if isinstance(zha, dict):
             zha_gw = zha.get("zha_gateway", None)
+        else:
+            zha_gw = zha.gateway
+
         if zha_gw is None:
             LOGGER.error(
                 "Missing hass.data['zha']/gateway - not found/running %s - on %r",
