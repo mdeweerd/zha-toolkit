@@ -9,6 +9,7 @@ import re
 import typing
 from enum import Enum
 
+from homeassistant.components.zha.core.gateway import ZHAGateway
 from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
@@ -274,10 +275,12 @@ async def get_ieee(app, listener, ref):
         # Todo: check if NWK address
         entity_registry = (
             # Deprecated >= 2022.6.0
-            await listener._hass.helpers.entity_registry.async_get_registry()
+            await get_hass(
+                listener
+            ).helpers.entity_registry.async_get_registry()
             if not is_ha_ge("2022.6")
-            else listener._hass.helpers.entity_registry.async_get(
-                listener._hass
+            else get_hass(listener).helpers.entity_registry.async_get(
+                get_hass(listener)
             )
         )
         # LOGGER.debug("registry %s",entity_registry)
@@ -291,10 +294,12 @@ async def get_ieee(app, listener, ref):
 
         device_registry = (
             # Deprecated >= 2022.6.0
-            await listener._hass.helpers.device_registry.async_get_registry()
+            await get_hass(
+                listener
+            ).helpers.device_registry.async_get_registry()
             if not is_ha_ge("2022.6")
-            else listener._hass.helpers.device_registry.async_get(
-                listener._hass
+            else get_hass(listener).helpers.device_registry.async_get(
+                get_hass(listener)
             )
         )
         registry_device = device_registry.async_get(registry_entity.device_id)
@@ -445,7 +450,7 @@ def write_json_to_file(
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
     else:
-        base_dir = listener._hass.config.config_dir
+        base_dir = get_hass(listener).config.config_dir
 
     out_dir = os.path.join(base_dir, subdir)
     if not os.path.isdir(out_dir):
@@ -477,7 +482,7 @@ def append_to_csvfile(
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
     else:
-        base_dir = listener._hass.config.config_dir
+        base_dir = get_hass(listener).config.config_dir
 
     out_dir = os.path.join(base_dir, subdir)
     if not os.path.isdir(out_dir):
@@ -970,3 +975,11 @@ def is_zigpy_ge(version: str) -> bool:
 def is_ha_ge(version: str) -> bool:
     """Test if zigpy library is newer than version"""
     return parse_version(getHaVersion()) >= parse_version(version)
+
+
+def get_hass(gateway: ZHAGateway):
+    """HA Version independent way of getting hass from gateway"""
+    hass = getattr(gateway, "_hass", None)
+    if hass is None:
+        hass = getattr(gateway, "hass", None)
+    return hass

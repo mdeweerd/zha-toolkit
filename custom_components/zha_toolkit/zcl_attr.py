@@ -532,7 +532,8 @@ async def attr_write(  # noqa: C901
                         )
 
                     template = Template(
-                        "{{ " + state_template_str + " }}", listener._hass
+                        "{{ " + state_template_str + " }}",
+                        u.get_hass(listener),
                     )
                     try:
                         val = template.async_render(value=val, attr_val=val)
@@ -561,7 +562,7 @@ async def attr_write(  # noqa: C901
                         attr_id,
                     )
                 u.set_state(
-                    listener._hass,
+                    u.get_hass(listener),
                     params[p.STATE_ID],
                     val,
                     key=params[p.STATE_ATTR],

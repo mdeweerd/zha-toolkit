@@ -28,7 +28,7 @@ async def get_routes_and_neighbours(
     ieee_tail = "".join([f"{o:02X}" for o in device.ieee])
 
     fname = os.path.join(
-        listener._hass.config.config_dir,
+        u.get_hass(listener).config.config_dir,
         "scans",
         f"routes_and_neighbours_{ieee_tail}.json",
     )
@@ -75,7 +75,7 @@ async def all_routes_and_neighbours(
     event_data["result"] = all_routes
 
     all_routes_name = os.path.join(
-        listener._hass.config.config_dir,
+        u.get_hass(listener).config.config_dir,
         "scans",
         "all_routes_and_neighbours.json",
     )
