@@ -1,10 +1,11 @@
 import importlib
 import logging
+from typing import Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.util import dt as dt_util
 from homeassistant.components.zha.core.gateway import ZHAGateway
+from homeassistant.util import dt as dt_util
 from zigpy import types as t
 
 from . import params as PARDEFS
@@ -29,7 +30,7 @@ except NameError:
     LOADED_VERSION = ""
 
 try:
-    DEFAULT_OTAU   # type:ignore[used-before-def]
+    DEFAULT_OTAU  # type:ignore[used-before-def]
 except NameError:
     DEFAULT_OTAU = "/config/zigpy_ota"
 
@@ -669,13 +670,20 @@ def register_services(hass):  # noqa: C901
         LOGGER.info("Running ZHA Toolkit service: %s", service)
         global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
 
-        try:
-            zha_gw: ZHAGateway = hass_ref.data["zha"].gateway
-        except AttributeError:
+        zha = hass_ref.data["zha"]
+        zha_gw: Optional[ZHAGateway] = zha.get("gateway", None)
+        if zha_gw is None:
+            zha_gw = zha.get("zha_gateway", None)
+        if zha_gw is None:
             LOGGER.error(
-                "Missing hass.data['zha'].gateway - not running %s",
+                "Missing hass.data['zha']/gateway - not found/running %s - on %r",
                 service,
+                zha,
             )
+        LOGGER.debug(
+            "Got hass.data['zha']/gateway %r",
+            zha_gw,
+        )
 
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
@@ -708,7 +716,7 @@ def register_services(hass):  # noqa: C901
         # Decode parameters
         params = u.extractParams(service)
 
-        app = zha_gw.application_controller
+        app = zha_gw.application_controller  # type: ignore
 
         ieee = await u.get_ieee(app, zha_gw, ieee_str)
 
@@ -767,7 +775,7 @@ def register_services(hass):  # noqa: C901
         handler_result = None
         try:
             handler_result = await handler(
-                zha_gw.application_controller,
+                zha_gw.application_controller,  # type: ignore
                 zha_gw,
                 ieee,
                 cmd,
@@ -791,15 +799,15 @@ def register_services(hass):  # noqa: C901
                 LOGGER.debug(
                     "Fire %s -> %s", params[p.EVT_SUCCESS], event_data
                 )
-                zha_gw.hass.bus.fire(params[p.EVT_SUCCESS], event_data)
+                u.get_hass(zha_gw).bus.fire(params[p.EVT_SUCCESS], event_data)
         else:
             if params[p.EVT_FAIL] is not None:
                 LOGGER.debug("Fire %s -> %s", params[p.EVT_FAIL], event_data)
-                zha_gw.hass.bus.fire(params[p.EVT_FAIL], event_data)
+                u.get_hass(zha_gw).bus.fire(params[p.EVT_FAIL], event_data)
 
         if params[p.EVT_DONE] is not None:
             LOGGER.debug("Fire %s -> %s", params[p.EVT_DONE], event_data)
-            zha_gw.hass.bus.fire(params[p.EVT_DONE], event_data)
+            u.get_hass(zha_gw).bus.fire(params[p.EVT_DONE], event_data)
 
         if handler_exception is not None:
             raise handler_exception
@@ -906,4 +914,4 @@ async def _register_services(hass):
 async def command_handler_register_services(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    await _register_services(listener.hass)
+    await _register_services(u.get_hass(listener))
