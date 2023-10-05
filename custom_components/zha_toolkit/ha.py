@@ -21,7 +21,7 @@ async def ha_set_state(  # noqa: C901
 
     state_template_str = params[p.STATE_VALUE_TEMPLATE]
     if state_template_str is not None:
-        template = Template("{{ " + state_template_str + " }}", listener._hass)
+        template = Template("{{ " + state_template_str + " }}", listener.hass)
         new_value = template.async_render(value=val, attr_val=val)
         val = new_value
 
@@ -40,7 +40,7 @@ async def ha_set_state(  # noqa: C901
         val,
     )
     u.set_state(
-        listener._hass,
+        listener.hass,
         params[p.STATE_ID],
         val,
         key=params[p.STATE_ATTR],

@@ -274,10 +274,10 @@ async def get_ieee(app, listener, ref):
         # Todo: check if NWK address
         entity_registry = (
             # Deprecated >= 2022.6.0
-            await listener._hass.helpers.entity_registry.async_get_registry()
+            await listener.hass.helpers.entity_registry.async_get_registry()
             if not is_ha_ge("2022.6")
-            else listener._hass.helpers.entity_registry.async_get(
-                listener._hass
+            else listener.hass.helpers.entity_registry.async_get(
+                listener.hass
             )
         )
         # LOGGER.debug("registry %s",entity_registry)
@@ -291,10 +291,10 @@ async def get_ieee(app, listener, ref):
 
         device_registry = (
             # Deprecated >= 2022.6.0
-            await listener._hass.helpers.device_registry.async_get_registry()
+            await listener.hass.helpers.device_registry.async_get_registry()
             if not is_ha_ge("2022.6")
-            else listener._hass.helpers.device_registry.async_get(
-                listener._hass
+            else listener.hass.helpers.device_registry.async_get(
+                listener.hass
             )
         )
         registry_device = device_registry.async_get(registry_entity.device_id)
@@ -445,7 +445,7 @@ def write_json_to_file(
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
     else:
-        base_dir = listener._hass.config.config_dir
+        base_dir = listener.hass.config.config_dir
 
     out_dir = os.path.join(base_dir, subdir)
     if not os.path.isdir(out_dir):
@@ -477,7 +477,7 @@ def append_to_csvfile(
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
     else:
-        base_dir = listener._hass.config.config_dir
+        base_dir = listener.hass.config.config_dir
 
     out_dir = os.path.join(base_dir, subdir)
     if not os.path.isdir(out_dir):

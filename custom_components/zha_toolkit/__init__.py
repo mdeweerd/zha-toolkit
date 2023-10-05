@@ -906,4 +906,4 @@ async def _register_services(hass):
 async def command_handler_register_services(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    await _register_services(listener._hass)
+    await _register_services(listener.hass)
