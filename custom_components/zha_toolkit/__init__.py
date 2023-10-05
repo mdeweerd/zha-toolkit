@@ -4,6 +4,7 @@ import logging
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.util import dt as dt_util
+from homeassistant.components.zha.core.gateway import ZHAGateway
 from zigpy import types as t
 
 from . import params as PARDEFS
@@ -669,10 +670,10 @@ def register_services(hass):  # noqa: C901
         global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
 
         try:
-            zha_gw = hass_ref.data["zha"]["zha_gateway"]
-        except KeyError:
+            zha_gw: ZHAGateway = hass_ref.data["zha"].gateway
+        except AttributeError:
             LOGGER.error(
-                "Missing hass.data['zha']['zha_gateway'] - not running %s",
+                "Missing hass.data['zha'].gateway - not running %s",
                 service,
             )
 
@@ -790,15 +791,15 @@ def register_services(hass):  # noqa: C901
                 LOGGER.debug(
                     "Fire %s -> %s", params[p.EVT_SUCCESS], event_data
                 )
-                zha_gw._hass.bus.fire(params[p.EVT_SUCCESS], event_data)
+                zha_gw.hass.bus.fire(params[p.EVT_SUCCESS], event_data)
         else:
             if params[p.EVT_FAIL] is not None:
                 LOGGER.debug("Fire %s -> %s", params[p.EVT_FAIL], event_data)
-                zha_gw._hass.bus.fire(params[p.EVT_FAIL], event_data)
+                zha_gw.hass.bus.fire(params[p.EVT_FAIL], event_data)
 
         if params[p.EVT_DONE] is not None:
             LOGGER.debug("Fire %s -> %s", params[p.EVT_DONE], event_data)
-            zha_gw._hass.bus.fire(params[p.EVT_DONE], event_data)
+            zha_gw.hass.bus.fire(params[p.EVT_DONE], event_data)
 
         if handler_exception is not None:
             raise handler_exception
