@@ -1,0 +1,5 @@
+# Keep workflow happy
+.*
+#example**
+#hacs.json
+README.md
