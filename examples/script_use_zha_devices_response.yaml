@@ -20,7 +20,7 @@ sequence:
         {% endfor %}
         Items: {{ ns.names | join(', ') }}
   - repeat:
-      for_each: '{{ dev_data.devices }}'
+      for_each: "{{ dev_data.devices }}"
       sequence:
         - service: system_log.write
           data:

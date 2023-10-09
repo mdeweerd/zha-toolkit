@@ -66,7 +66,8 @@ execute:
             - znp_restore
     ieee:
       name: Device Reference
-      description: Entity name, device name, or IEEE address of the node to execute
+      description:
+        Entity name, device name, or IEEE address of the node to execute
         command
       example: 00:0d:6f:00:05:7d:2d:34
       selector:
@@ -201,7 +202,7 @@ execute:
       description: >-
         When defined, the read attribute is converted using this template before writing
         it to the state.
-      example: '{{ value / 100 }}'
+      example: "{{ value / 100 }}"
       selector:
         text:
     force_update:
@@ -296,7 +297,8 @@ execute:
         text:
 add_group:
   name: Add Group
-  description: Add group to endpoint groups list of device.  May be equivalent to
+  description:
+    Add group to endpoint groups list of device.  May be equivalent to
     `add_to_group`
   fields:
     ieee:
@@ -536,7 +538,7 @@ attr_read:
       description: >-
         When defined, the read attribute is converted using this template before writing
         it to the state.
-      example: '{{ value / 100 }}'
+      example: "{{ value / 100 }}"
       selector:
         text:
     force_update:
@@ -833,8 +835,9 @@ bind_ieee:
           integration: zha
     command_data:
       name: Bind To Device Reference
-      description: 'Binding target (Entity name, device name, or IEEE address of the
-        node to execute command).  By default: coordinator'
+      description:
+        "Binding target (Entity name, device name, or IEEE address of the
+        node to execute command).  By default: coordinator"
       example: 00:0d:6f:00:05:7d:2d:34
       required: false
       selector:
@@ -842,7 +845,7 @@ bind_ieee:
           integration: zha
     endpoint:
       name: Target Endpoint
-      description: 'Target endpoint (when missing: all endpoints)'
+      description: "Target endpoint (when missing: all endpoints)"
       selector:
         number:
           min: 1
@@ -850,7 +853,7 @@ bind_ieee:
           mode: box
     dst_endpoint:
       name: Destination Endpoint
-      description: 'Destination endpoint (when missing: first EP with matching cluster)'
+      description: "Destination endpoint (when missing: first EP with matching cluster)"
       selector:
         number:
           min: 1
@@ -930,7 +933,7 @@ bind_group:
           mode: box
     endpoint:
       name: Target Endpoint
-      description: 'Target endpoint (when missing: all endpoints)'
+      description: "Target endpoint (when missing: all endpoints)"
       selector:
         number:
           min: 1
@@ -938,7 +941,7 @@ bind_group:
           mode: box
     cluster:
       name: Target Cluster
-      description: 'Target cluster (when missing: all internally defined cluster)'
+      description: "Target cluster (when missing: all internally defined cluster)"
       selector:
         number:
           min: 0
@@ -1883,7 +1886,8 @@ misc_settime:
         boolean:
 ota_notify:
   name: Trigger Device's Firmware Update
-  description: Notify a device that an update is available, after triggering ota image
+  description:
+    Notify a device that an update is available, after triggering ota image
     providers to fetch new images.
   fields:
     ieee:
@@ -2075,7 +2079,8 @@ remove_from_group:
         boolean:
 remove_group:
   name: Remove Group from Endpoint
-  description: Remove group from endpoint groups list of device.  May be equivalent
+  description:
+    Remove group from endpoint groups list of device.  May be equivalent
     to `remove_from_group`
   fields:
     ieee:
@@ -2381,7 +2386,8 @@ zcl_cmd:
           mode: box
     args:
       name: Command Arguments
-      description: Arguments for command when needed (as per zigpy's definition corresponding
+      description:
+        Arguments for command when needed (as per zigpy's definition corresponding
         to Zigbee Library Cluster (ZCL) specification)
       example: [1, abcd, 3]
       selector:
@@ -2452,7 +2458,7 @@ zdo_join_with_code:
       name: Code
       description: >-
         The code the device needs to present
-      example: '01234567'
+      example: "01234567"
       required: true
       selector:
         text:

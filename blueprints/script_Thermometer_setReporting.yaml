@@ -7,7 +7,8 @@ blueprint:
   input:
     entity_name:
       name: entity_name
-      description: A Zigbee Entity (all entities of the device resolve to the same
+      description:
+        A Zigbee Entity (all entities of the device resolve to the same
         address)
       selector:
         entity:
@@ -15,7 +16,7 @@ blueprint:
 sequence:
   - service: zha_toolkit.conf_report
     data:
-      ieee: '{{ entity_name }}'
+      ieee: "{{ entity_name }}"
       cluster: 1026
       attribute: 0
       tries: 100
@@ -25,7 +26,7 @@ sequence:
       min_interval: 19
   - service: zha_toolkit.conf_report_read
     data:
-      ieee: '{{ entity_name }}'
+      ieee: "{{ entity_name }}"
       cluster: 1026
       attribute: 0
       tries: 100

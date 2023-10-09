@@ -1,6 +1,7 @@
 ---
 alias: Read Basic Cluster
-description: Read main attributes of cluster to CSV file and 'sensor.basic_cluster'
+description:
+  Read main attributes of cluster to CSV file and 'sensor.basic_cluster'
   state.
 fields:
   entity_name:
@@ -21,10 +22,10 @@ fields:
       text:
 sequence:
   - repeat:
-      count: '7'
+      count: "7"
       sequence:
         - variables:
-            current: '{{ ( repeat.index - 1 ) }}'
+            current: "{{ ( repeat.index - 1 ) }}"
         - service: system_log.write
           data:
             logger: entity_name.read_basic_cluster_script
@@ -32,14 +33,14 @@ sequence:
             message: "{{ 'Read Attribute %u' % (repeat.index, ) }}"
         - service: zha_toolkit.attr_read
           data:
-            ieee: '{{ entity_name }}'
+            ieee: "{{ entity_name }}"
             cluster: 0
-            attribute: '{{ current }}'
+            attribute: "{{ current }}"
             tries: 3
             state_id: sensor.basic_cluster
             state_attr: '{{ "%s%04X" % (entity_name, current|int) }}'
             allow_create: true
-            csvout: '{{ csv }}'
+            csvout: "{{ csv }}"
   - service: system_log.write
     data:
       logger: entity_name.basic_cluster_read

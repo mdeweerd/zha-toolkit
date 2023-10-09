@@ -9,11 +9,12 @@ fields:
       entity:
         integration: zha
 sequence:
-  - alias: Configure the temperature cluster of the device so that it reports every
+  - alias:
+      Configure the temperature cluster of the device so that it reports every
       0.2°C every 19 seconds at most, or sends a report at least every 5 minutes
     service: zha_toolkit.conf_report
     data:
-      ieee: '{{ entity_name }}'
+      ieee: "{{ entity_name }}"
       cluster: 1026
       attribute: 0
       tries: 100
@@ -21,11 +22,12 @@ sequence:
       reportable_change: 20
       max_interval: 300
       min_interval: 19
-  - alias: Read back the report configuration so that it can be verified in the zha_done
+  - alias:
+      Read back the report configuration so that it can be verified in the zha_done
       event data
     service: zha_toolkit.conf_report_read
     data:
-      ieee: '{{ entity_name }}'
+      ieee: "{{ entity_name }}"
       cluster: 1026
       attribute: 0
       tries: 100
@@ -33,7 +35,7 @@ sequence:
   - alias: Ensure that the cluster is bound to the coordinator
     service: zha_toolkit.bind_ieee
     data:
-      ieee: 0  # 0 or false selects the coordinator in zha-toolkit
+      ieee: 0 # 0 or false selects the coordinator in zha-toolkit
       cluster: 1026
       tries: 100
       event_done: zha_done

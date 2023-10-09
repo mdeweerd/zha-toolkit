@@ -1,5 +1,5 @@
 ---
-alias: '[Lighting] Update on/off states'
+alias: "[Lighting] Update on/off states"
 description: >-
   Request on/off state of all ZHA lights.
   This allows to cope with lights that do not notify their state as expected.
@@ -20,7 +20,7 @@ action:
         - continue_on_error: true
           service: zha_toolkit.attr_read
           data:
-            ieee: '{{ repeat.item }}'
+            ieee: "{{ repeat.item }}"
             cluster: 6
             attribute: 0
             fail_exception: false

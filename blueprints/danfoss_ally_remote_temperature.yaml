@@ -2,8 +2,9 @@
 blueprint:
   domain: automation
   name: Ally Temp Update
-  description: 'Update Danfoss Ally TRV external temperature with min/max refresh
-    rate Original source: https://community.home-assistant.io/t/danfoss-ally-trv-working-with-remote-temp-sensor/276686/149'
+  description:
+    "Update Danfoss Ally TRV external temperature with min/max refresh
+    rate Original source: https://community.home-assistant.io/t/danfoss-ally-trv-working-with-remote-temp-sensor/276686/149"
   source_url: https://github.com/mdeweerd/zha-toolkit/blob/master/blueprints/danfoss_ally_remote_temperature.yaml
   input:
     ally_device:
@@ -16,7 +17,8 @@ blueprint:
             domain: climate
     temp_sensor_id:
       name: Temperature Sensor
-      description: External sensor from which the temperature will be read. Expects
+      description:
+        External sensor from which the temperature will be read. Expects
         data format 12.3 (corresponding to °C)
       selector:
         entity:
@@ -79,17 +81,18 @@ condition:
 action:
   - alias: Repeat until restarted to report temperature, or expired max_update delay
     repeat:
-      while: '{{ 1 == 1 }}'
+      while: "{{ 1 == 1 }}"
       sequence:
         - alias: Write remote temperature to Danfoss Ally
           service: zha_toolkit.attr_write
           data:
-            ieee: '{{ ieee }}'
+            ieee: "{{ ieee }}"
             cluster: 0x0201
             attribute: 0x4015
-            attr_val: '{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0) }}'
+            attr_val: "{{ (((states(temp_sensor_id)|float) + temp_offset) * 100) | round(0) }}"
             manf: 4678
-        - alias: Wait until the maximum update delay expires (automation restarts
+        - alias:
+            Wait until the maximum update delay expires (automation restarts
             when temperature changes before)
           delay:
             minutes: !input max_update_minutes
