@@ -793,6 +793,24 @@ data:
   write_if_equal: false
 ```
 
+In case ZCL Array type needs to be written, `attr_val` needs to be provided as a raw sequence of bytes,
+i.e. user is responsible to generate a sequence which complies to the ZCL spec.
+The following examples illustrates configuration of Ubisys C4 (see [the device manual](https://www.ubisys.de/wp-content/uploads/ubisys-c4-technical-reference.pdf) - section 7.8.5.2. InputActions Attribute - example):
+
+```yaml
+service: zha_toolkit.attr_write
+data:
+  ieee: 00:1f:ee:00:00:aa:aa:aa
+  endpoint: 232
+  cluster: 64512
+  attribute: 1
+  attr_type: 0x48
+  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6, 0, 2, 6, 3, 13, 4, 6, 0, 2]
+  read_before_write: false
+  read_after_write: false
+  use_cache: false
+```
+
 Using the symbolic name of the attribute, and automatic endpoint selection.
 
 ```yaml
