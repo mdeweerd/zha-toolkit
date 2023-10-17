@@ -603,6 +603,12 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             )
 
         attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
+    elif attr_type == 0xFF48:  # Array (disabled, see 'else:')
+        # let user construct the Array and pass it as raw bytes
+        array_type = attr_val_in[0]
+        array_body = t.SerializableBytes(bytes(attr_val_in[1:]))
+        attr_obj = f.TypeValue(attr_type, f.Array(array_type, array_body))
+        compare_val = None  # not implemented because of raw approach
     elif attr_type == 0xFF or attr_type is None:
         compare_val = str2int(attr_val_in)
         # This should not happen ideally
