@@ -793,9 +793,13 @@ data:
   write_if_equal: false
 ```
 
-In case ZCL Array type needs to be written, `attr_val` needs to be provided as a raw sequence of bytes,
-i.e. user is responsible to generate a sequence which complies to the ZCL spec.
-The following examples illustrates configuration of Ubisys C4 (see [the device manual](https://www.ubisys.de/wp-content/uploads/ubisys-c4-technical-reference.pdf) - section 7.8.5.2. InputActions Attribute - example):
+In case ZCL Array type needs to be written, `attr_val` needs to be provided
+as a raw sequence of bytes, i.e. user is responsible to generate a sequence
+which complies to the ZCL spec.\
+The following examples illustrates
+configuration of Ubisys C4 (see
+[the device manual](https://www.ubisys.de/wp-content/uploads/ubisys-c4-technical-reference.pdf)
+\- section 7.8.5.2. InputActions Attribute - example):
 
 ```yaml
 service: zha_toolkit.attr_write
@@ -805,10 +809,39 @@ data:
   cluster: 64512
   attribute: 1
   attr_type: 0x48
-  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6, 0, 2, 6, 3, 13, 4, 6, 0, 2]
+  # For the array type, the first to bytes compose the length (little endian)
+  #  So here: `4, 0` is 0x0004, so two elements in the array, each of 56 bytes.
+  attr_val: [4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6, 0,
+    2, 6, 3, 13, 4, 6, 0, 2]
   read_before_write: false
   read_after_write: false
   use_cache: false
+```
+
+Such a packet decoded using tshark/wireshark, the above results in:
+
+```plaintext
+ZigBee Cluster Library Frame, Command: Write Attributes, Seq: 102
+    Frame Control Field: Profile-wide (0x00)
+        .... ..00 = Frame Type: Profile-wide (0x0)
+        .... .0.. = Manufacturer Specific: False
+        .... 0... = Direction: Client to Server
+        ...0 .... = Disable Default Response: False
+    Sequence Number: 102
+    Command: Write Attributes (0x02)
+    Attribute Field
+        Attribute: Unknown (0xfde8)
+        Data Type: Array (0x48)
+        Elements Type: 56-Bit Bitmap (0x1e)
+        Elements Number: 4
+        Element #1, Bitmap: 020006010d0006
+            Bitmap56: 0x00020006010d0006
+        Element #2, Bitmap: 020006020d0106
+            Bitmap56: 0x00020006020d0106
+        Element #3, Bitmap: 020006030d0206
+            Bitmap56: 0x00020006030d0206
+        Element #4, Bitmap: 020006040d0306
+            Bitmap56: 0x00020006040d0306
 ```
 
 Using the symbolic name of the attribute, and automatic endpoint selection.
