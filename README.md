@@ -809,10 +809,13 @@ data:
   cluster: 64512
   attribute: 1
   attr_type: 0x48
-  # For the array type, the first to bytes compose the length (little endian)
-  #  So here: `4, 0` is 0x0004, so two elements in the array, each of 56 bytes.
-  attr_val: [4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6, 0,
-    2, 6, 3, 13, 4, 6, 0, 2]
+  # For the array type (type 0x48):
+  #  - The first byte is the type of items.  here 65 or 0x41: octet str.
+  #  - The second and third byte compose the length (little endian)
+  #    So here: `4, 0` is 0x0004, so two octet strings the array.
+  #  - All the octet strings in this example have a length of 6.
+  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6,
+    0, 2, 6, 3, 13, 4, 6, 0, 2]
   read_before_write: false
   read_after_write: false
   use_cache: false
@@ -821,27 +824,32 @@ data:
 Such a packet decoded using tshark/wireshark, the above results in:
 
 ```plaintext
-ZigBee Cluster Library Frame, Command: Write Attributes, Seq: 102
+ZigBee Cluster Library Frame, Command: Write Attributes, Seq: 40
     Frame Control Field: Profile-wide (0x00)
         .... ..00 = Frame Type: Profile-wide (0x0)
         .... .0.. = Manufacturer Specific: False
         .... 0... = Direction: Client to Server
         ...0 .... = Disable Default Response: False
-    Sequence Number: 102
+    Sequence Number: 40
     Command: Write Attributes (0x02)
     Attribute Field
         Attribute: Unknown (0xfde8)
         Data Type: Array (0x48)
-        Elements Type: 56-Bit Bitmap (0x1e)
+        Elements Type: Octet String (0x41)
         Elements Number: 4
-        Element #1, Bitmap: 020006010d0006
-            Bitmap56: 0x00020006010d0006
-        Element #2, Bitmap: 020006020d0106
-            Bitmap56: 0x00020006020d0106
-        Element #3, Bitmap: 020006030d0206
-            Bitmap56: 0x00020006030d0206
-        Element #4, Bitmap: 020006040d0306
-            Bitmap56: 0x00020006040d0306
+        Element #1, Octets: 00:0d:01:06:00:02
+            Octet String: 00:0d:01:06:00:02
+        Element #2, Octets: 01:0d:02:06:00:02
+            Octet String: 01:0d:02:06:00:02
+        Element #3, Octets: 02:0d:03:06:00:02
+            Octet String: 02:0d:03:06:00:02
+        Element #4, Octets: 03:0d:04:06:00:02
+            Octet String: 03:0d:04:06:00:02
+
+Decrypted ZigBee Payload (45 bytes) - only Array related data is shown:
+0000                                         48 41 04   @........(...HA.
+0010  00 06 00 0d 01 06 00 02 06 01 0d 02 06 00 02 06   ................
+0020  02 0d 03 06 00 02 06 03 0d 04 06 00 02            .............
 ```
 
 Using the symbolic name of the attribute, and automatic endpoint selection.
