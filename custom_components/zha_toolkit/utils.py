@@ -603,12 +603,6 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             )
 
         attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
-    elif attr_type == 0x48:  # Array
-        # let user construct the Array and pass it as raw bytes
-        array_type = attr_val_in[0]
-        array_body = t.SerializableBytes(bytes(attr_val_in[1:]))
-        attr_obj = f.TypeValue(attr_type, f.Array(array_type, array_body))
-        compare_val = None  # not implemented because of raw approach
     elif attr_type == 0xFF or attr_type is None:
         compare_val = str2int(attr_val_in)
         # This should not happen ideally
@@ -617,8 +611,14 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         # Try to apply conversion using foundation DATA_TYPES table
         data_type = f.DATA_TYPES[attr_type][1]
         LOGGER.debug(f"Data type '{data_type}' for attr type {attr_type}")
-        compare_val = data_type(str2int(attr_val_in))
-        attr_obj = f.TypeValue(attr_type, data_type(compare_val))
+        if isinstance(attr_val_in, list):
+            # Without length byte after serialisation:
+            compare_val = t.LVList[t.uint8_t](attr_val_in)
+            # With length byte after serialisation:
+            # compare_val = t.LVBytes(attr_val_in)
+        else:
+            compare_val = data_type(str2int(attr_val_in))
+        attr_obj = data_type(attr_type, compare_val)
         LOGGER.debug(
             "Converted %s to %s - will compare to %s - Type: 0x%02X",
             attr_val_in,
