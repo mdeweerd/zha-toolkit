@@ -812,7 +812,7 @@ data:
   # For the array type (type 0x48):
   #  - The first byte is the type of items.  here 65 or 0x41: octet str.
   #  - The second and third byte compose the length (little endian)
-  #    So here: `4, 0` is 0x0004, so two octet strings the array.
+  #    So here: `4, 0` is 0x0004, so four octet strings the array.
   #  - All the octet strings in this example have a length of 6.
   attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6,
     0, 2, 6, 3, 13, 4, 6, 0, 2]
