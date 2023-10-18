@@ -492,11 +492,20 @@ async def attr_write(  # noqa: C901
                 f"Reading attr result (attrs, status): {result_read!r}"
             )
             # read_is_equal = (result_read[0][attr_id] == compare_val)
-            success = (
-                success
-                and (len(result_read[1]) == 0 and len(result_read[0]) == 1)
-                and (result_read[0][attr_id] == compare_val)
+            success = success and (
+                len(result_read[1]) == 0 and len(result_read[0]) == 1
             )
+            if success and compare_val is not None:
+                if result_read[0][attr_id] != compare_val:
+                    success = False
+                    msg = "Read does not match expected: {!r} <> {!r}".format(
+                        result_read[0][attr_id].serialize(),
+                        compare_val.serialize(),
+                    )
+                    LOGGER.warning(msg)
+                    if "warnings" not in event_data:
+                        event_data["warnings"] = []
+                    event_data["warnings"].append(msg)
 
     if result_read is not None:
         event_data["result_read"] = result_read
