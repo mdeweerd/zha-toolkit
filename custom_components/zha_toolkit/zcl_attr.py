@@ -435,9 +435,15 @@ async def attr_write(  # noqa: C901
     write_is_equal = (
         (params[p.READ_BEFORE_WRITE])
         and (len(attr_write_list) != 0)
+        and compare_val is not None
         and (
             (attr_id in result_read[0])  # type:ignore[index]
-            and (result_read[0][attr_id] == compare_val)  # type:ignore[index]
+            and (
+                result_read[0][  # type:ignore[index]
+                    attr_id
+                ].serialize()  # type:ignore[union-attr]
+                == compare_val.serialize()
+            )
         )
     )
 
@@ -496,7 +502,10 @@ async def attr_write(  # noqa: C901
                 len(result_read[1]) == 0 and len(result_read[0]) == 1
             )
             if success and compare_val is not None:
-                if result_read[0][attr_id] != compare_val:
+                if (
+                    result_read[0][attr_id].serialize()
+                    != compare_val.serialize()
+                ):
                     success = False
                     msg = "Read does not match expected: {!r} <> {!r}".format(
                         result_read[0][attr_id].serialize(),
