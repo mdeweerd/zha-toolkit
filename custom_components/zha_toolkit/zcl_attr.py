@@ -346,11 +346,7 @@ async def attr_write(  # noqa: C901
     attr_type = params[p.ATTR_TYPE]
 
     result_read = None
-    if (
-        params[p.READ_BEFORE_WRITE]
-        or (len(attr_write_list) == 0)
-        or (cmd != S.ATTR_WRITE)
-    ):
+    if params[p.READ_BEFORE_WRITE] or (attr_read_list and cmd == S.ATTR_READ):
         if use_cache > 0:
             # Try to get value from cache
             if attr_id in cluster._attr_cache:
