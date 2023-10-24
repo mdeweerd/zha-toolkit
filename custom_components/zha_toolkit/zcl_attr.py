@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import importlib
 import logging
 
 from homeassistant.helpers.template import Template
@@ -424,6 +423,9 @@ async def attr_write(  # noqa: C901
                 attr = f.Attribute(attr_id, value=attr_val)
                 attr_write_list.append(attr)  # Write list
 
+    # Use serialize to compare if the compare_val allows it
+    use_serialize = callable(getattr(compare_val, "serialize", None))
+
     if attr_type is not None:
         event_data["attr_type"] = f"0x{attr_type:02X}"
 
@@ -439,6 +441,11 @@ async def attr_write(  # noqa: C901
                     attr_id
                 ].serialize()  # type:ignore[union-attr]
                 == compare_val.serialize()
+                if use_serialize
+                else result_read[0][  # type:ignore[index]
+                    attr_id
+                ]  # type:ignore[union-attr]
+                == compare_val
             )
         )
     )
@@ -501,11 +508,17 @@ async def attr_write(  # noqa: C901
                 if (
                     result_read[0][attr_id].serialize()
                     != compare_val.serialize()
+                    if use_serialize
+                    else result_read[0][attr_id] != compare_val
                 ):
                     success = False
                     msg = "Read does not match expected: {!r} <> {!r}".format(
-                        result_read[0][attr_id].serialize(),
-                        compare_val.serialize(),
+                        result_read[0][attr_id].serialize()
+                        if use_serialize
+                        else result_read[0][attr_id],
+                        compare_val.serialize()
+                        if use_serialize
+                        else compare_val,
                     )
                     LOGGER.warning(msg)
                     if "warnings" not in event_data:
@@ -623,11 +636,13 @@ async def attr_write(  # noqa: C901
             listener=listener,
         )
 
-    importlib.reload(u)
-    if "result_read" in event_data and not u.isJsonable(
-        event_data["result_read"]
-    ):
-        event_data["result_read"] = repr(event_data["result_read"])
+    for key in ["read_before", "result_read"]:
+        if key not in event_data:
+            continue
+        event_data[key] = (
+            u.dict_to_jsonable(event_data[key][0]),
+            event_data[key][1],
+        )
 
     # For internal use
     return result_read
