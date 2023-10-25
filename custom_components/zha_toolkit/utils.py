@@ -446,23 +446,6 @@ def get_cluster_from_params(
     return cluster
 
 
-def dict_to_hexvalues(read_dict):
-    result = {}
-    for attr_id, value in read_dict.items():
-        if callable(getattr(value, "serialize", None)):
-            value = value.serialize()
-
-        if isinstance(value, bytes):
-            try:
-                value = value.split(b"\x00")[0].decode().strip()
-            except UnicodeDecodeError:
-                value = value.hex()
-
-        result[attr_id] = value
-
-    return result
-
-
 def dict_to_jsonable(src_dict):
     result = {}
     if isJsonable(src_dict):
@@ -470,7 +453,9 @@ def dict_to_jsonable(src_dict):
     for key, value in src_dict.items():
         if not isJsonable(value):
             LOGGER.error(f"Can't convert to JSON {value!r}")
-            if callable(getattr(value, "serialize", None)):
+            if isinstance(value, bytes):
+                value = str(value, encoding="ascii")
+            elif callable(getattr(value, "serialize", None)):
                 value = value.serialize()
             else:
                 value = repr(value)
