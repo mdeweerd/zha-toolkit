@@ -453,10 +453,10 @@ def dict_to_jsonable(src_dict):
     for key, value in src_dict.items():
         if not isJsonable(value):
             LOGGER.error(f"Can't convert to JSON {value!r}")
-            if isinstance(value, bytes):
-                value = str(value, encoding="ascii")
-            elif callable(getattr(value, "serialize", None)):
+            if callable(getattr(value, "serialize", None)):
                 value = value.serialize()
+            if isinstance(value, bytes):
+                value = value.hex()
             else:
                 value = repr(value)
 
