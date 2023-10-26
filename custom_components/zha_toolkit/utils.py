@@ -634,6 +634,8 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         # Maybe in future accept:
         #  Specifying array item type in 'attr_items_type:'
         #      (/detect items type from read).
+        if isinstance(attr_val_in, str):
+            attr_val_in = bytes.fromhex(attr_val_in)
         compare_val = t.List[t.uint8_t](attr_val_in)
         array_item_type = attr_val_in[0]
         array_body = t.SerializableBytes(bytes(attr_val_in[1:]))
