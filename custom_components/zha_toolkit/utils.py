@@ -452,12 +452,17 @@ def dict_to_jsonable(src_dict):
         return src_dict
     for key, value in src_dict.items():
         if not isJsonable(value):
-            LOGGER.error(f"Can't convert to JSON {value!r}")
+            LOGGER.debug(
+                "Can't convert %r to JSON, serializing if possible.", value
+            )
             if callable(getattr(value, "serialize", None)):
+                # Serialization results in "bytes"
                 value = value.serialize()
             if isinstance(value, bytes):
-                value = value.hex()
+                # "bytes" is not compatible with json, get a "string"
+                value = str(value, encoding="ascii")
             else:
+                # Anything else: get a textual representation
                 value = repr(value)
 
         result[key] = value
@@ -634,11 +639,21 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         # Maybe in future accept:
         #  Specifying array item type in 'attr_items_type:'
         #      (/detect items type from read).
+
         if isinstance(attr_val_in, str):
-            attr_val_in = bytes.fromhex(attr_val_in)
+            attr_val_in = str.encode(attr_val_in[1:])
+
+        # Determine value to compare read values
+        #       with the value (to be) written [see attr_write].
         compare_val = t.List[t.uint8_t](attr_val_in)
+
+        # Get type of array items
         array_item_type = attr_val_in[0]
+
+        # Get body / array items.
         array_body = t.SerializableBytes(bytes(attr_val_in[1:]))
+
+        # Construct value to write as specific zigpy object
         attr_obj = f.TypeValue(attr_type, f.Array(array_item_type, array_body))
     elif attr_type == 0xFF or attr_type is None:
         compare_val = str2int(attr_val_in)
