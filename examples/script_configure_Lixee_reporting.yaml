@@ -1,0 +1,94 @@
+alias: Configure Lixee Reporting to 1Wh change and max 5 minutes
+sequence:
+  - variables:
+      ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
+      default_tries: 3
+  - service: zha_toolkit.conf_report
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 1794
+      attribute: 0
+      min_interval: 1
+      max_interval: 300
+      tries: "{{ default_tries}}"
+      reportable_change: 1
+      event_done: zha_done
+  - service: zha_toolkit.conf_report_read
+    alias: read report configuration (allows verification)
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 1794
+      attribute: 0
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - service: zha_toolkit.conf_report
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 1794
+      attribute: 0
+      min_interval: 1
+      max_interval: 300
+      tries: "{{ default_tries}}"
+      reportable_change: 1
+      event_done: zha_done
+  - service: zha_toolkit.conf_report_read
+    alias: read report configuration (allows verification)
+    data:
+      ieee: "{{ ieee }}"
+      endpoint: 1
+      cluster: 1794
+      attribute: 0
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - service: zha_toolkit.conf_report
+    alias: Active power report configuration
+    data:
+      ieee: "{{ ieee }}"
+      endpoint: 1
+      cluster: 2820
+      attribute: 1291
+      min_interval: 1
+      max_interval: 300
+      tries: "{{ default_tries}}"
+      reportable_change: 1
+      event_done: zha_done
+  - service: zha_toolkit.conf_report_read
+    alias: Active power report configuration read back
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 2820
+      attribute: 1291
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+  - service: zha_toolkit.conf_report
+    alias: Mains voltage report configuration
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 1
+      attribute: 0
+      min_interval: 1
+      max_interval: 3900
+      tries: "{{ default_tries}}"
+      reportable_change: 1
+      event_done: zha_done
+  - service: zha_toolkit.conf_report_read
+    alias: Mains voltage report configuration read back
+    data:
+      ieee: "{{ ieee }}"
+      cluster: 1
+      attribute: 0
+      tries: "{{ default_tries}}"
+      event_done: zha_done
+fields:
+  device:
+    name: Lixee
+    description: Lixee ZLinky device to configure
+    required: true
+    selector:
+      device:
+        manufacturer: LiXee
+        model: ZLinky_TIC
+        entity:
+          integration: zha
+mode: single
+
