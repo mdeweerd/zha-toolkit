@@ -1151,15 +1151,21 @@ intervals are provided, as well as the reportable change:
 
 ## `scan_device`: Scan a device/Read all attribute values
 
-This operation will discover the device attributes and read their values.
-Some values are excluded from reading, for instance Arrays as their length
-depends on the specification.
+`scan_device` will generated a report the discovered clusters, attributes,
+values and commands if the device implements this feature.
+
+This can help you in discovering what you can configure on your device and
+what the values are at some point in time.
+
+If the device does not fully support the discovery features, you could
+still write a script that would try to read the attributes that you want to
+poke using `attr_read`.
 
 The result of the scan is written to the `scan` directory located in the
 configuration directory of Home Assistant (`config/scan/*_result.txt`).
 
-The result is also added to the event data in the event\['data'\]\['scan'\]
-field
+The result is also added to the event data in the `event['data']['scan']`
+field which is also available in the response data.
 
 ```yaml
 service: zha_toolkit.scan_device
