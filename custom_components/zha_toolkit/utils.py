@@ -20,6 +20,8 @@ from .params import USER_PARAMS as P
 
 LOGGER = logging.getLogger(__name__)
 
+# pylint: disable=too-many-lines
+
 HA_VERSION = get_distribution("homeassistant").version
 ZIGPY_VERSION = get_distribution("zigpy").version
 
@@ -444,6 +446,30 @@ def get_cluster_from_params(
     return cluster
 
 
+def dict_to_jsonable(src_dict):
+    result = {}
+    if isJsonable(src_dict):
+        return src_dict
+    for key, value in src_dict.items():
+        if not isJsonable(value):
+            LOGGER.debug(
+                "Can't convert %r to JSON, serializing if possible.", value
+            )
+            if callable(getattr(value, "serialize", None)):
+                # Serialization results in "bytes"
+                value = value.serialize()
+            if isinstance(value, bytes):
+                # "bytes" is not compatible with json, get a "string"
+                value = str(value, encoding="ascii")
+            else:
+                # Anything else: get a textual representation
+                value = repr(value)
+
+        result[key] = value
+
+    return result
+
+
 def write_json_to_file(
     data, subdir, fname, desc, listener=None, normalize_name=False
 ):
@@ -603,16 +629,53 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             )
 
         attr_obj = f.TypeValue(attr_type, t.LVBytes(attr_val_in))
+    elif attr_type == 0x48:  # Array, (+Bag?, Set?)
+        # TODO: apply to Bag and Set ?
+        #
+        # Array List of bytes currently is:
+        #  First byte: type of array items
+        #  Next bytes: bytes for array items
+        #
+        # Maybe in future accept:
+        #  Specifying array item type in 'attr_items_type:'
+        #      (/detect items type from read).
+
+        if isinstance(attr_val_in, str):
+            attr_val_in = str.encode(attr_val_in[1:])
+
+        # Determine value to compare read values
+        #       with the value (to be) written [see attr_write].
+        compare_val = t.List[t.uint8_t](attr_val_in)
+
+        # Get type of array items
+        array_item_type = attr_val_in[0]
+
+        # Get body / array items.
+        array_body = t.SerializableBytes(bytes(attr_val_in[1:]))
+
+        # Construct value to write as specific zigpy object
+        attr_obj = f.TypeValue(attr_type, f.Array(array_item_type, array_body))
     elif attr_type == 0xFF or attr_type is None:
         compare_val = str2int(attr_val_in)
         # This should not happen ideally
         attr_obj = f.TypeValue(attr_type, t.LVBytes(compare_val))
     else:
         # Try to apply conversion using foundation DATA_TYPES table
+        # Note: this is not perfect and specific conversions may be needed.
         data_type = f.DATA_TYPES[attr_type][1]
         LOGGER.debug(f"Data type '{data_type}' for attr type {attr_type}")
-        compare_val = data_type(str2int(attr_val_in))
-        attr_obj = f.TypeValue(attr_type, data_type(compare_val))
+        if isinstance(attr_val_in, list):
+            # Without length byte after serialisation:
+            compare_val = t.List[t.uint8_t](attr_val_in)
+            # With length byte after serialisation:
+            # compare_val = t.LVBytes(attr_val_in)
+
+            attr_obj = data_type(compare_val)
+            # Not using : attr_obj = data_type(attr_type, compare_val)
+        #             which may add extra bytes
+        else:
+            compare_val = data_type(str2int(attr_val_in))
+            attr_obj = data_type(attr_type, compare_val)
         LOGGER.debug(
             "Converted %s to %s - will compare to %s - Type: 0x%02X",
             attr_val_in,

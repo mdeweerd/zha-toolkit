@@ -219,9 +219,10 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
             attr_type = foundation.DATA_TYPES.get(attr_rec.datatype)
             access_acl = t.uint8_t(attr_rec.acl)
 
-            if attr_rec.datatype not in [0x48] and (
-                access_acl & foundation.AttributeAccessControl.READ != 0
-            ):
+            # Note: reading back Array type was fixed in zigpy 0.58.1 .
+            if (
+                not u.is_zigpy_ge("0.58.1") or attr_rec.datatype not in [0x48]
+            ) and (access_acl & foundation.AttributeAccessControl.READ != 0):
                 to_read.append(attr_id)
 
             attr_type_hex = f"0x{attr_rec.datatype:02x}"
