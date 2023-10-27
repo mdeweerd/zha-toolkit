@@ -77,5 +77,3 @@
 - ![badge v0.5.5](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.5.5/total.svg)
 - ![badge v0.5.4](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.5.4/total.svg)
 - ![badge v0.5.3](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.5.3/total.svg)
-- ![badge v0.5.2](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.5.2/total.svg)
-- ![badge v0.5.0](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v0.5.0/total.svg)
