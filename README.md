@@ -1,4 +1,3 @@
-<style>.Box.mb-3:has(#files){display:none;}</style>
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 ![hacs_installs](https://img.shields.io/badge/dynamic/json?label=Installs%28Reported%29&query=%24.zha_toolkit.total&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json)[![zha_installs](https://img.shields.io/badge/dynamic/json?label=vs.ZHA%20Installs&query=%24.current.integrations.zha&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fdata.json)](https://analytics.home-assistant.io/integrations)
 [![Version](https://img.shields.io/github/v/release/mdeweerd/zha-toolkit)](https://github.com/mdeweerd/zha-toolkit/releases/latest)
@@ -1989,3 +1988,6 @@ The original `zha_custom` repository does not mention a license.
 
 #See [Contributing.md](Contributing.md)
 
+<style>
+.Box.mb-3:has(#files){display:none;}
+</style>
