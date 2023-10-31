@@ -1,0 +1,38 @@
+---
+alias: Set Danfoss TRV times
+sequence:
+  - variables:
+      default_tries: 3
+  - repeat:
+      sequence:
+        - alias: Set time
+          service: zha_toolkit.misc_settime
+          data:
+            ieee: "{{ repeat.item }}"
+            event_done: zha_done
+            tries: "{{ default_tries }}"
+            csvout: danfoss_config.csv
+        - alias: Set time status to synchronised
+          service: zha_toolkit.attr_write
+          data:
+            ieee: "{{ repeat.item }}"
+            cluster: 10
+            attribute: 1
+            attr_val: 2
+            tries: "{{ default_tries }}"
+            csvout: danfoss_config.csv
+      for_each: |-
+        {% set ns = namespace(trvs=[]) %}{%- for s in states
+         if device_id(s.entity_id) is not none
+         and device_attr(s.entity_id, 'manufacturer') == 'Danfoss'
+         and device_attr(s.entity_id, 'model') == 'eTRV0100'
+         %}{% set ns.trvs=(ns.trvs +[device_attr(s.entity_id, 'id')])|unique|list
+         %}{% endfor %}{{ ns.trvs }}
+description: >-
+  A script that sets/updates the time on Danfoss TRVs.
+  This is best called in an automation executed on a regular basis helping to
+  ensure that the time on the TRVs stays correct.
+  Could also be called when a TRV is detected to have been restarted,
+  or it's synchronised value set to 0.
+mode: restart
+icon: mdi:clock-outline

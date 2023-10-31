@@ -46,7 +46,7 @@ async def user_sinope_write_test(
 
     ieee = t.EUI64.deserialize(b"\xae\x09\x01\x00\x40\x91\x0b\x50")[0]
 
-    dev = app.get_device(ieee)
+    dev = u.get_device(app, listener, ieee)
 
     cluster = dev.endpoints[1].thermostat
 
@@ -82,7 +82,7 @@ async def user_zigpy_deconz(
     LOGGER.debug("Getting model from iris: %s", service)
 
     ieee = t.EUI64(b"\x00\x0d\x6f\x00\x0f\x3a\xf6\xa6")
-    dev = app.get_device(ieee=ieee)
+    dev = u.get_device(app, listener, ieee)
 
     cluster = dev.endpoints[2].basic
     res = await cluster.read_attributes(
@@ -99,7 +99,7 @@ async def user_tuya_magic(
     to try to get 'normal' behavior.
     """
 
-    dev = app.get_device(ieee)
+    dev = u.get_device(app, listener, ieee)
     basic_cluster = dev.endpoints[1].in_clusters[0]
 
     # The magic spell is needed only once.

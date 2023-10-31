@@ -9,7 +9,9 @@ import re
 import typing
 from enum import Enum
 
+import zigpy
 from homeassistant.components.zha.core.gateway import ZHAGateway
+from homeassistant.util import dt as dt_util
 from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
@@ -257,7 +259,7 @@ def get_radio_version(app):
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
     # pylint: disable=too-many-return-statements
-    # LOGGER.debug("Type IEEE: %s", type(ref))
+    # LOGGER.error("######### Get IEEE: %s %r", type(ref), ref)
     if isinstance(ref, str):
         # Check if valid ref address
         if ref.count(":") == 7:
@@ -285,14 +287,6 @@ async def get_ieee(app, listener, ref):
                 get_hass(listener)
             )
         )
-        # LOGGER.debug("registry %s",entity_registry)
-        registry_entity = entity_registry.async_get(ref)
-        LOGGER.debug("registry_entity %s", registry_entity)
-        if registry_entity is None:
-            return None
-        if registry_entity.platform != "zha":
-            LOGGER.error("Not a ZHA device : '%s'", ref)
-            return None
 
         device_registry = (
             # Deprecated >= 2022.6.0
@@ -304,23 +298,42 @@ async def get_ieee(app, listener, ref):
                 get_hass(listener)
             )
         )
-        registry_device = device_registry.async_get(registry_entity.device_id)
-        LOGGER.debug("registry_device %s", registry_device)
+        registry_device = device_registry.async_get(ref)
+
+        if registry_device is None:
+            # LOGGER.debug("registry %s",entity_registry)
+            registry_entity = entity_registry.async_get(ref)
+            if registry_entity is None:
+                LOGGER.error("No device found for '%s'", ref)
+                return None
+            if registry_entity.platform != "zha":
+                LOGGER.error("Not a ZHA device : '%s'", ref)
+                return None
+
+            LOGGER.debug("Found registry_entity %r", registry_entity)
+            registry_device = device_registry.async_get(
+                registry_entity.device_id
+            )
+
+        LOGGER.debug("Found registry_device %r", registry_device)
         for identifier in registry_device.identifiers:
             if identifier[0] == "zha":
                 return t.EUI64.convert(identifier[1])
+
+        LOGGER.error("Not a ZHA device : '%s'", ref)
         return None
 
     # Other type, suppose it's already an EUI64
     return ref
 
 
-# Get a zigbee device instance for the reference.
-#  Reference can be entity, device, or IEEE address
 async def get_device(app, listener, reference):
-    # Method is called get
+    """
+    Get a zigbee device instance for the reference.
+    Reference can be entity, device, or IEEE address
+    """
     ieee = await get_ieee(app, listener, reference)
-    LOGGER.debug("IEEE for get_device: %s", ieee)
+    LOGGER.debug("IEEE for get_device: %s %s", reference, ieee)
     return app.get_device(ieee)
 
 
@@ -529,6 +542,58 @@ def append_to_csvfile(
         LOGGER.debug(f"Wrote {desc} to '{file_name}'")
     else:
         LOGGER.debug(f"Appended {desc} to '{file_name}'")
+
+
+def record_read_data(
+    read_resp, cluster: zigpy.zcl.Cluster, params, listener=None
+):
+    """Record result from attr_write to CSV file if configured"""
+    if params[p.CSV_FILE] is None:
+        return
+
+    date_str = dt_util.utcnow().isoformat()
+
+    for attr_id, read_val in read_resp[0].items():
+        fields = []
+        if params[p.CSV_LABEL] is not None:
+            attr_name = params[p.CSV_LABEL]
+        else:
+            python_type = type(read_resp[0][attr_id])
+            attr_type = f.DATA_TYPES.pytype_to_datatype_id(python_type)
+
+            try:
+                attr_def = cluster.attributes.get(
+                    attr_id, (str(attr_id), None)
+                )
+                if is_zigpy_ge("0.50.0") and isinstance(
+                    attr_def, f.ZCLAttributeDef
+                ):
+                    attr_name = attr_def.name
+                else:
+                    attr_name = attr_def[0]
+            except Exception:
+                attr_name = attr_id
+
+        fields.append(date_str)
+        fields.append(cluster.name)
+        fields.append(attr_name)
+        fields.append(read_val)
+        fields.append(f"0x{attr_id:04X}")
+        fields.append(f"0x{cluster.cluster_id:04X}")
+        fields.append(cluster.endpoint.endpoint_id)
+        fields.append(str(cluster.endpoint.device.ieee))
+        fields.append(
+            f"0x{params[p.MANF]:04X}" if params[p.MANF] is not None else ""
+        )
+        fields.append(f"0x{attr_type:02X}" if attr_type is not None else "")
+
+        append_to_csvfile(
+            fields,
+            "csv",
+            params[p.CSV_FILE],
+            f"{attr_name}={read_val}",
+            listener=listener,
+        )
 
 
 def get_attr_id(cluster, attribute):

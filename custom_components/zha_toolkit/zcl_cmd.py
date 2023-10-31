@@ -24,7 +24,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
         LOGGER.error(msg)
         raise Exception(msg)
 
-    dev = app.get_device(ieee=ieee)
+    dev = u.get_device(app, listener, ieee)
     # The next line will also update the endpoint if it is not set
     cluster = u.get_cluster_from_params(dev, params, event_data)
 

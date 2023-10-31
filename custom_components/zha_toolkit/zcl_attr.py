@@ -124,7 +124,7 @@ Cluster.my_read_reporting_configuration_multiple = (
 async def conf_report_read(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    dev = app.get_device(ieee=ieee)
+    dev = await u.get_device(app, listener, ieee)
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
     if False:  # pylint: disable=using-constant-test
@@ -250,7 +250,7 @@ async def conf_report_read(
 async def conf_report(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    dev = app.get_device(ieee=ieee)
+    dev = await u.get_device(app, listener, ieee)
 
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
@@ -318,7 +318,7 @@ async def attr_write(  # noqa: C901
 ):
     success = True
 
-    dev = app.get_device(ieee=ieee)
+    dev = await u.get_device(app, listener, ieee)
     cluster = u.get_cluster_from_params(dev, params, event_data)
 
     # Prepare read and write lists
