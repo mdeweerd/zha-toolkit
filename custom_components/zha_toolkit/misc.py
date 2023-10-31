@@ -1,4 +1,3 @@
-# import asyncio
 import asyncio
 import logging
 
@@ -280,9 +279,12 @@ async def misc_settime(
         ]  # Time, Timestatus, Timezone, DstStart, DstEnd, DstShift
 
         if params[p.READ_BEFORE_WRITE]:
-            event_data["read_before"] = await cluster.read_attributes(
-                attr_read_list
+            read_resp = await cluster.read_attributes(attr_read_list)
+            event_data["read_before"] = (
+                u.dict_to_jsonable(read_resp[0]),
+                read_resp[1],
             )
+            u.record_read_data(read_resp, cluster, params, listener)
 
         EPOCH2000_TIMESTAMP = 946684800
         utctime_towrite = utcnow().timestamp() - EPOCH2000_TIMESTAMP
@@ -299,6 +301,9 @@ async def misc_settime(
         )
 
         if params[p.READ_AFTER_WRITE]:
-            event_data["read_after"] = await cluster.read_attributes(
-                attr_read_list
+            read_resp = await cluster.read_attributes(attr_read_list)
+            event_data["read_after"] = (
+                u.dict_to_jsonable(read_resp[0]),
+                read_resp[1],
             )
+            u.record_read_data(read_resp, cluster, params, listener)

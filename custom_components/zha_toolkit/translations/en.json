@@ -1073,6 +1073,10 @@
         "read_after_write": {
           "name": "Read After Write",
           "description": "Read attribute after writing.  Can be used to ensure the values match.  Defaults to True"
+        },
+        "csvout": {
+          "name": "CSV Filename",
+          "description": "Filename of CSV to write read data to.  Written to 'csv' directory"
         }
       }
     },

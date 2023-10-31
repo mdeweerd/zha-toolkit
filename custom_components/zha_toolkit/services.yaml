@@ -1884,6 +1884,13 @@ misc_settime:
         match.  Defaults to True
       selector:
         boolean:
+    csvout:
+      name: CSV Filename
+      description: >-
+        Filename of CSV to write read data to.  Written to 'csv' directory
+      example: ../web/mycsv.csv
+      selector:
+        text:
 ota_notify:
   name: Trigger Device's Firmware Update
   description:
