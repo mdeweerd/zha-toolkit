@@ -53,7 +53,7 @@ async def ieee_ping(
         return
 
     # The device is the parent device
-    dev = app.get_device(ieee)
+    dev = u.get_device(app, listener, ieee)
 
     # Get tries
     tries = params[p.TRIES]
@@ -148,13 +148,13 @@ async def zdo_flood_parent_annce(
         event_data["task"] = None
         return
 
-    flooder_task = asyncio.create_task(_flood_with_parent_annce(app))
+    flooder_task = asyncio.create_task(_flood_with_parent_annce(app, listener))
     add_task_info(event_data, flooder_task)
     app.flooder_task = flooder_task
 
 
-async def _flood_with_parent_annce(app):
-    coord = app.get_device(app.ieee)
+async def _flood_with_parent_annce(app, listener):
+    coord = u.get_device(app, listener, app.ieee)
 
     while True:
         children = [

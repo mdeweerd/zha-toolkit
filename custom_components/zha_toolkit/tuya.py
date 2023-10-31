@@ -9,7 +9,7 @@ async def tuya_magic(
     Send 'magic spell' sequence to device to try to get 'normal' behavior.
     """
 
-    dev = app.get_device(ieee)
+    dev = u.get_device(app, listener, ieee)
     basic_cluster = dev.endpoints[1].in_clusters[0]
 
     # The magic spell is needed only once.

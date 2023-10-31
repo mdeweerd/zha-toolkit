@@ -7,6 +7,7 @@ import voluptuous as vol
 from homeassistant.components.zha.core.gateway import ZHAGateway
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
+from zigpy.exceptions import DeliveryError
 
 from . import params as PARDEFS
 from . import utils as u
@@ -813,7 +814,15 @@ def register_services(hass):  # noqa: C901
             u.get_hass(zha_gw).bus.fire(params[p.EVT_DONE], event_data)
 
         if handler_exception is not None:
-            raise handler_exception
+            LOGGER.error(
+                "Exception '%s' for service call with data '%r'",
+                handler_exception,
+                event_data,
+            )
+            if params[p.FAIL_EXCEPTION] or not isinstance(
+                handler_exception, DeliveryError
+            ):
+                raise handler_exception
 
         if not event_data["success"] and params[p.FAIL_EXCEPTION]:
             raise Exception("Success expected, but failed")

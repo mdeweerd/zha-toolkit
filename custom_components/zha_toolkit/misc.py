@@ -82,7 +82,7 @@ async def handle_join(
         LOGGER.debug("Provide 'ieee' parameter for %s", cmd)
         raise ValueError("ieee parameter missing")
 
-    dev = app.get_device(ieee=ieee)
+    dev = await u.get_device(app, listener, ieee)
 
     if data is None:
         if dev is None:
@@ -111,7 +111,7 @@ async def misc_reinitialize(
         LOGGER.debug(msg)
         raise ValueError(ieee)
 
-    dev = app.get_device(ieee=ieee)
+    dev = await u.get_device(app, listener, ieee)
     LOGGER.debug(f"{ieee!r} - Set initialisations=False, call handle_join")
     # dev.has_non_zdo_endpoints = False  # Force rescan
     # Can't set: dev.non_zdo_endpoints = False  # Force rescan
@@ -136,7 +136,7 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
         LOGGER.error("missing ieee")
         return
     LOGGER.debug("running 'rejoin' command: %s", service)
-    src = app.get_device(ieee=ieee)
+    src = await u.get_device(app, listener, ieee)
 
     if data is None:
         await app.permit()
@@ -221,7 +221,13 @@ async def misc_settime(
         tz._utc_transition_times, utc_time  # type:ignore[union-attr]
     )
 
-    if index is not None:
+    if index is None:
+        event_data["success"] = False
+        event_data[
+            "msg"
+        ] = "misc_settime expects DST changes, needs update if None"
+
+    try:
         if (
             tz._utc_transition_times[index]  # type:ignore[union-attr]
             .replace(tzinfo=pytz.UTC)
@@ -264,7 +270,7 @@ async def misc_settime(
         )
         LOGGER.debug(f"UTC OFFSET: {utc_offset}  DST OFFSET: {dst_shift}")
 
-        dev = app.get_device(ieee=ieee)
+        dev = await u.get_device(app, listener, ieee)
         params[p.CLUSTER_ID] = 0x000A  # Time Cluster
         cluster = u.get_cluster_from_params(dev, params, event_data)
 
@@ -307,3 +313,8 @@ async def misc_settime(
                 read_resp[1],
             )
             u.record_read_data(read_resp, cluster, params, listener)
+
+        event_data["success"] = True
+    except DeliveryError as e:
+        event_data["success"] = False
+        event_data["msg"] = f"{e!r}"

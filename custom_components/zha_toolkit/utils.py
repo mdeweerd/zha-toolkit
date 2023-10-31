@@ -259,7 +259,7 @@ def get_radio_version(app):
 #  Reference can be entity, device, or IEEE address
 async def get_ieee(app, listener, ref):
     # pylint: disable=too-many-return-statements
-    # LOGGER.debug("Type IEEE: %s", type(ref))
+    # LOGGER.error("######### Get IEEE: %s %r", type(ref), ref)
     if isinstance(ref, str):
         # Check if valid ref address
         if ref.count(":") == 7:
@@ -287,14 +287,6 @@ async def get_ieee(app, listener, ref):
                 get_hass(listener)
             )
         )
-        # LOGGER.debug("registry %s",entity_registry)
-        registry_entity = entity_registry.async_get(ref)
-        LOGGER.debug("registry_entity %s", registry_entity)
-        if registry_entity is None:
-            return None
-        if registry_entity.platform != "zha":
-            LOGGER.error("Not a ZHA device : '%s'", ref)
-            return None
 
         device_registry = (
             # Deprecated >= 2022.6.0
@@ -306,23 +298,42 @@ async def get_ieee(app, listener, ref):
                 get_hass(listener)
             )
         )
-        registry_device = device_registry.async_get(registry_entity.device_id)
-        LOGGER.debug("registry_device %s", registry_device)
+        registry_device = device_registry.async_get(ref)
+
+        if registry_device is None:
+            # LOGGER.debug("registry %s",entity_registry)
+            registry_entity = entity_registry.async_get(ref)
+            if registry_entity is None:
+                LOGGER.error("No device found for '%s'", ref)
+                return None
+            if registry_entity.platform != "zha":
+                LOGGER.error("Not a ZHA device : '%s'", ref)
+                return None
+
+            LOGGER.debug("Found registry_entity %r", registry_entity)
+            registry_device = device_registry.async_get(
+                registry_entity.device_id
+            )
+
+        LOGGER.debug("Found registry_device %r", registry_device)
         for identifier in registry_device.identifiers:
             if identifier[0] == "zha":
                 return t.EUI64.convert(identifier[1])
+
+        LOGGER.error("Not a ZHA device : '%s'", ref)
         return None
 
     # Other type, suppose it's already an EUI64
     return ref
 
 
-# Get a zigbee device instance for the reference.
-#  Reference can be entity, device, or IEEE address
 async def get_device(app, listener, reference):
-    # Method is called get
+    """
+    Get a zigbee device instance for the reference.
+    Reference can be entity, device, or IEEE address
+    """
     ieee = await get_ieee(app, listener, reference)
-    LOGGER.debug("IEEE for get_device: %s", ieee)
+    LOGGER.debug("IEEE for get_device: %s %s", reference, ieee)
     return app.get_device(ieee)
 
 
@@ -724,12 +735,12 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             # With length byte after serialisation:
             # compare_val = t.LVBytes(attr_val_in)
 
-            attr_obj = data_type(compare_val)
+            attr_obj = f.TypeValue(attr_type, data_type(compare_val))
             # Not using : attr_obj = data_type(attr_type, compare_val)
         #             which may add extra bytes
         else:
             compare_val = data_type(str2int(attr_val_in))
-            attr_obj = data_type(attr_type, compare_val)
+            attr_obj = f.TypeValue(attr_type, compare_val)
         LOGGER.debug(
             "Converted %s to %s - will compare to %s - Type: 0x%02X",
             attr_val_in,
