@@ -813,6 +813,11 @@ def register_services(hass):  # noqa: C901
             u.get_hass(zha_gw).bus.fire(params[p.EVT_DONE], event_data)
 
         if handler_exception is not None:
+            LOGGER.error(
+                "Exception '%s' for service call with data '%r'",
+                params[p.EVT_DONE],
+                event_data,
+            )
             raise handler_exception
 
         if not event_data["success"] and params[p.FAIL_EXCEPTION]:
