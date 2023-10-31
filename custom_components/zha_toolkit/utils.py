@@ -735,12 +735,12 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
             # With length byte after serialisation:
             # compare_val = t.LVBytes(attr_val_in)
 
-            attr_obj = data_type(compare_val)
+            attr_obj = f.TypeValue(attr_type, data_type(compare_val))
             # Not using : attr_obj = data_type(attr_type, compare_val)
         #             which may add extra bytes
         else:
             compare_val = data_type(str2int(attr_val_in))
-            attr_obj = data_type(attr_type, compare_val)
+            attr_obj = f.TypeValue(attr_type, compare_val)
         LOGGER.debug(
             "Converted %s to %s - will compare to %s - Type: 0x%02X",
             attr_val_in,
