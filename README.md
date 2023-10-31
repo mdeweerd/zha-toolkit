@@ -1987,3 +1987,5 @@ The original `zha_custom` repository does not mention a license.
 # Contributing
 
 #See [Contributing.md](Contributing.md)
+
+<style>.Box.mb-3:has(#files){display:none;}</style>
