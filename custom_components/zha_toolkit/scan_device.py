@@ -427,7 +427,7 @@ async def scan_device(
 
     LOGGER.debug("Running 'scan_device'")
 
-    device = u.get_device(app, listener, ieee)
+    device = await u.get_device(app, listener, ieee)
 
     endpoints = params[p.EP_ID]
     manf = params[p.MANF]

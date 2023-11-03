@@ -29,7 +29,7 @@ async def bind_group(
         LOGGER.error("missing ieee")
         return
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
 
     # Get tries
     tries = params[p.TRIES]
@@ -171,7 +171,7 @@ async def unbind_group(
         LOGGER.error("missing data (destination ieee)")
         return
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
 
     group_id = u.str2int(data)
 
@@ -237,7 +237,7 @@ async def bind_ieee(
     if ieee is None:
         raise ValueError("'ieee' required")
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
     if data in [0, False, "0", None]:
         # when command_data is set to 0 or false, bind to coordinator
         data = app.ieee
@@ -428,7 +428,7 @@ async def binds_remove_all(
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
     zdo = src_dev.zdo
 
     # Get target ieee filter
@@ -581,7 +581,7 @@ async def binds_get(
     if ieee is None:
         LOGGER.error("missing ieee")
         return
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
     zdo = src_dev.zdo
 
     # Get tries

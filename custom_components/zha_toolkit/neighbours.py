@@ -22,7 +22,7 @@ async def get_routes_and_neighbours(
         return
 
     LOGGER.debug("Getting routes and neighbours: %s", service)
-    device = u.get_device(app, listener, ieee)
+    device = await u.get_device(app, listener, ieee)
     event_data["result"] = await _routes_and_neighbours(device, listener)
 
     ieee_tail = "".join([f"{o:02X}" for o in device.ieee])

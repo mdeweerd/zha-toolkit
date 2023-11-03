@@ -16,7 +16,7 @@ async def get_groups(
         LOGGER.error("missing ieee")
         return
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
 
     groups: dict[int, dict[str, Any]] = {}
     endpoint_id = params[p.EP_ID]
@@ -65,7 +65,7 @@ async def add_group(
     if ieee is None or not data:
         raise ValueError("ieee and command_data required")
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
 
     group_id = u.str2int(data)
     endpoint_id = params[p.EP_ID]
@@ -104,7 +104,7 @@ async def remove_group(
     if ieee is None or not data:
         raise ValueError("ieee and command_data required")
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
 
     group_id = u.str2int(data)
     endpoint_id = params[p.EP_ID]
@@ -139,7 +139,7 @@ async def remove_all_groups(
     if ieee is None:
         return
 
-    src_dev = u.get_device(app, listener, ieee)
+    src_dev = await u.get_device(app, listener, ieee)
     endpoint_id = params[p.EP_ID]
     result = []
 
@@ -165,7 +165,7 @@ async def add_to_group(
         LOGGER.error("invalid arguments for subscribe_group()")
         return
 
-    dev = u.get_device(app, listener, ieee)
+    dev = await u.get_device(app, listener, ieee)
 
     grp_id = u.str2int(data)
     endpoint_id = params[p.EP_ID]
@@ -194,7 +194,7 @@ async def remove_from_group(
     if data is None or ieee is None:
         raise ValueError("ieee and command_data required")
 
-    dev = u.get_device(app, listener, ieee)
+    dev = await u.get_device(app, listener, ieee)
 
     grp_id = u.str2int(data)
     endpoint_id = params[p.EP_ID]
@@ -228,7 +228,7 @@ async def get_zll_groups(
         LOGGER.error("missing ieee")
         return
 
-    dev = u.get_device(app, listener, ieee)
+    dev = await u.get_device(app, listener, ieee)
 
     clusters = [
         ep.in_clusters[LightLink.cluster_id]

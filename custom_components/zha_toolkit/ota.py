@@ -217,7 +217,7 @@ async def ota_notify(
 
     LOGGER.debug("running 'image_notify' command: %s", service)
 
-    device = u.get_device(app, listener, ieee)
+    device = await u.get_device(app, listener, ieee)
 
     cluster = None
     for epid, ep in device.endpoints.items():

@@ -53,7 +53,7 @@ async def ieee_ping(
         return
 
     # The device is the parent device
-    dev = u.get_device(app, listener, ieee)
+    dev = await u.get_device(app, listener, ieee)
 
     # Get tries
     tries = params[p.TRIES]
@@ -154,7 +154,7 @@ async def zdo_flood_parent_annce(
 
 
 async def _flood_with_parent_annce(app, listener):
-    coord = u.get_device(app, listener, app.ieee)
+    coord = await u.get_device(app, listener, app.ieee)
 
     while True:
         children = [
