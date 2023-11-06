@@ -78,7 +78,7 @@ async def my_read_reporting_configuration_multiple(
         record.direction = direction
         # LOGGER.warning(f"Record {record.direction} {record.attrid}")
         cfg.append(record)
-    LOGGER.warning("Read reporting with %s %r", cfg, kwargs)
+    LOGGER.debug("Read reporting with %s %r", cfg, kwargs)
     param = t.List[f.ReadReportingConfigRecord](cfg)
     LOGGER.debug("Resolves to %s", param)
 
@@ -88,9 +88,9 @@ async def my_read_reporting_configuration_multiple(
     )
 
     try:
-        LOGGER.warning("Read reporting with %s result %s", cfg, res)
+        LOGGER.debug("Read reporting with %s result %s", cfg, res)
     except Exception as e:
-        LOGGER.debug("Error when reporting result of Read Report %r", e)
+        LOGGER.warning("Error when reporting result of Read Report %r", e)
 
     # Parse configure reporting result for unsupported attributes
     records = res[0]

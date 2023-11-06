@@ -473,7 +473,7 @@ def dict_to_jsonable(src_dict):
                 value = value.serialize()
             if isinstance(value, bytes):
                 # "bytes" is not compatible with json, get a "string"
-                value = str(value, encoding="ascii")
+                value = str(value, encoding="unicode_escape")
             else:
                 # Anything else: get a textual representation
                 value = repr(value)
