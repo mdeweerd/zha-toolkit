@@ -650,7 +650,9 @@ data:
   ieee: sensor.zigbee_sensor
   # The endpoint is optional - when missing tries to find endpoint matching the cluster
   # endpoint: 1
+  # Cluster Id - Can be omitted if attribute is unique string.
   cluster: 0xb04
+  # Attribute Id or String - Example "pi_heating_demand"
   attribute: 0x50f
   # Optional, read the value from memory cache, do not make a zigbee read request.
   # Can be false, true, 0, 1 or 2 where '2' requests to fallback to a real read
