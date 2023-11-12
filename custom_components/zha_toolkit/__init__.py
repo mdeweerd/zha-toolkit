@@ -119,7 +119,7 @@ SERVICE_SCHEMAS = {
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
-            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
                 vol.Range(0, 0xFFFF), cv.string
             ),
@@ -144,7 +144,7 @@ SERVICE_SCHEMAS = {
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
-            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
                 vol.Range(0, 0xFFFF), cv.string
             ),
@@ -228,7 +228,7 @@ SERVICE_SCHEMAS = {
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
-            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
                 vol.Range(0, 0xFFFF), cv.string
             ),
@@ -250,7 +250,7 @@ SERVICE_SCHEMAS = {
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
             vol.Optional(P.ENDPOINT): vol.Range(0, 255),
-            vol.Required(P.CLUSTER): vol.Range(0, 0xFFFF),
+            vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Required(P.ATTRIBUTE): vol.Any(
                 vol.Range(0, 0xFFFF),
                 [vol.Any(vol.Range(0, 0xFFFF), cv.string)],

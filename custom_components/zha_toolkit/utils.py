@@ -422,8 +422,20 @@ def get_cluster_from_params(
 
     cluster_id = params[p.CLUSTER_ID]
     if not isinstance(cluster_id, int):
-        msg = f"Cluster must be numeric {cluster_id}"
-        raise Exception(msg)
+        attr_id = params[p.ATTR_ID]
+        if isinstance(attr_id, str):
+            for _epid, ep in dev.endpoints.items():
+                if _epid == 0:
+                    continue
+                for _cid, cluster in ep.in_clusters.items():
+                    if attr_id in cluster.attributes_by_name:
+                        cluster_id = _cid
+                        LOGGER.debug("Found Cluster:0x%04X", cluster_id)
+                        break
+
+        if not isinstance(cluster_id, int):
+            msg = f"Cluster must be numeric {cluster_id}"
+            raise Exception(msg)
 
     # Get best endpoint
     if params[p.EP_ID] is None or params[p.EP_ID] == "":
@@ -473,7 +485,7 @@ def dict_to_jsonable(src_dict):
                 value = value.serialize()
             if isinstance(value, bytes):
                 # "bytes" is not compatible with json, get a "string"
-                value = str(value, encoding="unicode_escape")
+                value = str(value, encoding="ascii")
             else:
                 # Anything else: get a textual representation
                 value = repr(value)
@@ -599,8 +611,9 @@ def record_read_data(
 def get_attr_id(cluster, attribute):
     # Try to get attribute id from cluster
     try:
-        if isinstance(attribute, str):
-            return cluster.attributes_by_name(attribute)
+        if attribute in cluster.attributes_by_name:
+            # return cluster.attributes_by_name(attribute)
+            return cluster.attributes_by_name[attribute].id
     except Exception:
         return None
 
