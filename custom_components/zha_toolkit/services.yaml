@@ -202,7 +202,7 @@ execute:
       description: >-
         When defined, the read attribute is converted using this template before writing
         it to the state.
-      example: "{{ value / 100 }}"
+      example: "value / 100"
       selector:
         text:
     force_update:
@@ -538,7 +538,7 @@ attr_read:
       description: >-
         When defined, the read attribute is converted using this template before writing
         it to the state.
-      example: "{{ value / 100 }}"
+      example: "value / 100"
       selector:
         text:
     force_update:
