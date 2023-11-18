@@ -729,6 +729,9 @@ data:
   use_cache: true
   state_id: sensor.temperature_chambre_x_temperature_2
   state_attr: raw_degc
+  # When defined, the read attribute is converted using this template string
+  # before writing it to the state.
+  # Note that no curly braces should be used here!
   state_value_template: value/100
 ```
 
@@ -1882,6 +1885,9 @@ data:
   # optional Parameters
   state_attr: some_attribute
   allow_create: true
+  # When defined, the read attribute is converted using this template string
+  # before writing it to the state.
+  # Note that no curly braces should be used here!
   state_value_template: value + 2
   csvout: set_state.csv
   csvlabel: Example reason
@@ -1889,10 +1895,9 @@ data:
 
 `state_value_template` is a template(-like) expression that is interpreted
 where `attr_val` is available as `value` and `attr_value`. This a template
-expression without the curly parentheses (`{{ }}`). Unfortunately
-`{{ value }}` is expanded before the zha service code is entered disabling
-the dynamic evaluation of value which is why the curly parenthesis are
-omitted.
+expression without the curly parentheses (`{{ }}`). If the curly
+parentheses are used, the expression would be expanded before the zha
+service code is entered which is incompatible with this functionality.
 
 This is not strictly a `zha` specific tool, but useful in some scripting
 situations.
