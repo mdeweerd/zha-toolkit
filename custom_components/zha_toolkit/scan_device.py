@@ -276,12 +276,22 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
                     except UnicodeDecodeError:
                         value = value.hex()
                 result[attr_id]["attribute_value"] = value
-        except (DeliveryError, asyncio.TimeoutError) as ex:
+        except (
+            DeliveryError,
+            asyncio.TimeoutError,
+        ) as ex:
             LOGGER.error(
                 "Couldn't read 0x%04x/0x%04x: %s",
                 cluster.cluster_id,
                 attr_id,
                 ex,
+            )
+        except Exception as ex_unexpected:
+            LOGGER.error(
+                "Unexpected Exception while reading 0x%04x/0x%04x: %s",
+                cluster.cluster_id,
+                attr_id,
+                ex_unexpected,
             )
         chunk, to_read = to_read[:4], to_read[4:]
         await asyncio.sleep(0.2)
