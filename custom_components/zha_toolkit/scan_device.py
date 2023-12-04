@@ -270,7 +270,14 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
                 "Reading attr success: %s, failed %s", success, failed
             )
             for attr_id, value in success.items():
-                result[attr_id]["attribute_value"] = u.value_to_jsonable(value)
+                if isinstance(value, bytes):
+                    try:
+                        value = value.split(b"\x00")[0].decode().strip()
+                    except UnicodeDecodeError:
+                        value = value.hex()
+                    result[attr_id]["attribute_value"] = value
+                else:
+                    result[attr_id]["attribute_value"] = u.value_to_jsonable(value)
         except (
             DeliveryError,
             asyncio.TimeoutError,
