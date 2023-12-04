@@ -1,6 +1,6 @@
 ---
 name: stats
-on: [create]
+on: [create, workflow_dispatch]
 jobs:
   gen_stats:
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -8,16 +8,23 @@ jobs:
     steps:
       # Credit: https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
       - name: Extract branch name
-        shell: bash
         #run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/}) >> $GITHUB_OUTPUT"
         id: extract_branch
       - uses: actions/checkout@v4
-        #with:
-        #  ref: ${{ steps.extract_branch.outputs.branch }}
-        #  fetch-depth: 0
+        with:
+          ref: ${{ steps.extract_branch.outputs.branch }}
       - run: ${{ github.workspace }}/.github/scripts/gen_stats.sh
+      - run: |
+          git status
+          git branch
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m '[Bot] stats - Update STATS.md'
+          git push 
       - name: Commit updated resources
+        if: false
         uses: test-room-7/action-update-file@v1
         with:
           file-path: STATS.md
