@@ -471,26 +471,37 @@ def get_cluster_from_params(
     return cluster
 
 
+def value_to_jsonable(value):
+    if not isJsonable(value):
+        LOGGER.debug(
+            "Can't convert %r to JSON, serializing if possible.", value
+        )
+        if callable(getattr(value, "serialize", None)):
+            # Serialization results in "bytes"
+            value = value.serialize()
+        if isinstance(value, bytes):
+            # "bytes" is not compatible with json, convert
+            # try:
+            #    value = value.split(b"\x00")[0].decode().strip()
+            # except:
+            #    value = value.hex()
+
+            try:
+                value = str(value, encoding="ascii")
+            except Exception:
+                value = "0x" + value.hex()
+        else:
+            # Anything else: get a textual representation
+            value = repr(value)
+    return value
+
+
 def dict_to_jsonable(src_dict):
     result = {}
     if isJsonable(src_dict):
         return src_dict
     for key, value in src_dict.items():
-        if not isJsonable(value):
-            LOGGER.debug(
-                "Can't convert %r to JSON, serializing if possible.", value
-            )
-            if callable(getattr(value, "serialize", None)):
-                # Serialization results in "bytes"
-                value = value.serialize()
-            if isinstance(value, bytes):
-                # "bytes" is not compatible with json, get a "string"
-                value = str(value, encoding="ascii")
-            else:
-                # Anything else: get a textual representation
-                value = repr(value)
-
-        result[key] = value
+        result[key] = value_to_jsonable(value)
 
     return result
 
