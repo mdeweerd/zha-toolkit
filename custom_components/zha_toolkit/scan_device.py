@@ -277,7 +277,9 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
                         value = value.hex()
                     result[attr_id]["attribute_value"] = value
                 else:
-                    result[attr_id]["attribute_value"] = u.value_to_jsonable(value)
+                    result[attr_id]["attribute_value"] = u.value_to_jsonable(
+                        value
+                    )
         except (
             DeliveryError,
             asyncio.TimeoutError,
