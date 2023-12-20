@@ -131,8 +131,8 @@ repos:
           - --ignore-words-list=hass,master
           - --skip="./.*"
           - --quiet-level=2
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a5
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.0.3
     hooks:
       - id: pylint
         args:
