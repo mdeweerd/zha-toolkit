@@ -30,7 +30,7 @@ jobs:
           SKIP: no-commit-to-branch
         run: |
           set -o pipefail
-          SKIP=pre-commit run --show-diff-on-failure --color=always --all-files | tee ${RAW_LOG}
+          pre-commit run --show-diff-on-failure --color=always --all-files | tee ${RAW_LOG}
       - name: Convert Raw Log to CheckStyle format
         if: ${{ failure() }}
         run: |
