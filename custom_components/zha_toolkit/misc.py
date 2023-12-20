@@ -67,7 +67,7 @@ async def backup(app, listener, ieee, cmd, data, service, params, event_data):
             params=params,
         )
     else:
-        raise Exception(f"Radio type {radio_type} not supported for backup")
+        raise ValueError(f"Radio type {radio_type} not supported for backup")
 
 
 async def handle_join(
@@ -89,7 +89,7 @@ async def handle_join(
             LOGGER.debug(
                 f"Device {ieee!r} missing in device table, provide NWK address"
             )
-            raise Exception(f"Missing NWK for unknown device '{ieee}'")
+            raise ValueError(f"Missing NWK for unknown device '{ieee}'")
 
         data = dev.nwk
 

@@ -22,7 +22,7 @@ jobs:
           git config user.email github-actions@github.com
           git add .
           git commit -m '[Bot] stats - Update STATS.md'
-          git push 
+          git push
       - name: Commit updated resources
         if: false
         uses: test-room-7/action-update-file@v1

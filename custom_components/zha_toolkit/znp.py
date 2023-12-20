@@ -20,7 +20,7 @@ async def znp_backup(
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = f"{cmd} is only for ZNP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Import stuff we need
     import json
@@ -56,7 +56,7 @@ async def znp_restore(
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Get/set parameters
 
@@ -134,7 +134,7 @@ async def znp_nvram_backup(
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Store backup information to file
     import json
@@ -167,7 +167,7 @@ async def znp_nvram_restore(
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Safety: backup current configuration
     from datetime import datetime
@@ -209,7 +209,7 @@ async def znp_nvram_reset(
     if u.get_radiotype(app) != u.RadioType.ZNP:
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     from datetime import datetime
 

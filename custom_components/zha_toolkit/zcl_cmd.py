@@ -22,7 +22,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
     if ieee is None:
         msg = ERR003_PARAMETER_MISSING.format("ieee")
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     dev = await u.get_device(app, listener, ieee)
     # The next line will also update the endpoint if it is not set
@@ -37,7 +37,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
     # The command to send
     cmd_id = params[p.CMD_ID]
     if cmd_id is None:
-        raise Exception(ERR003_PARAMETER_MISSING, P.CMD)
+        raise ValueError(ERR003_PARAMETER_MISSING, P.CMD)
 
     # The direction (to in or out cluster)
     dir_int = params[p.DIR]
@@ -59,7 +59,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
     if ep_id not in dev.endpoints:
         msg = f"Endpoint {ep_id} not found for '{repr(ieee)}'"
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     endpoint = dev.endpoints[ep_id]
 
@@ -76,7 +76,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     cluster_id, repr(ieee), ep_id
                 )
                 LOGGER.error(msg)
-                raise Exception(msg)
+                raise ValueError(msg)
 
             # Cluster is found
             cluster = endpoint.in_clusters[cluster_id]
@@ -127,7 +127,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     cluster_id, repr(ieee), ep_id
                 )
                 LOGGER.error(msg)
-                raise Exception(msg)
+                raise ValueError(msg)
 
             # Found cluster
             cluster = endpoint.out_clusters[cluster_id]

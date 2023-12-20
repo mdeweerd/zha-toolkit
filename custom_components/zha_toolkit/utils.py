@@ -435,7 +435,7 @@ def get_cluster_from_params(
 
         if not isinstance(cluster_id, int):
             msg = f"Cluster must be numeric {cluster_id}"
-            raise Exception(msg)
+            raise ValueError(msg)
 
     # Get best endpoint
     if params[p.EP_ID] is None or params[p.EP_ID] == "":
@@ -448,7 +448,7 @@ def get_cluster_from_params(
             f" for '{dev.ieee!r}'"
         )
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     cluster = None
     if cluster_id not in dev.endpoints[params[p.EP_ID]].in_clusters:
@@ -464,7 +464,7 @@ def get_cluster_from_params(
             cluster = dev.endpoints[params[p.EP_ID]].out_clusters[cluster_id]
         else:
             LOGGER.error(msg)
-            raise Exception(msg)
+            raise ValueError(msg)
     else:
         cluster = dev.endpoints[params[p.EP_ID]].in_clusters[cluster_id]
 

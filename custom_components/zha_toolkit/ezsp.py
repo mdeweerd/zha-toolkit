@@ -36,7 +36,7 @@ async def ezsp_set_channel(
             f"Couldn't get network parameters, abort channel change: {status}"
         )
         event_data["errors"].append(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     event_data["nwk_params"] = network_params
 
@@ -146,7 +146,7 @@ async def ezsp_add_transient_key(
     if ieee is None:
         msg = "No ieee to install transient key for"
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
     LOGGER.debug("Installed key for %s: %s", ieee, status)
@@ -194,7 +194,7 @@ async def ezsp_get_config_value(
     if data is None:
         msg = "Need EZSP config value"
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     cfg_id = app._ezsp.types.EzspConfigId(data)
     LOGGER.info("Getting EZSP configuration value: %s", cfg_id)
@@ -202,7 +202,7 @@ async def ezsp_get_config_value(
     if status != app._ezsp.types.EzspStatus.SUCCESS:
         msg = f"Couldn't get {status} configuration value: {cfg_id}"
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     LOGGER.info("%s = %s", cfg_id.name, value)
     event_data["result"] = value
@@ -214,7 +214,7 @@ async def ezsp_get_value(
     if data is None:
         msg = "Need EZSP value id"
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     value_id = app._ezsp.types.EzspValueId(data)
     LOGGER.info("Getting EZSP value: %s", value_id)
@@ -222,7 +222,7 @@ async def ezsp_get_value(
     if status != app._ezsp.types.EzspStatus.SUCCESS:
         msg = f"Couldn't get {status} value: {value_id}"
         LOGGER.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     LOGGER.info("%s = %s", value_id.name, value)
     event_data["ezsp_" + value_id.name] = repr(value)
@@ -241,7 +241,7 @@ async def ezsp_backup_legacy(
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = f"'{cmd}' is only available for BELLOWS/EZSP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Import stuff we need
     import json
@@ -327,7 +327,7 @@ async def ezsp_backup(
     if u.get_radiotype(app) != u.RadioType.EZSP:
         msg = f"'{cmd}' is only available for BELLOWS/EZSP"
         LOGGER.debug(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Import stuff we need
     import io

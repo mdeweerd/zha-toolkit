@@ -26,12 +26,12 @@ DATA_ZHATK = "zha_toolkit"
 LOGGER = logging.getLogger(__name__)
 
 try:
-    LOADED_VERSION  # type:ignore[used-before-def]
+    LOADED_VERSION  # type:ignore[used-before-def] # pylint: disable=used-before-assignment
 except NameError:
     LOADED_VERSION = ""
 
 try:
-    DEFAULT_OTAU  # type:ignore[used-before-def]
+    DEFAULT_OTAU  # type:ignore[used-before-def] # pylint: disable=used-before-assignment
 except NameError:
     DEFAULT_OTAU = "/config/zigpy_ota"
 
@@ -825,7 +825,7 @@ def register_services(hass):  # noqa: C901
                 raise handler_exception
 
         if not event_data["success"] and params[p.FAIL_EXCEPTION]:
-            raise Exception("Success expected, but failed")
+            raise RuntimeError("Success expected, but failed")
 
         if is_response_data_supported:
             if service.return_response:
