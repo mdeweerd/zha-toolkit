@@ -26,9 +26,11 @@ jobs:
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml')
             }}
       - name: Run pre-commit hooks
+        env:
+          SKIP: no-commit-to-branch
         run: |
           set -o pipefail
-          pre-commit run --show-diff-on-failure --color=always --all-files | tee ${RAW_LOG}
+          SKIP=pre-commit run --show-diff-on-failure --color=always --all-files | tee ${RAW_LOG}
       - name: Convert Raw Log to CheckStyle format
         if: ${{ failure() }}
         run: |
