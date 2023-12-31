@@ -74,7 +74,7 @@ async def download_koenkk_ota(listener, ota_dir):
             try:
                 out_filename = os.path.join(ota_dir, filename)
 
-                LOGGER.info("Download '%s' to '%s'", url, out_filename)
+                LOGGER.debug("Download '%s' to '%s'", url, out_filename)
                 async with req.get(url) as rsp:
                     data = await rsp.read()
 
@@ -145,7 +145,7 @@ async def download_sonoff_ota(listener, ota_dir):
             try:
                 out_filename = os.path.join(ota_dir, filename)
 
-                LOGGER.info("Download '%s' to '%s'", url, out_filename)
+                LOGGER.debug("Download '%s' to '%s'", url, out_filename)
                 async with req.get(url) as rsp:
                     data = await rsp.read()
 
@@ -165,12 +165,12 @@ async def download_zigpy_ota(app, listener):
         await ota.refresh_firmware_list()
         for image_key, image in ota._cache.items():
             url = getattr(image, "url", None)
-            LOGGER.error("Try getting %r, %r, %r", image_key, url, image)
+            LOGGER.debug("Try getting %r, %r, %r", image_key, url, image)
             try:
                 img = await app.ota.get_ota_image(
                     image_key.manufacturer_id, image_key.image_type, model=None
                 )
-                LOGGER.info("Got image %r", getattr(img, "header", None))
+                LOGGER.debug("Got image %r", getattr(img, "header", None))
             except Exception as e:
                 LOGGER.error("%r while getting %r - %s", e, image_key, url)
 
