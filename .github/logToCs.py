@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # pylint: disable=invalid-name
 """
 Convert a log to CheckStyle format.
@@ -64,12 +64,25 @@ def convert_to_checkstyle(messages):
     return ET.tostring(root, encoding="utf-8").decode("utf-8")
 
 
+def convert_text_to_checkstyle(text):
+    """
+    Convert provided message to CheckStyle format.
+    """
+    root = ET.Element("checkstyle")
+    for fields in parse_file(text):
+        if fields:
+            add_error_entry(root, **fields)
+    return ET.tostring(root, encoding="utf-8").decode("utf-8")
+
+
 ANY_REGEX = r".*?"
 FILE_REGEX = r"\s*(?P<file_name>\S.*?)\s*?"
+EOL_REGEX = r"[\r\n]"
 LINE_REGEX = r"\s*(?P<line>\d+?)\s*?"
 COLUMN_REGEX = r"\s*(?P<column>\d+?)\s*?"
 SEVERITY_REGEX = r"\s*(?P<severity>error|warning|notice|style|info)\s*?"
 MSG_REGEX = r"\s*(?P<message>.+?)\s*?"
+MULTILINE_MSG_REGEX = r"\s*(?P<message>(?:.|.[\r\n])+)"
 # cpplint confidence index
 CONFIDENCE_REGEX = r"\s*\[(?P<confidence>\d+)\]\s*?"
 
@@ -77,10 +90,19 @@ CONFIDENCE_REGEX = r"\s*\[(?P<confidence>\d+)\]\s*?"
 # List of message patterns, add more specific patterns earlier in the list
 # Creating patterns by using constants makes them easier to define and read.
 PATTERNS = [
-    # ESLint (JavaScript Linter), RoboCop
-    # path/to/file.js:10:2: Some linting issue
-    # path/to/file.rb:10:5: Style/Indentation: Incorrect indentation detected
-    # path/to/script.sh:10:1: SC2034: Some shell script issue
+    # beautysh
+    #  File ftp.sh: error: "esac" before "case" in line 90.
+    re.compile(
+        f"^File {FILE_REGEX}:{SEVERITY_REGEX}:"
+        f" {MSG_REGEX} in line {LINE_REGEX}.$"
+    ),
+    # beautysh
+    #  File socks4echo.sh: error: indent/outdent mismatch: -2.
+    re.compile(f"^File {FILE_REGEX}:{SEVERITY_REGEX}: {MSG_REGEX}$"),
+    # ESLint (JavaScript Linter), RoboCop, shellcheck
+    #  path/to/file.js:10:2: Some linting issue
+    #  path/to/file.rb:10:5: Style/Indentation: Incorrect indentation detected
+    #  path/to/script.sh:10:1: SC2034: Some shell script issue
     re.compile(f"^{FILE_REGEX}:{LINE_REGEX}:{COLUMN_REGEX}: {MSG_REGEX}$"),
     # Cpplint default output:
     #           '%s:%s:  %s  [%s] [%d]\n'
@@ -103,13 +125,77 @@ PATTERNS = [
     re.compile(f"^{FILE_REGEX}:{LINE_REGEX}: {MSG_REGEX}$"),
     # Shellcheck:
     # In script.sh line 76:
-    re.compile(f"^In {FILE_REGEX} line {LINE_REGEX}:({MSG_REGEX})?$"),
+    re.compile(
+        f"^In {FILE_REGEX} line {LINE_REGEX}:{EOL_REGEX}?"
+        f"({MULTILINE_MSG_REGEX})?{EOL_REGEX}{EOL_REGEX}"
+    ),
 ]
 
 # Severities available in CodeSniffer report format
 SEVERITY_NOTICE = "notice"
 SEVERITY_WARNING = "warning"
 SEVERITY_ERROR = "error"
+
+
+def strip_ansi(text: str):
+    """
+    Strip ANSI escape sequences from string (colors, etc)
+    """
+    return re.sub(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", "", text)
+
+
+def parse_file(text):
+    """
+    Parse all messages in a file
+
+    Returns the fields in a dict.
+    """
+    # regex required to allow same group names
+    import regex  # pylint: disable=import-outside-toplevel
+
+    patterns = [pattern.pattern for pattern in PATTERNS]
+    # patterns = [PATTERNS[0].pattern]
+
+    full_regex = "(?:(?:" + (")|(?:".join(patterns)) + "))"
+    results = []
+
+    for fields in regex.finditer(
+        full_regex, strip_ansi(text), regex.MULTILINE
+    ):
+        if not fields:
+            continue
+        result = fields.groupdict()
+
+        if len(result) == 0:
+            continue
+        severity = result.get("severity", None)
+        confidence = result.pop("confidence", None)
+
+        if confidence is not None:
+            # Convert confidence level of cpplint
+            # to warning, etc.
+            confidence = int(confidence)
+
+            if confidence <= 1:
+                severity = SEVERITY_NOTICE
+            elif confidence >= 5:
+                severity = SEVERITY_ERROR
+            else:
+                severity = SEVERITY_WARNING
+
+        if severity is None:
+            severity = SEVERITY_ERROR
+        else:
+            severity = severity.lower()
+
+        if severity in ["info", "style"]:
+            severity = SEVERITY_NOTICE
+
+        result["severity"] = severity
+
+        results.append(result)
+
+    return results
 
 
 def parse_message(message):
@@ -223,14 +309,17 @@ def main():
 
     if args.input == "-" and args.input_named:
         with open(args.input_named, encoding="utf_8") as input_file:
-            messages = input_file.readlines()
+            text = input_file.read()
     elif args.input != "-":
         with open(args.input, encoding="utf_8") as input_file:
-            messages = input_file.readlines()
+            text = input_file.read()
     else:
-        messages = sys.stdin.readlines()
+        text = sys.stdin.read()
 
-    checkstyle_xml = convert_to_checkstyle(messages)
+    try:
+        checkstyle_xml = convert_text_to_checkstyle(text)
+    except ImportError:
+        checkstyle_xml = convert_to_checkstyle(re.split(r"[\r\n]+", text))
 
     if args.output == "-" and args.output_named:
         with open(args.output_named, "w", encoding="utf_8") as output_file:

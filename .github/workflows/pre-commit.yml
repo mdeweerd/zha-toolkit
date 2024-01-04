@@ -18,8 +18,8 @@ jobs:
         if: false
         with:
           cache: pip
-          python-version: "3.12.1"
-      - run: python -m pip install pre-commit
+          python-version: 3.12.1
+      - run: python -m pip install pre-commit regex
       - uses: actions/cache/restore@v3
         with:
           path: ~/.cache/pre-commit/
@@ -30,21 +30,31 @@ jobs:
           SKIP: no-commit-to-branch
         run: |
           set -o pipefail
+          pre-commit gc
           pre-commit run --show-diff-on-failure --color=always --all-files | tee ${RAW_LOG}
       - name: Convert Raw Log to CheckStyle format
         if: ${{ failure() }}
         run: |
-          ${LOG_TO_CS} ${RAW_LOG} ${CS_XML}
+          python ${LOG_TO_CS} ${RAW_LOG} ${CS_XML}
       - name: Annotate Source Code with Messages
         uses: staabm/annotate-pull-request-from-checkstyle-action@v1
         if: ${{ failure() }}
         with:
           files: ${{ env.CS_XML }}
-          notices-as-warnings: true # optional
-          prepend-filename: true # optional
+          notices-as-warnings: true  # optional
+          prepend-filename: true  # optional
       - uses: actions/cache/save@v3
         if: ${{ always() }}
         with:
           path: ~/.cache/pre-commit/
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml')
             }}
+      - name: Provide log as artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: precommit-logs
+          path: |
+            ${{ env.RAW_LOG }}
+            ${{ env.CS_XML }}
+          retention-days: 2
