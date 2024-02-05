@@ -189,7 +189,7 @@ fields:
   orientation:
     name: TRV orientation
     description: >-
-      - When false, mounted horizontaly, - When true, mounted vertically. This
+      - When false, mounted horizontally, - When true, mounted vertically. This
       selects the temperature gradient measured in the valve on radiator.
     default: false
     example: false
