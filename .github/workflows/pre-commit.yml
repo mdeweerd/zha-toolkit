@@ -7,44 +7,44 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     env:
-      LOG_TO_CS: .github/logToCs.py
       RAW_LOG: pre-commit.log
       CS_XML: pre-commit.xml
     steps:
       - run: sudo apt-get update && sudo apt-get install cppcheck
         if: false
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         if: false
         with:
           cache: pip
-          python-version: "3.12.1"
+          python-version: 3.12.1
       - run: python -m pip install pre-commit
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v4
         with:
           path: ~/.cache/pre-commit/
-          key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml')
-            }}
+          key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Run pre-commit hooks
-        env:
-          SKIP: no-commit-to-branch
         run: |
           set -o pipefail
+          pre-commit gc
           pre-commit run --show-diff-on-failure --color=always --all-files | tee ${RAW_LOG}
-      - name: Convert Raw Log to CheckStyle format
-        if: ${{ failure() }}
-        run: |
-          ${LOG_TO_CS} ${RAW_LOG} ${CS_XML}
-      - name: Annotate Source Code with Messages
-        uses: staabm/annotate-pull-request-from-checkstyle-action@v1
+      - name: Convert Raw Log to Checkstyle format (launch action)
+        uses: mdeweerd/logToCheckStyle@v2024.2.3
         if: ${{ failure() }}
         with:
-          files: ${{ env.CS_XML }}
-          notices-as-warnings: true # optional
-          prepend-filename: true # optional
-      - uses: actions/cache/save@v3
-        if: ${{ always() }}
+          in: ${{ env.RAW_LOG }}
+          # out: ${{ env.CS_XML }}
+      - uses: actions/cache/save@v4
+        if: ${{ ! cancelled() }}
         with:
           path: ~/.cache/pre-commit/
-          key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml')
-            }}
+          key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Provide log as artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ ! cancelled() }}
+        with:
+          name: precommit-logs
+          path: |
+            ${{ env.RAW_LOG }}
+            ${{ env.CS_XML }}
+          retention-days: 2
