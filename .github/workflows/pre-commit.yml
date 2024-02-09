@@ -24,6 +24,8 @@ jobs:
           path: ~/.cache/pre-commit/
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Run pre-commit hooks
+        env:
+          SKIP: no-commit-to-branch
         run: |
           set -o pipefail
           pre-commit gc
