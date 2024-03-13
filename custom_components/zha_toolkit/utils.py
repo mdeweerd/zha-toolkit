@@ -356,7 +356,11 @@ def set_state(
     #              entity_id, key, value, stateAttrs)
     if key is not None:
         stateAttrs[key] = value
-        value = None
+        if stateObj is not None:
+            # Copy existing state, to update selected item
+            value = stateObj.state
+        else:
+            value = None
 
     # LOGGER.debug("entity:%s key:%s value:%s attrs:%s",
     #              entity_id, key, value, stateAttrs)
