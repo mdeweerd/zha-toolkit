@@ -146,8 +146,9 @@ repos:
         args:
           - --reports=no
           - --py-version=3.10
-        #additional_dependencies:
-          #- homeassistant-stubs>=2023.1.7
+        # additional_dependencies:
+          # - pylint-blocking-calls
+          # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.5.1
