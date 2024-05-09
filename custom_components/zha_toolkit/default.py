@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, final
+
 import importlib
 import logging
 import sys
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,13 +34,16 @@ async def default(app, listener, ieee, cmd, data, service, params, event_data):
         module_name = cmd[0]
         cmd = cmd[1]
 
-    LOGGER.debug(
-        f"Trying to import {package_name}.{module_name} to call {cmd}"
-    )
-    m = importlib.import_module(f".{module_name}", package=package_name)
+    def _reload_command_module() -> ModuleType:
+        LOGGER.debug(
+            f"Trying to import {package_name}.{module_name} to call {cmd}"
+        )
+        m = importlib.import_module(f".{module_name}", package=package_name)
 
-    importlib.reload(m)
+        importlib.reload(m)
+        return m
 
+    m = await listener.hass.async_add_import_executor_job(_reload_command_module)
     # Get handler (cmd) in loaded module.
     handler = getattr(m, cmd)
     # Call the handler
