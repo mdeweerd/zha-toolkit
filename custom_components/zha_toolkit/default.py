@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, final
-
 import importlib
 import logging
 import sys
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -43,7 +42,9 @@ async def default(app, listener, ieee, cmd, data, service, params, event_data):
         importlib.reload(m)
         return m
 
-    m = await listener.hass.async_add_import_executor_job(_reload_command_module)
+    m = await listener.hass.async_add_import_executor_job(
+        _reload_command_module
+    )
     # Get handler (cmd) in loaded module.
     handler = getattr(m, cmd)
     # Call the handler
