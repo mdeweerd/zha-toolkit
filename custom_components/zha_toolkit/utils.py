@@ -35,7 +35,8 @@ else:
     from homeassistant.helpers.json import save_json
 
 if parse_version(HA_VERSION) >= parse_version("2024.6"):
-    from homeassistant.helpers import device_registry as dr, entity_registry as er
+    from homeassistant.helpers import device_registry as dr
+    from homeassistant.helpers import entity_registry as er
 
 if typing.TYPE_CHECKING:
     VERSION_TIME: float = 0.0
