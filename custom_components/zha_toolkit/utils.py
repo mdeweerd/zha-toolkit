@@ -34,6 +34,10 @@ else:
     # pylint: disable=ungrouped-imports
     from homeassistant.helpers.json import save_json
 
+if parse_version(HA_VERSION) >= parse_version("2024.6"):
+    from homeassistant.helpers import device_registry as dr
+    from homeassistant.helpers import entity_registry as er
+
 if typing.TYPE_CHECKING:
     VERSION_TIME: float = 0.0
     VERSION: str = "Unknown"
@@ -286,6 +290,8 @@ async def get_ieee(app, listener, ref):
             else get_hass(listener).helpers.entity_registry.async_get(
                 get_hass(listener)
             )
+            if not is_ha_ge("2024.6")
+            else er.async_get(get_hass(listener))
         )
 
         device_registry = (
@@ -297,6 +303,8 @@ async def get_ieee(app, listener, ref):
             else get_hass(listener).helpers.device_registry.async_get(
                 get_hass(listener)
             )
+            if not is_ha_ge("2024.6")
+            else dr.async_get(get_hass(listener))
         )
         registry_device = device_registry.async_get(ref)
 
