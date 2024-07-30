@@ -158,28 +158,40 @@ async def download_sonoff_ota(listener, ota_dir):
 
 async def download_zigpy_ota(app, listener):
     LOGGER.debug("Zigpy download procedure starting")
-    for _, (ota, _) in app.ota._listeners.items():
-        if isinstance(ota, zigpy.ota.provider.FileStore):
-            # Skip files provider
-            continue
-        await ota.refresh_firmware_list()
-        for image_key, image in ota._cache.items():
-            url = getattr(image, "url", None)
-            LOGGER.error("Try getting %r, %r, %r", image_key, url, image)
-            try:
-                img = await app.ota.get_ota_image(
-                    image_key.manufacturer_id, image_key.image_type, model=None
-                )
-                LOGGER.info("Got image %r", getattr(img, "header", None))
-            except Exception as e:
-                LOGGER.error("%r while getting %r - %s", e, image_key, url)
+    if hasattr(app, "ota") and hasattr(app.ota, "_listeners"):
+        for _, (ota, _) in app.ota._listeners.items():
+            if isinstance(ota, zigpy.ota.provider.FileStore):
+                # Skip files provider
+                continue
+            await ota.refresh_firmware_list()
+            for image_key, image in ota._cache.items():
+                url = getattr(image, "url", None)
+                LOGGER.error("Try getting %r, %r, %r", image_key, url, image)
+                try:
+                    img = await app.ota.get_ota_image(
+                        image_key.manufacturer_id,
+                        image_key.image_type,
+                        model=None,
+                    )
+                    LOGGER.info("Got image %r", getattr(img, "header", None))
+                except Exception as e:
+                    LOGGER.error("%r while getting %r - %s", e, image_key, url)
+    else:
+        LOGGER.warning(
+            "Could not get ota object for download_zigpy_ota, try again"
+        )
 
 
 async def ota_update_images(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    for _, (ota, _) in app.ota._listeners.items():
-        await ota.refresh_firmware_list()
+    if hasattr(app, "ota") and hasattr(app.ota, "_listeners"):
+        for _, (ota, _) in app.ota._listeners.items():
+            await ota.refresh_firmware_list()
+    else:
+        LOGGER.warning(
+            "Could not get ota object for ota_update_images, try again"
+        )
 
 
 async def ota_notify(
