@@ -4,7 +4,7 @@ from typing import Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.zha.core.gateway import ZHAGateway
+from homeassistant.components.zha import Gateway
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
