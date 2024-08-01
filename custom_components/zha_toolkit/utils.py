@@ -10,7 +10,7 @@ import typing
 from enum import Enum
 
 import zigpy
-from homeassistant.components.zha.core.gateway import ZHAGateway
+from homeassistant.components.zha import Gateway
 from homeassistant.util import dt as dt_util
 from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
