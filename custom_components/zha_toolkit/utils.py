@@ -13,7 +13,7 @@ import zigpy
 
 try:
     from homeassistant.components.zha import Gateway as ZHAGateway
-except:
+except ImportError:
     from homeassistant.components.zha.core.gateway import ZHAGateway
 
 from homeassistant.util import dt as dt_util
