@@ -657,12 +657,12 @@ async def async_setup(hass, config):
         return True
 
     LOGGER.debug("Setup services from async_setup")
-    register_services(hass)
+    await register_services(hass)
 
     return True
 
 
-def register_services(hass):  # noqa: C901
+async def register_services(hass):  # noqa: C901
     global LOADED_VERSION  # pylint: disable=global-statement
     hass_ref = hass
 
@@ -710,7 +710,7 @@ def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        if u.getVersion() != LOADED_VERSION:
+        if await u.getVersion() != LOADED_VERSION:
             LOGGER.debug(
                 "Reload services because VERSION changed from %s to %s",
                 LOADED_VERSION,
@@ -743,7 +743,7 @@ def register_services(hass):  # noqa: C901
 
         # Preload event_data
         event_data = {
-            "zha_toolkit_version": u.getVersion(),
+            "zha_toolkit_version": await u.getVersion(),
             "zigpy_version": u.getZigpyVersion(),
             "zigpy_rf_version": u.get_radio_version(app),
             "ieee_org": ieee_str,
@@ -864,7 +864,7 @@ def register_services(hass):  # noqa: C901
                 schema=value,
             )
 
-    LOADED_VERSION = u.getVersion()
+    LOADED_VERSION = await u.getVersion()
 
 
 async def command_handler_default(
@@ -898,7 +898,7 @@ async def command_handler_default(
         )
 
 
-async def reload_services_yaml(hass):
+def reload_services_yaml(hass):
     import os
 
     from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
@@ -922,7 +922,7 @@ async def reload_services_yaml(hass):
 
 async def _register_services(hass):
     register_services(hass)
-    await reload_services_yaml(hass)
+    await hass.async_add_executor_job(reload_services_yaml, hass)
 
 
 #

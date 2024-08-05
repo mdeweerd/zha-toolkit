@@ -146,7 +146,8 @@ repos:
         args:
           - --reports=no
           - --py-version=3.10
-        # additional_dependencies:
+        additional_dependencies:
+          - aiofiles>=0.4.0
           # - pylint-blocking-calls
           # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
@@ -165,6 +166,7 @@ repos:
           - --show-error-context
         additional_dependencies:
           - zigpy==0.61.0
+          - aiofiles>=0.4.0
           # - cryptography==3.3.2  # Compatible/Available on cygwin
           #- homeassistant-stubs>=2023.1.7
           #- pydantic
