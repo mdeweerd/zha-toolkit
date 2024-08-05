@@ -893,7 +893,7 @@ async def command_handler_default(
         )
 
 
-async def reload_services_yaml(hass):
+def reload_services_yaml(hass):
     import os
 
     from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
@@ -917,7 +917,7 @@ async def reload_services_yaml(hass):
 
 async def _register_services(hass):
     register_services(hass)
-    await reload_services_yaml(hass)
+    await hass.async_add_executor_job(reload_services_yaml, hass)
 
 
 #
