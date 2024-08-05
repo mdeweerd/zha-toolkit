@@ -657,12 +657,12 @@ async def async_setup(hass, config):
         return True
 
     LOGGER.debug("Setup services from async_setup")
-    await register_services(hass)
+    await hass.async_add_executor_job(register_services, hass)
 
     return True
 
 
-async def register_services(hass):  # noqa: C901
+def register_services(hass):  # noqa: C901
     global LOADED_VERSION  # pylint: disable=global-statement
     hass_ref = hass
 
@@ -710,11 +710,12 @@ async def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        if await u.getVersion() != LOADED_VERSION:
+        currentVersion = hass.async_add_executor_job(u.getVersion)
+        if currentVersion != LOADED_VERSION:
             LOGGER.debug(
                 "Reload services because VERSION changed from %s to %s",
                 LOADED_VERSION,
-                u.getVersion(),
+                currentVersion,
             )
             await _register_services(hass)
 
@@ -743,7 +744,7 @@ async def register_services(hass):  # noqa: C901
 
         # Preload event_data
         event_data = {
-            "zha_toolkit_version": await u.getVersion(),
+            "zha_toolkit_version": currentVersion,
             "zigpy_version": u.getZigpyVersion(),
             "zigpy_rf_version": u.get_radio_version(app),
             "ieee_org": ieee_str,
@@ -864,7 +865,7 @@ async def register_services(hass):  # noqa: C901
                 schema=value,
             )
 
-    LOADED_VERSION = await u.getVersion()
+    LOADED_VERSION = u.getVersion()
 
 
 async def command_handler_default(
