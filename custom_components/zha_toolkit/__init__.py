@@ -893,7 +893,7 @@ async def command_handler_default(
         )
 
 
-async def reload_services_yaml(hass):
+def reload_services_yaml(hass):
     import os
 
     from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
