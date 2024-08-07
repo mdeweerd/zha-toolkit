@@ -6,6 +6,6 @@
   "documentation": "https://github.com/mdeweerd/zha-toolkit",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/mdeweerd/zha-toolkit/issues",
-  "requirements": ["pytz"],
+  "requirements": ["aiofiles>=0.4.0", "pytz>=>2016.10"],
   "version": "1.0.0"
 }
