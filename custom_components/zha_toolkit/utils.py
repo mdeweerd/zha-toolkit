@@ -9,6 +9,7 @@ import re
 import typing
 from enum import Enum
 
+import aiofiles
 import zigpy
 from homeassistant.components.zha.core.gateway import ZHAGateway
 from homeassistant.util import dt as dt_util
@@ -85,9 +86,9 @@ def getVersion() -> str:
         # No version, or file change -> get version again
         LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
 
-        with open(fname, encoding="utf_8") as infile:
-            VERSION_TIME = ftime
-            MANIFEST = json.load(infile)
+        async with aiofiles.open(fname, mode="r", encoding="utf_8") as infile:
+            json_raw = await infile.read()
+            MANIFEST = json.loads(json_raw)
 
         if MANIFEST is not None:
             if "version" in MANIFEST.keys():
