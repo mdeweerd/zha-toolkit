@@ -9,6 +9,7 @@ import re
 import typing
 from enum import Enum
 
+import aiofiles
 import zigpy
 
 try:
@@ -59,7 +60,7 @@ def getZigpyVersion() -> str:
     return ZIGPY_VERSION
 
 
-def getVersion() -> str:
+async def getVersion() -> str:
     # pylint: disable=global-variable-undefined,used-before-assignment
     # pylint: disable=global-statement
     global VERSION_TIME
@@ -90,9 +91,9 @@ def getVersion() -> str:
         # No version, or file change -> get version again
         LOGGER.debug(f"Read version from {fname} {ftime}<>{VERSION_TIME}")
 
-        with open(fname, encoding="utf_8") as infile:
-            VERSION_TIME = ftime
-            MANIFEST = json.load(infile)
+        async with aiofiles.open(fname, mode="r", encoding="utf_8") as infile:
+            json_raw = await infile.read()
+            MANIFEST = json.loads(json_raw)
 
         if MANIFEST is not None:
             if "version" in MANIFEST.keys():
