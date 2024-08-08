@@ -7,8 +7,10 @@ import voluptuous as vol
 
 try:
     from homeassistant.components.zha import Gateway as ZHAGateway
+    type ZHAGatewayProxy = Any
 except ImportError:
     from homeassistant.components.zha.core.gateway import ZHAGateway
+    from homeassistant.components.zha.helpers import ZHAGatewayProxy
 
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
@@ -677,9 +679,11 @@ async def register_services(hass):  # noqa: C901
         global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
 
         zha = hass_ref.data["zha"]
-        zha_gw: Optional[ZHAGateway] = None
+        zha_gw: Optional[ZHAGateway | ZHAGatewayProxy] = None
         if isinstance(zha, dict):
             zha_gw = zha.get("zha_gateway", None)
+        elif hasattr(zha, 'gateway_proxy'):
+            zha_gw = zha.gateway_proxy
         else:
             zha_gw = zha.gateway
 
@@ -726,7 +730,7 @@ async def register_services(hass):  # noqa: C901
         # Decode parameters
         params = u.extractParams(service)
 
-        app = zha_gw.application_controller  # type: ignore
+        app = _get_application_controller(zha_gw) # type: ignore
 
         ieee = await u.get_ieee(app, zha_gw, ieee_str)
 
@@ -785,7 +789,7 @@ async def register_services(hass):  # noqa: C901
         handler_result = None
         try:
             handler_result = await handler(
-                zha_gw.application_controller,  # type: ignore
+                _get_application_controller(zha_gw),  # type: ignore
                 zha_gw,
                 ieee,
                 cmd,
@@ -920,6 +924,11 @@ def reload_services_yaml(hass):
         }
         async_set_service_schema(hass, DOMAIN, s, s_desc)
 
+
+def _get_application_controller(zha_gateway: ZHAGateway | ZHAGatewayProxy):
+    if hasattr(zha_gateway, 'gateway'):
+        zha_gateway = zha_gateway.gateway
+    return zha_gateway.application_controller
 
 async def _register_services(hass):
     register_services(hass)
