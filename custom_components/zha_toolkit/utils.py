@@ -11,12 +11,15 @@ from enum import Enum
 
 import aiofiles
 import zigpy
+from homeassistant.core import HomeAssistant
 
 try:
     from homeassistant.components.zha import Gateway as ZHAGateway
 except ImportError:
     from homeassistant.components.zha.core.gateway import ZHAGateway
 
+from homeassistant.components import zha
+from homeassistant.components.zha import helpers as zha_helpers
 from homeassistant.util import dt as dt_util
 from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
@@ -48,6 +51,15 @@ if typing.TYPE_CHECKING:
     VERSION_TIME: float = 0.0
     VERSION: str = "Unknown"
     MANIFEST: dict[str, str | list[str]] = {}
+
+
+def get_zha_gateway(hass: HomeAssistant) -> ZHAGateway:
+    """Get the ZHA gateway object."""
+    if parse_version(HA_VERSION) >= parse_version("2024.8"):
+        return zha_helpers.get_zha_gateway(hass)
+    if isinstance(zha, dict):
+        return zha.get("zha_gateway", None)
+    return zha.gateway
 
 
 def getHaVersion() -> str:

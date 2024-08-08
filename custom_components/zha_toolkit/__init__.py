@@ -678,10 +678,7 @@ async def register_services(hass):  # noqa: C901
 
         zha = hass_ref.data["zha"]
         zha_gw: Optional[ZHAGateway] = None
-        if isinstance(zha, dict):
-            zha_gw = zha.get("zha_gateway", None)
-        else:
-            zha_gw = zha.gateway
+        zha_gw = u.get_zha_gateway(hass)
 
         if zha_gw is None:
             LOGGER.error(
