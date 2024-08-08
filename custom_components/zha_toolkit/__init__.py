@@ -657,7 +657,7 @@ async def async_setup(hass, config):
         return True
 
     LOGGER.debug("Setup services from async_setup")
-    register_services(hass)
+    await register_services(hass)
 
     return True
 
@@ -710,7 +710,7 @@ async def register_services(hass):  # noqa: C901
         LOGGER.debug("module is %s", module)
         importlib.reload(u)
 
-        currentVersion = hass.async_add_executor_job(u.getVersion)
+        currentVersion = await u.getVersion()
         if currentVersion != LOADED_VERSION:
             LOGGER.debug(
                 "Reload services because VERSION changed from %s to %s",
