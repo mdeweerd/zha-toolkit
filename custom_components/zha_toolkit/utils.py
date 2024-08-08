@@ -19,7 +19,12 @@ except ImportError:
     from homeassistant.components.zha.core.gateway import ZHAGateway
 
 from homeassistant.components import zha
-from homeassistant.components.zha import helpers as zha_helpers
+
+try:
+    from homeassistant.components.zha import helpers as zha_helpers
+except ImportError:
+    zha_helpers = None
+
 from homeassistant.util import dt as dt_util
 from pkg_resources import get_distribution, parse_version
 from zigpy import types as t
@@ -60,6 +65,20 @@ def get_zha_gateway(hass: HomeAssistant) -> ZHAGateway:
     if isinstance(zha, dict):
         return zha.get("zha_gateway", None)
     return zha.gateway
+
+
+def get_zha_gateway_hass(
+    hass: HomeAssistant,
+) -> ZHAGateway | zha_helpers.ZHAGatewayProxy:
+    """
+    Get the ZHA gateway proxy object.
+
+    Fallback to the gateway object prior to 2024.8 which still has an attached
+    HASS object.
+    """
+    if parse_version(HA_VERSION) >= parse_version("2024.8"):
+        return zha_helpers.get_zha_gateway_proxy(hass)
+    return get_zha_gateway(hass)
 
 
 def getHaVersion() -> str:
