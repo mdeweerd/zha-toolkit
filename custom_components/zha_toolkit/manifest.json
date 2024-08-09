@@ -1,6 +1,6 @@
 {
   "domain": "zha_toolkit",
-  "name": "\ud83e\uddf0 ZHA Toolkit",
+  "name": "ZHA \ud83e\uddf0 Toolkit",
   "codeowners": ["@mdeweerd"],
   "dependencies": ["zha"],
   "documentation": "https://github.com/mdeweerd/zha-toolkit",
