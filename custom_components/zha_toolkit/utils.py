@@ -1186,6 +1186,6 @@ def get_hass(gateway: ZHAGateway):
     if hass is None:
         msg = f"Could not get hass from {gateway!r}."
         if gateway is not None:
-            msg += "Attributes available {dir(gateway)}."
+            msg += f"Attributes available {dir(gateway)}."
         raise ValueError(msg)
     return hass
