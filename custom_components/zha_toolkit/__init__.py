@@ -806,15 +806,19 @@ async def register_services(hass):  # noqa: C901
                 LOGGER.debug(
                     "Fire %s -> %s", params[p.EVT_SUCCESS], event_data
                 )
-                u.get_hass(zha_gw).bus.fire(params[p.EVT_SUCCESS], event_data)
+                u.get_hass(zha_gw_hass).bus.fire(
+                    params[p.EVT_SUCCESS], event_data
+                )
         else:
             if params[p.EVT_FAIL] is not None:
                 LOGGER.debug("Fire %s -> %s", params[p.EVT_FAIL], event_data)
-                u.get_hass(zha_gw).bus.fire(params[p.EVT_FAIL], event_data)
+                u.get_hass(zha_gw_hass).bus.fire(
+                    params[p.EVT_FAIL], event_data
+                )
 
         if params[p.EVT_DONE] is not None:
             LOGGER.debug("Fire %s -> %s", params[p.EVT_DONE], event_data)
-            u.get_hass(zha_gw).bus.fire(params[p.EVT_DONE], event_data)
+            u.get_hass(zha_gw_hass).bus.fire(params[p.EVT_DONE], event_data)
 
         if handler_exception is not None:
             LOGGER.error(
