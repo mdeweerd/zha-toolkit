@@ -382,9 +382,9 @@ async def attr_write(  # noqa: C901
             # Try to get attribute type
             if success and (attr_id in result_read[0]):
                 python_type = type(result_read[0][attr_id])
-                found_attr_type = f.DATA_TYPES.pytype_to_datatype_id(
+                found_attr_type = f.DataType.from_python_type(
                     python_type
-                )
+                ).type_id
                 LOGGER.debug(
                     "Type determined from read: 0x%02x", found_attr_type
                 )
