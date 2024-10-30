@@ -233,7 +233,7 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
                 attr_type = [
                     attr_type_hex,
                     attr_type.python_type.__name__,
-                    attr_type.type_class.__name__,
+                    attr_type.type_class.name,
                 ]
             else:
                 attr_type = attr_type_hex
