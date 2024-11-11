@@ -508,6 +508,7 @@ SERVICE_SCHEMAS = {
             vol.Optional(P.ENDPOINT): vol.Any(cv.byte, [cv.byte]),
             vol.Optional(P.CLUSTER): vol.Range(0, 0xFFFF),
             vol.Optional(P.MANF): vol.Range(0, 0xFFFF),
+            vol.Optional(P.KWARGS): dict,
             vol.Optional(P.ARGS): vol.Any(
                 int, list, cv.string
             ),  # Arguments to command

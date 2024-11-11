@@ -873,6 +873,7 @@ def extractParams(  # noqa: C901
         p.TRIES: 1,
         p.EXPECT_REPLY: True,
         p.ARGS: [],
+        p.KWARGS: {},
         p.STATE_ID: None,
         p.STATE_ATTR: None,
         p.STATE_VALUE_TEMPLATE: None,
@@ -977,6 +978,9 @@ def extractParams(  # noqa: C901
                 cmd_args.append(lval)
                 LOGGER.debug("cmd converted arg %s", lval)
         params[p.ARGS] = cmd_args
+
+    if P.KWARGS in rawParams:
+        params[P.KWARGS] = rawParams[P.KWARGS]
 
     if P.MIN_INTRVL in rawParams:
         params[p.MIN_INTERVAL] = str2int(rawParams[P.MIN_INTRVL])
