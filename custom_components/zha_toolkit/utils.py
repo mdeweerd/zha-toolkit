@@ -849,14 +849,14 @@ def isManf(manf, includeNone=False):
 #
 def extractParams(  # noqa: C901
     service,
-) -> dict[str, None | int | str | list[int | str] | bytes]:
+) -> dict[str, None | int | str | list[int | str] | dict | bytes]:
     rawParams = service.data
 
     LOGGER.debug("Parameters '%s'", rawParams)
 
     # Potential parameters, initialized to None
     # TODO: Not all parameters are decoded in this function yet
-    params: dict[str, None | int | str | list[int | str] | bytes] = {
+    params: dict[str, None | int | str | list[int | str] | dict | bytes] = {
         p.CMD_ID: None,
         p.EP_ID: None,
         p.DST_EP_ID: None,
