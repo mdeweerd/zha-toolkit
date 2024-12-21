@@ -2401,9 +2401,8 @@ zcl_cmd:
         text:
     kwargs:
       name: Command Keyword Arguments
-      description:
-        Keyword arguments for command
-      example: {"code": "cool_code"}
+      description: Keyword arguments for command
+      example: { "code": "cool_code" }
       selector:
         text:
     tries:
