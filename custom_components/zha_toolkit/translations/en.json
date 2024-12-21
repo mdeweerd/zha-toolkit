@@ -82,11 +82,11 @@
         },
         "force_update": {
           "name": "Force Update",
-          "description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation.\n"
+          "description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation."
         },
         "use_cache": {
           "name": "Use Cache",
-          "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)\n"
+          "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)"
         },
         "event_success": {
           "name": "Success Event Name",
@@ -278,11 +278,11 @@
         },
         "force_update": {
           "name": "Force Update",
-          "description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation.\n"
+          "description": "Force an update event when the state is written When not set or false, if the state value is unchanged, the update may not trigger an automation."
         },
         "use_cache": {
           "name": "Use Cache",
-          "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)\n"
+          "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)"
         },
         "event_success": {
           "name": "Success Event Name",
@@ -352,7 +352,7 @@
         },
         "use_cache": {
           "name": "Use Cache",
-          "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)\n"
+          "description": "Use zigpy attribute cache to get the value of an attribute. (Does not send a zigbee packet to read the attribute)"
         },
         "tries": {
           "name": "Tries",
