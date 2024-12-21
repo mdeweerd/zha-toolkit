@@ -12,8 +12,10 @@ from .params import INTERNAL_PARAMS as p
 LOGGER = logging.getLogger(__name__)
 
 BINDABLE_OUT_CLUSTERS = [
+    0x0005,  # Scenes
     0x0006,  # OnOff
     0x0008,  # Level
+    0x0102,  # Window Covering
     0x0300,  # Color Control
 ]
 BINDABLE_IN_CLUSTERS = [
@@ -612,7 +614,7 @@ async def binds_get(
                 if binding.DstAddress.addrmode == 1:
                     dst_info = {
                         "addrmode": binding.DstAddress.addrmode,
-                        "group": f"0x{binding.DstAddress.nwk}",
+                        "group": f"0x{binding.DstAddress.nwk:04X}",
                     }
                 elif binding.DstAddress.addrmode == 3:
                     dst_info = {

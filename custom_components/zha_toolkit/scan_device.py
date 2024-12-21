@@ -216,7 +216,10 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
                 attr_name = attr_def.name
             else:
                 attr_name = attr_def[0]
-            attr_type = foundation.DATA_TYPES.get(attr_rec.datatype)
+            try:
+                attr_type = foundation.DataType.from_type_id(attr_rec.datatype)
+            except KeyError:
+                attr_type = None
             access_acl = t.uint8_t(attr_rec.acl)
 
             # Note: reading back Array type was fixed in zigpy 0.58.1 .
@@ -229,8 +232,8 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
             if attr_type:
                 attr_type = [
                     attr_type_hex,
-                    attr_type[1].__name__,
-                    attr_type[2].__name__,
+                    attr_type.python_type.__name__,
+                    attr_type.type_class.name,
                 ]
             else:
                 attr_type = attr_type_hex

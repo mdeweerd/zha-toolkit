@@ -631,7 +631,7 @@ def record_read_data(
             attr_name = params[p.CSV_LABEL]
         else:
             python_type = type(read_resp[0][attr_id])
-            attr_type = f.DATA_TYPES.pytype_to_datatype_id(python_type)
+            attr_type = f.DataType.from_python_type(python_type).type_id
 
             try:
                 attr_def = cluster.attributes.get(
@@ -690,7 +690,7 @@ def get_attr_type(cluster, attr_id):
         else:
             attr_type = attr_def[1]
 
-        return f.DATA_TYPES.pytype_to_datatype_id(attr_type)
+        return f.DataType.from_python_type(attr_type).type_id
     except Exception:  # nosec
         LOGGER.debug("Could not find type for %s in %r", attr_id, cluster)
 
@@ -800,7 +800,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
     else:
         # Try to apply conversion using foundation DATA_TYPES table
         # Note: this is not perfect and specific conversions may be needed.
-        data_type = f.DATA_TYPES[attr_type][1]
+        data_type = f.DataType.from_type_id(attr_type).python_type
         LOGGER.debug(f"Data type '{data_type}' for attr type {attr_type}")
         if isinstance(attr_val_in, list):
             # Without length byte after serialisation:
