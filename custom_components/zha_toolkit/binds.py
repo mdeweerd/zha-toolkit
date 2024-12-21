@@ -614,7 +614,7 @@ async def binds_get(
                 if binding.DstAddress.addrmode == 1:
                     dst_info = {
                         "addrmode": binding.DstAddress.addrmode,
-                        "group": f"0x{binding.DstAddress.nwk}",
+                        "group": f"0x{binding.DstAddress.nwk:04X}",
                     }
                 elif binding.DstAddress.addrmode == 3:
                     dst_info = {
