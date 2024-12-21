@@ -52,6 +52,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
     expect_reply = params[p.EXPECT_REPLY]
 
     cmd_args = params[p.ARGS]
+    kw_args = params[p.KWARGS]
 
     # Direction 0 = Client to Server, as in protocol bit
     is_in_cluster = dir_int == 0
@@ -120,6 +121,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                 manufacturer=manf,
                 expect_reply=expect_reply,
                 tries=tries,
+                **kw_args,
             )
         else:
             if cluster_id not in endpoint.out_clusters:
@@ -134,7 +136,7 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
 
             # Note: client_command not tested
             event_data["cmd_reply"] = await cluster.client_command(
-                cmd_id, *cmd_args, manufacturer=manf
+                cmd_id, *cmd_args, manufacturer=manf, **kw_args
             )
     except Exception as e:
         caught_e = e

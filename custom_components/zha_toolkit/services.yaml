@@ -2399,6 +2399,12 @@ zcl_cmd:
       example: [1, abcd, 3]
       selector:
         text:
+    kwargs:
+      name: Command Keyword Arguments
+      description: Keyword arguments for command
+      example: { "code": "cool_code" }
+      selector:
+        text:
     tries:
       name: Tries
       description: Number of times the zigbee packet should be attempted
