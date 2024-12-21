@@ -98,6 +98,7 @@ ZHA Toolkit can also:
     - [`zcl_cmd` Example: "Store Scene"](#zcl_cmd-example-store-scene)
     - [`zcl_cmd` Example: "Recall Scene"](#zcl_cmd-example-recall-scene)
     - [`zcl_cmd` Example: "Add Scene"](#zcl_cmd-example-add-scene)
+    - [`zcl_cmd` Example: Pass keyword arguments](#zcl_cmd-example-pass-keyword-arguments)
   - [Group related services](#group-related-services)
     - [`add_group`](#add_group)
     - [`get_groups`](#get_groups)
@@ -1420,6 +1421,24 @@ ZigBee Cluster Library Frame
         Length: 13
         String: Final Example
         Extension Set: 06000101
+```
+
+### `zcl_cmd` Example: Pass keyword arguments
+
+`kwargs` allows passing arbitrary keyword arguments to the underlying ZHA
+cluster command handler. For instance, this enables sending an IR remote
+code to the cluster command handler in the Tuya TS1201 quirk (see
+https://github.com/ferehcarb/zha-device-handlers/blob/fd90c398bd746df22a5cd55e53cd3134fbd7e009/zhaquirks/tuya/ts1201.py#L125).
+
+```yaml
+action: zha_toolkit.zcl_cmd
+metadata: {}
+data:
+  ieee: switch.ir_blaster_switch
+  cluster: 57348
+  cmd: 2
+  kwargs:
+    code: BXcjrhE/AuATAQF+BuAVA8AB4Acn4AMBQBvgBwFAE8ADB92ZdyPMCD8C
 ```
 
 ## Group related services
