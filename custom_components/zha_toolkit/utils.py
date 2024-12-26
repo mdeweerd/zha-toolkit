@@ -58,7 +58,9 @@ if typing.TYPE_CHECKING:
     MANIFEST: dict[str, str | list[str]] = {}
 
 
-def get_zha_gateway(hass: HomeAssistant) -> ZHAGateway | zha_helpers.ZHAGatewayProxy:
+def get_zha_gateway(
+    hass: HomeAssistant,
+) -> ZHAGateway | zha_helpers.ZHAGatewayProxy:
     """Get the ZHA gateway object."""
     if parse_version(HA_VERSION) >= parse_version("2024.8"):
         return zha_helpers.get_zha_gateway(hass)
@@ -68,12 +70,13 @@ def get_zha_gateway(hass: HomeAssistant) -> ZHAGateway | zha_helpers.ZHAGatewayP
 
 
 def get_zha_devices(listener: ZHAGateway | zha_helpers.ZHAGatewayProxy):
-   devices = getattr(listener, "device_proxies", None)
-   if devices is None:
-       # Old method
-       devices = getattr(listener, "devices", None)
-   if devices is not None:
-       return devices.values()
+    devices = getattr(listener, "device_proxies", None)
+    if devices is None:
+        # Old method
+        devices = getattr(listener, "devices", None)
+    if devices is not None:
+        return devices.values()
+    return []
 
 
 def get_zha_gateway_hass(
