@@ -44,7 +44,7 @@ async def download_koenkk_ota(listener, ota_dir):
     # Get manufacturers
     manfs = {}
     for info in [
-        device.zha_device_info for device in listener.devices.values()
+        device.zha_device_info for device in u.get_zha_devices(listener)
     ]:
         manfs[info["manufacturer_code"]] = True
 
@@ -111,7 +111,7 @@ async def download_sonoff_ota(listener, ota_dir):
     # Get manufacturers
     manfs = {}
     for info in [
-        device.zha_device_info for device in listener.devices.values()
+        device.zha_device_info for device in u.get_zha_devices(listener)
     ]:
         manfs[info["manufacturer_code"]] = True
 
