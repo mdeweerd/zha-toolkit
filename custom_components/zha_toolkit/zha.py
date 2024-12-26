@@ -45,7 +45,9 @@ async def zha_devices(
         #  'signature'
         #  'endpoints'
 
-    devices = [device.zha_device_info for device in listener.devices.values()]
+    devices = [
+        device.zha_device_info for device in listener.device_proxies.values()
+    ]
 
     if ieee is not None:
         ieee = str(ieee)
