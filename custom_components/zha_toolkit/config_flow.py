@@ -46,6 +46,8 @@ class ZhaToolkitCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     data: Optional[dict[str, Any]]
 
     async def my_async_create_entry(self):
+        if self.data is None:
+            self.data = {}
         self.data["VERSION"] = await u.getVersion()
         # Create the configuration entry
         return self.async_create_entry(title="ZHA Toolkit", data=self.data)
