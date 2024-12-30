@@ -6,8 +6,8 @@ from typing import Any, Optional
 
 from homeassistant import config_entries
 
-from . import DOMAIN
 from . import utils as u
+from .const import DOMAIN
 
 # from homeassistant.const import CONF_ACCESS_TOKEN,CONF_NAME
 # from homeassistant.const import CONF_PATH,CONF_URL
@@ -40,10 +40,13 @@ _LOGGER = logging.getLogger(__name__)
 class ZhaToolkitCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Zha Toolkit Custom config flow."""
 
+    VERSION = 0
+    MINOR_VERSION = 1
+
     data: Optional[dict[str, Any]]
 
     async def my_async_create_entry(self):
-        self.data["VERSION"] = u.getVersion()
+        self.data["VERSION"] = await u.getVersion()
         # Create the configuration entry
         return self.async_create_entry(title="ZHA Toolkit", data=self.data)
 
