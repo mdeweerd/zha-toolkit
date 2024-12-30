@@ -37,7 +37,9 @@ _LOGGER = logging.getLogger(__name__)
 # OPTIONS_SCHEMA = vol.Schema({vol.Optional(CONF_NM, default="go"): cv.string})
 
 
-class ZhaToolkitCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ZhaToolkitCustomConfigFlow(
+    config_entries.ConfigFlow, domain=DOMAIN
+):  # type:ignore[call-arg]
     """Zha Toolkit Custom config flow."""
 
     VERSION = 0
