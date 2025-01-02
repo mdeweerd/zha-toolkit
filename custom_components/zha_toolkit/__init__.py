@@ -15,9 +15,11 @@ from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
 
+from . import const as c
 from . import params as PARDEFS
 from . import utils as u
-from .const import DOMAIN
+
+DOMAIN = c.DOMAIN
 
 DEPENDENCIES = ["zha"]
 
