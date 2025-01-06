@@ -1,0 +1,1 @@
+DOMAIN = "zha_toolkit"
