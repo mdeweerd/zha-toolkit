@@ -1,19 +1,19 @@
-import logging
-import aiofiles
 import json
+import logging
 from datetime import datetime
 
+import aiofiles
 from zigpy import types as t
 
 from . import utils as u
 
 try:
-    from zigpy_znp.tools.network_backup import backup_network
-    from zigpy_znp.tools.nvram_read import nvram_read
-    from zigpy_znp.tools.nvram_write import nvram_write
-    from zigpy_znp.tools.nvram_reset import nvram_reset
     from zigpy_znp.tools.common import validate_backup_json
+    from zigpy_znp.tools.network_backup import backup_network
     from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
+    from zigpy_znp.tools.nvram_read import nvram_read
+    from zigpy_znp.tools.nvram_reset import nvram_reset
+    from zigpy_znp.tools.nvram_write import nvram_write
 except ImportError:
     backup_network = None
     nvram_read = None
@@ -38,7 +38,7 @@ async def znp_backup(
         raise ValueError(msg)
 
     if backup_network is None:
-        msg = "ZNP tools not available"
+        msg = "ZNP tools not available (backup_network)"
         LOGGER.debug(msg)
         raise RuntimeError(msg)
 
@@ -74,7 +74,7 @@ async def znp_restore(
         raise ValueError(msg)
 
     if validate_backup_json is None or json_backup_to_zigpy_state is None:
-        msg = "ZNP tools not available"
+        msg = "ZNP tools not available (validate_backup_json)"
         LOGGER.debug(msg)
         raise RuntimeError(msg)
 
@@ -149,7 +149,7 @@ async def znp_nvram_backup(
         raise ValueError(msg)
 
     if nvram_read is None:
-        msg = "ZNP tools not available"
+        msg = "ZNP tools not available (nvram_read)"
         LOGGER.debug(msg)
         raise RuntimeError(msg)
 
@@ -180,9 +180,9 @@ async def znp_nvram_restore(
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise ValueError(msg)
-    
+
     if nvram_write is None:
-        msg = "ZNP tools not available"
+        msg = "ZNP tools not available (nvram_write)"
         LOGGER.debug(msg)
         raise RuntimeError(msg)
 
@@ -220,9 +220,9 @@ async def znp_nvram_reset(
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise ValueError(msg)
-    
+
     if nvram_reset is None:
-        msg = "ZNP tools not available"
+        msg = "ZNP tools not available (nvram_reset)"
         LOGGER.debug(msg)
         raise RuntimeError(msg)
 
