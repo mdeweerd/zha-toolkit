@@ -104,8 +104,8 @@ async def znp_restore(
     event_data["restore_file"] = fname
 
     # Read backup file
-    with open(fname, encoding="utf_8") as f:
-        backup = json.load(f)
+    async with aiofiles.open(fname, encoding="utf_8") as f:
+        backup = json.loads(await f.read())
 
     # validate the backup file
     LOGGER.info("Validating backup contents")
@@ -203,7 +203,7 @@ async def znp_nvram_restore(
 
     LOGGER.info("Restoring NVRAM from '%s'", fname)
     async with aiofiles.open(fname, "r", encoding="utf_8") as f:
-        nvram_obj = json.load(await f.read())
+        nvram_obj = json.loads(await f.read())
 
     await nvram_write(app._znp, nvram_obj)
     LOGGER.info("Restored NVRAM from '%s'", fname)
