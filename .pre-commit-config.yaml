@@ -69,7 +69,7 @@ repos:
     hooks:
       - id: beautysh
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.6
+    rev: v0.10.0.1
     hooks:
       - id: shellcheck
         files: ^[^\.].*\.sh$
@@ -152,7 +152,7 @@ repos:
           # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.14.0
     hooks:
       - id: mypy
         args:
@@ -166,7 +166,8 @@ repos:
           - --show-error-context
         additional_dependencies:
           - zigpy==0.61.0
-          - aiofiles>=0.4.0
+          - types_aiofiles>=0.4.0
+          - types_pytz>=2023.1
           # - cryptography==3.3.2  # Compatible/Available on cygwin
           #- homeassistant-stubs>=2023.1.7
           #- pydantic

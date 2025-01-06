@@ -86,22 +86,30 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
 
             if (cluster_id == 5) and (cmd_id == 0):
                 org_cluster_cmd_defs[0] = cluster.server_commands[0]
+                command = foundation.ZCLCommandDev(
+                    name="zha_cltr5_cmd0",
+                    id=0x00,
+                    schema={
+                        "param1": t.uint16_t,
+                        "param2": t.uint8_t,
+                        "param3": t.uint16_t,
+                        "param4": t.CharacterString,
+                        "param5?": t.List[t.uint8_t],
+                    },
+                ).with_compiled_schema()
+
                 cluster.server_commands[0] = (
                     "add",
-                    (
-                        t.uint16_t,
-                        t.uint8_t,
-                        t.uint16_t,
-                        t.CharacterString,
-                        t.Optional(t.List[t.uint8_t]),
-                    ),
+                    command.schema,
                     False,
                 )
             elif cmd_id not in cluster.server_commands:
                 cmd_schema: list[Any] = []
 
                 if cmd_args is not None:
-                    cmd_schema = [t.uint8_t] * len(cmd_args)
+                    cmd_schema = {
+                        f"param{i+1}?": t.uint8_t for i in range(len(cmd_args))
+                    }
 
                 cmd_def = foundation.ZCLCommandDef(
                     name=f"zha_toolkit_dummy_cmd{cmd_id}",

@@ -4,6 +4,7 @@ from typing import Any, Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+from homeassistant.config_entries import ConfigEntry
 
 try:
     from homeassistant.components.zha import Gateway as ZHAGateway
@@ -14,12 +15,13 @@ from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import DeliveryError
 
+from . import const as c
 from . import params as PARDEFS
 from . import utils as u
 
-DEPENDENCIES = ["zha"]
+DOMAIN = c.DOMAIN
 
-DOMAIN = "zha_toolkit"
+DEPENDENCIES = ["zha"]
 
 # Legacy parameters
 ATTR_COMMAND = "command"
@@ -935,3 +937,51 @@ async def command_handler_register_services(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     await _register_services(u.get_hass(listener))
+
+
+# For migrating from one version to another.
+# Added to migrate from a configuration.yaml entry to UI configuration
+# Example migration function
+# Return True when migration is successful
+#
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    LOGGER.debug(
+        "Migrating configuration from version %s.%s",
+        config_entry.version,
+        config_entry.minor_version,
+    )
+
+    from .config_flow import ZhaToolkitCustomConfigFlow as CF
+
+    new_data = {**config_entry.data}
+
+    # Sample code to  test version migration and update it
+    # if config_entry.version > 1:
+    #   # This means the user has downgraded from a future version
+    #   return False
+
+    # if config_entry.version == 1:
+
+    #   new_data = {**config_entry.data}
+    #   if config_entry.minor_version < 2:
+    #       # TODO: modify Config Entry data with changes in version 1.2
+    #       pass
+    #   if config_entry.minor_version < 3:
+    #       # TODO: modify Config Entry data with changes in version 1.3
+    #       pass
+
+    hass.config_entries.async_update_entry(
+        config_entry,
+        data=new_data,
+        minor_version=CF.MIN_VERSION,
+        version=CF.VERSION,
+    )
+
+    LOGGER.debug(
+        "Migration to configuration version %s.%s successful",
+        config_entry.version,
+        config_entry.minor_version,
+    )
+
+    return True

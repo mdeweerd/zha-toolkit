@@ -548,9 +548,12 @@ async def attr_write(  # noqa: C901
 
     # Write value to provided state or state attribute
     if params[p.STATE_ID] is not None:
-        if len(result_read[1]) == 0 and len(result_read[0]) == 1:
+        if (
+            len(result_read[1]) == 0  # type:ignore[index]
+            and len(result_read[0]) == 1  # type:ignore[index]
+        ):
             # No error and one result
-            for attr_id, val in result_read[0].items():
+            for attr_id, val in result_read[0].items():  # type:ignore[index]
                 if state_template_str is not None:
                     if val is None:
                         LOGGER.debug(

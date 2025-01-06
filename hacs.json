@@ -5,5 +5,5 @@
   "filename": "zha-toolkit.zip",
   "render_readme": true,
   "persistent_directory": "local",
-  "homeassistant": "2024.9.0"
+  "homeassistant": "2024.11.0"
 }
