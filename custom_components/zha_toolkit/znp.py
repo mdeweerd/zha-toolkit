@@ -1,11 +1,26 @@
 import logging
+import aiofiles
+import json
+from datetime import datetime
 
 from zigpy import types as t
 
 from . import utils as u
 
-# from zigpy.zcl import foundation
-# import zigpy.zcl as zcl
+try:
+    from zigpy_znp.tools.network_backup import backup_network
+    from zigpy_znp.tools.nvram_read import nvram_read
+    from zigpy_znp.tools.nvram_write import nvram_write
+    from zigpy_znp.tools.nvram_reset import nvram_reset
+    from zigpy_znp.tools.common import validate_backup_json
+    from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
+except ImportError:
+    backup_network = None
+    nvram_read = None
+    nvram_write = None
+    nvram_reset = None
+    validate_backup_json = None
+    json_backup_to_zigpy_state = None
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,10 +37,10 @@ async def znp_backup(
         LOGGER.debug(msg)
         raise ValueError(msg)
 
-    # Import stuff we need
-    import json
-
-    from zigpy_znp.tools.network_backup import backup_network
+    if backup_network is None:
+        msg = "ZNP tools not available"
+        LOGGER.debug(msg)
+        raise RuntimeError(msg)
 
     # Get backup information
     backup_obj = await backup_network(app._znp)
@@ -44,8 +59,8 @@ async def znp_backup(
     event_data["backup_file"] = fname
 
     LOGGER.debug("Writing to %s", fname)
-    with open(fname, "w", encoding="utf_8") as f:
-        f.write(json.dumps(backup_obj, indent=4))
+    async with aiofiles.open(fname, "w", encoding="utf_8") as f:
+        await f.write(json.dumps(backup_obj, indent=4))
 
 
 async def znp_restore(
@@ -57,6 +72,11 @@ async def znp_restore(
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise ValueError(msg)
+
+    if validate_backup_json is None or json_backup_to_zigpy_state is None:
+        msg = "ZNP tools not available"
+        LOGGER.debug(msg)
+        raise RuntimeError(msg)
 
     # Get/set parameters
 
@@ -70,20 +90,12 @@ async def znp_restore(
 
     counter_increment = t.uint32_t(counter_increment)
 
-    from datetime import datetime
-
     current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
     # Safety: backup current configuration
     await znp_backup(
         app, listener, ieee, cmd, current_datetime, service, params, event_data
     )
-
-    # Import stuff we need for restoring
-    import json
-
-    from zigpy_znp.tools.common import validate_backup_json
-    from zigpy_znp.tools.network_restore import json_backup_to_zigpy_state
 
     # Set name with regards to local path
     fname = u.get_local_dir() + "nwk_backup.json"
@@ -136,10 +148,10 @@ async def znp_nvram_backup(
         LOGGER.debug(msg)
         raise ValueError(msg)
 
-    # Store backup information to file
-    import json
-
-    from zigpy_znp.tools.nvram_read import nvram_read
+    if nvram_read is None:
+        msg = "ZNP tools not available"
+        LOGGER.debug(msg)
+        raise RuntimeError(msg)
 
     # Set name with regards to local path
     out_dir = u.get_local_dir()
@@ -154,8 +166,8 @@ async def znp_nvram_backup(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Saving NVRAM to '%s'", fname)
-    with open(fname, "w", encoding="utf_8") as f:
-        f.write(json.dumps(backup_obj, indent=4))
+    async with aiofiles.open(fname, "w", encoding="utf_8") as f:
+        await f.write(json.dumps(backup_obj, indent=4))
     LOGGER.info("NVRAM backup saved to '%s'", fname)
 
 
@@ -168,9 +180,11 @@ async def znp_nvram_restore(
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise ValueError(msg)
-
-    # Safety: backup current configuration
-    from datetime import datetime
+    
+    if nvram_write is None:
+        msg = "ZNP tools not available"
+        LOGGER.debug(msg)
+        raise RuntimeError(msg)
 
     current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
     await znp_nvram_backup(
@@ -178,10 +192,6 @@ async def znp_nvram_restore(
     )
 
     # Restore NVRAM backup from file
-    import json
-
-    from zigpy_znp.tools.nvram_write import nvram_write
-
     # Set name with regards to local path
     out_dir = u.get_local_dir()
 
@@ -192,8 +202,8 @@ async def znp_nvram_restore(
     fname = out_dir + "nvram_backup" + str(data) + ".json"
 
     LOGGER.info("Restoring NVRAM from '%s'", fname)
-    with open(fname, "w", encoding="utf_8") as f:
-        nvram_obj = json.load(f)
+    async with aiofiles.open(fname, "r", encoding="utf_8") as f:
+        nvram_obj = json.load(await f.read())
 
     await nvram_write(app._znp, nvram_obj)
     LOGGER.info("Restored NVRAM from '%s'", fname)
@@ -210,8 +220,11 @@ async def znp_nvram_reset(
         msg = f"'{cmd}' is only available for ZNP"
         LOGGER.debug(msg)
         raise ValueError(msg)
-
-    from datetime import datetime
+    
+    if nvram_reset is None:
+        msg = "ZNP tools not available"
+        LOGGER.debug(msg)
+        raise RuntimeError(msg)
 
     current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
@@ -219,9 +232,6 @@ async def znp_nvram_reset(
     await znp_nvram_backup(
         app, listener, ieee, cmd, current_datetime, service, params, event_data
     )
-
-    # Import stuff we need for resetting
-    from zigpy_znp.tools.nvram_reset import nvram_reset
 
     # Write back information from backup
     LOGGER.info("Reset NVRAM")
