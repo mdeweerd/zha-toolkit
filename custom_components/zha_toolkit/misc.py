@@ -319,28 +319,29 @@ async def misc_settime(
         event_data["success"] = False
         event_data["msg"] = f"{e!r}"
 
+
 async def misc_energy_scan(
-        app, listener, ieee, cmd, data, service, params, event_data
+    app, listener, ieee, cmd, data, service, params, event_data
 ):
-    """ Run energy scan for each channel. """
-    # See https://github.com/zigpy/zigpy-cli/blob/dev/README.md#performing-an-energy-scan
+    """Run energy scan for each channel."""
+    # See https://github.com/zigpy/zigpy-cli/blob/dev/README.md#performing-an-energy-scan  # noqa: E501
     # Lower value means less congestion.
-    
-    LOGGER.debug(f"Energy scan.")
+
+    LOGGER.debug("Energy scan.")
     scan = await app.energy_scan(
         channels=t.Channels.ALL_CHANNELS, duration_exp=4, count=1
     )
-    event_data['energy_scan'] = {
+    event_data["energy_scan"] = {
         channel: 100 * energy / 255 for channel, energy in scan.items()
     }
 
     if params[p.CSV_FILE] is not None:
         # write CSV header
         u.append_to_csvfile(
-            ['channel', 'energy'],
+            ["channel", "energy"],
             "csv",
             params[p.CSV_FILE],
-            'Energy Scan',
+            "Energy Scan",
             listener=listener,
             overwrite=True,
         )
