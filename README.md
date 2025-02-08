@@ -122,6 +122,7 @@ ZHA Toolkit can also:
     - [`zha_devices`: Device Information to Event or CSV or Script variable](#zha_devices-device-information-to-event-or-csv-or-script-variable)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [`ha_set_state` - Update HA state](#ha_set_state---update-ha-state)
+    - [`misc_energy_scan`: Scan Zigbee channels for congestion](#misc_energy_scan-perform-an-energy-scan)
   - [User method](#user-method)
   - [Manufacturers](#manufacturers)
     - [Tuya](#tuya)
@@ -1921,7 +1922,7 @@ service code is entered which is incompatible with this functionality.
 This is not strictly a `zha` specific tool, but useful in some scripting
 situations.
 
-### `misc_energy_scan`: Performing an energy scan
+### `misc_energy_scan`: Perform an energy scan
 
 Scan Zigbee channels for congestion level. A lower value is less congested.
 
