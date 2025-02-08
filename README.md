@@ -1924,7 +1924,8 @@ situations.
 
 ### `misc_energy_scan`: Perform an energy scan
 
-Scan Zigbee channels for congestion level. A lower value is less congested.
+Scan Zigbee channels for congestion level. The value is a percentage from zero
+to 100. A lower value is less congested.
 
 ```yaml
 service: zha_toolkit.misc_energy_scan
