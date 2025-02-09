@@ -1956,7 +1956,7 @@ automation runs each hour:
           sequence:
             - action: input_number.set_value
               target:
-                entity_id: input_number.zigbee_energy_channel_{{ repeat.item }}
+                entity_id: "input_number.zigbee_energy_channel_{{ repeat.item }}"
               data:
                 value: "{{ scan['energy_scan'][repeat.item] | round }}"
 ```
