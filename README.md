@@ -1938,7 +1938,7 @@ The values can vary quite a bit between scans. You can create helpers to
 store results which will allow you to see trends via the History tab. This
 automation runs each hour:
 
-```yaml
+```
   - id: zigbee_energy_scan
     alias: Zigbee Energy Scan
     mode: single
