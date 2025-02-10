@@ -122,6 +122,7 @@ ZHA Toolkit can also:
     - [`zha_devices`: Device Information to Event or CSV or Script variable](#zha_devices-device-information-to-event-or-csv-or-script-variable)
     - [`register_services`: Reregister ZHA-Toolkit services](#register_services-reregister-zha-toolkit-services)
     - [`ha_set_state` - Update HA state](#ha_set_state---update-ha-state)
+    - [`misc_energy_scan`: Perform an energy scan](#misc_energy_scan-perform-an-energy-scan)
   - [User method](#user-method)
   - [Manufacturers](#manufacturers)
     - [Tuya](#tuya)
@@ -1920,6 +1921,49 @@ service code is entered which is incompatible with this functionality.
 
 This is not strictly a `zha` specific tool, but useful in some scripting
 situations.
+
+### `misc_energy_scan`: Perform an energy scan
+
+Scan Zigbee channels for congestion level. The value is a percentage from
+zero to 100. A lower value is less congested.
+
+```yaml
+service: zha_toolkit.misc_energy_scan
+data:
+  # Optional: CSV file to write attribute to - located in /config/csv/...
+  csvout: energy_scan.csv
+```
+
+The values can vary quite a bit between scans. You can create helpers to
+store results which will allow you to see trends via the History tab. This
+automation runs each hour:
+
+```
+  - id: zigbee_energy_scan
+    alias: Zigbee Energy Scan
+    mode: single
+    triggers:
+      - trigger: time_pattern
+      # Matches every hour at 17 minutes past the hour
+        minutes: 17
+    actions:
+      - action: zha_toolkit.execute
+        data:
+          command: misc_energy_scan
+        response_variable: scan
+      - repeat:
+          for_each: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+          sequence:
+            - action: input_number.set_value
+              target:
+                entity_id: "input_number.zigbee_energy_channel_{{ repeat.item }}"
+              data:
+                value: "{{ scan['energy_scan'][repeat.item] | round }}"
+```
+
+Creating 16 input_number helpers can be tedious. ZHA recommends only
+channels 15, 20, and 25 be used. Alternatively you can create just three
+helpers and reduce the for_each list to only those three channels.
 
 ## User method
 
