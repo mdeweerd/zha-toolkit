@@ -568,7 +568,7 @@ def dict_to_jsonable(src_dict):
 
 
 def write_json_to_file(
-    data, subdir, fname, desc, listener=None, normalize_name=False
+    data, subdir, fname, desc, listener=None, normalize_name=False, ts=None
 ):
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
@@ -579,6 +579,12 @@ def write_json_to_file(
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
+    if ts is not None:
+        if '.' in fname:
+            base, ext = fname.rsplit('.', 1)
+            fname = base + '_' + ts + '.' + ext
+        else:
+            fname = fname + '_' + ts
     if normalize_name:
         file_name = os.path.join(out_dir, normalize_filename(fname))
     else:
@@ -903,6 +909,8 @@ def extractParams(  # noqa: C901
         p.DOWNLOAD: None,
         p.PATH: None,
         p.USE_CACHE: False,
+        p.JSON_OUT: None,
+        p.JSON_TIMESTAMP: False,
     }
 
     # Endpoint to send command to
@@ -1054,6 +1062,12 @@ def extractParams(  # noqa: C901
 
     if P.CSVLABEL in rawParams:
         params[p.CSV_LABEL] = rawParams[P.CSVLABEL]
+
+    if P.JSON_OUT in rawParams:
+        params[p.JSON_OUT] = rawParams[P.JSON_OUT]
+
+    if P.JSON_TIMESTAMP in rawParams:
+        params[p.JSON_TIMESTAMP] = rawParams[P.JSON_TIMESTAMP]
 
     return params
 

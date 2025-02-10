@@ -121,3 +121,18 @@ async def zha_devices(
                 )
         if selectDeviceFields:
             event_data["devices"] = slimmedDevices
+
+    if params[p.JSON_OUT] is not None:
+        timeStamp = None
+        if params[p.JSON_TIMESTAMP] is not None:
+            timeStamp = event_data['start_time'].split('.', 1)[0]
+        u.write_json_to_file(
+            event_data,
+            subdir="json",
+            fname=params[p.JSON_OUT],
+            desc="zha_devices",
+            listener=listener,
+            normalize_name=False,
+            ts=timeStamp
+        )
+            

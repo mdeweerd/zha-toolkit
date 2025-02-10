@@ -2549,7 +2549,7 @@ znp_backup:
         boolean:
 zha_devices:
   name: Get/Export Device Information
-  description: Export device information (Response, CSV File, Event)
+  description: Export device information (Response, CSV File, JSON File, Event)
   fields:
     ieee:
       name: Device Reference
@@ -2599,6 +2599,22 @@ zha_devices:
             - user_given_name
             - device_reg_id
             - area_id
+    json_out:
+      name: JSON Filename
+      description: >-
+        Filename of JSON to write read data to.  Written to '/config/json' directory
+      required: false
+      example: zha_devices.json
+      selector:
+        text:
+    json_timestamp:
+      name: JSON Timestamp
+      description: >-
+        Add timestamp to Filename of JSON file. Defaults to False.
+      required: false
+      example: True
+      selector:
+        boolean:
     event_success:
       name: Success Event Name
       description: Event name in case of success

@@ -1474,7 +1474,7 @@
     },
     "zha_devices": {
       "name": "Get/Export Device Information",
-      "description": "Export device information (Response, CSV File, Event)",
+      "description": "Export device information (Response, CSV File, JSON File, Event)",
       "fields": {
         "ieee": {
           "name": "Device Reference",
@@ -1491,6 +1491,14 @@
         "csvlabel": {
           "name": "CSV Sort Column",
           "description": "Column to sort table by"
+        },
+        "json_out": {
+          "name": "JSON Filename",
+          "description": "Filename of JSON to write read data to.  Written to '/config/json' directory"
+        },
+        "json_timestamp": {
+          "name": "JSON Timestamp",
+          "description": "Add timestamp to Filename of JSON file. Defaults to False."
         },
         "event_success": {
           "name": "Success Event Name",
