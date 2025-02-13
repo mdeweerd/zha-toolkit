@@ -580,11 +580,11 @@ def write_json_to_file(
         os.mkdir(out_dir)
 
     if ts is not None:
-        if '.' in fname:
-            base, ext = fname.rsplit('.', 1)
-            fname = base + '_' + ts + '.' + ext
+        if "." in fname:
+            base, ext = fname.rsplit(".", 1)
+            fname = base + "_" + ts + "." + ext
         else:
-            fname = fname + '_' + ts
+            fname = fname + "_" + ts
     if normalize_name:
         file_name = os.path.join(out_dir, normalize_filename(fname))
     else:

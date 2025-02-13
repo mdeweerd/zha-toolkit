@@ -1855,7 +1855,7 @@ data:
   # Optional: JSON file to write devices data to - located in /config/json/...
   json_out: zha_devices.json
   # Optional: Add timestamp to Filename of JSON file. Defaults to False.
-  json_timestamp: True
+  json_timestamp: true
   event_done: zha_devices
 ```
 
