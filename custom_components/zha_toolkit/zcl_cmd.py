@@ -98,11 +98,21 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     False,
                 )
             elif cmd_id not in cluster.server_commands:
-                cmd_schema: list[Any] = []
+                schema_dict: dict[str, Any] = {}
 
                 if cmd_args is not None:
-                    cmd_schema = [t.uint8_t] * len(cmd_args)
+                    schema_dict = {
+                        f"param{i + 1}": t.uint8_t
+                        for i in range(len(cmd_args))
+                    }
 
+                temp = foundation.ZCLCommandDef(
+                    schema=schema_dict,
+                    direction=foundation.Direction.Client_to_Server,
+                    id=cmd_id,
+                    name="schema",
+                )
+                cmd_schema = temp.with_compiled_schema().schema
                 cmd_def = foundation.ZCLCommandDef(
                     name=f"zha_toolkit_dummy_cmd{cmd_id}",
                     id=cmd_id,
