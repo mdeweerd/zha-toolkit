@@ -38,6 +38,8 @@ class USER_PARAMS_consts:  # pylint: disable=too-few-public-methods
     DOWNLOAD = "download"
     PATH = "path"
     USE_CACHE = "use_cache"
+    JSON_OUT = "json_out"
+    JSON_TIMESTAMP = "json_timestamp"
 
 
 class SERVICE_consts:  # pylint: disable=too-few-public-methods
@@ -135,6 +137,8 @@ class INTERNAL_PARAMS_consts:  # pylint: disable=too-few-public-methods
     WRITE_IF_EQUAL = "write_if_equal"
     CSV_FILE = "csvfile"
     CSV_LABEL = "csvlabel"
+    JSON_OUT = "json_out"
+    JSON_TIMESTAMP = "json_timestamp"
     DOWNLOAD = "download"
     PATH = "path"
     USE_CACHE = "use_cache"

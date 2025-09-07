@@ -8,7 +8,7 @@ repos:
       - id: pyupgrade-docs
   - repo: https://github.com/executablebooks/mdformat
     # Do this before other tools "fixing" the line endings
-    rev: 0.7.17
+    rev: 0.7.22
     hooks:
       - id: mdformat
         name: Format Markdown
@@ -19,6 +19,7 @@ repos:
         additional_dependencies:
           - mdformat-toc
           - mdformat-beautysh
+          - setuptools==80  # workaround for beautysh
           # -mdformat-shfmt
           # -mdformat-tables
           - mdformat-config
@@ -38,6 +39,7 @@ repos:
       - id: mixed-line-ending
       - id: end-of-file-fixer
       - id: trailing-whitespace
+        exclude: ^.*\.md$
       - id: no-commit-to-branch
         args: [--branch, main]
       - id: check-yaml

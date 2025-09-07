@@ -8,6 +8,7 @@ import os
 import re
 import typing
 from enum import Enum
+from importlib.metadata import version
 
 import aiofiles
 import zigpy
@@ -26,7 +27,7 @@ except ImportError:
     zha_helpers = None
 
 from homeassistant.util import dt as dt_util
-from pkg_resources import get_distribution, parse_version
+from packaging.version import parse as parse_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.zcl import foundation as f
@@ -38,8 +39,8 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-lines
 
-HA_VERSION = get_distribution("homeassistant").version
-ZIGPY_VERSION = get_distribution("zigpy").version
+HA_VERSION = version("homeassistant")
+ZIGPY_VERSION = version("zigpy")
 
 if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
@@ -268,14 +269,14 @@ def get_radio_version(app):
         if hasattr(zigpy_znp, "__version__"):
             return zigpy_znp.__version__
 
-        return get_distribution("zigpy_znp").version
+        return version("zigpy_znp")
     if hasattr(app, "_ezsp"):
         import bellows
 
         if hasattr(bellows, "__version__"):
             return bellows.__version__
 
-        return get_distribution("bellows").version
+        return version("bellows")
     if hasattr(app, "_api"):
         rt = get_radiotype(app)
         if rt == RadioType.DECONZ:
@@ -284,21 +285,21 @@ def get_radio_version(app):
             if hasattr(zigpy_deconz, "__version__"):
                 return zigpy_deconz.__version__
 
-            return get_distribution("zigpy_deconz").version
+            return version("zigpy_deconz")
         if rt == RadioType.ZIGATE:
             import zigpy_zigate
 
             if hasattr(zigpy_zigate, "__version__"):
                 return zigpy_zigate.__version__
 
-            return get_distribution("zigpy_zigate").version
+            return version("zigpy_zigate")
         if rt == RadioType.XBEE:
             import zigpy_xbee
 
             if hasattr(zigpy_xbee, "__version__"):
                 return zigpy_xbee.__version__
 
-            return get_distribution("zigpy_xbee").version
+            return version("zigpy_xbee")
 
         # if rt == RadioType.ZIGPY_CC:
         #     import zigpy_cc
@@ -568,7 +569,7 @@ def dict_to_jsonable(src_dict):
 
 
 def write_json_to_file(
-    data, subdir, fname, desc, listener=None, normalize_name=False
+    data, subdir, fname, desc, listener=None, normalize_name=False, ts=None
 ):
     if listener is None or subdir == "local":
         base_dir = os.path.dirname(__file__)
@@ -579,6 +580,12 @@ def write_json_to_file(
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
+    if ts is not None:
+        if "." in fname:
+            base, ext = fname.rsplit(".", 1)
+            fname = base + "_" + ts + "." + ext
+        else:
+            fname = fname + "_" + ts
     if normalize_name:
         file_name = os.path.join(out_dir, normalize_filename(fname))
     else:
@@ -822,7 +829,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 
             attr_obj = f.TypeValue(attr_type, data_type(compare_val))
             # Not using : attr_obj = data_type(attr_type, compare_val)
-        #             which may add extra bytes
+            #             which may add extra bytes
         else:
             compare_val = data_type(str2int(attr_val_in))
             attr_obj = f.TypeValue(attr_type, compare_val)
@@ -903,6 +910,8 @@ def extractParams(  # noqa: C901
         p.DOWNLOAD: None,
         p.PATH: None,
         p.USE_CACHE: False,
+        p.JSON_OUT: None,
+        p.JSON_TIMESTAMP: False,
     }
 
     # Endpoint to send command to
@@ -1055,6 +1064,12 @@ def extractParams(  # noqa: C901
     if P.CSVLABEL in rawParams:
         params[p.CSV_LABEL] = rawParams[P.CSVLABEL]
 
+    if P.JSON_OUT in rawParams:
+        params[p.JSON_OUT] = rawParams[P.JSON_OUT]
+
+    if P.JSON_TIMESTAMP in rawParams:
+        params[p.JSON_TIMESTAMP] = rawParams[P.JSON_TIMESTAMP]
+
     return params
 
 
@@ -1183,15 +1198,15 @@ def get_local_dir() -> str:
     return local_dir
 
 
-def is_zigpy_ge(version: str) -> bool:
+def is_zigpy_ge(version_str: str) -> bool:
     """Test if zigpy library is newer than version"""
     # Example version value: "0.45.0"
-    return parse_version(getZigpyVersion()) >= parse_version(version)
+    return parse_version(getZigpyVersion()) >= parse_version(version_str)
 
 
-def is_ha_ge(version: str) -> bool:
+def is_ha_ge(version_str: str) -> bool:
     """Test if zigpy library is newer than version"""
-    return parse_version(getHaVersion()) >= parse_version(version)
+    return parse_version(getHaVersion()) >= parse_version(version_str)
 
 
 def get_hass(gateway: ZHAGateway):
