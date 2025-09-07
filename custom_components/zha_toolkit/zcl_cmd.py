@@ -108,7 +108,8 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
 
                 if cmd_args is not None:
                     cmd_schema = {
-                        f"param{i + 1}?": t.uint8_t for i in range(len(cmd_args))
+                        f"param{i + 1}?": t.uint8_t
+                        for i in range(len(cmd_args))
                     }
 
                 temp = foundation.ZCLCommandDef(
