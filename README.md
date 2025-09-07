@@ -222,31 +222,28 @@ plan a daily backup of your TI-ZNP USB Key configuration.
 
 It will be more common to send a Zigbee command only once: for instance
 bind one device to another, set a manufacturer attribute, ... .\
-You can
-perform them using the developer tools.\
-The developer tools are handy to
-test the service first before adding them to an automation.
+You can perform them using the developer tools.\
+The developer tools are handy to test the service first before adding them
+to an automation.
 
 Go to Developer Tools > Services in your instance :
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
 Choose the generic service `zha_toolkit.execute` or - more convenient - the
 specific `zha_toolkit.<COMMAND>` as the service.\
-Most parameters can be
-set using the UI, there are some cases where you may want to enable Yaml
-entry - you'll have some more flexibility and all parameters fit in your
-browser view. On the other hand, the UI interface makes it easier to select
-the entity. You can switch back and forth!
+Most parameters can be set using the UI, there are some cases where you may
+want to enable Yaml entry - you'll have some more flexibility and all
+parameters fit in your browser view. On the other hand, the UI interface
+makes it easier to select the entity. You can switch back and forth!
 
 There are several examples below for different commands. You can copy/paste
 them to start from.
 
 Not all available commands are documented. The undocumented ones were in
 the original repository.\
-Some of these undocumented commands seem to be
-very specific trials from the original authors.\
-Feel free to propose
-documentation updates.
+Some of these undocumented commands seem to be very specific trials from
+the original authors.\
+Feel free to propose documentation updates.
 
 # General recommendations
 
@@ -284,35 +281,30 @@ network-oriented view and the device-oriented view.
 From a network perspective, there is a coordinator, which is the main
 device controlling the network (often your Home Assistant instance), and
 there are other devices categorized as routers and end devices.\
-Routers
-are permanently powered devices that store and forward messages, while end
-devices can be any type of device. End devices can reply to requests and
-communicate autonomously if they have reporting configurations and bindings
-set up. Reporting configurations determine when a device should communicate
-attribute changes, and bindings specify which device or group should
-receive these changes.\
-Commands, such as those triggered by a button
-press, can also be bound to specific devices or groups.
+Routers are permanently powered devices that store and forward messages,
+while end devices can be any type of device. End devices can reply to
+requests and communicate autonomously if they have reporting configurations
+and bindings set up. Reporting configurations determine when a device
+should communicate attribute changes, and bindings specify which device or
+group should receive these changes.\
+Commands, such as those triggered by a button press, can also be bound to
+specific devices or groups.
 
 From a device perspective, devices are organized into endpoints.\
-An
-endpoint represents a function or feature of the device. For example, a
+An endpoint represents a function or feature of the device. For example, a
 device with two switches would have an endpoint for each switch function,
 and a device with a temperature and humidity sensor may have an endpoint
 for each sensor.\
-Endpoints can also represent Zigbee-specific
-functionalities like Over The Air (OTA) updates or Green Power
-functionality.
+Endpoints can also represent Zigbee-specific functionalities like Over The
+Air (OTA) updates or Green Power functionality.
 
 Each endpoint has attributes associated with it.\
-Attributes allow you to
-control the configuration of the device or retrieve values for its current
-state, such as on/off status or temperature readings.\
-Attributes are
-grouped into clusters, which are reusable sets of features.\
-Clusters
-represent things like on/off state, color control, temperature measurement,
-energy metering, and more.
+Attributes allow you to control the configuration of the device or retrieve
+values for its current state, such as on/off status or temperature
+readings.\
+Attributes are grouped into clusters, which are reusable sets of features.\
+Clusters represent things like on/off state, color control, temperature
+measurement, energy metering, and more.
 
 In practice, clusters are defined on endpoints, and each attribute has a
 unique address consisting of the IEEE address (a 64-bit number), the
@@ -334,13 +326,13 @@ devices, like a switch instructing a light bulb to turn on or off.
 To avoid excessive network traffic caused by constantly polling devices for
 their internal state, devices can be configured to report their state
 changes to other devices in the network.\
-This reporting is accompanied by
-bindings, which specify the devices or groups that should receive the data.
+This reporting is accompanied by bindings, which specify the devices or
+groups that should receive the data.
 
 Binding can also make an endpoint on a device respond to commands sent to a
 specific group.\
-For example, if you add a switch's endpoint and multiple
-light bulbs to a group, the switch can control all the bulbs in that group.
+For example, if you add a switch's endpoint and multiple light bulbs to a
+group, the switch can control all the bulbs in that group.
 
 When a new device is added to a Zigbee network through Home Assistant's ZHA
 integration, an initial configuration is sent to the device. This
@@ -455,15 +447,14 @@ for Home Assistant installations that have at least version 2023.7 .
 This response is available in automations and script by adding
 `response_variable: VAR_NAME` to the `zha_toolkit` service call. That will
 make the data available under VAR_NAME inside the automation or script.\
-An
-example using the response data can be found in
+An example using the response data can be found in
 [script_use_zha_devices_response.yaml](examples/script_use_zha_devices_response.yaml).
 
 The response data feature of Home Assistant also makes the response
 available when calling the service interactively.\
-The image below shows a
-an interactive attribute read using the zha-toolkit service attr_read. The
-response data is shown in Yaml format when the call finishes.
+The image below shows a an interactive attribute read using the zha-toolkit
+service attr_read. The response data is shown in Yaml format when the call
+finishes.
 
 ![Service Response Example](images/ServiceResponse.png)
 
@@ -499,10 +490,9 @@ events.
 
 By listening for the event, you can see the list of groups that is found
 when using `zha_toolkit.get_groups` for instance.\
-Otherwise you need to
-[set the debug level](#logging) and watch the `home-assistant.log`. That
-can be useful if you do a lot of service calls in sequence and you want to
-look back what happened.
+Otherwise you need to [set the debug level](#logging) and watch the
+`home-assistant.log`. That can be useful if you do a lot of service calls
+in sequence and you want to look back what happened.
 
 You can also simply always enable debugging for `zha_toolkit` if you use it
 sporadically - it is quite verbose and tends to fill up the logs if you use
@@ -803,8 +793,7 @@ data:
 In case ZCL Array type needs to be written, `attr_val` needs to be provided
 as a raw sequence of bytes, i.e. user is responsible to generate a sequence
 which complies to the ZCL spec.\
-The following examples illustrates
-configuration of Ubisys C4 (see
+The following examples illustrates configuration of Ubisys C4 (see
 [the device manual](https://www.ubisys.de/wp-content/uploads/ubisys-c4-technical-reference.pdf)
 \- section 7.8.5.2. InputActions Attribute - example):
 
@@ -821,7 +810,7 @@ data:
   #  - The second and third byte compose the length (little endian)
   #    So here: `4, 0` is 0x0004, so four octet strings the array.
   #  - All the octet strings in this example have a length of 6.
-  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3,
+  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 
         6, 0, 2, 6, 3, 13, 4, 6, 0, 2]
   read_before_write: false
   read_after_write: false
@@ -870,13 +859,12 @@ data:
   attr_val: My Location
 ```
 
-A more complex example using HA's templating feature can be found
-below.\
-Each call will increment the previous target temperature by 0.5
-degrees (increment by 50 in Zigbee's unit) up to 22.50 degrees and restart
-from 20 degrees.\
-On the first call (when the state is not set yet), the
-setpoint temperature is 21.5 degrees.
+A more complex example using HA's templating feature can be found below.\
+Each call will increment the previous target temperature by 0.5 degrees
+(increment by 50 in Zigbee's unit) up to 22.50 degrees and restart from 20
+degrees.\
+On the first call (when the state is not set yet), the setpoint temperature
+is 21.5 degrees.
 
 The toolkit implements a read after each write (and it is not disabled by a
 `read_after_write` parameter), so it will write the temperature value to
@@ -922,10 +910,9 @@ The default list of binding clusters is currently as follows:
 
 Bind all available default and matching clusters from `ieee` to
 `command_data` on all endpoints.\
-Binds to the coordinator if
-`command_data` is not set or 0.\
-By default only binds cluster types in the
-internal list, i.e. OnOff, Level and Color Control clusters.
+Binds to the coordinator if `command_data` is not set or 0.\
+By default only binds cluster types in the internal list, i.e. OnOff, Level
+and Color Control clusters.
 
 The cluster must exist on both devices, except when the coordinator is the
 target.
@@ -937,10 +924,8 @@ Use `binds_get` to verify that the configuration worked.
 
 It's possible to attempt binding specific endpoints between `ieee` and
 `command_data`.\
-The endpoint for `ieee` (source) can be provided by
-`endpoint`.\
-If it's not specified then all endpoints on `ieee` are
-considered.\
+The endpoint for `ieee` (source) can be provided by `endpoint`.\
+If it's not specified then all endpoints on `ieee` are considered.\
 Endpoint for `command_data` (destination) can be provided by
 `dst_endpoint`. If it's not specified then all endpoints on `command_data`
 are considered\
@@ -963,8 +948,8 @@ data:
 ### `binds_get`: Get binding table from the device
 
 Get the bindings from the device.\
-Listen to the event, or enable debug and
-check the log to get the information.
+Listen to the event, or enable debug and check the log to get the
+information.
 
 ```yaml
 service: zha_toolkit.binds_get
@@ -979,9 +964,8 @@ data:
 ### `binds_remove_all`: Remove all device to device bindings
 
 Remove all bindings from the device.\
-This internally fetches all the
-existing bindings (`binds_get` service) and requests the device to remove
-them.
+This internally fetches all the existing bindings (`binds_get` service) and
+requests the device to remove them.
 
 ```yaml
 service: zha_toolkit.binds_remove_all
@@ -1285,13 +1269,12 @@ data:
 Allows you to send a cluster command. Also accepts command arguments.
 
 Note:\
-There is also the official core service
-`zha.issue_zigbee_cluster_command`. You may want to use that instead if it
-suits your needs.\
-The `zha_toolkit` version allows lists of bytes as arg
-parameters, and has a hack to allow "Add Scene". It is also easier to adapt
-than the core that has though release procedures and is not as easily
-modifiable as a `custom_component`.
+There is also the official core service `zha.issue_zigbee_cluster_command`.
+You may want to use that instead if it suits your needs.\
+The `zha_toolkit` version allows lists of bytes as arg parameters, and has
+a hack to allow "Add Scene". It is also easier to adapt than the core that
+has though release procedures and is not as easily modifiable as a
+`custom_component`.
 
 ```yaml
 service: zha_toolkit.zcl_cmd
@@ -1693,20 +1676,19 @@ The procedure should be:
    2. Insert the new Coordinator.
    3. *Only when migrating to a Coordinator with different port/serial
       path/socket.*\
-      Remove/Disable the ZHA Integration from Home
-      Assistant.\
-      The alternative is to modify HA’s config file directly to
-      update the current integration’s serial path and baudrate
+      Remove/Disable the ZHA Integration from Home Assistant.\
+      The alternative is to modify HA’s config file directly to update the
+      current integration’s serial path and baudrate
    4. Copy the zigbee.db file (for backup).\
-      Moving/renaming it should not
-      be needed. If you Move or Rename the `zigbee.db` the Entity name are
-      lost after the restore (which impacts your automations, UI, etc).
+      Moving/renaming it should not be needed. If you Move or Rename the
+      `zigbee.db` the Entity name are lost after the restore (which impacts
+      your automations, UI, etc).
 3. 1. Restart Home Assistant.
    2. Enable/Add the ZHA Integration to Home Assistant (needed if you
       disabled or removed the ZHA integration in step 2.iii.)
 4. Restore using the `znp_restore` command.\
-   (If you used a custom file
-   name for the backup then make sure you copy it to `nwk_backup.json`).
+   (If you used a custom file name for the backup then make sure you copy
+   it to `nwk_backup.json`).
 5. Check the logs (currently the `pre_shutdown` call failed for the first
    successful test, but that is not critical).
 6. Restart HA

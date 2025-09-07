@@ -3,11 +3,9 @@
 (Note: scripts can be called as a service)
 
 - `script_read_basic_cluster.yaml`:\
-  Script to add to HA (Configuration >
-  Scripts):
+  Script to add to HA (Configuration > Scripts):
 - `service_call_read_basic_cluster.yaml`:\
-  Example of service
-  call.\
+  Example of service call.\
   ![image](images/service_basic_cluster.png)
 - Values in state:\
   ![image](images/state_basic_cluster.png)
@@ -28,12 +26,11 @@
 (Note: scripts can be called as a service)
 
 - `script_TRV_setTemperatureReporting.yaml`:\
-  Script to configure a TRV to
-  report every 5 minutes or when temperature changed by 0.2°C.
+  Script to configure a TRV to report every 5 minutes or when temperature
+  changed by 0.2°C.
 - `script_Thermometer_setReporting.yaml`:\
-  Script to configure a
-  Thermometer to report every 5 minutes or when temperature changed by
-  0.2°C.
+  Script to configure a Thermometer to report every 5 minutes or when
+  temperature changed by 0.2°C.
 
 ## Download firmware from different sources.
 
