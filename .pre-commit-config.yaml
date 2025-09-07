@@ -19,7 +19,7 @@ repos:
         additional_dependencies:
           - mdformat-toc
           - mdformat-beautysh
-          - setuptools  # workaround for beautysh
+          - setuptools==80  # workaround for beautysh
           # -mdformat-shfmt
           # -mdformat-tables
           - mdformat-config
@@ -69,9 +69,6 @@ repos:
     rev: v6.2.1
     hooks:
       - id: beautysh
-        additional_dependencies:
-          - setuptools  # workaround for beautysh
-
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
