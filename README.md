@@ -821,8 +821,8 @@ data:
   #  - The second and third byte compose the length (little endian)
   #    So here: `4, 0` is 0x0004, so four octet strings the array.
   #  - All the octet strings in this example have a length of 6.
-  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3, 6,
-    0, 2, 6, 3, 13, 4, 6, 0, 2]
+  attr_val: [65, 4, 0, 6, 0, 13, 1, 6, 0, 2, 6, 1, 13, 2, 6, 0, 2, 6, 2, 13, 3,
+        6, 0, 2, 6, 3, 13, 4, 6, 0, 2]
   read_before_write: false
   read_after_write: false
   use_cache: false

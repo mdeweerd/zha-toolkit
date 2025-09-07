@@ -8,6 +8,7 @@ import os
 import re
 import typing
 from enum import Enum
+from importlib.metadata import version
 
 import aiofiles
 import zigpy
@@ -26,7 +27,7 @@ except ImportError:
     zha_helpers = None
 
 from homeassistant.util import dt as dt_util
-from pkg_resources import get_distribution, parse_version
+from packaging.version import parse as parse_version
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
 from zigpy.zcl import foundation as f
@@ -38,8 +39,8 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-lines
 
-HA_VERSION = get_distribution("homeassistant").version
-ZIGPY_VERSION = get_distribution("zigpy").version
+HA_VERSION = version("homeassistant")
+ZIGPY_VERSION = version("zigpy")
 
 if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
@@ -268,14 +269,14 @@ def get_radio_version(app):
         if hasattr(zigpy_znp, "__version__"):
             return zigpy_znp.__version__
 
-        return get_distribution("zigpy_znp").version
+        return version("zigpy_znp")
     if hasattr(app, "_ezsp"):
         import bellows
 
         if hasattr(bellows, "__version__"):
             return bellows.__version__
 
-        return get_distribution("bellows").version
+        return version("bellows")
     if hasattr(app, "_api"):
         rt = get_radiotype(app)
         if rt == RadioType.DECONZ:
@@ -284,21 +285,21 @@ def get_radio_version(app):
             if hasattr(zigpy_deconz, "__version__"):
                 return zigpy_deconz.__version__
 
-            return get_distribution("zigpy_deconz").version
+            return version("zigpy_deconz")
         if rt == RadioType.ZIGATE:
             import zigpy_zigate
 
             if hasattr(zigpy_zigate, "__version__"):
                 return zigpy_zigate.__version__
 
-            return get_distribution("zigpy_zigate").version
+            return version("zigpy_zigate")
         if rt == RadioType.XBEE:
             import zigpy_xbee
 
             if hasattr(zigpy_xbee, "__version__"):
                 return zigpy_xbee.__version__
 
-            return get_distribution("zigpy_xbee").version
+            return version("zigpy_xbee")
 
         # if rt == RadioType.ZIGPY_CC:
         #     import zigpy_cc
@@ -828,7 +829,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 
             attr_obj = f.TypeValue(attr_type, data_type(compare_val))
             # Not using : attr_obj = data_type(attr_type, compare_val)
-        #             which may add extra bytes
+            #             which may add extra bytes
         else:
             compare_val = data_type(str2int(attr_val_in))
             attr_obj = f.TypeValue(attr_type, compare_val)
@@ -1197,15 +1198,15 @@ def get_local_dir() -> str:
     return local_dir
 
 
-def is_zigpy_ge(version: str) -> bool:
+def is_zigpy_ge(version_str: str) -> bool:
     """Test if zigpy library is newer than version"""
     # Example version value: "0.45.0"
-    return parse_version(getZigpyVersion()) >= parse_version(version)
+    return parse_version(getZigpyVersion()) >= parse_version(version_str)
 
 
-def is_ha_ge(version: str) -> bool:
+def is_ha_ge(version_str: str) -> bool:
     """Test if zigpy library is newer than version"""
-    return parse_version(getHaVersion()) >= parse_version(version)
+    return parse_version(getHaVersion()) >= parse_version(version_str)
 
 
 def get_hass(gateway: ZHAGateway):
