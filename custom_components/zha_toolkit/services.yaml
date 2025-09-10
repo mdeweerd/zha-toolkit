@@ -1753,16 +1753,6 @@ leave:
       selector:
         entity:
           integration: zha
-    command_data:
-      name: Node to send the Rejoin
-      description: >-
-        (Parent) Node (router) that removes the device
-        of the node)
-      example: 00:0d:6f:00:05:7d:2d:34
-      required: true
-      selector:
-        entity:
-          integration: zha
     tries:
       name: Tries
       description: Number of times the zigbee packet should be attempted

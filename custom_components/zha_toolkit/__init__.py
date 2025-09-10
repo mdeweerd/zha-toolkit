@@ -386,9 +386,6 @@ SERVICE_SCHEMAS = {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert
             ),
-            vol.Required(ATTR_COMMAND_DATA): vol.Any(
-                cv.entity_id_or_uuid, t.EUI64.convert
-            ),
         },
         extra=vol.ALLOW_EXTRA,
     ),

@@ -17,30 +17,29 @@ def add_task_info(event_data, task):
 
 
 async def leave(app, listener, ieee, cmd, data, service, params, event_data):
-    if ieee is None or not data:
-        raise ValueError("Need 'ieee' and command_data'")
+    if ieee is None:
+        raise ValueError("Need 'ieee'")
 
     LOGGER.debug(
-        "running 'leave' command. Telling 0x%s to remove %s: %s",
-        data,
+        "running 'leave' command. Telling 0x%s to leave %s",
         ieee,
         service,
     )
 
-    parent = await u.get_device(app, listener, data)
+    dev = await u.get_device(app, listener, ieee)
 
     # Get tries
     tries = params[p.TRIES]
 
     res = await u.retry_wrapper(
-        parent.zdo.request,
+        dev.zdo.request,
         zdo_t.ZDOCmd.Mgmt_Leave_req,
         ieee,
         0x02,
         tries=tries,
     )
     event_data["result_leave"] = res
-    LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", parent.nwk, res)
+    LOGGER.debug("0x%04x: Mgmt_Leave_req: %s", dev.nwk, res)
 
 
 async def ieee_ping(
