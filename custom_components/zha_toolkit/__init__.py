@@ -921,7 +921,7 @@ def reload_services_yaml(hass):
 
 
 async def _register_services(hass):
-    register_services(hass)
+    await register_services(hass)
     await hass.async_add_executor_job(reload_services_yaml, hass)
 
 
