@@ -39,8 +39,17 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-lines
 
-HA_VERSION = version("homeassistant")
-ZIGPY_VERSION = version("zigpy")
+async def get_ha_version() -> str:
+    """Get HA Version"""
+    return await asyncio.to_thread(version, "homeassistant")
+
+HA_VERSION = asyncio.run(get_ha_version())
+
+async def get_zigpy_version() -> str:
+    """Get zigpy Version"""
+    return await asyncio.to_thread(version, "zigpy")
+
+ZIGPY_VERSION = asyncio.run(get_zigpy_version())
 
 if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
