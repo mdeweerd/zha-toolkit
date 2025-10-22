@@ -60,7 +60,7 @@ async def ha_set_state(  # noqa: C901
         fields.append(val)
         fields.append(label)
 
-        u.append_to_csvfile(
+        await u.append_to_csvfile(
             fields,
             "csv",
             params[p.CSV_FILE],

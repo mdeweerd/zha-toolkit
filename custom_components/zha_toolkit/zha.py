@@ -81,7 +81,7 @@ async def zha_devices(
     if doGenerateCSV or selectDeviceFields:
         if doGenerateCSV:
             # Write CSV header
-            u.append_to_csvfile(
+            await u.append_to_csvfile(
                 columns,
                 "csv",
                 params[p.CSV_FILE],
@@ -112,7 +112,7 @@ async def zha_devices(
 
             if doGenerateCSV:
                 LOGGER.debug("Device %r", csvFields)
-                u.append_to_csvfile(
+                await u.append_to_csvfile(
                     csvFields,
                     "csv",
                     params[p.CSV_FILE],

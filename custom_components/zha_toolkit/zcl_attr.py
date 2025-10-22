@@ -633,7 +633,7 @@ async def attr_write(  # noqa: C901
         )
         fields.append(f"0x{attr_type:02X}" if attr_type is not None else "")
 
-        u.append_to_csvfile(
+        await u.append_to_csvfile(
             fields,
             "csv",
             params[p.CSV_FILE],

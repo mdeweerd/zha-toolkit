@@ -337,7 +337,7 @@ async def misc_energy_scan(
 
     if params[p.CSV_FILE] is not None:
         # write CSV header
-        u.append_to_csvfile(
+        await u.append_to_csvfile(
             ["channel", "energy"],
             "csv",
             params[p.CSV_FILE],
@@ -347,7 +347,7 @@ async def misc_energy_scan(
         )
         # write CSV data
         for channel, energy in scan.items():
-            u.append_to_csvfile(
+            await u.append_to_csvfile(
                 [channel, 100 * energy / 255],
                 "csv",
                 params[p.CSV_FILE],

@@ -609,7 +609,7 @@ def helper_save_json(file_name: str, data: typing.Any):
     save_json(file_name, data)
 
 
-def append_to_csvfile(
+async def append_to_csvfile(
     fields,
     subdir,
     fname,
@@ -634,9 +634,9 @@ def append_to_csvfile(
 
     import csv
 
-    with open(file_name, "w" if overwrite else "a", encoding="utf_8") as out:
+    async with aiofiles.open(file_name, "w" if overwrite else "a", encoding="utf_8") as out:
         writer = csv.writer(out)
-        writer.writerow(fields)
+        await writer.writerow(fields)
 
     if overwrite:
         LOGGER.debug(f"Wrote {desc} to '{file_name}'")
@@ -687,7 +687,7 @@ def record_read_data(
         )
         fields.append(f"0x{attr_type:02X}" if attr_type is not None else "")
 
-        append_to_csvfile(
+        await append_to_csvfile(
             fields,
             "csv",
             params[p.CSV_FILE],
