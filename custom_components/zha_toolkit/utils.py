@@ -39,15 +39,19 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-lines
 
+
 async def get_ha_version() -> str:
     """Get HA Version"""
     return await asyncio.to_thread(version, "homeassistant")
 
+
 HA_VERSION = asyncio.run(get_ha_version())
+
 
 async def get_zigpy_version() -> str:
     """Get zigpy Version"""
     return await asyncio.to_thread(version, "zigpy")
+
 
 ZIGPY_VERSION = asyncio.run(get_zigpy_version())
 
@@ -634,7 +638,9 @@ async def append_to_csvfile(
 
     import csv
 
-    async with aiofiles.open(file_name, "w" if overwrite else "a", encoding="utf_8") as out:
+    async with aiofiles.open(
+        file_name, "w" if overwrite else "a", encoding="utf_8"
+    ) as out:
         writer = csv.writer(out)
         await writer.writerow(fields)
 
@@ -644,7 +650,7 @@ async def append_to_csvfile(
         LOGGER.debug(f"Appended {desc} to '{file_name}'")
 
 
-def record_read_data(
+async def record_read_data(
     read_resp, cluster: zigpy.zcl.Cluster, params, listener=None
 ):
     """Record result from attr_write to CSV file if configured"""

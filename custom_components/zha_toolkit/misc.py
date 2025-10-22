@@ -290,7 +290,7 @@ async def misc_settime(
                 u.dict_to_jsonable(read_resp[0]),
                 read_resp[1],
             )
-            u.record_read_data(read_resp, cluster, params, listener)
+            await u.record_read_data(read_resp, cluster, params, listener)
 
         EPOCH2000_TIMESTAMP = 946684800
         utctime_towrite = utcnow().timestamp() - EPOCH2000_TIMESTAMP
@@ -312,7 +312,7 @@ async def misc_settime(
                 u.dict_to_jsonable(read_resp[0]),
                 read_resp[1],
             )
-            u.record_read_data(read_resp, cluster, params, listener)
+            await u.record_read_data(read_resp, cluster, params, listener)
 
         event_data["success"] = True
     except DeliveryError as e:
