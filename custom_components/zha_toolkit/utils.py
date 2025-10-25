@@ -44,10 +44,11 @@ LOGGER = logging.getLogger(__name__)
 _executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
 
-def _get_version_sync(package: str) -> str:
-    """Synchronous version of version check"""
+async def get_version_async(package: str) -> str:
+    """Asynchronous version of version check"""
+    loop = asyncio.get_event_loop()
     try:
-        return version(package)
+        return await loop.run_in_executor(_executor, version, package)
     except Exception as e:
         LOGGER.error(f"Error getting {package} version: {e}")
         return "0.0.0"
@@ -55,16 +56,12 @@ def _get_version_sync(package: str) -> str:
 
 async def get_ha_version() -> str:
     """Get HA Version asynchronously"""
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(
-        _executor, _get_version_sync, "homeassistant"
-    )
+    return await get_version_async("homeassistant")
 
 
 async def get_zigpy_version() -> str:
     """Get zigpy Version asynchronously"""
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(_executor, _get_version_sync, "zigpy")
+    return await get_version_async("zigpy")
 
 
 # Initialize versions
@@ -298,14 +295,14 @@ async def get_radio_version(app):
         if hasattr(zigpy_znp, "__version__"):
             return zigpy_znp.__version__
 
-        return await get_hass(app).async_add_executor_job(version, "zigpy_znp")
+        return await get_version_async("zigpy_znp")
     if hasattr(app, "_ezsp"):
         import bellows
 
         if hasattr(bellows, "__version__"):
             return bellows.__version__
 
-        return await get_hass(app).async_add_executor_job(version, "bellows")
+        return await get_version_async("bellows")
     if hasattr(app, "_api"):
         rt = get_radiotype(app)
         if rt == RadioType.DECONZ:
@@ -314,27 +311,21 @@ async def get_radio_version(app):
             if hasattr(zigpy_deconz, "__version__"):
                 return zigpy_deconz.__version__
 
-            return await get_hass(app).async_add_executor_job(
-                version, "zigpy_deconz"
-            )
+            return await get_version_async("zigpy_deconz")
         if rt == RadioType.ZIGATE:
             import zigpy_zigate
 
             if hasattr(zigpy_zigate, "__version__"):
                 return zigpy_zigate.__version__
 
-            return await get_hass(app).async_add_executor_job(
-                version, "zigpy_zigate"
-            )
+            return await get_version_async("zigpy_zigate")
         if rt == RadioType.XBEE:
             import zigpy_xbee
 
             if hasattr(zigpy_xbee, "__version__"):
                 return zigpy_xbee.__version__
 
-            return await get_hass(app).async_add_executor_job(
-                version, "zigpy_xbee"
-            )
+            return await get_version_async("zigpy_xbee")
 
         # if rt == RadioType.ZIGPY_CC:
         #     import zigpy_cc
