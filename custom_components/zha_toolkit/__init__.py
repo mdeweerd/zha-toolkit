@@ -692,8 +692,16 @@ async def register_services(hass):  # noqa: C901
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
 
+        mod_path = f"custom_components.{DOMAIN}"
+        try:
+            module = importlib.import_module(mod_path)
+        except ImportError as err:
+            LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
+            return
+
         # Disabled reloading ourselves because of "non-blocking" requirements by HA
         # module, currentVersion = await _reload_module(hass)
+        currentVersion = await u.getVersion()
 
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
@@ -848,17 +856,10 @@ async def register_services(hass):  # noqa: C901
     LOADED_VERSION = await u.getVersion()
 
 
-async def _reload_module(hass):
+async def _reload_module(hass, module):
     global LOADED_VERSION  # pylint: disable=global-statement,global-variable-not-assigned
 
     # Reload ourselves
-    mod_path = f"custom_components.{DOMAIN}"
-    try:
-        module = importlib.import_module(mod_path)
-    except ImportError as err:
-        LOGGER.error("Couldn't load %s module: %s", DOMAIN, err)
-        return
-
     importlib.reload(module)
 
     LOGGER.debug("module is %s", module)
