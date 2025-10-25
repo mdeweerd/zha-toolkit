@@ -43,6 +43,7 @@ LOGGER = logging.getLogger(__name__)
 # Create a thread pool executor
 _executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
+
 def _get_version_sync(package: str) -> str:
     """Synchronous version of version check"""
     try:
@@ -69,7 +70,6 @@ async def get_zigpy_version() -> str:
 # Initialize versions
 HA_VERSION = asyncio.run(get_ha_version())
 ZIGPY_VERSION = asyncio.run(get_zigpy_version())
-
 
 if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
