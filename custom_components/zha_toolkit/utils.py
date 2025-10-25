@@ -290,7 +290,7 @@ def get_radio(app):
     return None
 
 
-def get_radio_version(app):
+async def get_radio_version(app):
     # pylint: disable=R0911
     if hasattr(app, "_znp"):
         import zigpy_znp
@@ -298,14 +298,14 @@ def get_radio_version(app):
         if hasattr(zigpy_znp, "__version__"):
             return zigpy_znp.__version__
 
-        return version("zigpy_znp")
+        return await get_hass(app).async_add_executor_job(version, "zigpy_znp")
     if hasattr(app, "_ezsp"):
         import bellows
 
         if hasattr(bellows, "__version__"):
             return bellows.__version__
 
-        return version("bellows")
+        return await get_hass(app).async_add_executor_job(version, "bellows")
     if hasattr(app, "_api"):
         rt = get_radiotype(app)
         if rt == RadioType.DECONZ:
@@ -314,21 +314,27 @@ def get_radio_version(app):
             if hasattr(zigpy_deconz, "__version__"):
                 return zigpy_deconz.__version__
 
-            return version("zigpy_deconz")
+            return await get_hass(app).async_add_executor_job(
+                version, "zigpy_deconz"
+            )
         if rt == RadioType.ZIGATE:
             import zigpy_zigate
 
             if hasattr(zigpy_zigate, "__version__"):
                 return zigpy_zigate.__version__
 
-            return version("zigpy_zigate")
+            return await get_hass(app).async_add_executor_job(
+                version, "zigpy_zigate"
+            )
         if rt == RadioType.XBEE:
             import zigpy_xbee
 
             if hasattr(zigpy_xbee, "__version__"):
                 return zigpy_xbee.__version__
 
-            return version("zigpy_xbee")
+            return await get_hass(app).async_add_executor_job(
+                version, "zigpy_xbee"
+            )
 
         # if rt == RadioType.ZIGPY_CC:
         #     import zigpy_cc

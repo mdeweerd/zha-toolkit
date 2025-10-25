@@ -730,7 +730,7 @@ async def register_services(hass):  # noqa: C901
         event_data = {
             "zha_toolkit_version": currentVersion,
             "zigpy_version": u.getZigpyVersion(),
-            "zigpy_rf_version": u.get_radio_version(app),
+            "zigpy_rf_version": await u.get_radio_version(app),
             "ieee_org": ieee_str,
             "ieee": str(ieee),
             "command": cmd,
