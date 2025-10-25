@@ -692,7 +692,8 @@ async def register_services(hass):  # noqa: C901
         # importlib.reload(PARDEFS)
         # S = PARDEFS.SERVICES
 
-        module, currentVersion = await _reload_module(hass)
+        # Disabled reloading ourselves because of "non-blocking" requirements by HA
+        # module, currentVersion = await _reload_module(hass)
 
         ieee_str = service.data.get(ATTR_IEEE)
         cmd = service.data.get(ATTR_COMMAND)
