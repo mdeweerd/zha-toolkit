@@ -45,7 +45,18 @@ async def get_ha_version() -> str:
     return await asyncio.to_thread(version, "homeassistant")
 
 
-HA_VERSION = asyncio.get_event_loop().run_until_complete(get_ha_version())
+def get_ha_version_sync() -> str:
+    """Get HA Version synchronously"""
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            return loop.run_until_complete(get_ha_version())
+        return asyncio.run(get_ha_version())
+    except RuntimeError:
+        return asyncio.run(get_ha_version())
+
+
+HA_VERSION = get_ha_version_sync()
 
 
 async def get_zigpy_version() -> str:
@@ -53,9 +64,18 @@ async def get_zigpy_version() -> str:
     return await asyncio.to_thread(version, "zigpy")
 
 
-ZIGPY_VERSION = asyncio.get_event_loop().run_until_complete(
-    get_zigpy_version()
-)
+def get_zigpy_version_sync() -> str:
+    """Get zigpy Version synchronously"""
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            return loop.run_until_complete(get_zigpy_version())
+        return asyncio.run(get_zigpy_version())
+    except RuntimeError:
+        return asyncio.run(get_zigpy_version())
+
+
+ZIGPY_VERSION = get_zigpy_version_sync()
 
 if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
