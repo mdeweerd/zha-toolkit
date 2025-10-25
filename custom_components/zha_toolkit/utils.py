@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import concurrent.futures
 import functools
 import json
 import logging
@@ -39,43 +40,36 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-lines
 
+# Create a thread pool executor
+_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+
+def _get_version_sync(package: str) -> str:
+    """Synchronous version of version check"""
+    try:
+        return version(package)
+    except Exception as e:
+        LOGGER.error(f"Error getting {package} version: {e}")
+        return "0.0.0"
+
 
 async def get_ha_version() -> str:
-    """Get HA Version"""
-    return await asyncio.to_thread(version, "homeassistant")
-
-
-def get_ha_version_sync() -> str:
-    """Get HA Version synchronously"""
-    try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            return loop.run_until_complete(get_ha_version())
-        return asyncio.run(get_ha_version())
-    except RuntimeError:
-        return asyncio.run(get_ha_version())
-
-
-HA_VERSION = get_ha_version_sync()
+    """Get HA Version asynchronously"""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        _executor, _get_version_sync, "homeassistant"
+    )
 
 
 async def get_zigpy_version() -> str:
-    """Get zigpy Version"""
-    return await asyncio.to_thread(version, "zigpy")
+    """Get zigpy Version asynchronously"""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(_executor, _get_version_sync, "zigpy")
 
 
-def get_zigpy_version_sync() -> str:
-    """Get zigpy Version synchronously"""
-    try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            return loop.run_until_complete(get_zigpy_version())
-        return asyncio.run(get_zigpy_version())
-    except RuntimeError:
-        return asyncio.run(get_zigpy_version())
+# Initialize versions
+HA_VERSION = asyncio.run(get_ha_version())
+ZIGPY_VERSION = asyncio.run(get_zigpy_version())
 
-
-ZIGPY_VERSION = get_zigpy_version_sync()
 
 if parse_version(HA_VERSION) < parse_version("2023.4"):
     # pylint: disable=ungrouped-imports
