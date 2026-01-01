@@ -67,11 +67,11 @@ variables:
   min_update_minutes: !input min_update_minutes
   temp_sensor_id: !input temp_sensor_id
   temp_offset: !input temperature_offset
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     entity_id:
       - !input temp_sensor_id
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
 condition:
   - condition: template
