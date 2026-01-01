@@ -4,7 +4,7 @@ sequence:
   - parallel:
       - sequence:
           - wait_for_trigger:
-              - platform: event
+              - trigger: event
                 event_type: zha_devices_ready
           - service: system_log.write
             data:

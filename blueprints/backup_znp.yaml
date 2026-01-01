@@ -10,8 +10,8 @@ blueprint:
         Time at which the daily backup should be madeaction should start
       selector:
         time:
-trigger:
-  - platform: time
+triggers:
+  - trigger: time
     at: !input backup_time
 condition: []
 action:

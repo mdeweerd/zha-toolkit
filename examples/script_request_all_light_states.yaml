@@ -9,7 +9,7 @@ description: >-
   You can call this script in an automation triggered by the group action, or on a
   timely basis.
   (Original script by @HarvsG in https://github.com/mdeweerd/zha-toolkit/issues/113#issuecomment-1335616201)
-trigger: []
+triggers: []
 condition: []
 action:
   - repeat:

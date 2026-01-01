@@ -53,11 +53,11 @@ variables:
   temp_sensor_id: !input temp_sensor_id
   temp_offset: !input temperature_offset
   temperature: "{{ states(temp_sensor_id) }}"
-trigger:
-  - platform: state
+triggers:
+  - triggers: state
     entity_id:
       - !input temp_sensor_id
-  - platform: event
+  - triggers: event
     event_type: homeassistant_start
     id: ha_restart
 condition:
