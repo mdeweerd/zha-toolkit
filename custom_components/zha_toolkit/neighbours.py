@@ -58,7 +58,8 @@ async def all_routes_and_neighbours(
 
     counter = 1
     devs = [
-        d for d in app.devices.values()
+        d
+        for d in app.devices.values()
         if d.node_desc is not None and not d.node_desc.is_end_device
     ]
     all_routes = {}
