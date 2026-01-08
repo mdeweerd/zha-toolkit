@@ -57,7 +57,11 @@ async def all_routes_and_neighbours(
     LOGGER.debug("Getting routes and neighbours for all devices: %s", service)
 
     counter = 1
-    devs = [d for d in app.devices.values() if not d.node_desc.is_end_device]
+    devs = [
+        d
+        for d in app.devices.values()
+        if d.node_desc is not None and not d.node_desc.is_end_device
+    ]
     all_routes = {}
     for device in devs:
         LOGGER.debug(
