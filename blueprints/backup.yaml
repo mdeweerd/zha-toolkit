@@ -17,7 +17,7 @@ triggers:
     at: !input backup_time
 condition: []
 action:
-  - service: zha_toolkit.execute
+  - action: zha_toolkit.execute
     data:
       command: backup
       command_data: '{{ now().strftime("_%d") }}'

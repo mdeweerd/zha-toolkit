@@ -65,7 +65,7 @@ condition:
     value_template: "{{ temperature != -32768 }}"
 action:
   - alias: Store ZHA reported temperature in state attribute
-    service: zha_toolkit.ha_set_state
+    action: zha_toolkit.ha_set_state
     data:
       state_id: "{{ temp_sensor_id }}"
       state_attr: best_val
@@ -73,7 +73,7 @@ action:
   - alias:
       Try to get more precise temperature (should work if zigbee temperature
       sensor)
-    service: zha_toolkit.attr_read
+    action: zha_toolkit.attr_read
     data:
       ieee: "{{ temp_sensor_id }}"
       use_cache: true
@@ -85,12 +85,12 @@ action:
   - alias:
       Fake small change in temperature so that the next sensor update triggers
       an update/change event in case the write fails
-    service: zha_toolkit.ha_set_state
+    action: zha_toolkit.ha_set_state
     data:
       state_id: "{{ temp_sensor_id }}"
       attr_val: "{{ (temperature|round(2)) - 0.001 }}"
   - alias: Write remote temperature to Danfoss Ally
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 0x0201
@@ -121,7 +121,7 @@ action:
       - alias:
           Fake small change in temperature so that the next sensor update triggers
           an update/change event
-        service: zha_toolkit.ha_set_state
+        action: zha_toolkit.ha_set_state
         data:
           state_id: "{{ temp_sensor_id }}"
           attr_val: "{{ (states(temp_sensor_id)|round(2)) + 0.001 }}"

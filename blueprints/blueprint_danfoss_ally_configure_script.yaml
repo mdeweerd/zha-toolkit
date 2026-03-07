@@ -26,7 +26,7 @@ variables:
   ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
 sequence:
   - alias: Configure reporting of local_temperature in Thermostat cluster
-    service: zha_toolkit.conf_report
+    action: zha_toolkit.conf_report
     data:
       ieee: "{{ ieee }}"
       cluster: 0x0201
@@ -37,7 +37,7 @@ sequence:
       max_interval: 300
       min_interval: 19
   - alias: Read back reporting configuration, for debugging
-    service: zha_toolkit.conf_report_read
+    action: zha_toolkit.conf_report_read
     data:
       ieee: "{{ ieee }}"
       cluster: 0x0201
@@ -45,7 +45,7 @@ sequence:
       tries: 100
       event_done: zha_done
   - alias: Enable close window functionality
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513

@@ -9,7 +9,7 @@ sequence:
       csv: danfoss_adaptation_run.csv
       default_tries: 3
   - alias: Set the valve in mounting mode
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -33,7 +33,7 @@ sequence:
             milliseconds: 0
           alias: Wait between successive reads
         - alias: Read mount status (should be false)
-          service: zha_toolkit.attr_read
+          action: zha_toolkit.attr_read
           data:
             ieee: "{{ ieee }}"
             cluster: 513
@@ -58,7 +58,7 @@ sequence:
             milliseconds: 0
           alias: Wait between successive reads
         - alias: Read mount status (should be false)
-          service: zha_toolkit.attr_read
+          action: zha_toolkit.attr_read
           data:
             ieee: "{{ ieee }}"
             cluster: 513
@@ -71,7 +71,7 @@ sequence:
             state_attr: "{{ device + 'mounting' }}"
             allow_create: true
   - alias: Read the adaptation status (should not be 2)
-    service: zha_toolkit.attr_read
+    action: zha_toolkit.attr_read
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -81,7 +81,7 @@ sequence:
       csvout: "{{ csv }}"
       event_done: zha_done
   - alias: Set Adaptation Run control to automatic
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -92,7 +92,7 @@ sequence:
       csvout: "{{ csv }}"
       event_done: zha_done
   - alias: Initiate Adaptation Run
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -110,7 +110,7 @@ sequence:
       seconds: 10
       milliseconds: 0
   - alias: Read the adaptation status (Expected to be 1, but not observed as such).
-    service: zha_toolkit.attr_read
+    action: zha_toolkit.attr_read
     data:
       ieee: "{{ ieee }}"
       cluster: 513

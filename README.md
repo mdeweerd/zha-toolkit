@@ -393,7 +393,7 @@ you want to control.
 Easiest, use an entity name:
 
 ```yaml
-service: zha_toolkit.SOME_SERVICE
+action: zha_toolkit.SOME_SERVICE
 data:
   # entity name (one of them)
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
@@ -402,7 +402,7 @@ data:
 Harder, find and use the IEEE address:
 
 ```yaml
-service: zha_toolkit.SOME_SERVICE
+action: zha_toolkit.SOME_SERVICE
 data:
   # Valid possibilities for the ieee address
   # The full IEEE address:
@@ -413,7 +413,7 @@ Even more difficult, find and use the devices' short address, which may
 change over time.
 
 ```yaml
-service: zha_toolkit.SOME_SERVICE
+action: zha_toolkit.SOME_SERVICE
 data:
   # The short network address
   ieee: 0x2F3E
@@ -473,7 +473,7 @@ start in another tab of your browser.
 You can set the event names as follows:
 
 ```yaml
-service: zha_toolkit.SERVICE_NAME
+action: zha_toolkit.SERVICE_NAME
 data:
   # You can set the next events to use as a trigger.
   # The event data has the result of the command
@@ -501,7 +501,7 @@ it often.
 ## Raise an exception on failure
 
 ```yaml
-service: zha_toolkit.SERVICE_CALL
+action: zha_toolkit.SERVICE_CALL
 data:
   fail_exception: true
 ```
@@ -517,7 +517,7 @@ turn red in case the zigbee transaction result is not `SUCCESS`, then add
 ## Tries
 
 ```yaml
-service: zha_toolkit.SERVICE_CALL
+action: zha_toolkit.SERVICE_CALL
 data:
   tries: 10
 ```
@@ -637,7 +637,7 @@ including undocumented ezsp commands):
 Read a zigbee attribute value, optionally write to a state.
 
 ```yaml
-service: zha_toolkit.attr_read
+action: zha_toolkit.attr_read
 data:
   ieee: sensor.zigbee_sensor
   # The endpoint is optional - when missing tries to find endpoint matching the cluster
@@ -670,7 +670,7 @@ data:
 ### Example: attribute read with write to CSV file
 
 ```yaml
-service: zha_toolkit.attr_read
+action: zha_toolkit.attr_read
 data:
   ieee: light.texasinstruments_ti_samplelight_d77add01_level_light_color_on_off
   event_done: zha_done
@@ -713,7 +713,7 @@ When `use_cache` is 2, an actual read will be executed if the attribute is
 not in cache.
 
 ```yaml
-service: zha_toolkit.attr_read
+action: zha_toolkit.attr_read
 data:
   ieee: sensor.temperature_chambre_x_temperature_2
   cluster: 1026
@@ -754,7 +754,7 @@ In the yaml example detailing the available parameters to `attr_write` it
 is shown how to specify the value for an `octet_string` as an array/list.
 
 ```yaml
-service: zha_toolkit.attr_write
+action: zha_toolkit.attr_write
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # The endpoint is optional,
@@ -798,7 +798,7 @@ The following examples illustrates configuration of Ubisys C4 (see
 \- section 7.8.5.2. InputActions Attribute - example):
 
 ```yaml
-service: zha_toolkit.attr_write
+action: zha_toolkit.attr_write
 data:
   ieee: 00:1f:ee:00:00:aa:aa:aa
   endpoint: 232
@@ -851,7 +851,7 @@ Decrypted ZigBee Payload (45 bytes) - only Array related data is shown:
 Using the symbolic name of the attribute, and automatic endpoint selection.
 
 ```yaml
-service: zha_toolkit.attr_write
+action: zha_toolkit.attr_write
 data:
   ieee: button.fictious_model_dcd14224_identify
   cluster: 0
@@ -881,7 +881,7 @@ This example also uses the attribute name, not the attribute id.
 Tries is set to 3 to cope with some uncommon communication issues.
 
 ```yaml
-service: zha_toolkit.attr_write
+action: zha_toolkit.attr_write
 data:
   ieee: entity.my_thermostat_entity
   cluster: 0x201
@@ -932,7 +932,7 @@ are considered\
 and the first one that matches cluster-wise will be picked.
 
 ```yaml
-service: zha_toolkit.bind_ieee
+action: zha_toolkit.bind_ieee
 data:
   ieee: entity.my_thermostat_entity
   # Optional, when not set or 0, bind to the coordinator.
@@ -952,7 +952,7 @@ Listen to the event, or enable debug and check the log to get the
 information.
 
 ```yaml
-service: zha_toolkit.binds_get
+action: zha_toolkit.binds_get
 data:
   ieee: 00:15:8d:00:04:7b:83:69
   # Optional number of tries for each sub-request,
@@ -968,7 +968,7 @@ This internally fetches all the existing bindings (`binds_get` service) and
 requests the device to remove them.
 
 ```yaml
-service: zha_toolkit.binds_remove_all
+action: zha_toolkit.binds_remove_all
 data:
   ieee: entity.my_thermostat_entity
   # Optional - only remove binding to device
@@ -994,7 +994,7 @@ address as the `command_data` parameter automatically avoiding that you
 have to look it up.
 
 ```yaml
-service: zha_toolkit.unbind_coordinator
+action: zha_toolkit.unbind_coordinator
 data:
   ieee: entity.my_thermostat_entity
   # Optional - name of generated event when done
@@ -1027,7 +1027,7 @@ For sleepy devices, you can add the parameter 'tries' which will retry
 until the devices confirms (with success or error)
 
 ```yaml
-service: zha_toolkit.conf_report
+action: zha_toolkit.conf_report
 data:
   ieee: 00:12:4b:00:23:b3:da:a5
   # Optional endpoint, when missing will match cluster
@@ -1107,7 +1107,7 @@ Example of data available in the event report.
 Read the report configuration of a cluster.
 
 ```yaml
-service: zha_toolkit.conf_report_read
+action: zha_toolkit.conf_report_read
 data:
   ieee: 00:12:4b:00:23:b3:da:a5
   # Optional endpoint, when missing will match cluster
@@ -1159,7 +1159,7 @@ The result is also added to the event data in the `event['data']['scan']`
 field which is also available in the response data.
 
 ```yaml
-service: zha_toolkit.scan_device
+action: zha_toolkit.scan_device
 data:
   ieee: 00:12:4b:00:22:08:ed:1a
   # Optional: endpoint to scan, when missing: all known endpoints
@@ -1173,7 +1173,7 @@ data:
 Scan using the entity name:
 
 ```yaml
-service: zha_toolkit.scan_device
+action: zha_toolkit.scan_device
 data:
   ieee: light.tz3000_odygigth_ts0505a_12c90efe_level_light_color_on_off
 ```
@@ -1183,7 +1183,7 @@ data:
 Runs `topology.scan()`.
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   command: zdo_scan_now
 ```
@@ -1197,7 +1197,7 @@ You may want to try
 `handle_join` will not redo any joining step that already completed.
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   # Address of the device that joined
   ieee: 00:12:4b:00:22:08:ed:1a
@@ -1219,7 +1219,7 @@ device is already set up in zigpy.
 that the zigpy initialization code will proceed with initialization.
 
 ```yaml
-service: zha_toolkit.misc_reinitialize
+action: zha_toolkit.misc_reinitialize
 data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
@@ -1230,7 +1230,7 @@ data:
 Send Leave Request to the device.
 
 ```yaml
-service: zha_toolkit.leave
+action: zha_toolkit.leave
 data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
@@ -1243,7 +1243,7 @@ data:
 Send Rejoin Request to the device (=Leave with Rejoin).
 
 ```yaml
-service: zha_toolkit.rejoin
+action: zha_toolkit.rejoin
 data:
   # Reference of the device that should be rejoined
   ieee: 00:12:4b:00:22:08:ed:1a
@@ -1256,7 +1256,7 @@ data:
 Currently for "bellow's" radio types.
 
 ```yaml
-service: zha_toolkit.zdo_join_with_code
+action: zha_toolkit.zdo_join_with_code
 data:
   # Reference of the device that allows the join
   ieee: 00:12:4b:00:22:08:ed:1a
@@ -1277,7 +1277,7 @@ has though release procedures and is not as easily modifiable as a
 `custom_component`.
 
 ```yaml
-service: zha_toolkit.zcl_cmd
+action: zha_toolkit.zcl_cmd
 data:
   # Device IEEE address - mandatory
   ieee: 5c:02:72:ff:fe:92:c2:5d
@@ -1303,7 +1303,7 @@ data:
 ### `zcl_cmd` Example: Send `on` command to an OnOff Cluster.
 
 ```yaml
-service: zha_toolkit.zcl_cmd
+action: zha_toolkit.zcl_cmd
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   cmd: 1
@@ -1314,7 +1314,7 @@ data:
 ### `zcl_cmd` Example: Send `off` command to an OnOff Cluster:
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -1326,7 +1326,7 @@ data:
 ### `zcl_cmd` Example: "Store Scene"
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -1339,7 +1339,7 @@ data:
 ### `zcl_cmd` Example: "Recall Scene"
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -1370,7 +1370,7 @@ ZigBee Cluster Library Frame
 This example shows that you can provide a list of bytes for an argument:
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   command: zcl_cmd
@@ -1432,7 +1432,7 @@ data:
 Add a group on the endpoint (or all endpoints).
 
 ```yaml
-service: zha_toolkit.add_group
+action: zha_toolkit.add_group
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Group Id
@@ -1447,7 +1447,7 @@ data:
 Get the groups defined on the endpoint (or all endpoints)
 
 ```yaml
-service: zha_toolkit.get_groups
+action: zha_toolkit.get_groups
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Optional endpoint
@@ -1461,7 +1461,7 @@ data:
 Remove a group defined on the endpoint (or all endpoints)
 
 ```yaml
-service: zha_toolkit.remove_group
+action: zha_toolkit.remove_group
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Group Id
@@ -1475,7 +1475,7 @@ data:
 ### `remove_all_groups`
 
 ```yaml
-service: zha_toolkit.remove_all_groups
+action: zha_toolkit.remove_all_groups
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Optional endpoint
@@ -1489,7 +1489,7 @@ data:
 Similar to `add_group` but uses another method internally.
 
 ```yaml
-service: zha_toolkit.add_to_group
+action: zha_toolkit.add_to_group
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Group Id
@@ -1505,7 +1505,7 @@ data:
 Similar to `remove_group` but uses another method internally.
 
 ```yaml
-service: zha_toolkit.remove_from_group
+action: zha_toolkit.remove_from_group
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Group Id
@@ -1521,7 +1521,7 @@ data:
 Get groups on Zigbee Light Link cluster (uses `get group identifiers`)
 
 ```yaml
-service: zha_toolkit.get_zll_groups
+action: zha_toolkit.get_zll_groups
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # Optional endpoint
@@ -1568,7 +1568,7 @@ You can use the blueprint to setup daily backup:
 The name of that backup is according to the format
 
 ```yaml
-service: zha_toolkit.ezsp_backup
+action: zha_toolkit.ezsp_backup
 data:
   # Optional command_data, string added to the basename.
   # With this example the backup is written to `nwk_backup_20220105.json`
@@ -1592,7 +1592,7 @@ When `command_data` is provided, it is added just after nvram_backup.
 Note: currently under test.
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   command: znp_nvram_backup
   # Optional command_data, string added to the basename.
@@ -1612,7 +1612,7 @@ For safety, a backup is made of the current network before restoring
 format `local/nvram_backup_YYmmDD_HHMMSS.json`.
 
 ```yaml
-service: zha_toolkit.znp_nvram_restore
+action: zha_toolkit.znp_nvram_restore
 ```
 
 ### `znp_nvram_reset`: Reset ZNP NVRAM data
@@ -1627,7 +1627,7 @@ For safety, a backup is made of the current network before restoring
 format `local/nvram_backup_YYmmDD_HHMMSS.json`.
 
 ```yaml
-service: zha_toolkit.znp_nvram_reset
+action: zha_toolkit.znp_nvram_reset
 ```
 
 ### `znp_backup`: Backup ZNP network data
@@ -1646,7 +1646,7 @@ The name of that backup is according to the format
 `nwk_backup{command_data}.json`.
 
 ```yaml
-service: zha_toolkit.znp_backup
+action: zha_toolkit.znp_backup
 data:
   # Optional command_data, string added to the basename.
   # With this example the backup is written to `nwk_backup_20220105.json`
@@ -1708,7 +1708,7 @@ The procedure should be:
 for a success story.)
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   command: znp_restore
   # Optional:
@@ -1727,7 +1727,7 @@ The backup service starts a backup of the coordinator by calling upon
 It provides a radio independent service for backups.
 
 ```yaml
-service: zha_toolkit.backup
+action: zha_toolkit.backup
 data:
   # Optional command_data, string added to the basename.
   # With this example the backup is written to `nwk_backup_20220105.json`
@@ -1746,7 +1746,7 @@ Before and after writing, the attributes are read from the cluster and
 available in the event data, unless options disable these reads.
 
 ```yaml
-service: zha_toolkit.misc_settime
+action: zha_toolkit.misc_settime
 data:
   ieee: 5c:02:72:ff:fe:92:c2:5d
   # The endpoint is optional - by default the endpoint containing the Time Cluster
@@ -1801,7 +1801,7 @@ available.\
 When the update starts, be patient: it can take a while.
 
 ```yaml
-service: zha_toolkit.ota_notify
+action: zha_toolkit.ota_notify
 data:
   # Reference of the device that should be notified about an update.
   # Using one of the entity/sensor names is so much easier !
@@ -1825,7 +1825,7 @@ You also get this data in the 'devices' field of the generated events which
 allows you to get information about endpoints and services as well.
 
 ```yaml
-service: zha_toolkit.zha_devices
+action: zha_toolkit.zha_devices
 data:
   # Optional: Device to report on, by default all devices are in the report
   ieee: sensor.my_zha_sensor
@@ -1875,7 +1875,7 @@ detected, and a manual update may be due for testing or accessing updated
 interfaces.
 
 ```yaml
-service: zha_toolkit.register_services
+action: zha_toolkit.register_services
 ```
 
 ### `ha_set_state` - Update HA state
@@ -1883,7 +1883,7 @@ service: zha_toolkit.register_services
 Set/update any Home Assistant state.
 
 ```yaml
-service: zha_toolkit.ha_set_state
+action: zha_toolkit.ha_set_state
 data:
   fail_exception: true
   state_id: sensor.mysensor
@@ -1914,7 +1914,7 @@ Scan Zigbee channels for congestion level. The value is a percentage from
 zero to 100. A lower value is less congested.
 
 ```yaml
-service: zha_toolkit.misc_energy_scan
+action: zha_toolkit.misc_energy_scan
 data:
   # Optional: CSV file to write attribute to - located in /config/csv/...
   csvout: energy_scan.csv
@@ -1973,7 +1973,7 @@ async def user_test(app, listener, ieee, cmd, data, service, params, event_data)
 The service call to execute it looks like this:
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   command: user_test
 ```
@@ -2010,7 +2010,7 @@ It has to be done using the "execute" command it's not implemented as a
 searchable service.
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   command: tuya_magic
   ieee: light.tz3000_dbou1ap4_ts0505a_level_light_color_on_off

@@ -3,7 +3,7 @@ sequence:
   - variables:
       ieee: "{{(device_attr(device, 'identifiers')|list)[0][1]}}"
       default_tries: 3
-  - service: zha_toolkit.conf_report
+  - action: zha_toolkit.conf_report
     data:
       ieee: "{{ ieee }}"
       cluster: 1794
@@ -13,7 +13,7 @@ sequence:
       tries: "{{ default_tries}}"
       reportable_change: 1
       event_done: zha_done
-  - service: zha_toolkit.conf_report_read
+  - action: zha_toolkit.conf_report_read
     alias: read report configuration (allows verification)
     data:
       ieee: "{{ ieee }}"
@@ -21,7 +21,7 @@ sequence:
       attribute: 0
       tries: "{{ default_tries}}"
       event_done: zha_done
-  - service: zha_toolkit.conf_report
+  - action: zha_toolkit.conf_report
     data:
       ieee: "{{ ieee }}"
       cluster: 1794
@@ -31,7 +31,7 @@ sequence:
       tries: "{{ default_tries}}"
       reportable_change: 1
       event_done: zha_done
-  - service: zha_toolkit.conf_report_read
+  - action: zha_toolkit.conf_report_read
     alias: read report configuration (allows verification)
     data:
       ieee: "{{ ieee }}"
@@ -40,7 +40,7 @@ sequence:
       attribute: 0
       tries: "{{ default_tries}}"
       event_done: zha_done
-  - service: zha_toolkit.conf_report
+  - action: zha_toolkit.conf_report
     alias: Active power report configuration
     data:
       ieee: "{{ ieee }}"
@@ -52,7 +52,7 @@ sequence:
       tries: "{{ default_tries}}"
       reportable_change: 1
       event_done: zha_done
-  - service: zha_toolkit.conf_report_read
+  - action: zha_toolkit.conf_report_read
     alias: Active power report configuration read back
     data:
       ieee: "{{ ieee }}"
@@ -60,7 +60,7 @@ sequence:
       attribute: 1291
       tries: "{{ default_tries}}"
       event_done: zha_done
-  - service: zha_toolkit.conf_report
+  - action: zha_toolkit.conf_report
     alias: Mains voltage report configuration
     data:
       ieee: "{{ ieee }}"
@@ -71,7 +71,7 @@ sequence:
       tries: "{{ default_tries}}"
       reportable_change: 1
       event_done: zha_done
-  - service: zha_toolkit.conf_report_read
+  - action: zha_toolkit.conf_report_read
     alias: Mains voltage report configuration read back
     data:
       ieee: "{{ ieee }}"
