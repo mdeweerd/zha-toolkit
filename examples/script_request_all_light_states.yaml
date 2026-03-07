@@ -18,7 +18,7 @@ action:
         integration_entities('zha')) | list }}
       sequence:
         - continue_on_error: true
-          service: zha_toolkit.attr_read
+          action: zha_toolkit.attr_read
           data:
             ieee: "{{ repeat.item }}"
             cluster: 6

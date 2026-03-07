@@ -14,7 +14,7 @@ blueprint:
         entity:
           integration: zha
 sequence:
-  - service: zha_toolkit.conf_report
+  - action: zha_toolkit.conf_report
     data:
       ieee: "{{ entity_name }}"
       cluster: 1026
@@ -24,7 +24,7 @@ sequence:
       reportable_change: 20
       max_interval: 300
       min_interval: 19
-  - service: zha_toolkit.conf_report_read
+  - action: zha_toolkit.conf_report_read
     data:
       ieee: "{{ entity_name }}"
       cluster: 1026

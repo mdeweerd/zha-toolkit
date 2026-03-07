@@ -64,7 +64,7 @@ Because of the naming, it is immediately available using the
 `zha_toolkit.execute` service:
 
 ```yaml
-service: zha_toolkit.execute
+action: zha_toolkit.execute
 data:
   command: hello_world
   param1: content1
@@ -75,7 +75,7 @@ Once you made the required steps to add the command as a service itself,
 you can call it as:
 
 ```yaml
-service: zha_toolkit.hello_world
+action: zha_toolkit.hello_world
 data:
   param1: content1
   param2: content2

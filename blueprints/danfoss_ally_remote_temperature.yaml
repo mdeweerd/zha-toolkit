@@ -84,7 +84,7 @@ action:
       while: "{{ 1 == 1 }}"
       sequence:
         - alias: Write remote temperature to Danfoss Ally
-          service: zha_toolkit.attr_write
+          action: zha_toolkit.attr_write
           data:
             ieee: "{{ ieee }}"
             cluster: 0x0201

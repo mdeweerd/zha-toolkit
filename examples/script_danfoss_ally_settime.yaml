@@ -6,14 +6,14 @@ sequence:
   - repeat:
       sequence:
         - alias: Set time
-          service: zha_toolkit.misc_settime
+          action: zha_toolkit.misc_settime
           data:
             ieee: "{{ repeat.item }}"
             event_done: zha_done
             tries: "{{ default_tries }}"
             csvout: danfoss_config.csv
         - alias: Set time status to synchronised
-          service: zha_toolkit.attr_write
+          action: zha_toolkit.attr_write
           data:
             ieee: "{{ repeat.item }}"
             cluster: 10

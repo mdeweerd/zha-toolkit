@@ -5,7 +5,7 @@ sequence:
       ieee: "{{ (device_attr(device, 'identifiers')|list)[0][1] }}"
       default_tries: 3
   - alias: Configure reporting of local_temperature in Thermostat cluster
-    service: zha_toolkit.conf_report
+    action: zha_toolkit.conf_report
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -16,7 +16,7 @@ sequence:
       max_interval: 300
       min_interval: 19
   - alias: Read back reporting configuration, for debugging
-    service: zha_toolkit.conf_report_read
+    action: zha_toolkit.conf_report_read
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -24,7 +24,7 @@ sequence:
       tries: "{{ default_tries }}"
       event_done: zha_done
   - alias: Set lower limit for setpoint
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -33,7 +33,7 @@ sequence:
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Set upper limit for setpoint
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -42,7 +42,7 @@ sequence:
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Set Display rotation
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 516
@@ -53,7 +53,7 @@ sequence:
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Set open window detection
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -64,7 +64,7 @@ sequence:
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Check if window open reporting is configured, for debugging
-    service: zha_toolkit.conf_report_read
+    action: zha_toolkit.conf_report_read
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -73,7 +73,7 @@ sequence:
       tries: "{{ default_tries }}"
       event_done: zha_done
   - alias: Set TRV orientation (horizontal/vertical)
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -84,14 +84,14 @@ sequence:
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Set time
-    service: zha_toolkit.misc_settime
+    action: zha_toolkit.misc_settime
     data:
       ieee: "{{ ieee }}"
       event_done: zha_done
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Set time status to synchronised
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 10
@@ -100,7 +100,7 @@ sequence:
       tries: "{{ default_tries }}"
       csvout: danfoss_config.csv
   - alias: Set covered mode
-    service: zha_toolkit.attr_write
+    action: zha_toolkit.attr_write
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -110,7 +110,7 @@ sequence:
       tries: "{{ default_tries}}"
       csvout: danfoss_config.csv
   - alias: Check heat request reporting configuration
-    service: zha_toolkit.conf_report_read
+    action: zha_toolkit.conf_report_read
     data:
       ieee: "{{ ieee }}"
       cluster: 513
@@ -119,7 +119,7 @@ sequence:
       tries: "{{ default_tries }}"
       event_done: zha_done
   - alias: Read Heat Supply Request
-    service: zha_toolkit.attr_read
+    action: zha_toolkit.attr_read
     data:
       ieee: "{{ ieee }}"
       cluster: 513
