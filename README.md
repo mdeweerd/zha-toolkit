@@ -1913,6 +1913,9 @@ situations.
 Scan Zigbee channels for congestion level. The value is a percentage from
 zero to 100. A lower value is less congested.
 
+This does not work with all coordinators, it was observec to work with a
+TI CC2530.
+
 ```yaml
 action: zha_toolkit.misc_energy_scan
 data:
