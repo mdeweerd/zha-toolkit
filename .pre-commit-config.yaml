@@ -8,7 +8,7 @@ repos:
       - id: pyupgrade-docs
   - repo: https://github.com/executablebooks/mdformat
     # Do this before other tools "fixing" the line endings
-    rev: 0.7.22
+    rev: 1.0.0
     hooks:
       - id: mdformat
         name: Format Markdown
@@ -27,13 +27,13 @@ repos:
           - mdformat-web
           - mdformat-gfm
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.16.0
+    rev: 1.20.0
     hooks:
       - id: blacken-docs
         additional_dependencies: [black==22.6.0]
         stages: [manual]   # Manual because already done by mdformat-black
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: fix-byte-order-marker
       - id: mixed-line-ending
@@ -55,11 +55,11 @@ repos:
       - id: check-case-conflict
       # - id: check-toml
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.32.0
+    rev: v1.38.0
     hooks:
       - id: yamllint
         args:
@@ -67,13 +67,13 @@ repos:
           - -d
           - '{extends: relaxed, rules: {line-length: {max: 90}}}'
   - repo: https://github.com/lovesegfault/beautysh.git
-    rev: v6.2.1
+    rev: v6.4.2
     hooks:
       - id: beautysh
         additional_dependencies:
           - setuptools==80  # workaround for beautysh
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: v0.11.0.1
     hooks:
       - id: shellcheck
         files: ^[^\.].*\.sh$
@@ -81,7 +81,7 @@ repos:
         # args: [-x,-e2086,-e2004,-e2207,-e2002,-e2116]
         # args: ["--severity=warning"]  # Optionally only show errors and warnings
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+    rev: v0.15.5
     hooks:
       # Note, added for future reference, not used
       - id: ruff
@@ -89,13 +89,13 @@ repos:
       - id: ruff-format
         stages: [manual]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
         args:
           - --py39-plus
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 26.3.0
     hooks:
       - id: black
         args:
@@ -118,7 +118,7 @@ repos:
           - --expand-star-imports
           - custom_components
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
+    rev: 7.3.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -130,11 +130,11 @@ repos:
           - pycodestyle>=2.9.1
           - pyflakes>=2.5.0
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 8.0.1
     hooks:
       - id: isort
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.4.2
     hooks:
       - id: codespell
         args:
@@ -144,7 +144,7 @@ repos:
           - --skip="./.*"
           - --quiet-level=2
   - repo: https://github.com/pylint-dev/pylint
-    rev: v3.0.3
+    rev: v4.0.5
     hooks:
       - id: pylint
         args:
@@ -156,7 +156,7 @@ repos:
           # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.0
+    rev: v1.19.1
     hooks:
       - id: mypy
         args:

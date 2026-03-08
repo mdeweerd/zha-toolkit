@@ -1917,8 +1917,9 @@ This does not work with all coordinators, it was observec to work with a
 TI CC2530.
 
 ```yaml
-action: zha_toolkit.misc_energy_scan
+action: zha_toolkit.execute
 data:
+  command: misc_energy_scan
   # Optional: CSV file to write attribute to - located in /config/csv/...
   csvout: energy_scan.csv
 ```
@@ -1927,7 +1928,7 @@ The values can vary quite a bit between scans. You can create helpers to
 store results which will allow you to see trends via the History tab. This
 automation runs each hour:
 
-```
+```yaml
   - id: zigbee_energy_scan
     alias: Zigbee Energy Scan
     mode: single
