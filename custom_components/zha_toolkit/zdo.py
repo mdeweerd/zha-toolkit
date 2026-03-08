@@ -114,7 +114,7 @@ async def zdo_update_nwk_id(
         0xEE,
         b"\xee"
         + t.Channels.ALL_CHANNELS.serialize()
-        + b"\xFF"
+        + b"\xff"
         + nwk_upd_id.serialize()
         + b"\x00\x00",
     )

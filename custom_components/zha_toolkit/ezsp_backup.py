@@ -21,23 +21,23 @@ async def _backup(ezsp):
     # (status,) = await ezsp.networkInit()
     # assert status == t.EmberStatus.SUCCESS
 
-    (status, node_type, network) = await ezsp.getNetworkParameters()
+    status, node_type, network = await ezsp.getNetworkParameters()
     assert status == t.EmberStatus.SUCCESS
     assert node_type == ezsp.types.EmberNodeType.COORDINATOR
 
     (ieee,) = await ezsp.getEui64()
 
-    (status, nwk_key) = await ezsp.getKey(
+    status, nwk_key = await ezsp.getKey(
         ezsp.types.EmberKeyType.CURRENT_NETWORK_KEY
     )
     assert status == t.EmberStatus.SUCCESS
 
-    (status, security_level) = await ezsp.getConfigurationValue(
+    status, security_level = await ezsp.getConfigurationValue(
         ezsp.types.EzspConfigId.CONFIG_SECURITY_LEVEL
     )
     assert status == t.EmberStatus.SUCCESS
 
-    (status, _tclk) = await ezsp.getKey(
+    status, _tclk = await ezsp.getKey(
         ezsp.types.EmberKeyType.TRUST_CENTER_LINK_KEY
     )
     assert status == t.EmberStatus.SUCCESS
@@ -65,7 +65,7 @@ async def _backup(ezsp):
     keys = {}
 
     for idx in range(0, 192):
-        (status, key_struct) = await ezsp.getKeyTableEntry(idx)
+        status, key_struct = await ezsp.getKeyTableEntry(idx)
         LOGGER.debug(
             "Got key at index %s status: %s key_struct: %s",
             idx,

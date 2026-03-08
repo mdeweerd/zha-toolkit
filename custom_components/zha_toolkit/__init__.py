@@ -31,12 +31,12 @@ DATA_ZHATK = "zha_toolkit"
 LOGGER = logging.getLogger(__name__)
 
 try:
-    LOADED_VERSION  # type:ignore[used-before-def] # pylint: disable=used-before-assignment
+    LOADED_VERSION  # type: ignore[used-before-def] # pylint: disable=used-before-assignment
 except NameError:
     LOADED_VERSION = ""
 
 try:
-    DEFAULT_OTAU  # type:ignore[used-before-def] # pylint: disable=used-before-assignment
+    DEFAULT_OTAU  # type: ignore[used-before-def] # pylint: disable=used-before-assignment
 except NameError:
     DEFAULT_OTAU = "/config/zigpy_ota"
 
@@ -672,7 +672,7 @@ async def register_services(hass):  # noqa: C901
     async def toolkit_service(service):
         """Run command from toolkit module."""
         LOGGER.info("Running ZHA Toolkit service: %s", service)
-        global LOADED_VERSION  # pylint: disable=global-variable-not-assigned
+        global LOADED_VERSION  # noqa: F824 pylint: disable=global-variable-not-assigned
 
         zha = hass_ref.data["zha"]
         zha_gw: Optional[ZHAGateway] = u.get_zha_gateway(hass)
@@ -843,7 +843,7 @@ async def register_services(hass):  # noqa: C901
                 key,
                 toolkit_service,
                 schema=value,
-                supports_response=SupportsResponse.OPTIONAL,  # type:ignore[undefined-variable]
+                supports_response=SupportsResponse.OPTIONAL,  # type: ignore[undefined-variable]
             )
         else:
             hass.services.async_register(
@@ -857,7 +857,7 @@ async def register_services(hass):  # noqa: C901
 
 
 async def _reload_module(hass, module):
-    global LOADED_VERSION  # pylint: disable=global-statement,global-variable-not-assigned
+    global LOADED_VERSION  # noqa: F824  pylint: disable=global-statement,global-variable-not-assigned
 
     # Reload ourselves
     importlib.reload(module)

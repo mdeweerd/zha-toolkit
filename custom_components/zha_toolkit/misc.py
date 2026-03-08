@@ -218,18 +218,18 @@ async def misc_settime(
 
     utc_time = utcnow().astimezone(pytz.UTC).replace(tzinfo=None)
     index = bisect(
-        tz._utc_transition_times, utc_time  # type:ignore[union-attr]
+        tz._utc_transition_times, utc_time  # type: ignore[union-attr]
     )
 
     if index is None:
         event_data["success"] = False
-        event_data[
-            "msg"
-        ] = "misc_settime expects DST changes, needs update if None"
+        event_data["msg"] = (
+            "misc_settime expects DST changes, needs update if None"
+        )
 
     try:
         if (
-            tz._utc_transition_times[index]  # type:ignore[union-attr]
+            tz._utc_transition_times[index]  # type: ignore[union-attr]
             .replace(tzinfo=pytz.UTC)
             .astimezone(tz)
             .dst()
@@ -239,17 +239,17 @@ async def misc_settime(
             # First date must be start of dst period
             index = index - 1
 
-        dst1_obj = tz._utc_transition_times[index]  # type:ignore[union-attr]
-        dst2_obj = tz._utc_transition_times[  # type:ignore[union-attr]
+        dst1_obj = tz._utc_transition_times[index]  # type: ignore[union-attr]
+        dst2_obj = tz._utc_transition_times[  # type: ignore[union-attr]
             index + 1
         ]
         epoch2000 = datetime(2000, 1, 1, tzinfo=None)
         dst1 = (dst1_obj - epoch2000).total_seconds()
         dst2 = (dst2_obj - epoch2000).total_seconds()
-        dst1_aware = tz._utc_transition_times[  # type:ignore[union-attr]
+        dst1_aware = tz._utc_transition_times[  # type: ignore[union-attr]
             index
         ].replace(tzinfo=pytz.UTC)
-        dst2_aware = tz._utc_transition_times[  # type:ignore[union-attr]
+        dst2_aware = tz._utc_transition_times[  # type: ignore[union-attr]
             index + 1
         ].replace(tzinfo=pytz.UTC)
 

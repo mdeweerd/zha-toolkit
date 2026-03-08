@@ -39,7 +39,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class ZhaToolkitCustomConfigFlow(
     config_entries.ConfigFlow, domain=DOMAIN
-):  # type:ignore[call-arg]
+):  # type: ignore[call-arg]
     """Zha Toolkit Custom config flow."""
 
     VERSION = 0

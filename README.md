@@ -1913,8 +1913,8 @@ situations.
 Scan Zigbee channels for congestion level. The value is a percentage from
 zero to 100. A lower value is less congested.
 
-This does not work with all coordinators, it was observec to work with a
-TI CC2530.
+This does not work with all coordinators, it was observec to work with a TI
+CC2530.
 
 ```yaml
 action: zha_toolkit.execute
@@ -1942,11 +1942,12 @@ automation runs each hour:
           command: misc_energy_scan
         response_variable: scan
       - repeat:
-          for_each: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+          for_each: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 
+                26]
           sequence:
             - action: input_number.set_value
               target:
-                entity_id: "input_number.zigbee_energy_channel_{{ repeat.item }}"
+                entity_id: input_number.zigbee_energy_channel_{{ repeat.item }}
               data:
                 value: "{{ scan['energy_scan'][repeat.item] | round }}"
 ```

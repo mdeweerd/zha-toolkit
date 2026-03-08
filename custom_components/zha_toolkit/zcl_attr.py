@@ -437,16 +437,16 @@ async def attr_write(  # noqa: C901
         and (len(attr_write_list) != 0)
         and compare_val is not None
         and (
-            (attr_id in result_read[0])  # type:ignore[index]
+            (attr_id in result_read[0])  # type: ignore[index]
             and (
-                result_read[0][  # type:ignore[index]
+                result_read[0][  # type: ignore[index]
                     attr_id
-                ].serialize()  # type:ignore[union-attr]
+                ].serialize()  # type: ignore[union-attr]
                 == compare_val.serialize()
                 if use_serialize
-                else result_read[0][  # type:ignore[index]
+                else result_read[0][  # type: ignore[index]
                     attr_id
-                ]  # type:ignore[union-attr]
+                ]  # type: ignore[union-attr]
                 == compare_val
             )
         )
@@ -515,17 +515,23 @@ async def attr_write(  # noqa: C901
                 ):
                     success = False
                     msg = "Read does not match expected: {!r} <> {!r}".format(
-                        result_read[0][attr_id].serialize()
-                        if use_serialize
-                        else result_read[0][attr_id],
-                        compare_val.serialize()
-                        if use_serialize
-                        else compare_val,
+                        (
+                            result_read[0][attr_id].serialize()
+                            if use_serialize
+                            else result_read[0][attr_id]
+                        ),
+                        (
+                            compare_val.serialize()
+                            if use_serialize
+                            else compare_val
+                        ),
                     )
                     LOGGER.warning(msg)
                     if "warnings" not in event_data:
                         event_data["warnings"] = []
                     event_data["warnings"].append(msg)
+
+    read_val = None  # Ensure this value looks initialised in all cases
 
     if result_read is not None:
         event_data["result_read"] = result_read
@@ -541,19 +547,17 @@ async def attr_write(  # noqa: C901
                 event_data["warnings"] = []
             event_data["warnings"].append(msg)
             success = False
-    else:
-        read_val = None
 
     event_data["success"] = success
 
     # Write value to provided state or state attribute
     if params[p.STATE_ID] is not None:
         if (
-            len(result_read[1]) == 0  # type:ignore[index]
-            and len(result_read[0]) == 1  # type:ignore[index]
+            len(result_read[1]) == 0  # type: ignore[index]
+            and len(result_read[0]) == 1  # type: ignore[index]
         ):
             # No error and one result
-            for attr_id, val in result_read[0].items():  # type:ignore[index]
+            for attr_id, val in result_read[0].items():  # type: ignore[index]
                 if state_template_str is not None:
                     if val is None:
                         LOGGER.debug(

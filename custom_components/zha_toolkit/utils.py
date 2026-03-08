@@ -363,11 +363,15 @@ async def get_ieee(app, listener, ref):
                 listener
             ).helpers.entity_registry.async_get_registry()
             if not is_ha_ge("2022.6")
-            else get_hass(listener).helpers.entity_registry.async_get(
-                get_hass(listener)
+            else (
+                get_hass(listener).helpers.entity_registry.async_get(
+                    get_hass(listener)
+                )
+                if not is_ha_ge("2024.6")
+                else er.async_get(  # noqa: E0606,E501 pylint: disable=possibly-used-before-assignment
+                    get_hass(listener)
+                )
             )
-            if not is_ha_ge("2024.6")
-            else er.async_get(get_hass(listener))
         )
 
         device_registry = (
@@ -376,11 +380,15 @@ async def get_ieee(app, listener, ref):
                 listener
             ).helpers.device_registry.async_get_registry()
             if not is_ha_ge("2022.6")
-            else get_hass(listener).helpers.device_registry.async_get(
-                get_hass(listener)
+            else (
+                get_hass(listener).helpers.device_registry.async_get(
+                    get_hass(listener)
+                )
+                if not is_ha_ge("2024.6")
+                else dr.async_get(  # noqa: E0606,E501 pylint: disable=possibly-used-before-assignment
+                    get_hass(listener)
+                )
             )
-            if not is_ha_ge("2024.6")
-            else dr.async_get(get_hass(listener))
         )
         registry_device = device_registry.async_get(ref)
 
@@ -671,6 +679,7 @@ async def record_read_data(
         return
 
     date_str = dt_util.utcnow().isoformat()
+    attr_type = None
 
     for attr_id, read_val in read_resp[0].items():
         fields = []
@@ -1108,8 +1117,9 @@ def extractParams(  # noqa: C901
 #
 async def retry(
     func: typing.Callable[[], typing.Awaitable[typing.Any]],
-    retry_exceptions: typing.Iterable[typing.Any]
-    | None = None,  # typing.Iterable[BaseException],
+    retry_exceptions: (
+        typing.Iterable[typing.Any] | None
+    ) = None,  # typing.Iterable[BaseException],
     tries: int = 3,
     delay: int | float = 0.1,
 ) -> typing.Any:
@@ -1131,7 +1141,7 @@ async def retry(
         try:
             return await func()
             # pylint: disable-next=catching-non-exception
-        except retry_exceptions:  # type:ignore[misc]
+        except retry_exceptions:  # type: ignore[misc]
             if tries <= 1:
                 raise
             tries -= 1
@@ -1141,8 +1151,9 @@ async def retry(
 async def retry_wrapper(
     func: typing.Callable,
     *args,
-    retry_exceptions: typing.Iterable[typing.Any]
-    | None = None,  # typing.Iterable[BaseException],
+    retry_exceptions: (
+        typing.Iterable[typing.Any] | None
+    ) = None,  # typing.Iterable[BaseException],
     tries: int = 3,
     delay: int | float = 0.1,
     **kwargs,
@@ -1157,8 +1168,9 @@ async def retry_wrapper(
 
 
 def retryable(
-    retry_exceptions: None
-    | typing.Iterable[typing.Any] = None,  # typing.Iterable[BaseException]
+    retry_exceptions: (
+        None | typing.Iterable[typing.Any]
+    ) = None,  # typing.Iterable[BaseException]
     tries: int = 1,
     delay: float = 0.1,
 ) -> typing.Callable:
@@ -1169,7 +1181,7 @@ def retryable(
     """
 
     def decorator(func: typing.Callable) -> typing.Callable:
-        nonlocal tries, delay
+        nonlocal tries, delay  # noqa: F824
 
         @functools.wraps(func)
         def wrapper(*args, tries=tries, delay=delay, **kwargs):

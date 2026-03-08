@@ -40,7 +40,7 @@ async def ezsp_set_channel(
 
     event_data["nwk_params"] = network_params
 
-    payload = b"\xDE" + ch_mask.serialize() + b"\xFE"
+    payload = b"\xde" + ch_mask.serialize() + b"\xfe"
     payload += network_params.nwkUpdateId.serialize()
 
     status, _ = await app._ezsp.sendBroadcast(
@@ -111,7 +111,7 @@ async def ezsp_get_keys(
 
     for idx in range(0, 192):
         LOGGER.debug("Getting key index %s", idx)
-        (status, key_struct) = await app._ezsp.getKeyTableEntry(idx)
+        status, key_struct = await app._ezsp.getKeyTableEntry(idx)
         if status == app._ezsp.types.EmberStatus.SUCCESS:
             result[idx] = key_struct
             if key_struct.partnerEUI64 not in app.devices:
@@ -198,7 +198,7 @@ async def ezsp_get_config_value(
 
     cfg_id = app._ezsp.types.EzspConfigId(data)
     LOGGER.info("Getting EZSP configuration value: %s", cfg_id)
-    (status, value) = await app._ezsp.getConfigurationValue(cfg_id)
+    status, value = await app._ezsp.getConfigurationValue(cfg_id)
     if status != app._ezsp.types.EzspStatus.SUCCESS:
         msg = f"Couldn't get {status} configuration value: {cfg_id}"
         LOGGER.error(msg)
@@ -218,7 +218,7 @@ async def ezsp_get_value(
 
     value_id = app._ezsp.types.EzspValueId(data)
     LOGGER.info("Getting EZSP value: %s", value_id)
-    (status, value) = await app._ezsp.getValue(value_id)
+    status, value = await app._ezsp.getValue(value_id)
     if status != app._ezsp.types.EzspStatus.SUCCESS:
         msg = f"Couldn't get {status} value: {value_id}"
         LOGGER.error(msg)
@@ -263,7 +263,7 @@ async def ezsp_backup_legacy(
         _backup_keys,
     )
 
-    (status, node_type, network) = await app._ezsp.getNetworkParameters()
+    status, node_type, network = await app._ezsp.getNetworkParameters()
     assert status == bt.EmberStatus.SUCCESS
     assert node_type == app._ezsp.types.EmberNodeType.COORDINATOR
     LOGGER.debug("Network params: %s", network)
@@ -287,7 +287,7 @@ async def ezsp_backup_legacy(
         (ATTR_KEY_GLOBAL, app._ezsp.types.EmberKeyType.TRUST_CENTER_LINK_KEY),
         (ATTR_KEY_NWK, app._ezsp.types.EmberKeyType.CURRENT_NETWORK_KEY),
     ):
-        (status, key) = await app._ezsp.getKey(key_type)
+        status, key = await app._ezsp.getKey(key_type)
         assert status == bt.EmberStatus.SUCCESS
         LOGGER.debug("%s key: %s", key_name, key)
         result[key_name] = key.as_dict()

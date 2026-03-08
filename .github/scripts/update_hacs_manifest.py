@@ -29,6 +29,7 @@
 # SOFTWARE.
 
 """Update the files with new version."""
+
 import json
 import os
 import re
