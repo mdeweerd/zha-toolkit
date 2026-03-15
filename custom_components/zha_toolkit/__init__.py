@@ -1,5 +1,6 @@
 import importlib
 import logging
+import os
 from typing import Any, Optional
 
 import homeassistant.helpers.config_validation as cv
@@ -38,7 +39,9 @@ except NameError:
 try:
     DEFAULT_OTAU  # type: ignore[used-before-def] # pylint: disable=used-before-assignment
 except NameError:
-    DEFAULT_OTAU = ""  # Initialize as empty string or default path (initialized later)
+    DEFAULT_OTAU = (
+        ""  # Initialize as empty string or default path (initialized later)
+    )
 
 
 importlib.reload(PARDEFS)
@@ -630,7 +633,9 @@ async def async_setup(hass, config):
 
     try:
         global DEFAULT_OTAU  # pylint: disable=global-statement
-        DEFAULT_OTAU = os.path.join(hass.config.config_dir, "zigpy_ota")  # Next statement might fail
+        DEFAULT_OTAU = os.path.join(
+            hass.config.config_dir, "zigpy_ota"
+        )  # Next statement might fail
         DEFAULT_OTAU = config[ZHA_DOMAIN]["zigpy_config"]["ota"][
             "otau_directory"
         ]
@@ -910,8 +915,6 @@ async def command_handler_default(
 
 
 def reload_services_yaml(hass):
-    import os
-
     from homeassistant.const import CONF_DESCRIPTION, CONF_NAME
     from homeassistant.helpers.service import async_set_service_schema
     from homeassistant.util.yaml.loader import load_yaml
