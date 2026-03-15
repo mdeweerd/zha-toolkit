@@ -38,7 +38,7 @@ except NameError:
 try:
     DEFAULT_OTAU  # type: ignore[used-before-def] # pylint: disable=used-before-assignment
 except NameError:
-    DEFAULT_OTAU = "/config/zigpy_ota"
+    DEFAULT_OTAU = ""  # Initialize as empty string or default path (initialized later)
 
 
 importlib.reload(PARDEFS)
@@ -630,6 +630,7 @@ async def async_setup(hass, config):
 
     try:
         global DEFAULT_OTAU  # pylint: disable=global-statement
+        DEFAULT_OTAU = os.path.join(hass.config.config_dir, "zigpy_ota")  # Next statement might fail
         DEFAULT_OTAU = config[ZHA_DOMAIN]["zigpy_config"]["ota"][
             "otau_directory"
         ]

@@ -212,7 +212,7 @@
     },
     "all_routes_and_neigbours": {
       "name": "Scan all Routes and Neighbours",
-      "description": "Scan for all routes and neighbours, results saved to config/scans/...",
+      "description": "Scan for all routes and neighbours, results saved to /homeassistant/scans/...",
       "fields": {
         "event_success": {
           "name": "Success Event Name",
@@ -796,7 +796,7 @@
     },
     "get_routes_and_neigbours": {
       "name": "Scan Device's Routes and Neighbours",
-      "description": "Scan for all routes and neighbours, results saved to config/scans/...",
+      "description": "Scan for all routes and neighbours, results saved to /homeassistant/scans/...",
       "fields": {
         "ieee": {
           "name": "Device Reference",
@@ -1094,7 +1094,7 @@
         },
         "path": {
           "name": "Firmware Directory",
-          "description": "Path to write ota image(s) to (defaults to zha:zigpy_config:ota:otau_directory value or /config/zigpy_ota)"
+          "description": "Path to write ota image(s) to (defaults to zha:zigpy_config:ota:otau_directory value or /homeassistant/zigpy_ota)"
         },
         "tries": {
           "name": "Tries",
@@ -1238,7 +1238,7 @@
     },
     "scan_device": {
       "name": "Scan Device",
-      "description": "Scan device (result written to file in /config/scans)",
+      "description": "Scan device (result written to file in /homeassistant/scans)",
       "fields": {
         "ieee": {
           "name": "Device Reference",
@@ -1494,7 +1494,7 @@
         },
         "json_out": {
           "name": "JSON Filename",
-          "description": "Filename of JSON to write read data to.  Written to '/config/json' directory"
+          "description": "Filename of JSON to write read data to.  Written to '/homeassistant/json' directory"
         },
         "json_timestamp": {
           "name": "JSON Timestamp",
