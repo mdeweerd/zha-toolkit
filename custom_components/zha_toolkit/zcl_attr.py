@@ -22,7 +22,7 @@ LOGGER = logging.getLogger(__name__)
 def _manufacturer_code_for_find_attribute(
     manf: None | int | bytes,
 ) -> int | None | UndefinedType:
-    """Map service MANF to zigpy ``find_attribute(..., manufacturer_code=)``."""
+    """Map service MANF to zigpy `find_attribute(..., manufacturer_code=)`."""
     if isinstance(manf, bytes):
         return None if manf == b"" else UNDEFINED
     if manf is None:
@@ -42,7 +42,10 @@ def _zcl_status_to_json(status: typing.Any) -> dict[str, typing.Any]:
 def _serialize_configure_reporting_result(
     result_conf: typing.Any,
 ) -> list[dict[str, typing.Any]]:
-    """Make configure_reporting output JSON-safe for HA service responses and events."""
+    """
+    Make configure_reporting output JSON-safe
+    for HA service responses and events.
+    """
     rows: list[dict[str, typing.Any]] = []
     if isinstance(result_conf, dict):
         for attr, status in result_conf.items():
@@ -74,7 +77,12 @@ def _serialize_configure_reporting_result(
 def _configure_reporting_succeeded(
     result_conf: object, attr_def: f.ZCLAttributeDef | None
 ) -> bool:
-    """Handle dict (zigpy >= 1.2), flat record lists (zigpy 0.91–1.1.x), and legacy nested responses."""
+    """
+    Handle:
+    - dict (zigpy >= 1.2),
+    - flat record lists (zigpy 0.91–1.1.x), and
+    - legacy nested responses.
+    """
     if isinstance(result_conf, dict):
         if attr_def is not None:
             return result_conf.get(attr_def) == f.Status.SUCCESS
@@ -347,8 +355,8 @@ async def conf_report(
                 params[p.REPORTABLE_CHANGE],
                 params[p.MANF],
             )
-            # zigpy >= 0.91: no ``manufacturer=`` on configure_reporting; resolve
-            # manufacturer via ``find_attribute(..., manufacturer_code=...)``.
+            # zigpy >= 0.91: no `manufacturer=` on configure_reporting; resolve
+            # manufacturer via `find_attribute(..., manufacturer_code=...)`.
             # Older zigpy: pass manufacturer through configure_reporting.
             if u.is_zigpy_ge("0.91.0"):
                 attr_def = cluster.find_attribute(
