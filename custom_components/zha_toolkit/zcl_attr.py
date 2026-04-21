@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import typing
 
 from homeassistant.helpers.template import Template
 from homeassistant.util import dt as dt_util
 from zigpy import types as t
 from zigpy.exceptions import ControllerException, DeliveryError
+from zigpy.typing import UNDEFINED, UndefinedType
 from zigpy.zcl import Cluster
 from zigpy.zcl import foundation as f
 
@@ -15,6 +17,78 @@ from .params import INTERNAL_PARAMS as p
 from .params import SERVICES as S
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _manufacturer_code_for_find_attribute(
+    manf: None | int | bytes,
+) -> int | None | UndefinedType:
+    """Map service MANF to zigpy ``find_attribute(..., manufacturer_code=)``."""
+    if isinstance(manf, bytes):
+        return None if manf == b"" else UNDEFINED
+    if manf is None:
+        return UNDEFINED
+    return manf
+
+
+def _zcl_status_to_json(status: typing.Any) -> dict[str, typing.Any]:
+    try:
+        code = int(status)
+    except (TypeError, ValueError):
+        code = status
+    name = getattr(status, "name", None)
+    return {"status": code, "status_name": name or str(status)}
+
+
+def _serialize_configure_reporting_result(
+    result_conf: typing.Any,
+) -> list[dict[str, typing.Any]]:
+    """Make configure_reporting output JSON-safe for HA service responses and events."""
+    rows: list[dict[str, typing.Any]] = []
+    if isinstance(result_conf, dict):
+        for attr, status in result_conf.items():
+            row = _zcl_status_to_json(status)
+            if isinstance(attr, f.ZCLAttributeDef):
+                row["attribute_id"] = int(attr.id)
+                if attr.name:
+                    row["attribute_name"] = attr.name
+                mc = getattr(attr, "manufacturer_code", None)
+                if mc is not UNDEFINED and mc is not None:
+                    row["manufacturer_code"] = int(mc)
+            else:
+                row["attribute"] = repr(attr)
+            rows.append(row)
+        return rows
+    if isinstance(result_conf, list):
+        for item in result_conf:
+            if isinstance(item, list):
+                rows.extend(_serialize_configure_reporting_result(item))
+            elif hasattr(item, "status"):
+                row = _zcl_status_to_json(item.status)
+                aid = getattr(item, "attrid", None)
+                if aid is not None:
+                    row["attribute_id"] = int(aid)
+                rows.append(row)
+    return rows
+
+
+def _configure_reporting_succeeded(
+    result_conf: object, attr_def: f.ZCLAttributeDef | None
+) -> bool:
+    """Handle dict (zigpy >= 1.2), flat record lists (zigpy 0.91–1.1.x), and legacy nested responses."""
+    if isinstance(result_conf, dict):
+        if attr_def is not None:
+            return result_conf.get(attr_def) == f.Status.SUCCESS
+        for status in result_conf.values():
+            return status == f.Status.SUCCESS
+        return False
+    if isinstance(result_conf, list) and len(result_conf) > 0:
+        first = result_conf[0]
+        if isinstance(first, list) and first and hasattr(first[0], "status"):
+            return first[0].status == f.Status.SUCCESS
+        if hasattr(first, "status"):
+            return first.status == f.Status.SUCCESS
+    return False
+
 
 if not hasattr(Cluster, "_read_reporting_configuration"):
     if hasattr(f, "GeneralCommand"):
@@ -273,19 +347,41 @@ async def conf_report(
                 params[p.REPORTABLE_CHANGE],
                 params[p.MANF],
             )
-            result_conf = await cluster.configure_reporting(
-                params[p.ATTR_ID],
-                params[p.MIN_INTERVAL],
-                params[p.MAX_INTERVAL],
-                params[p.REPORTABLE_CHANGE],
-                manufacturer=params[p.MANF],
+            # zigpy >= 0.91: no ``manufacturer=`` on configure_reporting; resolve
+            # manufacturer via ``find_attribute(..., manufacturer_code=...)``.
+            # Older zigpy: pass manufacturer through configure_reporting.
+            if u.is_zigpy_ge("0.91.0"):
+                attr_def = cluster.find_attribute(
+                    params[p.ATTR_ID],
+                    manufacturer_code=_manufacturer_code_for_find_attribute(
+                        params[p.MANF]
+                    ),
+                )
+                result_conf = await cluster.configure_reporting(
+                    attr_def,
+                    params[p.MIN_INTERVAL],
+                    params[p.MAX_INTERVAL],
+                    params[p.REPORTABLE_CHANGE],
+                )
+                event_data["success"] = _configure_reporting_succeeded(
+                    result_conf, attr_def
+                )
+            else:
+                result_conf = await cluster.configure_reporting(
+                    params[p.ATTR_ID],
+                    params[p.MIN_INTERVAL],
+                    params[p.MAX_INTERVAL],
+                    params[p.REPORTABLE_CHANGE],
+                    manufacturer=params[p.MANF],
+                )
+                event_data["success"] = _configure_reporting_succeeded(
+                    result_conf, None
+                )
+            event_data["result_conf"] = _serialize_configure_reporting_result(
+                result_conf
             )
-            event_data["result_conf"] = result_conf
             triesToGo = 0  # Stop loop
             LOGGER.info("Configure report result: %s", result_conf)
-            event_data["success"] = (
-                result_conf[0][0].status == f.Status.SUCCESS
-            )
         except (
             DeliveryError,
             ControllerException,
