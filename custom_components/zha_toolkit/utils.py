@@ -1217,16 +1217,20 @@ async def cluster_read_attributes(
     cluster, attrs, manufacturer=None
 ) -> tuple[list, list]:
     """Read attributes from cluster, retryable"""
+    if is_zigpy_ge("1.2.0"):
+        return await cluster.read_attributes_raw(attrs, manufacturer=manufacturer)
     return await cluster.read_attributes(attrs, manufacturer=manufacturer)
 
 
-# The zigpy library does not offer retryable on read_attributes.
+# The zigpy library does not offer retryable on write_attributes.
 # Add it ourselves
 @retryable(
     (DeliveryError, asyncio.CancelledError, asyncio.TimeoutError), tries=1
 )
 async def cluster__write_attributes(cluster, attrs, manufacturer=None):
     """Write cluster attributes from cluster, retryable"""
+    if is_zigpy_ge("1.2.0"):
+        return await cluster.write_attributes_raw(attrs, manufacturer_code=manufacturer)
     return await cluster._write_attributes(attrs, manufacturer=manufacturer)
 
 
