@@ -481,27 +481,44 @@ async def attr_write(  # noqa: C901
             LOGGER.debug(
                 "Reading attr result (attrs, status): %s", result_read
             )
-            success = (len(result_read[1]) == 0) and (len(result_read[0]) == 1)
+            if u.is_zigpy_ge("1.2.0"):
+                if len(result_read):
+                    found_attr_type = result_read[0][0].value.type
+                    result_read = ({
+                            result_read[0][0].attrid: result_read[0][0].value.value,
+                        },
+                        {},
+                    )
+                else:
+                    result_read = ({}, (result_read[0]["status"],))
 
-            # Try to get attribute type
-            if success and (attr_id in result_read[0]):
-                python_type = type(result_read[0][attr_id])
-                found_attr_type = f.DataType.from_python_type(
-                    python_type
-                ).type_id
-                LOGGER.debug(
-                    "Type determined from read: 0x%02x", found_attr_type
+                success = (len(result_read[1]) == 0) and (
+                    len(result_read[0]) == 1
+                )
+            else:
+                success = (len(result_read[1]) == 0) and (
+                    len(result_read[0]) == 1
                 )
 
-                if attr_type is None:
-                    attr_type = found_attr_type
-                elif attr_type != found_attr_type:
-                    LOGGER.warning(
-                        "Type determined from read "
-                        "different from requested: 0x%02X <> 0x%02X",
-                        found_attr_type,
-                        attr_id,
+                # Try to get attribute type
+                if success and (attr_id in result_read[0]):
+                    python_type = type(result_read[0][attr_id])
+                    found_attr_type = f.DataType.from_python_type(
+                        python_type
+                    ).type_id
+                    LOGGER.debug(
+                        "Type determined from read: 0x%02x", found_attr_type
                     )
+
+                    if attr_type is None:
+                        attr_type = found_attr_type
+                    elif attr_type != found_attr_type:
+                        LOGGER.warning(
+                            "Type determined from read "
+                            "different from requested: 0x%02X <> 0x%02X",
+                            found_attr_type,
+                            attr_id,
+                        )
 
     compare_val = None
 
@@ -607,9 +624,22 @@ async def attr_write(  # noqa: C901
                 f"Reading attr result (attrs, status): {result_read!r}"
             )
             # read_is_equal = (result_read[0][attr_id] == compare_val)
-            success = success and (
-                len(result_read[1]) == 0 and len(result_read[0]) == 1
-            )
+            if u.is_zigpy_ge("1.2.0"):
+                if len(result_read):
+                    found_attr_type = result_read[0][0].value.type
+                    result_read = ({
+                            result_read[0][0].attrid: result_read[0][0].value.value,
+                        },
+                        {},
+                    )
+                else:
+                    result_read = ({}, (result_read[0]["status"],))
+
+                success = success and (len(result_read[0]) == 1)
+            else:
+                success = success and (
+                    len(result_read[1]) == 0 and len(result_read[0]) == 1
+                )
             if success and compare_val is not None:
                 if (
                     result_read[0][attr_id].serialize()
