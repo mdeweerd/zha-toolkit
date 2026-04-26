@@ -598,7 +598,16 @@ async def attr_write(  # noqa: C901
             manufacturer=params[p.MANF],
             tries=params[p.TRIES],
         )
+
+def get_status_string(status_code: int) -> str:
+    """Returns the string representation of a Zigbee status code."""
+    return STATUS_ENUMERATIONS.get(status_code, "UNKNOWN_STATUS")
+
         LOGGER.debug("Write attr status: %s", result_write)
+        for r in result_write:
+            if "status" in r:
+            r["status_code"] = u.get_status_string(r["status"])
+
         event_data["result_write"] = result_write
         success = False
         try:

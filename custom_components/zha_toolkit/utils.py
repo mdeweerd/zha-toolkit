@@ -1264,3 +1264,48 @@ def get_hass(gateway: ZHAGateway):
             msg += f"Attributes available {dir(gateway)}."
         raise ValueError(msg)
     return hass
+
+STATUS_ENUMERATIONS = {
+    0x00: "SUCCESS",
+    0x01: "FAILURE",
+    0x70: "REQUEST_DENIED",
+    0x71: "MULTIPLE_REQUEST_NOT_ALLOWED",
+    0x72: "INDICATION_REDIRECTION_TO_AP",
+    0x73: "PREFERENCE_DENIED",
+    0x74: "PREFERENCE_IGNORED",
+    0x7E: "NOT_AUTHORIZED",
+    0x7F: "RESERVED_FIELD_NOT_ZERO",
+    0x80: "MALFORMED_COMMAND",
+    0x81: "UNSUP_CLUSTER_COMMAND",
+    0x85: "INVALID_FIELD",
+    0x86: "UNSUPPORTED_ATTRIBUTE",
+    0x87: "INVALID_VALUE",
+    0x88: "READ_ONLY",
+    0x89: "INSUFFICIENT_SPACE",
+    0x8A: "DUPLICATE_EXISTS",
+    0x8B: "NOT_FOUND",
+    0x8C: "UNREPORTABLE_ATTRIBUTE",
+    0x8D: "INVALID_DATA_TYPE",
+    0x8E: "INVALID_SELECTOR",
+    0x8F: "WRITE_ONLY",
+    0x90: "INCONSISTENT_STARTUP_STATE",
+    0x91: "DEFINED_OUT_OF_BAND",
+    0x92: "INCONSISTENT",
+    0x93: "ACTION_DENIED",
+    0x94: "TIMEOUT",
+    0x95: "ABORT",
+    0x96: "INVALID_IMAGE",
+    0x97: "WAIT_FOR_DATA",
+    0x98: "NO_IMAGE_AVAILABLE",
+    0x99: "REQUIRE_MORE_IMAGE",
+    0x9A: "NOTIFICATION_PENDING",
+    0xC0: "HARDWARE_FAILURE",
+    0xC1: "SOFTWARE_FAILURE",
+    0xC2: "CALIBRATION_ERROR",
+    0xC3: "UNSUPPORTED_CLUSTER",
+    0xC4: "LIMIT_REACHED"
+}
+
+def get_status_string(status_code: int) -> str:
+    """Returns the string representation of a Zigbee status code."""
+    return STATUS_ENUMERATIONS.get(status_code, "UNKNOWN_STATUS")
