@@ -602,15 +602,14 @@ async def attr_write(  # noqa: C901
             tries=params[p.TRIES],
         )
 
-        LOGGER.debug("Write attr status: %s", result_write)
-        for r in result_write:
-            if "status" in r:
-                r["status_code"] = u.get_status_string(r["status"])
-
         event_data["result_write"] = result_write
+
+        LOGGER.debug("Write attr status: %s", result_write)
+
         success = False
         try:
             # LOGGER.debug("Write attr status: %s", result_write[0][0].status)
+            event_data["result_write_status_str"] = u.get_status_string(result_write[0][0].status)
             success = result_write[0][0].status == f.Status.SUCCESS
             LOGGER.debug(f"Write success: {success}")
         except Exception as e:
