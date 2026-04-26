@@ -450,9 +450,7 @@ async def attr_write(  # noqa: C901
 
     attr_type = params[p.ATTR_TYPE]
 
-    result_read: (
-        tuple[dict[typing.Any, typing.Any], tuple[typing.Any]] | None
-    ) = None
+    result_read: tuple[dict[typing.Any, typing.Any], tuple[typing.Any] | tuple[()]] | None = None
     if params[p.READ_BEFORE_WRITE] or (attr_read_list and cmd == S.ATTR_READ):
         if use_cache > 0:
             # Try to get value from cache
