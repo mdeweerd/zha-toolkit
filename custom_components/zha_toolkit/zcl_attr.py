@@ -450,7 +450,10 @@ async def attr_write(  # noqa: C901
 
     attr_type = params[p.ATTR_TYPE]
 
-    result_read: tuple[dict[typing.Any, typing.Any], tuple[typing.Any] | tuple[()]] | None = None
+    result_read: (
+        tuple[dict[typing.Any, typing.Any], tuple[typing.Any] | tuple[()]]
+        | None
+    ) = None
     if params[p.READ_BEFORE_WRITE] or (attr_read_list and cmd == S.ATTR_READ):
         if use_cache > 0:
             # Try to get value from cache
@@ -609,7 +612,9 @@ async def attr_write(  # noqa: C901
         success = False
         try:
             # LOGGER.debug("Write attr status: %s", result_write[0][0].status)
-            event_data["result_write_status_str"] = u.get_status_string(result_write[0][0].status)
+            event_data["result_write_status_str"] = u.get_status_string(
+                result_write[0][0].status
+            )
             success = result_write[0][0].status == f.Status.SUCCESS
             LOGGER.debug(f"Write success: {success}")
         except Exception as e:
