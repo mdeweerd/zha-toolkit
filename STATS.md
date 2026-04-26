@@ -1,6 +1,18 @@
 # Badges showing number of downloads per version
 
 - ![badge latest](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/latest/total.svg)
+- ![badge v1.1.37](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.37/total.svg)
+- ![badge v1.1.36](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.36/total.svg)
+- ![badge v1.1.35](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.35/total.svg)
+- ![badge v1.1.34](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.34/total.svg)
+- ![badge v1.1.33](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.33/total.svg)
+- ![badge v1.1.32](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.32/total.svg)
+- ![badge v1.1.31](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.31/total.svg)
+- ![badge v1.1.30](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.30/total.svg)
+- ![badge v1.1.29](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.29/total.svg)
+- ![badge v1.1.28](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.28/total.svg)
+- ![badge v1.1.27](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.27/total.svg)
+- ![badge v1.1.26](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.26/total.svg)
 - ![badge v1.1.25](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.25/total.svg)
 - ![badge v1.1.24](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.24/total.svg)
 - ![badge v1.1.23](https://img.shields.io/github/downloads/mdeweerd/zha-toolkit/v1.1.23/total.svg)
