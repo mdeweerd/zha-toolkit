@@ -1218,7 +1218,9 @@ async def cluster_read_attributes(
 ) -> tuple[list, list]:
     """Read attributes from cluster, retryable"""
     if is_zigpy_ge("1.2.0"):
-        return await cluster.read_attributes_raw(attrs, manufacturer=manufacturer)
+        return await cluster.read_attributes_raw(
+            attrs, manufacturer=manufacturer
+        )
     return await cluster.read_attributes(attrs, manufacturer=manufacturer)
 
 
@@ -1230,7 +1232,9 @@ async def cluster_read_attributes(
 async def cluster__write_attributes(cluster, attrs, manufacturer=None):
     """Write cluster attributes from cluster, retryable"""
     if is_zigpy_ge("1.2.0"):
-        return await cluster.write_attributes_raw(attrs, manufacturer_code=manufacturer)
+        return await cluster.write_attributes_raw(
+            attrs, manufacturer_code=manufacturer
+        )
     return await cluster._write_attributes(attrs, manufacturer=manufacturer)
 
 
@@ -1264,6 +1268,7 @@ def get_hass(gateway: ZHAGateway):
             msg += f"Attributes available {dir(gateway)}."
         raise ValueError(msg)
     return hass
+
 
 STATUS_ENUMERATIONS = {
     0x00: "SUCCESS",
@@ -1303,8 +1308,9 @@ STATUS_ENUMERATIONS = {
     0xC1: "SOFTWARE_FAILURE",
     0xC2: "CALIBRATION_ERROR",
     0xC3: "UNSUPPORTED_CLUSTER",
-    0xC4: "LIMIT_REACHED"
+    0xC4: "LIMIT_REACHED",
 }
+
 
 def get_status_string(status_code: int) -> str:
     """Returns the string representation of a Zigbee status code."""

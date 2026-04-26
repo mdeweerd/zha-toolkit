@@ -450,12 +450,14 @@ async def attr_write(  # noqa: C901
 
     attr_type = params[p.ATTR_TYPE]
 
-    result_read = None
+    result_read: (
+        tuple[dict[typing.Any, typing.Any], tuple[typing.Any]] | None
+    ) = None
     if params[p.READ_BEFORE_WRITE] or (attr_read_list and cmd == S.ATTR_READ):
         if use_cache > 0:
             # Try to get value from cache
             if attr_id in cluster._attr_cache:
-                result_read = ({attr_id: cluster._attr_cache[attr_id]}, {})
+                result_read = ({attr_id: cluster._attr_cache[attr_id]}, ())
                 LOGGER.debug(
                     f"Got attribute 0x{cluster.cluster_id:04X}/0x{attr_id:04X}"
                     f" from cache: {result_read!r}"
@@ -484,10 +486,13 @@ async def attr_write(  # noqa: C901
             if u.is_zigpy_ge("1.2.0"):
                 if len(result_read):
                     found_attr_type = result_read[0][0].value.type
-                    result_read = ({
-                            result_read[0][0].attrid: result_read[0][0].value.value,
+                    result_read = (
+                        {
+                            result_read[0][0]
+                            .attrid: result_read[0][0]
+                            .value.value,
                         },
-                        {},
+                        (),
                     )
                 else:
                     result_read = ({}, (result_read[0]["status"],))
@@ -599,14 +604,10 @@ async def attr_write(  # noqa: C901
             tries=params[p.TRIES],
         )
 
-def get_status_string(status_code: int) -> str:
-    """Returns the string representation of a Zigbee status code."""
-    return STATUS_ENUMERATIONS.get(status_code, "UNKNOWN_STATUS")
-
         LOGGER.debug("Write attr status: %s", result_write)
         for r in result_write:
             if "status" in r:
-            r["status_code"] = u.get_status_string(r["status"])
+                r["status_code"] = u.get_status_string(r["status"])
 
         event_data["result_write"] = result_write
         success = False
@@ -636,10 +637,13 @@ def get_status_string(status_code: int) -> str:
             if u.is_zigpy_ge("1.2.0"):
                 if len(result_read):
                     found_attr_type = result_read[0][0].value.type
-                    result_read = ({
-                            result_read[0][0].attrid: result_read[0][0].value.value,
+                    result_read = (
+                        {
+                            result_read[0][0]
+                            .attrid: result_read[0][0]
+                            .value.value,
                         },
-                        {},
+                        (),
                     )
                 else:
                     result_read = ({}, (result_read[0]["status"],))
