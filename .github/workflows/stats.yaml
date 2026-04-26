@@ -11,7 +11,7 @@ jobs:
         #run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
         id: extract_branch
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
       - run: ${{ github.workspace }}/.github/scripts/gen_stats.sh
