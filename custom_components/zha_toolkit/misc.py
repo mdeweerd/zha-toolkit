@@ -141,7 +141,7 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     if data is None:
         await app.permit()
     else:
-        await app.permit(node=t.EUI64.convert_ieee(data))
+        await app.permit(node=await u.get_ieee(app, listener, data))
 
     method = 1
     res = None
