@@ -251,7 +251,7 @@ async def bind_ieee(
     src_dev = await u.get_device(app, listener, ieee)
     if data in [0, False, "0", None]:
         # when command_data is set to 0 or false, bind to coordinator
-        data = app.state.node_info.ieee
+        data = u.get_coordinator_ieee(app)
 
     dst_dev = await u.get_device(app, listener, data)
 
@@ -433,7 +433,7 @@ async def unbind_coordinator(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
     # Unbind bindings towards the coordinator:
-    data = app.state.node_info.ieee
+    data = u.get_coordinator_ieee(app)
 
     # Use binds_remove_all with parameters
     await binds_remove_all(

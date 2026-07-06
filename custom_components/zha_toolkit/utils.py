@@ -429,6 +429,19 @@ async def get_device(app, listener, reference):
     return app.get_device(ieee)
 
 
+def get_coordinator_ieee(app):
+    """Return the coordinator's IEEE address.
+
+    Recent zigpy releases dropped the ``ControllerApplication.ieee``
+    shortcut in favour of ``app.state.node_info.ieee``. Prefer the new
+    location and fall back to the legacy attribute for older zigpy.
+    """
+    try:
+        return app.state.node_info.ieee
+    except AttributeError:
+        return app.ieee
+
+
 # Save state to db
 def set_state(
     hass, entity_id, value, key=None, allow_create=False, force_update=False
