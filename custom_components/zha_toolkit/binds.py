@@ -186,10 +186,19 @@ async def unbind_group(
     dst_addr = MultiAddress()
     dst_addr.addrmode = t.uint8_t(1)
     dst_addr.nwk = t.uint16_t(group_id)
+    u_epid = params[p.EP_ID]
+    u_cluster_id = params[p.CLUSTER_ID]
+
+    if u_cluster_id is not None:
+        src_out_cls = [u_cluster_id]
+
     results: dict[int, list[dict[str, int]]] = {}
     for src_out_cluster in src_out_cls:
         src_ep = None
         for ep_id, ep in src_dev.endpoints.items():
+            if u_epid is not None and ep_id != u_epid:
+                # Endpoint not selected
+                continue
             if ep_id == 0:
                 continue
             if src_out_cluster in ep.out_clusters:
