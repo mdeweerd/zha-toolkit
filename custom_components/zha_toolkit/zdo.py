@@ -153,7 +153,7 @@ async def zdo_flood_parent_annce(
 
 
 async def _flood_with_parent_annce(app, listener):
-    coord = await u.get_device(app, listener, app.ieee)
+    coord = await u.get_device(app, listener, u.get_coordinator_ieee(app))
 
     while True:
         children = [
