@@ -1,0 +1,1522 @@
+{
+  "services": {
+    "execute": {
+      "name": "执行任意 zha toolkit 服务",
+      "description": "执行 ZHA Toolkit 服务（请查阅文档或代码以确定所需的参数）",
+      "fields": {
+        "command": {
+          "name": "命令名称",
+          "description": "命令名称"
+        },
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "命令数据",
+          "description": "命令所需的数据（特定命令所需，例如：绑定的第二个 IEEE 地址）"
+        },
+        "manf": {
+          "name": "制造商 ID",
+          "description": "制造商 ID（0 = 无制造商 ID，为空则可能自动获取）"
+        },
+        "cmd": {
+          "name": "命令 ID",
+          "description": "命令 ID (zcl_cmd)"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "dst_endpoint": {
+          "name": "目标端点 (Destination)",
+          "description": "目的端点"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群"
+        },
+        "attribute": {
+          "name": "属性 ID 或名称",
+          "description": "目标属性 ID（大多数情况下也接受名称）"
+        },
+        "attr_type": {
+          "name": "属性类型",
+          "description": "属性类型（用于写入等操作）"
+        },
+        "attr_val": {
+          "name": "属性值",
+          "description": "要写入的属性值"
+        },
+        "min_interval": {
+          "name": "最小报告间隔",
+          "description": "最小报告间隔（秒）"
+        },
+        "max_interval": {
+          "name": "最大报告间隔",
+          "description": "最大报告间隔（秒）"
+        },
+        "reportable_change": {
+          "name": "最小可报告变化量",
+          "description": "报告前的最小变化量"
+        },
+        "dir": {
+          "name": "方向",
+          "description": "根据命令确定的方向指示符"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "state_id": {
+          "name": "状态 ID",
+          "description": "定义后，将读取的属性值写入该状态名称中"
+        },
+        "state_attr": {
+          "name": "状态属性",
+          "description": "定义后，将读取的属性值写入 state_id 的该属性中。若未定义且 state_id 已定义，则写入状态值本身"
+        },
+        "state_value_template": {
+          "name": "状态值模板",
+          "description": "定义后，读取的属性在写入状态前将使用此模板进行转换"
+        },
+        "force_update": {
+          "name": "强制更新",
+          "description": "写入状态时强制触发更新事件。如果未设置或为 false，且状态值未改变，则可能不会触发自动化"
+        },
+        "use_cache": {
+          "name": "使用缓存",
+          "description": "使用 zigpy 属性缓存来获取属性值（不发送 Zigbee 数据包读取属性）"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当 success == False 时抛出异常，适用于停止脚本或自动化"
+        },
+        "allow_create": {
+          "name": "允许创建",
+          "description": "如果状态（由 state_id 指定）不存在，允许创建它"
+        },
+        "read_before_write": {
+          "name": "写入前读取",
+          "description": "在写入属性前先读取它（与 attr_write 配合使用）。当读取值与待写入值一致时，不执行写入。默认为 True"
+        },
+        "read_after_write": {
+          "name": "写入后读取",
+          "description": "写入后读取属性，可用于确保值匹配。默认为 True"
+        },
+        "write_if_equal": {
+          "name": "相等时仍写入",
+          "description": "即使读取的属性已匹配，也强制执行写入操作。默认为 False"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        },
+        "csvout": {
+          "name": "CSV 文件名",
+          "description": "写入读取数据的 CSV 文件名。保存在 'csv' 目录下"
+        },
+        "csvlabel": {
+          "name": "CSV 标签",
+          "description": "用于读取值的标签（在 CSV 文件中显示）"
+        }
+      }
+    },
+    "add_group": {
+      "name": "添加组",
+      "description": "将组添加到设备的端点组列表中。可能等同于 `add_to_group`",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "获取信息的端点（未设置时为所有端点）"
+        },
+        "command_data": {
+          "name": "组 ID",
+          "description": "要添加的组 ID"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当操作失败时抛出异常，用于停止脚本或自动化"
+        }
+      }
+    },
+    "add_to_group": {
+      "name": "将设备添加到组",
+      "description": "将设备添加到组",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "要移除组的端点（未设置时为所有端点）"
+        },
+        "command_data": {
+          "name": "已移除的组 ID",
+          "description": "要移除的组 ID"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当操作失败时抛出异常，用于停止脚本或自动化"
+        }
+      }
+    },
+    "all_routes_and_neigbours": {
+      "name": "扫描所有路由和邻居",
+      "description": "扫描所有路由和邻居，结果保存在 /homeassistant/scans/...",
+      "fields": {
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时触发的事件名称"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当操作失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "attr_read": {
+      "name": "读取属性",
+      "description": "读取属性",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "manf": {
+          "name": "制造商 ID",
+          "description": "制造商 ID（0 = 无制造商 ID，为空则可能自动获取）"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群"
+        },
+        "attribute": {
+          "name": "属性 ID 或名称",
+          "description": "目标属性 ID（大多数情况下也接受名称）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "state_id": {
+          "name": "状态 ID",
+          "description": "定义后，将读取的属性值写入该状态名称中"
+        },
+        "state_attr": {
+          "name": "状态属性",
+          "description": "定义后，写入 state_id 对应的属性中"
+        },
+        "state_value_template": {
+          "name": "状态值模板",
+          "description": "写入状态前对读取值进行转换的模板"
+        },
+        "force_update": {
+          "name": "强制更新",
+          "description": "写入状态时强制触发更新事件"
+        },
+        "use_cache": {
+          "name": "使用缓存",
+          "description": "使用 zigpy 属性缓存获取值（不发送数据包）"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时触发的事件名称"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "allow_create": {
+          "name": "允许创建",
+          "description": "如果状态不存在则允许创建"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        },
+        "csvout": {
+          "name": "CSV 文件名",
+          "description": "写入数据的 CSV 文件名"
+        },
+        "csvlabel": {
+          "name": "CSV 标签",
+          "description": "CSV 文件中的值标签"
+        }
+      }
+    },
+    "attr_write": {
+      "name": "写入属性",
+      "description": "写入属性",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "manf": {
+          "name": "制造商 ID",
+          "description": "制造商 ID"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群"
+        },
+        "attribute": {
+          "name": "属性 ID 或名称",
+          "description": "目标属性 ID"
+        },
+        "attr_type": {
+          "name": "属性类型",
+          "description": "属性类型"
+        },
+        "attr_val": {
+          "name": "属性值",
+          "description": "要写入的值"
+        },
+        "use_cache": {
+          "name": "使用缓存",
+          "description": "使用缓存获取值"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送次数"
+        },
+        "state_id": {
+          "name": "状态 ID",
+          "description": "写入的状态名称"
+        },
+        "state_attr": {
+          "name": "状态属性",
+          "description": "写入的状态属性"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件名称"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "allow_create": {
+          "name": "允许创建",
+          "description": "允许创建状态"
+        },
+        "read_before_write": {
+          "name": "写入前读取",
+          "description": "写入前对比当前值，若一致则跳过写入。默认为 True"
+        },
+        "read_after_write": {
+          "name": "写入后读取",
+          "description": "写入后验证值。默认为 True"
+        },
+        "write_if_equal": {
+          "name": "相等时仍写入",
+          "description": "即使值相等也强制写入。默认为 False"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "预期回复"
+        },
+        "csvout": {
+          "name": "CSV 文件名",
+          "description": "CSV 文件名"
+        },
+        "csvlabel": {
+          "name": "CSV 标签",
+          "description": "CSV 标签"
+        }
+      }
+    },
+    "backup": {
+      "name": "备份协调器数据",
+      "description": "备份协调器数据 (znp, bellows/ezsp)",
+      "fields": {
+        "command_data": {
+          "name": "备份文件后缀",
+          "description": "备份文件的后缀名"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "预期回复"
+        }
+      }
+    },
+    "bind_ieee": {
+      "name": "绑定集群",
+      "description": "将集群从 ieee 设备绑定到 command_data 设备",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "源节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "绑定到设备引用",
+          "description": "绑定目标（实体名称、设备名称或 IEEE 地址）。默认：协调器"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "源端点（若缺失：所有端点）"
+        },
+        "dst_endpoint": {
+          "name": "目的端点",
+          "description": "目标端点（若缺失：第一个匹配集群的端点）"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群（或所有内部定义的集群）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "bind_group": {
+      "name": "绑定集群到组",
+      "description": "将集群从 ieee 设备绑定到组",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "目标绑定组",
+          "description": "绑定的目标组"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点（缺失时为所有端点）"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群（缺失时为所有内部定义的集群）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "binds_get": {
+      "name": "获取绑定表",
+      "description": "从设备获取绑定表。",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "设备的实体名称、设备名称或 IEEE 地址"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "binds_remove_all": {
+      "name": "从设备移除所有绑定",
+      "description": "从设备中移除（解绑）所有绑定",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "设备的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "移除与此设备的绑定",
+          "description": "若提供，仅移除指向此设备的绑定（实体名称、设备名称或绑定目标的 IEEE 地址）"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "若提供，仅移除此端点或端点列表的绑定（单个值或列表，例如：20 或 [20, 30]）。否则：移除所有端点的绑定"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "若提供，仅移除此集群或集群列表的绑定（单个值或列表，例如：0x0200 或 [0x200, 0x300]）。否则：移除所有集群的绑定"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当 success == False 时抛出异常，适用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "conf_report": {
+      "name": "配置属性报告",
+      "description": "配置属性报告。对于休眠设备，您可以将重试次数（tries）设置得较高（100 或更多）。",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群"
+        },
+        "attribute": {
+          "name": "属性 ID 或名称",
+          "description": "目标属性 ID（大多数情况下也接受名称）"
+        },
+        "min_interval": {
+          "name": "最小报告间隔",
+          "description": "最小报告间隔（秒）"
+        },
+        "max_interval": {
+          "name": "最大报告间隔",
+          "description": "最大报告间隔（秒）"
+        },
+        "reportable_change": {
+          "name": "最小可报告变化量",
+          "description": "触发报告前的最小变化值"
+        },
+        "manf": {
+          "name": "制造商 ID",
+          "description": "制造商 ID（0 = 无制造商 ID，为空则可能自动获取）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当操作失败时抛出异常，用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "conf_report_read": {
+      "name": "读取报告配置",
+      "description": "读取属性报告配置。对于休眠设备，您可以将重试次数（tries）设置得较高（100 或更多）。",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群"
+        },
+        "attribute": {
+          "name": "属性 ID 或名称",
+          "description": "目标属性 ID（或名称），可以是一个列表"
+        },
+        "manf": {
+          "name": "制造商 ID",
+          "description": "制造商 ID（0 = 无制造商 ID，为空则可能自动获取）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "ezsp_backup": {
+      "name": "备份 EZSP 协调器",
+      "description": "备份协调器数据 (bellows/ezsp)",
+      "fields": {
+        "command_data": {
+          "name": "备份文件后缀",
+          "description": "备份文件的后缀名"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "get_groups": {
+      "name": "获取端点上设置的组",
+      "description": "获取设备端点上设置的组信息",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "要获取信息的端点（未设置时为所有端点）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "操作完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        }
+      }
+    },
+    "get_routes_and_neigbours": {
+      "name": "扫描设备的路由和邻居",
+      "description": "扫描所有路由和邻居，结果保存在 /homeassistant/scans/...",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "操作完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "get_zll_groups": {
+      "name": "获取 ZLL 集群组",
+      "description": "获取 zll_cluster 的组（如果存在）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        }
+      }
+    },
+    "ha_set_state": {
+      "name": "设置/更新 Home Assistant 状态",
+      "description": "设置或更新一个 Home Assistant 状态",
+      "fields": {
+        "attr_val": {
+          "name": "属性值",
+          "description": "写入状态的值（或在模板中使用）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试次数"
+        },
+        "state_id": {
+          "name": "状态 ID (state_id)",
+          "description": "要写入读取属性值的状态名称"
+        },
+        "state_attr": {
+          "name": "状态属性",
+          "description": "定义后，写入 state_id 对应的属性。若缺失且 state_id 已定义，则写入状态值。"
+        },
+        "state_value_template": {
+          "name": "状态值模板",
+          "description": "定义后用作模板表达式。例如 \"value + 10\" 将在内部解释为 \"{{ value + 10 }}\"，其中 'value' 由 'attr_val' 的值替换。"
+        },
+        "allow_create": {
+          "name": "允许创建",
+          "description": "如果状态不存在，允许创建它"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "csvout": {
+          "name": "CSV 文件名",
+          "description": "写入更新状态信息的 CSV 文件名。保存在 'csv' 目录下。"
+        },
+        "csvlabel": {
+          "name": "CSV 标签",
+          "description": "在 CSV 文件中标记写入值的标签"
+        }
+      }
+    },
+    "handle_join": {
+      "name": "处理加入",
+      "description": "处理加入（ZHA 应像新设备加入时一样重新查询设备）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "短网络地址",
+          "description": "设备的短网络地址（可选，如果在 ZHA 中已知）"
+        }
+      }
+    },
+    "ieee_ping": {
+      "name": "Ping 设备",
+      "description": "Ping 设备",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "Ping：请求 IEEE 地址（使用已知的网络地址）"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "rejoin": {
+      "name": "发送重新加入请求",
+      "description": "向设备发送重新加入请求（= 离网并重新加入）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "请求重新加入的节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "发送重新加入的节点",
+          "description": "用于接受重新加入的节点（节点的实体名称、设备名称或 IEEE 地址）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "leave": {
+      "name": "发送离网请求",
+      "description": "向设备发送离网（Leave）请求",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "请求离网的节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "misc_reinitialize": {
+      "name": "重新初始化设备",
+      "description": "重新初始化设备",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        }
+      }
+    },
+    "misc_settime": {
+      "name": "设置时间",
+      "description": "设置时间集群属性（时间、夏令时 - TimeStatus 除外）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "操作完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "read_before_write": {
+          "name": "写入前读取",
+          "description": "在写入前先读取属性"
+        },
+        "read_after_write": {
+          "name": "写入后读取",
+          "description": "写入后读取属性。可用于确保值匹配。默认为 True"
+        },
+        "csvout": {
+          "name": "CSV 文件名",
+          "description": "写入数据的 CSV 文件名。保存在 'csv' 目录下"
+        }
+      }
+    },
+    "ota_notify": {
+      "name": "触发设备固件更新",
+      "description": "在触发 OTA 镜像提供程序获取新镜像后，通知设备有可用更新。",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "download": {
+          "name": "启用固件下载",
+          "description": "如果为 True，则从 KKoenk 列表中下载可能匹配设备的固件。"
+        },
+        "path": {
+          "name": "固件目录",
+          "description": "写入 OTA 镜像的路径（默认为 zha:zigpy_config:ota:otau_directory 的值或 /homeassistant/zigpy_ota）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "当镜像更新完毕并通知设备后的事件（无论成功或失败）。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "register_services": {
+      "name": "注册服务",
+      "description": "重新注册 zha-toolkit 服务。在开发过程中更新 __init__.py 时非常有用。"
+    },
+    "remove_all_groups": {
+      "name": "从端点移除所有组",
+      "description": "从设备的（选定）端点中移除所有组",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "要从中移除组的端点（未设置时为所有端点）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        }
+      }
+    },
+    "remove_from_group": {
+      "name": "从组中移除端点",
+      "description": "从组中移除设备的端点",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "要从中移除组的端点（或所有端点）"
+        },
+        "command_data": {
+          "name": "组 ID",
+          "description": "要移除的组 ID"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        }
+      }
+    },
+    "remove_group": {
+      "name": "从端点移除组",
+      "description": "从设备的端点组列表中移除组。可能等同于 `remove_from_group`",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "要从中移除组的端点（或所有端点）"
+        },
+        "command_data": {
+          "name": "组 ID",
+          "description": "要移除的组 ID"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        }
+      }
+    },
+    "scan_device": {
+      "name": "扫描设备",
+      "description": "扫描设备（结果写入 /homeassistant/scans 中的文件）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点，或端点列表"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "无响应时重复发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "失败事件"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "完成事件"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时停止脚本/自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待回复"
+        }
+      }
+    },
+    "unbind_coordinator": {
+      "name": "移除到协调器的绑定",
+      "description": "移除设备到协调器（您的 HA 实例）的所有绑定（解绑）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "若提供，仅移除此端点或端点列表的绑定。否则：移除所有端点的绑定。"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "若提供，仅移除此集群或集群列表的绑定。否则：移除所有集群的绑定。"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "重试次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "成功事件"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当 success == False 时抛出异常，适用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "tuya_magic": {
+      "name": "施放涂鸦魔法咒语",
+      "description": "执行涂鸦魔法咒语（使大多数涂鸦设备能正常工作）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "执行命令节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "当操作失败时抛出异常，用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "zcl_cmd": {
+      "name": "发送集群命令",
+      "description": "发送集群命令",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "发送命令的目标节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "manf": {
+          "name": "制造商 ID",
+          "description": "制造商 ID（0 = 无制造商 ID，为空则可能自动获取）"
+        },
+        "endpoint": {
+          "name": "目标端点",
+          "description": "目标端点"
+        },
+        "cluster": {
+          "name": "目标集群",
+          "description": "目标集群"
+        },
+        "cmd": {
+          "name": "命令 ID",
+          "description": "要执行的命令 ID"
+        },
+        "args": {
+          "name": "命令参数",
+          "description": "根据需要提供命令参数（遵循对应 Zigbee 库集群 (ZCL) 规范的 zigpy 定义）"
+        },
+        "tries": {
+          "name": "重试次数",
+          "description": "尝试发送 Zigbee 数据包的次数"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常，适用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "zdo_join_with_code": {
+      "name": "允许设备使用配网码加入",
+      "description": "允许设备使用配网码（Code）加入（仅限 bellows 无线电类型）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "请求重新加入的节点的实体名称、设备名称或 IEEE 地址"
+        },
+        "command_data": {
+          "name": "接受加入的设备",
+          "description": "用于接受加入请求的节点（节点的实体名称、设备名称或 IEEE 地址）"
+        },
+        "code": {
+          "name": "配网码",
+          "description": "设备加入时需要出示的配网码（Code）"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常，适用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "znp_backup": {
+      "name": "备份 ZNP 协调器",
+      "description": "备份协调器数据 (znp, bellows/ezsp)",
+      "fields": {
+        "command_data": {
+          "name": "备份文件后缀",
+          "description": "备份文件的后缀名"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常，适用于停止脚本或自动化"
+        },
+        "expect_reply": {
+          "name": "预期回复",
+          "description": "等待/预期回复（暂未使用）"
+        }
+      }
+    },
+    "zha_devices": {
+      "name": "获取/导出设备信息",
+      "description": "导出设备信息（响应、CSV 文件、JSON 文件、事件）",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "可选。要提供详细信息的设备的实体名称、设备名称或 IEEE 地址。默认提供所有设备的信息。"
+        },
+        "command_data": {
+          "name": "选定字段",
+          "description": "选定要导出的字段"
+        },
+        "csvout": {
+          "name": "CSV 文件名",
+          "description": "写入读取数据的 CSV 文件名。保存在 'csv' 目录下（可以是示例中的相对路径）。"
+        },
+        "csvlabel": {
+          "name": "CSV 排序字段",
+          "description": "用于对表格进行排序的列名"
+        },
+        "json_out": {
+          "name": "JSON 文件名",
+          "description": "写入读取数据的 JSON 文件名。保存在 '/homeassistant/json' 目录下"
+        },
+        "json_timestamp": {
+          "name": "JSON 时间戳",
+          "description": "在 JSON 文件名中添加时间戳。默认为 False。"
+        },
+        "event_success": {
+          "name": "成功事件名称",
+          "description": "操作成功时触发的事件名称"
+        },
+        "event_fail": {
+          "name": "失败事件名称",
+          "description": "操作失败时触发的事件名称"
+        },
+        "event_done": {
+          "name": "完成事件名称",
+          "description": "服务调用完成时（无论成功或失败）触发的事件名称。包含带有相关属性的事件数据。"
+        },
+        "fail_exception": {
+          "name": "失败时抛出异常",
+          "description": "失败时抛出异常，适用于停止脚本或自动化"
+        }
+      }
+    }
+  }
+}
