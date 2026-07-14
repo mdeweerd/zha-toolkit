@@ -36,4 +36,3 @@ updates:
     patterns: ["*"]
     #patterns: ["nginx", "redis", "postgres"]
     multi-ecosystem-group: "infrastructure"
-
