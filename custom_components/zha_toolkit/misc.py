@@ -204,6 +204,49 @@ async def rejoin(app, listener, ieee, cmd, data, service, params, event_data):
     LOGGER.debug("%s -> %s: leave and rejoin result: %s", src, ieee, res)
 
 
+async def misc_reinterview(
+    app, listener, ieee, cmd, data, service, params, event_data
+):
+    """Re-interview a device without removing it from the network.
+
+    This is the equivalent of the "Reconfigure" button on the ZHA device
+    page: zigpy rediscovers the endpoints, clusters and model info, then
+    swaps the device in place.  Bindings and attribute reporting are
+    re-established by ZHA, which reacts to the `device_reinterviewed`
+    event zigpy emits on success.
+
+    Unlike `rejoin`, the device is never asked to leave, so its NWK, its
+    entity ids and everything referencing them survive.  Unlike
+    `misc_reinitialize`, the existing device is only replaced once
+    rediscovery has succeeded: zigpy discovers into a shadow device and
+    keeps the old one on failure.
+
+    ieee -- ieee of the device
+    """
+    if ieee is None:
+        msg = f"Provide 'ieee' parameter for {cmd}"
+        LOGGER.debug(msg)
+        raise ValueError(msg)
+
+    dev = await u.get_device(app, listener, ieee)
+
+    if not hasattr(dev, "reinterview"):
+        raise ValueError(
+            "Device.reinterview() is not available, zigpy is too old"
+        )
+
+    # `reinterview()` does not raise on failure: it logs, emits
+    # `device_reinterview_failure` and returns.  It also returns early
+    # when a re-interview or an initialization is already running, or
+    # while an OTA is in progress.  In every one of those cases the
+    # device object is left in place, so comparing identity afterwards is
+    # what tells us whether the swap actually happened.  This is the same
+    # check ZHA itself uses after calling `async_reinterview_device`.
+    await dev.reinterview()
+
+    event_data["result"] = app.devices.get(dev.ieee) is not dev
+
+
 async def misc_settime(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
