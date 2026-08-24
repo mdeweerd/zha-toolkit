@@ -1034,6 +1034,16 @@
         }
       }
     },
+    "misc_reinterview": {
+      "name": "Reinterview Device",
+      "description": "Re-interview a device without removing it from the network, the equivalent of the Reconfigure button on the ZHA device page",
+      "fields": {
+        "ieee": {
+          "name": "Device Reference",
+          "description": "Entity name, device name, or IEEE address of the node to execute command"
+        }
+      }
+    },
     "misc_settime": {
       "name": "Set Time",
       "description": "Set Time Cluster attributes (Time, DST - except TimeStatus)",

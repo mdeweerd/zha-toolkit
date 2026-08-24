@@ -20,6 +20,8 @@ from . import params as PARDEFS
 from . import utils as u
 from .const import DOMAIN
 
+# pylint: disable=too-many-lines
+
 DEPENDENCIES = ["zha"]
 
 # Legacy parameters
@@ -393,6 +395,14 @@ SERVICE_SCHEMAS = {
         extra=vol.ALLOW_EXTRA,
     ),
     S.MISC_REINITIALIZE: vol.Schema(
+        {
+            vol.Required(ATTR_IEEE): vol.Any(
+                cv.entity_id_or_uuid, t.EUI64.convert
+            ),
+        },
+        extra=vol.ALLOW_EXTRA,
+    ),
+    S.MISC_REINTERVIEW: vol.Schema(
         {
             vol.Required(ATTR_IEEE): vol.Any(
                 cv.entity_id_or_uuid, t.EUI64.convert

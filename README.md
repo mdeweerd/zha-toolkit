@@ -89,6 +89,7 @@ ZHA Toolkit can also:
   - [Join & Network presence related](#join--network-presence-related)
     - [`handle_join`: Handle join - rediscover device](#handle_join-handle-join---rediscover-device)
     - [`misc_reinitialize`: Reinitialize device](#misc_reinitialize-reinitialize-device)
+    - [`misc_reinterview`: Re-interview device (ZHA "Reconfigure")](#misc_reinterview-re-interview-device-zha-reconfigure)
     - [`leave`](#leave)
     - [`rejoin`](#rejoin)
     - [`zdo_join_with_code`](#zdo_join_with_code)
@@ -1224,6 +1225,51 @@ data:
   # Reference of the device that should be reinitialized
   ieee: 00:12:4b:00:22:08:ed:1a
 ```
+
+### `misc_reinterview`: Re-interview device (ZHA "Reconfigure")
+
+`misc_reinterview` is the service equivalent of the **Reconfigure** button
+on the ZHA device page. Zigpy rediscovers the device's endpoints, clusters
+and model info, then swaps the device in place. ZHA reacts to the
+`device_reinterviewed` event zigpy emits and re-establishes the bindings
+and attribute reporting, exactly as it does for the button.
+
+Use it when a device still reports (so ZHA shows it as available, with a
+fresh `last_seen` and a ticking LQI) but no longer accepts commands, which
+is a state where the inbound path works while the outbound one is broken.
+
+Compared to the neighbouring commands:
+
+- `handle_join` does almost nothing on an already-initialized device.
+- `misc_reinitialize` clears device attributes in place to force
+  re-initialization, so a failed rediscovery leaves the device stripped.
+  `misc_reinterview` discovers into a shadow device and only replaces the
+  existing one **once discovery has succeeded**, keeping the old device on
+  failure.
+- `rejoin` makes the device leave and rejoin. `misc_reinterview` never asks
+  the device to leave, so its NWK, its entity ids and everything
+  referencing them survive.
+
+```yaml
+action: zha_toolkit.misc_reinterview
+data:
+  # Reference of the device that should be re-interviewed
+  ieee: 00:12:4b:00:22:08:ed:1a
+```
+
+Zigpy does not raise when a re-interview fails: it logs a warning and emits
+`device_reinterview_failure`. It also returns early when a re-interview or
+an initialization is already running, or while an OTA is in progress. So
+this command reports whether the device was actually replaced in
+`event_data`:
+
+```yaml
+result: true   # the device was re-interviewed and swapped
+result: false  # nothing changed, see the log for the reason
+```
+
+Requires a zigpy version providing `Device.reinterview()`; the command
+fails with a clear error on older versions.
 
 ### `leave`
 

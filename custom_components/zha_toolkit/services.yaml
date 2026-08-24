@@ -1806,6 +1806,27 @@ misc_reinitialize:
       selector:
         entity:
           integration: zha
+misc_reinterview:
+  name: Reinterview Device
+  description: >-
+    Re-interview a device without removing it from the network, the
+    equivalent of the "Reconfigure" button on the ZHA device page. Zigpy
+    rediscovers the endpoints, clusters and model info, then swaps the
+    device in place, and ZHA re-establishes bindings and attribute
+    reporting. The device keeps its NWK and its entity ids. On failure the
+    existing device is kept, and the result field reports whether the
+    device was actually replaced.
+  fields:
+    ieee:
+      name: Device Reference
+      description: >-
+        Entity name, device name, or IEEE address of the node to execute
+        command
+      example: 00:0d:6f:00:05:7d:2d:34
+      required: true
+      selector:
+        entity:
+          integration: zha
 misc_settime:
   name: Set Time
   description: Set Time Cluster attributes (Time, DST - except TimeStatus)
