@@ -3,12 +3,12 @@ files: ^(.*\.(py|json|md|sh|yaml|cfg|txt))$
 exclude: ^(\.[^/]*cache/.*|.*/_user.py)$
 repos:
   - repo: https://github.com/verhovsky/pyupgrade-docs
-    rev: v0.3.0
+    rev: 35bac4a048739814b0d773a37bca88bc8fc3abc6  # v0.3.0
     hooks:
       - id: pyupgrade-docs
   - repo: https://github.com/executablebooks/mdformat
     # Do this before other tools "fixing" the line endings
-    rev: 1.0.0
+    rev: 2d496dbc18e31b83a1596685347ffe0b6041daf0  # 1.0.0
     hooks:
       - id: mdformat
         name: Format Markdown
@@ -27,13 +27,13 @@ repos:
           - mdformat-web
           - mdformat-gfm
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.20.0
+    rev: dda8db18cfc68df532abf33b185ecd12d5b7b326  # 1.20.0
     hooks:
       - id: blacken-docs
-        additional_dependencies: [black==22.6.0]
+        additional_dependencies: [black==26.3.1]
         stages: [manual]   # Manual because already done by mdformat-black
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # v6.0.0
     hooks:
       - id: fix-byte-order-marker
       - id: mixed-line-ending
@@ -55,11 +55,11 @@ repos:
       - id: check-case-conflict
       # - id: check-toml
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+    rev: f12edd9c7be1c20cfa42420fd0e6df71e42b51ea  # v4.0.0-alpha.8
     hooks:
       - id: prettier
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.38.0
+    rev: cba56bcde1fdd01c1deb3f945e69764c291a6530  # v1.38.0
     hooks:
       - id: yamllint
         args:
@@ -67,13 +67,13 @@ repos:
           - -d
           - '{extends: relaxed, rules: {line-length: {max: 90}}}'
   - repo: https://github.com/lovesegfault/beautysh.git
-    rev: v6.4.3
+    rev: 885128fe2600889194c69fa19326cf55a3462777  # v6.4.3
     hooks:
       - id: beautysh
         additional_dependencies:
           - setuptools==80  # workaround for beautysh
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
+    rev: a6564f5d57444e123433a5c9af733e3975c77229  # v0.11.0.1-1
     hooks:
       - id: shellcheck
         files: ^[^\.].*\.sh$
@@ -81,7 +81,7 @@ repos:
         # args: [-x,-e2086,-e2004,-e2207,-e2002,-e2116]
         # args: ["--severity=warning"]  # Optionally only show errors and warnings
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: aab412d509121cb5f7533134b7e67f9fab59c682  # v0.16.4
     hooks:
       # Note, added for future reference, not used
       - id: ruff
@@ -89,13 +89,13 @@ repos:
       - id: ruff-format
         stages: [manual]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
+    rev: 75992aaa40730136014f34227e0135f63fc951b4  # v3.21.2
     hooks:
       - id: pyupgrade
         args:
           - --py39-plus
   - repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 87928e6d6761a4a6d22250e1fee5601b3998086e  # 26.5.1
     hooks:
       - id: black
         args:
@@ -103,22 +103,22 @@ repos:
           - --quiet
           - -l 79
   - repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
-    rev: v1.0.6
+    rev: be256dab724687e8c3d7d6f52c1b263e2de6d439  # v1.0.6
     hooks:
       - id: python-bandit-vulnerability-check
         args: [--skip, 'B101,B311', --recursive, .]
 
-  - repo: https://github.com/fsouza/autoflake8
-    rev: v0.4.1
+  - repo: https://github.com/PyCQA/autoflake
+    rev: 6d9dd2716540ab776f29c7b896cd3052ef4619b2  # v2.4.0
     hooks:
-      - id: autoflake8
+      - id: autoflake
         args:
           - -i
           - -r
           - --expand-star-imports
           - custom_components
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
+    rev: d93590f5be797aabb60e3b09f2f52dddb02f349f  # 7.3.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -130,11 +130,11 @@ repos:
           - pycodestyle>=2.9.1
           - pyflakes>=2.5.0
   - repo: https://github.com/PyCQA/isort
-    rev: 9.0.0a3
+    rev: d5f40fa0553aa4bba71fcd73cf42933ae14d5116  # 9.0.0b5
     hooks:
       - id: isort
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: 57b21406f092110c18776e39b0bda50d37c945c8  # v2.4.3
     hooks:
       - id: codespell
         args:
@@ -144,7 +144,7 @@ repos:
           - --skip="./.*"
           - --quiet-level=2
   - repo: https://github.com/pylint-dev/pylint
-    rev: v4.0.5
+    rev: f5a6e3b1de17502747a40d7f92f285ccf9c6c459  # v4.0.7
     hooks:
       - id: pylint
         args:
@@ -156,7 +156,7 @@ repos:
           # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.2
+    rev: 7ff8d35ae36a7d2b968f2f90b4c723e292e594ee  # v2.3.1
     hooks:
       - id: mypy
         args:

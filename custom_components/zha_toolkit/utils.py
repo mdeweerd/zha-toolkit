@@ -212,7 +212,7 @@ def normalize_filename(filename: str) -> str:
     """
     result = "".join([c if re.match(r"[\w.]", c) else "-" for c in filename])
     LOGGER.debug(f"Normalize {filename}->{result}")
-    return "".join([c if re.match(r"[\w.]", c) else "-" for c in filename])
+    return result
 
 
 class RadioType(Enum):
@@ -265,12 +265,6 @@ def get_radiotype(app):
             pass
 
         LOGGER.debug("Did not recognize _api '%s'", type(app._api))
-        # try:
-        #    from zigpy_cc.api import API
-        #    if isinstance(app._api, API):
-        #        return RadioType.ZIGPY_CC
-        # except Exception:  # nosec
-        #    pass
 
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return RadioType.UNKNOWN
@@ -326,10 +320,6 @@ async def get_radio_version(app):
                 return zigpy_xbee.__version__
 
             return await get_version_async("zigpy_xbee")
-
-        # if rt == RadioType.ZIGPY_CC:
-        #     import zigpy_cc
-        #     return zigpy_cc.__version__
 
     LOGGER.debug("Type recognition for '%s' not implemented", type(app))
     return None
@@ -496,7 +486,7 @@ def find_endpoint(dev, cluster_id):
         for key, value in dev.endpoints.items():
             if key == 0:
                 continue
-            if cluster_id in value.in_clusters:
+            if cluster_id in value.out_clusters:
                 endpoint_id = key
                 cnt = cnt + 1
 
@@ -589,12 +579,6 @@ def value_to_jsonable(value):
             # Serialization results in "bytes"
             value = value.serialize()
         if isinstance(value, bytes):
-            # "bytes" is not compatible with json, convert
-            # try:
-            #    value = value.split(b"\x00")[0].decode().strip()
-            # except:
-            #    value = value.hex()
-
             try:
                 value = str(value, encoding="ascii")
             except Exception:
@@ -788,7 +772,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         attr_obj = f.TypeValue(attr_type, t.uint32_t(compare_val))
     elif attr_type == 0x24:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.uint32_t(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.uint40_t(compare_val))
     elif attr_type == 0x25:
         compare_val = str2int(attr_val_in)
         attr_obj = f.TypeValue(attr_type, t.uint48_t(compare_val))
@@ -812,7 +796,7 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         attr_obj = f.TypeValue(attr_type, t.int32s(compare_val))
     elif attr_type == 0x2C:
         compare_val = str2int(attr_val_in)
-        attr_obj = f.TypeValue(attr_type, t.int32s(compare_val))
+        attr_obj = f.TypeValue(attr_type, t.int40s(compare_val))
     elif attr_type == 0x2D:
         compare_val = str2int(attr_val_in)
         attr_obj = f.TypeValue(attr_type, t.int48s(compare_val))
@@ -848,11 +832,8 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
         #      (/detect items type from read).
 
         if isinstance(attr_val_in, str):
-            attr_val_in = str.encode(attr_val_in[1:])
-
-        # Determine value to compare read values
-        #       with the value (to be) written [see attr_write].
-        compare_val = t.List[t.uint8_t](attr_val_in)
+            # Strip type byte (first char) and encode
+            attr_val_in = attr_val_in[1:].encode("utf-8")
 
         # Get type of array items
         array_item_type = attr_val_in[0]
@@ -862,6 +843,10 @@ def attr_encode(attr_val_in, attr_type):  # noqa C901
 
         # Construct value to write as specific zigpy object
         attr_obj = f.TypeValue(attr_type, f.Array(array_item_type, array_body))
+
+        # Determine value to compare read values
+        #       with the value (to be) written [see attr_write].
+        compare_val = t.List[t.uint8_t](attr_val_in)  # Only if needed
     elif attr_type == 0xFF or attr_type is None:
         compare_val = str2int(attr_val_in)
         # This should not happen ideally
@@ -1075,9 +1060,6 @@ def extractParams(  # noqa: C901
     if P.WRITE_IF_EQUAL in rawParams:
         params[p.WRITE_IF_EQUAL] = str2bool(rawParams[P.WRITE_IF_EQUAL])
 
-    if P.STATE_ATTR in rawParams:
-        params[p.STATE_ATTR] = rawParams[P.STATE_ATTR]
-
     if P.STATE_VALUE_TEMPLATE in rawParams:
         params[p.STATE_VALUE_TEMPLATE] = rawParams[P.STATE_VALUE_TEMPLATE]
 
@@ -1251,11 +1233,12 @@ async def cluster__write_attributes(cluster, attrs, manufacturer=None):
     return await cluster._write_attributes(attrs, manufacturer=manufacturer)
 
 
+_LOCAL_DIR = os.path.dirname(__file__) + "/local/"
+if not os.path.isdir(_LOCAL_DIR):
+    os.mkdir(_LOCAL_DIR)
+
 def get_local_dir() -> str:
     """Provide directory for local files that survive updates"""
-    local_dir = os.path.dirname(__file__) + "/local/"
-    if not os.path.isdir(local_dir):
-        os.mkdir(local_dir)
     return local_dir
 
 
@@ -1266,7 +1249,7 @@ def is_zigpy_ge(version_str: str) -> bool:
 
 
 def is_ha_ge(version_str: str) -> bool:
-    """Test if zigpy library is newer than version"""
+    """Test if HA library is newer than version"""
     return parse_version(getHaVersion()) >= parse_version(version_str)
 
 
