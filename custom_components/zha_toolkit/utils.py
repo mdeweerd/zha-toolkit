@@ -1239,7 +1239,7 @@ if not os.path.isdir(_LOCAL_DIR):
 
 def get_local_dir() -> str:
     """Provide directory for local files that survive updates"""
-    return local_dir
+    return _LOCAL_DIR
 
 
 def is_zigpy_ge(version_str: str) -> bool:
