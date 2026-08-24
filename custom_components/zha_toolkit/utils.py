@@ -1237,6 +1237,7 @@ _LOCAL_DIR = os.path.dirname(__file__) + "/local/"
 if not os.path.isdir(_LOCAL_DIR):
     os.mkdir(_LOCAL_DIR)
 
+
 def get_local_dir() -> str:
     """Provide directory for local files that survive updates"""
     return _LOCAL_DIR
