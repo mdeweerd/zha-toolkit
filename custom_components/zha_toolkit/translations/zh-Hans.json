@@ -1034,6 +1034,16 @@
         }
       }
     },
+    "misc_reinterview": {
+      "name": "重新采访设备",
+      "description": "相当于 ZHA 设备页面上的重新配置按钮，在不将设备从网络中移除的情况下重新采访设备",
+      "fields": {
+        "ieee": {
+          "name": "设备引用",
+          "description": "要执行命令的节点的实体名称、设备名称或 IEEE 地址"
+        }
+      }
+    },
     "misc_settime": {
       "name": "设置时间",
       "description": "设置时间集群属性（时间、夏令时 - TimeStatus 除外）",
