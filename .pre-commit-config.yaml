@@ -3,7 +3,7 @@ files: ^(.*\.(py|json|md|sh|yaml|cfg|txt))$
 exclude: ^(\.[^/]*cache/.*|.*/_user.py)$
 repos:
   - repo: https://github.com/verhovsky/pyupgrade-docs
-    rev: 35bac4a048739814b0d773a37bca88bc8fc3abc6  # v0.3.0
+    rev: 732397f682454fa3bab34e846c3afeaeba7eae5c  # v1.9.2
     hooks:
       - id: pyupgrade-docs
   - repo: https://github.com/executablebooks/mdformat
@@ -19,7 +19,7 @@ repos:
         additional_dependencies:
           - mdformat-toc
           - mdformat-beautysh
-          - setuptools==80  # workaround for beautysh
+          - setuptools==84.0.0  # workaround for beautysh
           # -mdformat-shfmt
           # -mdformat-tables
           - mdformat-config
@@ -30,7 +30,7 @@ repos:
     rev: dda8db18cfc68df532abf33b185ecd12d5b7b326  # 1.20.0
     hooks:
       - id: blacken-docs
-        additional_dependencies: [black==26.3.1]
+        additional_dependencies: [black==26.5.1]
         stages: [manual]   # Manual because already done by mdformat-black
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # v6.0.0
@@ -71,7 +71,7 @@ repos:
     hooks:
       - id: beautysh
         additional_dependencies:
-          - setuptools==80  # workaround for beautysh
+          - setuptools==84.0.0  # workaround for beautysh
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: a6564f5d57444e123433a5c9af733e3975c77229  # v0.11.0.1-1
     hooks:
@@ -81,7 +81,7 @@ repos:
         # args: [-x,-e2086,-e2004,-e2207,-e2002,-e2116]
         # args: ["--severity=warning"]  # Optionally only show errors and warnings
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: aab412d509121cb5f7533134b7e67f9fab59c682  # v0.16.4
+    rev: 1f1e8bf348ff38fc88619a38d3ca4d9c56abea49  # v0.16.5
     hooks:
       # Note, added for future reference, not used
       - id: ruff
@@ -123,14 +123,14 @@ repos:
       - id: flake8
         additional_dependencies:
           # - pyproject-flake8>=0.0.1a5
-          - flake8-bugbear>=22.7.1
-          - flake8-comprehensions>=3.10.1
-          - flake8-2020>=1.7.0
+          - flake8-bugbear>=25.11.29
+          - flake8-comprehensions>=3.17.0
+          - flake8-2020>=1.8.1
           - mccabe>=0.7.0
-          - pycodestyle>=2.9.1
-          - pyflakes>=2.5.0
+          - pycodestyle>=2.14.0
+          - pyflakes>=3.4.0
   - repo: https://github.com/PyCQA/isort
-    rev: d5f40fa0553aa4bba71fcd73cf42933ae14d5116  # 9.0.0b5
+    rev: 131f4adcd5582bfc53928ab0d740eceb8b506b6c  # 9.0.1b5
     hooks:
       - id: isort
   - repo: https://github.com/codespell-project/codespell
@@ -144,14 +144,14 @@ repos:
           - --skip="./.*"
           - --quiet-level=2
   - repo: https://github.com/pylint-dev/pylint
-    rev: f5a6e3b1de17502747a40d7f92f285ccf9c6c459  # v4.0.7
+    rev: ecb84baf74ae152a511e5fdada5000c85250a48f  # v4.0.8
     hooks:
       - id: pylint
         args:
           - --reports=no
           - --py-version=3.10
         additional_dependencies:
-          - aiofiles>=0.4.0
+          - aiofiles>=25.1.0
           # - pylint-blocking-calls
           # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
@@ -169,9 +169,9 @@ repos:
           - --show-error-codes
           - --show-error-context
         additional_dependencies:
-          - zigpy==0.61.0
-          - types_aiofiles>=0.4.0
-          - types_pytz>=2023.1
+          - zigpy==2.1.0
+          - types_aiofiles>=25.1.0.20260518
+          - types_pytz>=2026.3.1.20260727
           # - cryptography==3.3.2  # Compatible/Available on cygwin
           #- homeassistant-stubs>=2023.1.7
           #- pydantic
