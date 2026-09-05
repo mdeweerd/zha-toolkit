@@ -154,9 +154,9 @@ repos:
           - --show-error-codes
           - --show-error-context
         additional_dependencies:
-          - zigpy>=2.1.0
-          - types_aiofiles>=25.1.0.20260518
-          - types_pytz>=2026.3.1.20260727
+          - zigpy==0.61.0
+          - types_aiofiles>=0.4.0
+          - types_pytz>=2023.1
           # - cryptography==3.3.2  # Compatible/Available on cygwin
           #- homeassistant-stubs>=2023.1.7
           #- pydantic
