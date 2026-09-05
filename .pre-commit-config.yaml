@@ -2,10 +2,6 @@
 files: ^(.*\.(py|json|md|sh|yaml|cfg|txt))$
 exclude: ^(\.[^/]*cache/.*|.*/_user.py)$
 repos:
-  - repo: https://github.com/adamchainz/blacken-docs
-    rev: 732397f682454fa3bab34e846c3afeaeba7eae5c  # v1.9.2
-    hooks:
-      - id: pyupgrade-docs
   - repo: https://github.com/executablebooks/mdformat
     # Do this before other tools "fixing" the line endings
     rev: 2d496dbc18e31b83a1596685347ffe0b6041daf0  # 1.0.0
