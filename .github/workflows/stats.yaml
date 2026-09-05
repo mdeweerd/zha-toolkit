@@ -24,7 +24,7 @@ jobs:
           git push
           # commit_user_email: stats@nill
           # commit_author: STATS BOT <stats>
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v4
         id: changes
         with:
           filters: |
