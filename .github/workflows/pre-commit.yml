@@ -12,14 +12,14 @@ jobs:
     steps:
       - run: sudo apt-get update && sudo apt-get install cppcheck
         if: false
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         if: false
         with:
           cache: pip
           python-version: 3.12.1
       - run: python -m pip install pre-commit
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.cache/pre-commit/
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -36,13 +36,13 @@ jobs:
         with:
           in: ${{ env.RAW_LOG }}
           # out: ${{ env.CS_XML }}
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@v6
         if: ${{ ! cancelled() }}
         with:
           path: ~/.cache/pre-commit/
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Provide log as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ ! cancelled() }}
         with:
           name: precommit-logs
