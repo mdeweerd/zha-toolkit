@@ -25,14 +25,14 @@ updates:
     #patterns: ["aws", "terraform-*"]
     multi-ecosystem-group: "infrastructure"
 
-  - package-ecosystem: "docker"
-    directory: "/"
-    patterns: ["*"]
-    #patterns: ["nginx", "redis", "postgres"]
-    multi-ecosystem-group: "infrastructure"
-
-  - package-ecosystem: "docker-compose"
-    directory: "/"
-    patterns: ["*"]
-    #patterns: ["nginx", "redis", "postgres"]
-    multi-ecosystem-group: "infrastructure"
+#  - package-ecosystem: "docker"
+#    directory: "/"
+#    patterns: ["*"]
+#    #patterns: ["nginx", "redis", "postgres"]
+#    multi-ecosystem-group: "infrastructure"
+#
+#  - package-ecosystem: "docker-compose"
+#    directory: "/"
+#    patterns: ["*"]
+#    #patterns: ["nginx", "redis", "postgres"]
+#    multi-ecosystem-group: "infrastructure"
