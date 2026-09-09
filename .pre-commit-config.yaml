@@ -77,7 +77,7 @@ repos:
         # args: [-x,-e2086,-e2004,-e2207,-e2002,-e2116]
         # args: ["--severity=warning"]  # Optionally only show errors and warnings
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 1f1e8bf348ff38fc88619a38d3ca4d9c56abea49  # v0.16.5
+    rev: 321478e58f4938179c6b86e4ddfa923d1547a49b  # v0.16.6
     hooks:
       # Note, added for future reference, not used
       - id: ruff
@@ -154,9 +154,9 @@ repos:
           - --show-error-codes
           - --show-error-context
         additional_dependencies:
-          - zigpy==0.61.0
-          - types_aiofiles>=0.4.0
-          - types_pytz>=2023.1
+          - zigpy==2.1.0
+          - types_aiofiles>=25.1.0.20260518
+          - types_pytz>=2026.3.1.20260727
           # - cryptography==3.3.2  # Compatible/Available on cygwin
           #- homeassistant-stubs>=2023.1.7
           #- pydantic
