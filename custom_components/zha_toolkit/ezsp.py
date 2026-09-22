@@ -108,32 +108,38 @@ async def ezsp_get_keys(
     result = {}
     erase = data is not None and data
     warnings = []
+    orphans = []
 
-    for idx in range(0, 192):
-        LOGGER.debug("Getting key index %s", idx)
-        status, key_struct = await app._ezsp.getKeyTableEntry(idx)
-        if status == bt.EmberStatus.SUCCESS:
-            result[idx] = key_struct
-            if key_struct.partnerEUI64 not in app.devices:
-                warn = "Partner {} for key {} is not present".format(
-                    key_struct.partnerEUI64,
-                    idx,
-                )
-                warnings.append(warn)
-                LOGGER.warning(warn)
-                if erase:
-                    await app._ezsp.eraseKeyTableEntry(idx)
-        elif status == bt.EmberStatus.INDEX_OUT_OF_RANGE:
-            break
-        else:
-            warn = f"No key at {idx} idx: {status}"
+    # bellows removes getKeyTableEntry from the command table at EZSP v13.
+    # read_link_keys() is implemented for every protocol version and reads
+    # the key table through whichever command that version provides.
+    async for key in app._ezsp.read_link_keys():
+        partner = key.partner_ieee
+        result[str(partner)] = key
+        LOGGER.info("EZSP key for %s: %s", partner, key)
+        if partner not in app.devices:
+            warn = f"Partner {partner} for key is not present"
             warnings.append(warn)
             LOGGER.warning(warn)
+            orphans.append(partner)
+
+    # Erase after reading the table, so the indexes are not looked up
+    # while read_link_keys() is still walking it.
+    if erase:
+        for partner in orphans:
+            (index,) = await app._ezsp.findKeyTableEntry(
+                address=partner, linkKey=True
+            )
+            if index == 0xFF:
+                warn = f"No key table entry for {partner} to erase"
+                warnings.append(warn)
+                LOGGER.warning(warn)
+                continue
+            (status,) = await app._ezsp.eraseKeyTableEntry(index=index)
+            LOGGER.info("Erased key %s at %s: %s", partner, index, status)
 
     event_data["warnings"] = warnings
     event_data["result"] = result
-    for idx, item in result.items():
-        LOGGER.info("EZSP %s key: %s", idx, item)
     _, _, nwkParams = await app._ezsp.getNetworkParameters()
     LOGGER.info("Current network: %s", nwkParams)
     event_data["network"] = nwkParams
@@ -148,7 +154,11 @@ async def ezsp_add_transient_key(
         LOGGER.error(msg)
         raise ValueError(msg)
 
-    (status,) = await app._ezsp.addTransientLinkKey(ieee, b"ZigbeeAlliance09")
+    # addTransientLinkKey is gone from EZSP v13 on; add_transient_link_key
+    # is implemented for every protocol version and returns sl_Status.
+    status = await app._ezsp.add_transient_link_key(
+        ieee, bt.KeyData(b"ZigbeeAlliance09")
+    )
     LOGGER.debug("Installed key for %s: %s", ieee, status)
     event_data["result"] = status
 
