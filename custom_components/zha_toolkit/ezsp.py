@@ -112,7 +112,7 @@ async def ezsp_get_keys(
     for idx in range(0, 192):
         LOGGER.debug("Getting key index %s", idx)
         status, key_struct = await app._ezsp.getKeyTableEntry(idx)
-        if status == app._ezsp.types.EmberStatus.SUCCESS:
+        if status == bt.EmberStatus.SUCCESS:
             result[idx] = key_struct
             if key_struct.partnerEUI64 not in app.devices:
                 warn = "Partner {} for key {} is not present".format(
@@ -123,7 +123,7 @@ async def ezsp_get_keys(
                 LOGGER.warning(warn)
                 if erase:
                     await app._ezsp.eraseKeyTableEntry(idx)
-        elif status == app._ezsp.types.EmberStatus.INDEX_OUT_OF_RANGE:
+        elif status == bt.EmberStatus.INDEX_OUT_OF_RANGE:
             break
         else:
             warn = f"No key at {idx} idx: {status}"
@@ -172,10 +172,8 @@ async def ezsp_get_policy(
 
     LOGGER.info("Getting EZSP %s policy id", policy)
     _status, value = await app._ezsp.getPolicy(policy)
-    LOGGER.debug(
-        "policy: %s, value: %s", app._ezsp.types.EzspPolicyId(policy), value
-    )
-    event_data["policy"] = repr(app._ezsp.types.EzspPolicyId(policy))
+    LOGGER.debug("policy: %s, value: %s", bt.EzspPolicyId(policy), value)
+    event_data["policy"] = repr(bt.EzspPolicyId(policy))
     event_data["policy_value"] = repr(value)
 
 
@@ -196,10 +194,10 @@ async def ezsp_get_config_value(
         LOGGER.error(msg)
         raise ValueError(msg)
 
-    cfg_id = app._ezsp.types.EzspConfigId(data)
+    cfg_id = bt.EzspConfigId(data)
     LOGGER.info("Getting EZSP configuration value: %s", cfg_id)
     status, value = await app._ezsp.getConfigurationValue(cfg_id)
-    if status != app._ezsp.types.EzspStatus.SUCCESS:
+    if status != bt.EzspStatus.SUCCESS:
         msg = f"Couldn't get {status} configuration value: {cfg_id}"
         LOGGER.error(msg)
         raise RuntimeError(msg)
@@ -216,10 +214,10 @@ async def ezsp_get_value(
         LOGGER.error(msg)
         raise ValueError(msg)
 
-    value_id = app._ezsp.types.EzspValueId(data)
+    value_id = bt.EzspValueId(data)
     LOGGER.info("Getting EZSP value: %s", value_id)
     status, value = await app._ezsp.getValue(value_id)
-    if status != app._ezsp.types.EzspStatus.SUCCESS:
+    if status != bt.EzspStatus.SUCCESS:
         msg = f"Couldn't get {status} value: {value_id}"
         LOGGER.error(msg)
         raise RuntimeError(msg)
@@ -265,7 +263,7 @@ async def ezsp_backup_legacy(
 
     status, node_type, network = await app._ezsp.getNetworkParameters()
     assert status == bt.EmberStatus.SUCCESS
-    assert node_type == app._ezsp.types.EmberNodeType.COORDINATOR
+    assert node_type == bt.EmberNodeType.COORDINATOR
     LOGGER.debug("Network params: %s", network)
 
     (node_id,) = await app._ezsp.getNodeId()
@@ -284,8 +282,8 @@ async def ezsp_backup_legacy(
     }
 
     for key_name, key_type in (
-        (ATTR_KEY_GLOBAL, app._ezsp.types.EmberKeyType.TRUST_CENTER_LINK_KEY),
-        (ATTR_KEY_NWK, app._ezsp.types.EmberKeyType.CURRENT_NETWORK_KEY),
+        (ATTR_KEY_GLOBAL, bt.EmberKeyType.TRUST_CENTER_LINK_KEY),
+        (ATTR_KEY_NWK, bt.EmberKeyType.CURRENT_NETWORK_KEY),
     ):
         status, key = await app._ezsp.getKey(key_type)
         assert status == bt.EmberStatus.SUCCESS
