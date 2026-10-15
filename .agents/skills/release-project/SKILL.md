@@ -12,7 +12,7 @@ license: MIT
 allowed-tools: Read Write Edit Bash Grep Glob
 metadata:
   author: mdeweerd
-  version: "1.1"
+  version: "1.2"
   domain: devops
   complexity: intermediate
   language: multi
@@ -297,10 +297,13 @@ gh release create "v<X.Y.Z>" --title "v<X.Y.Z> 🧰" --notes-file notes.md
 
 **Expected:** `gh release view "v<X.Y.Z>" --json isDraft,publishedAt` shows
 `isDraft: false` and a non-null `publishedAt` (the release is published and
-becomes "Latest").
+becomes "Latest"). The release has a title: `gh release view "v<X.Y.Z>"
+--json name` returns the name-template title (e.g. `v<X.Y.Z> 🧰`) — a release
+published without a title displays the bare tag.
 
-**On failure:** Three cases:
+**On failure:** Four cases:
 
+- The release was published without a title (it displays the bare tag): set it with `gh release edit "v<X.Y.Z>" --title "v<X.Y.Z> 🧰"`, or via REST: `curl -X PATCH -H "Authorization: token $GH_TOKEN" -d '{"name": "v<X.Y.Z> 🧰"}' "https://api.github.com/repos/<owner>/<repo>/releases/<id>"`.
 - The REST publish fails (e.g. token scopes): delete the draft (`gh release delete "v<X.Y.Z>" --yes`) and use the `gh release create` fallback.
 - The tag already exists: the version was already tagged — pick the next patch version and repeat. If the tag push is rejected, fetch first (`git fetch --tags`) and check for a remote tag with the same name.
 - `git tag` fails with "already exists" (stale local tag from an earlier attempt): `git tag -d "v<X.Y.Z>"` and re-tag the squash SHA.
@@ -372,6 +375,7 @@ Write the body to a file first (or use `--body-file`): a shell double-quoted
 - [ ] All expected PR check runs reported success before merging
 - [ ] Tag `v<X.Y.Z>` exists and points at the merged squash commit: `git ls-remote --tags origin "v<X.Y.Z>"` returns `$squash_sha` (recorded in Step 5)
 - [ ] Release is published (not draft): `gh release view "v<X.Y.Z>" --json isDraft,publishedAt` shows `isDraft: false` and a non-null `publishedAt`
+- [ ] Release has a title matching the name-template: `gh release view "v<X.Y.Z>" --json name` returns e.g. `v<X.Y.Z> 🧰` (a title-less release displays the bare tag)
 - [ ] The `release.yml` run bound to the tag (event `release`, head SHA = `$squash_sha`) completed with success and `zha-toolkit.zip` is attached
 - [ ] Zip manifest shows `version` = full tag name (with `v` prefix) and the intended `requirements`
 - [ ] Release notes cover all changes since the last published release, with the merged PR under the matching category
