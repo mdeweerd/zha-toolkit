@@ -106,7 +106,9 @@ def test_group_binding_first_is_preserved():
         binds.binds_remove_all, bindings, data=COORDINATOR_IEEE
     )
     assert event_data["result"]["removed"] == [bindings[1]]
-    assert event_data["result"]["skipped"] == [bindings[0]]
+    assert event_data["result"]["skipped"] == []
+    assert event_data["result"]["ignored"] == [bindings[0]]
+    assert event_data["success"] is True
     assert len(recorder.calls) == 1
 
 
@@ -124,7 +126,9 @@ def test_group_binding_after_ieee_binding_is_preserved():
         binds.binds_remove_all, bindings, data=COORDINATOR_IEEE
     )
     assert event_data["result"]["removed"] == [bindings[0]]
-    assert event_data["result"]["skipped"] == [bindings[1]]
+    assert event_data["result"]["skipped"] == []
+    assert event_data["result"]["ignored"] == [bindings[1]]
+    assert event_data["success"] is True
     assert len(recorder.calls) == 1
 
 
@@ -142,7 +146,9 @@ def test_cluster_filter_keeps_group_binding():
         extra_params={p.CLUSTER_ID: [0x0005]},
     )
     assert event_data["result"]["removed"] == [bindings[1]]
-    assert event_data["result"]["skipped"] == [bindings[0], bindings[2]]
+    assert event_data["result"]["skipped"] == []
+    assert event_data["result"]["ignored"] == [bindings[0], bindings[2]]
+    assert event_data["success"] is True
     assert len(recorder.calls) == 1
 
 
@@ -157,7 +163,9 @@ def test_unbind_coordinator_preserves_group_bindings():
     ):
         event_data, recorder = _run(binds.unbind_coordinator, bindings)
     assert event_data["result"]["removed"] == [bindings[1]]
-    assert event_data["result"]["skipped"] == [bindings[0]]
+    assert event_data["result"]["skipped"] == []
+    assert event_data["result"]["ignored"] == [bindings[0]]
+    assert event_data["success"] is True
     assert len(recorder.calls) == 1
 
 
@@ -170,8 +178,31 @@ def test_remove_all_without_target_removes_group_bindings():
     event_data, recorder = _run(binds.binds_remove_all, bindings)
     assert event_data["result"]["removed"] == bindings
     assert event_data["result"]["skipped"] == []
+    assert event_data["result"]["ignored"] == []
+    assert event_data["success"] is True
     assert len(recorder.calls) == 2
     # The group binding is unbound towards its group address
     group_call = recorder.calls[0]
     assert group_call[4].addrmode == 1
     assert group_call[4].nwk == 0x0002
+
+
+def test_unsupported_addrmode_is_skipped():
+    """A binding with an unsupported address mode is an error, not neutral."""
+    bindings = [
+        {
+            "src": DEVICE_IEEE,
+            "src_ep": 1,
+            "cluster_id": "0x0006",
+            "dst": {"addrmode": 2},
+        },
+        _ieee_binding(COORDINATOR_IEEE),
+    ]
+    event_data, recorder = _run(
+        binds.binds_remove_all, bindings, data=COORDINATOR_IEEE
+    )
+    assert event_data["result"]["removed"] == [bindings[1]]
+    assert event_data["result"]["skipped"] == [bindings[0]]
+    assert event_data["result"]["ignored"] == []
+    assert event_data["success"] is False
+    assert len(recorder.calls) == 1
