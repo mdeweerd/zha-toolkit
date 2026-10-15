@@ -12,7 +12,7 @@ license: MIT
 allowed-tools: Read Write Edit Bash Grep Glob
 metadata:
   author: mdeweerd
-  version: "1.2"
+  version: "1.3"
   domain: devops
   complexity: intermediate
   language: multi
@@ -264,10 +264,12 @@ git tag "v<X.Y.Z>" "$squash_sha"              # the merged commit saved in Step 
 git push origin "v<X.Y.Z>"
 ```
 
-The title follows the drafter's `name-template` in
-`.github/release-drafter.yml` (currently `v$RESOLVED_VERSION 🧰`) — copy the
-exact suffix from that file; do not guess it, or the published title won't
-match the drafter's next draft.
+The title is the drafter's `name-template` prefix (`.github/release-drafter.yml`,
+currently `v$RESOLVED_VERSION 🧰` — copy the exact prefix from that file) plus
+a short, meaningful subject in clear English for users, describing the
+user-facing change (e.g. `v<X.Y.Z> 🧰 Fix <what>`). The drafter's draft name
+carries only the version + icon — the subject is added at publish time, so
+don't rely on the draft's `name`. An icon-only title tells users nothing.
 
 **Publish the existing draft (the common case):** the release-drafter keeps a
 draft for the next version — which is the version you are releasing — so
@@ -281,7 +283,7 @@ squash SHA (the draft's target is the `main` ref):
 gh api repos/<owner>/<repo>/releases \
   --jq '.[] | select(.draft and .tag_name=="v<X.Y.Z>") | {id, tag_name, target_commitish}'
 
-jq -n --rawfile body notes.md '{draft: false, name: "v<X.Y.Z> 🧰", body: $body}' > /tmp/payload.json
+jq -n --rawfile body notes.md '{draft: false, name: "v<X.Y.Z> 🧰 <subject>", body: $body}' > /tmp/payload.json
 curl -s -X PATCH -H "Authorization: token $GH_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   --data-binary @/tmp/payload.json \
@@ -292,7 +294,7 @@ curl -s -X PATCH -H "Authorization: token $GH_TOKEN" \
 run failed):
 
 ```bash
-gh release create "v<X.Y.Z>" --title "v<X.Y.Z> 🧰" --notes-file notes.md
+gh release create "v<X.Y.Z>" --title "v<X.Y.Z> 🧰 <subject>" --notes-file notes.md
 ```
 
 **Expected:** `gh release view "v<X.Y.Z>" --json isDraft,publishedAt` shows
@@ -303,7 +305,7 @@ published without a title displays the bare tag.
 
 **On failure:** Four cases:
 
-- The release was published without a title (it displays the bare tag): set it with `gh release edit "v<X.Y.Z>" --title "v<X.Y.Z> 🧰"`, or via REST: `curl -X PATCH -H "Authorization: token $GH_TOKEN" -d '{"name": "v<X.Y.Z> 🧰"}' "https://api.github.com/repos/<owner>/<repo>/releases/<id>"`.
+- The release was published without a title (bare tag) or with an icon-only title (version + icon, no subject): set it with `gh release edit "v<X.Y.Z>" --title "v<X.Y.Z> 🧰 <subject>"`, or via REST: `curl -X PATCH -H "Authorization: token $GH_TOKEN" -d '{"name": "v<X.Y.Z> 🧰 <subject>"}' "https://api.github.com/repos/<owner>/<repo>/releases/<id>"`.
 - The REST publish fails (e.g. token scopes): delete the draft (`gh release delete "v<X.Y.Z>" --yes`) and use the `gh release create` fallback.
 - The tag already exists: the version was already tagged — pick the next patch version and repeat. If the tag push is rejected, fetch first (`git fetch --tags`) and check for a remote tag with the same name.
 - `git tag` fails with "already exists" (stale local tag from an earlier attempt): `git tag -d "v<X.Y.Z>"` and re-tag the squash SHA.
@@ -375,7 +377,7 @@ Write the body to a file first (or use `--body-file`): a shell double-quoted
 - [ ] All expected PR check runs reported success before merging
 - [ ] Tag `v<X.Y.Z>` exists and points at the merged squash commit: `git ls-remote --tags origin "v<X.Y.Z>"` returns `$squash_sha` (recorded in Step 5)
 - [ ] Release is published (not draft): `gh release view "v<X.Y.Z>" --json isDraft,publishedAt` shows `isDraft: false` and a non-null `publishedAt`
-- [ ] Release has a title matching the name-template: `gh release view "v<X.Y.Z>" --json name` returns e.g. `v<X.Y.Z> 🧰` (a title-less release displays the bare tag)
+- [ ] Release has a title with a short meaningful English subject: `gh release view "v<X.Y.Z>" --json name` returns e.g. `v<X.Y.Z> 🧰 Fix <what>` — not just the version + icon, and not the bare tag
 - [ ] The `release.yml` run bound to the tag (event `release`, head SHA = `$squash_sha`) completed with success and `zha-toolkit.zip` is attached
 - [ ] Zip manifest shows `version` = full tag name (with `v` prefix) and the intended `requirements`
 - [ ] Release notes cover all changes since the last published release, with the merged PR under the matching category
