@@ -3,52 +3,23 @@ name: stats
 on: [create, workflow_dispatch]
 jobs:
   gen_stats:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     steps:
-      # Credit: https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
-      - name: Extract branch name
-        #run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
-        id: extract_branch
+      # Check out the main branch (not the tag): the stats commit must land
+      # on a branch so `git push` works. fetch-depth 0 so all version tags
+      # are present for the badge list.
       - uses: actions/checkout@v7
         with:
-          ref: ${{ steps.extract_branch.outputs.branch }}
+          ref: main
+          fetch-depth: 0
       - run: ${{ github.workspace }}/.github/scripts/gen_stats.sh
       - name: Commit changes
-        run: |-
-          for r in $(git remote) ; do git remote get-url --all $r ; done
+        run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git commit -a -m '[Bot] stats - Update STATS.md'
-          git push
-          # commit_user_email: stats@nill
-          # commit_author: STATS BOT <stats>
-      - uses: dorny/paths-filter@v4
-        id: changes
-        with:
-          filters: |
-            man:
-              - 'man.md'
-            autotools:
-              - 'aclocal.m4'
-              - 'configure.ac'
-      - uses: docker://pandoc/core:2.17
-        if: ${{ github.event_name == 'workflow_dispath' || steps.changes.outputs.man == 'true' }}
-        with:
-          args: -s man.md -t man -o shc.1
-      - uses: docker://pandoc/core:2.17
-        if: ${{ github.event_name == 'workflow_dispath' || steps.changes.outputs.man == 'true' }}
-        with:
-          args: -s man.md -t html -o man.html
-      - run: |-
-          ./autogen.sh
-        if: ${{ github.event_name == 'workflow_dispath' || steps.changes.outputs.autotools == 'true' }}
-      - name: Commit changes
-        if: ${{ github.event_name == 'workflow_dispath' || steps.changes.outputs.man == 'true' || steps.changes.outputs.autotools }}
-        run: |-
-          for r in $(git remote) ; do git remote get-url --all $r ; done
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git commit -a -m "ci: Github Action Generate Files"
-          git push
+          git add STATS.md
+          if ! git diff --cached --quiet; then
+            git commit -m '[Bot] stats - Update STATS.md'
+            git push
+          fi
