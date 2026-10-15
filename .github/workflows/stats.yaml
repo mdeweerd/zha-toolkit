@@ -34,10 +34,10 @@ jobs:
           git checkout -b bot/stats-${RUN_ID}
           git commit -m '[Bot] stats - Update STATS.md'
           git push -u origin bot/stats-${RUN_ID}
-          PR=$(gh pr create --base main --head bot/stats-${RUN_ID} \
+          gh pr create --base main --head bot/stats-${RUN_ID} \
             --title '[Bot] stats - Update STATS.md' \
-            --body 'Automated STATS.md download-badge update.' \
-            --json number -q .number)
+            --body 'Automated STATS.md download-badge update.'
+          PR=$(gh pr view --json number -q .number)
           echo "Opened PR #${PR}"
           for i in 1 2 3 4 5; do
             if gh pr merge "${PR}" --squash --delete-branch; then
