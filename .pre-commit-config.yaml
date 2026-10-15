@@ -11,6 +11,8 @@ repos:
         entry: mdformat  # Executable to run, with fixed options
         language: python
         types: [markdown]
+        # SKILL.md files carry YAML frontmatter, which mdformat mangles
+        exclude: ^\.agents/skills/
         args: [--wrap, '75', --number]
         additional_dependencies:
           - mdformat-toc
