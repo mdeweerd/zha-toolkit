@@ -1,25 +1,50 @@
 ---
 name: stats
 on: [create, workflow_dispatch]
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: stats
 jobs:
   gen_stats:
     if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     steps:
-      # Check out the main branch (not the tag): the stats commit must land
-      # on a branch so `git push` works. fetch-depth 0 so all version tags
-      # are present for the badge list.
+      # Check out the main branch (not the tag): the stats update must land
+      # on main via a pull request (branch protection requires PRs).
+      # fetch-depth 0 so all version tags are present for the badge list.
       - uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
       - run: ${{ github.workspace }}/.github/scripts/gen_stats.sh
       - name: Commit changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add STATS.md
-          if ! git diff --cached --quiet; then
-            git commit -m '[Bot] stats - Update STATS.md'
-            git push
+          if git diff --cached --quiet; then
+            echo "STATS.md unchanged - nothing to do"
+            exit 0
           fi
+          git checkout -b bot/stats-${RUN_ID}
+          git commit -m '[Bot] stats - Update STATS.md'
+          git push -u origin bot/stats-${RUN_ID}
+          PR=$(gh pr create --base main --head bot/stats-${RUN_ID} \
+            --title '[Bot] stats - Update STATS.md' \
+            --body 'Automated STATS.md download-badge update.' \
+            --json number -q .number)
+          echo "Opened PR #${PR}"
+          for i in 1 2 3 4 5; do
+            if gh pr merge "${PR}" --squash --delete-branch; then
+              echo "Merged PR #${PR}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Failed to merge PR #${PR}" >&2
+          exit 1
