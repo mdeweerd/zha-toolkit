@@ -320,10 +320,6 @@ async def ezsp_backup_legacy(
         jsonfile.write(json.dumps(result, indent=4))
 
 
-async def ezsp_dummy_networkInit():
-    return (bellows.types.EmberStatus.SUCCESS,)
-
-
 async def ezsp_click_get_echo(s):
     LOGGER.error(f"GET_ECHO: {s}")
     bellows.cli._result = s
@@ -337,23 +333,13 @@ async def ezsp_backup(
         LOGGER.debug(msg)
         raise ValueError(msg)
 
-    # Import stuff we need
-    import io
     import json
-    from contextlib import redirect_stdout
 
-    from bellows.cli import backup as bellows_backup
-
-    try:
-        # Network is already initialised, fake result for backup function
-        org_network_init = app._ezsp.networkInit
-        app._ezsp.networkInit = ezsp_dummy_networkInit
-        f = io.StringIO()
-        with redirect_stdout(f):
-            await bellows_backup._backup(app._ezsp)
-        result = f.getvalue()
-    finally:
-        app._ezsp.networkInit = org_network_init  # pylint: disable=E0601
+    # bellows >= 0.40.0 removed bellows.cli.backup._backup.
+    # Use zigpy's radio-independent backup manager instead; it produces
+    # the same Open Coordinator Backup JSON format.
+    backup = await app.backups.create_backup(load_devices=True)
+    result = backup.as_open_coordinator_json()
 
     # Store backup information to file
 
@@ -367,4 +353,6 @@ async def ezsp_backup(
     fname = out_dir + "nwk_backup" + str(data) + ".json"
 
     with open(fname, "w", encoding="utf_8") as jsonfile:
-        jsonfile.write(json.dumps(json.loads(result), indent=4))
+        jsonfile.write(json.dumps(result, indent=4))
+
+    event_data["backup_file"] = fname
