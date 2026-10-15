@@ -518,8 +518,11 @@ async def binds_remove_all(
                     dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
                     dst_addr.ieee = dst_ieee
 
+                # A group binding has no IEEE destination: never match it
+                # when filtering by target IEEE (e.g. unbind_coordinator).
+                # Group bindings are always preserved in that case.
                 match_filter = (
-                    (tgt_ieee is None or dst_ieee == tgt_ieee)
+                    (tgt_ieee is None)
                     and (len(endpoints) == 0 or ep_id in endpoints)
                     and (len(clusters) == 0 or cluster_id in clusters)
                 )
