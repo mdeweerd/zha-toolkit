@@ -12,7 +12,7 @@ license: MIT
 allowed-tools: Read Write Edit Bash Grep Glob
 metadata:
   author: mdeweerd
-  version: "1.0"
+  version: "1.1"
   domain: devops
   complexity: intermediate
   language: multi
@@ -89,7 +89,9 @@ gh api repos/<owner>/<repo>/releases \
 If the full-release count is 0, still bump from that tag, but do not publish
 the old draft — create the new version tag instead (see Common Pitfalls). The
 draft's `name` should match the computed next version; if it names an older
-version, that is the stale-draft situation.
+version, that is the stale-draft situation. After each publish, the drafter
+pre-creates the next version's draft (the tag push triggers the stats
+workflow's commit to `main`), so the cross-check is usually available.
 
 ### Step 2: Prepare the change branch
 
@@ -219,7 +221,9 @@ folds the merged PR into the draft under the matching category heading (copy
 the exact heading from `.github/release-drafter.yml`, e.g. `## 🐛 Bug Fixes`).
 Wait for that workflow run on `main` to finish, then verify the merged PR
 appears in the fetched body; only add entries that are missing — otherwise
-the entry is duplicated.
+the entry is duplicated. The draft may also hold PRs merged after the
+previous release that you did not release yourself — keep those entries;
+the notes cover everything since the last published release.
 
 ```bash
 gh run list --branch main --workflow="Release Drafter" --limit 1   # until completed
@@ -251,14 +255,13 @@ exist with only a draft/pre-release (see Step 1).
 from the tag name and uploads `zha-toolkit.zip` built from
 `custom_components/zha_toolkit`.
 
+Tag the merged squash commit explicitly — pin the SHA, not the moving
+`main` ref:
+
 ```bash
 git ls-remote --tags origin "v<X.Y.Z>"        # must print nothing: tag must not exist yet
-git tag "v<X.Y.Z>" "$squash_sha"              # the merged commit saved in Step 5 — pin the SHA, not the moving `main` ref
+git tag "v<X.Y.Z>" "$squash_sha"              # the merged commit saved in Step 5
 git push origin "v<X.Y.Z>"
-# pre-check: does a release (draft) already target this tag?
-gh api repos/<owner>/<repo>/releases \
-  --jq '.[] | select(.tag_name=="v<X.Y.Z>") | {id, draft, prerelease}'
-gh release create "v<X.Y.Z>" --title "v<X.Y.Z> 🧰" --notes-file notes.md
 ```
 
 The title follows the drafter's `name-template` in
@@ -266,23 +269,39 @@ The title follows the drafter's `name-template` in
 exact suffix from that file; do not guess it, or the published title won't
 match the drafter's next draft.
 
-**Expected:** `gh release create` prints the release URL;
-`gh release view "v<X.Y.Z>" --json isDraft,publishedAt` shows `isDraft: false`
-and a non-null `publishedAt` (the release is published and becomes "Latest").
+**Publish the existing draft (the common case):** the release-drafter keeps a
+draft for the next version — which is the version you are releasing — so
+`gh release create` fails with `already_exists` here. Publishing the draft
+(`draft: false`) fires the `release: [published]` event that triggers
+`release.yml`. Push the tag first so the release attaches to the exact
+squash SHA (the draft's target is the `main` ref):
+
+```bash
+# find the draft for this version
+gh api repos/<owner>/<repo>/releases \
+  --jq '.[] | select(.draft and .tag_name=="v<X.Y.Z>") | {id, tag_name, target_commitish}'
+
+jq -n --rawfile body notes.md '{draft: false, name: "v<X.Y.Z> 🧰", body: $body}' > /tmp/payload.json
+curl -s -X PATCH -H "Authorization: token $GH_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  --data-binary @/tmp/payload.json \
+  "https://api.github.com/repos/<owner>/<repo>/releases/<id>"
+```
+
+**Fallback when no draft targets the version** (first release, or the drafter
+run failed):
+
+```bash
+gh release create "v<X.Y.Z>" --title "v<X.Y.Z> 🧰" --notes-file notes.md
+```
+
+**Expected:** `gh release view "v<X.Y.Z>" --json isDraft,publishedAt` shows
+`isDraft: false` and a non-null `publishedAt` (the release is published and
+becomes "Latest").
 
 **On failure:** Three cases:
 
-- `gh release create` fails with `already_exists`: a release — usually the release-drafter's draft — already targets this tag. Publish that release instead of creating a duplicate:
-
-  ```bash
-  jq -n --rawfile body notes.md '{draft: false, name: "v<X.Y.Z> 🧰", body: $body}' > /tmp/payload.json
-  curl -s -X PATCH -H "Authorization: token $GH_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    --data-binary @/tmp/payload.json \
-    "https://api.github.com/repos/<owner>/<repo>/releases/<id>"   # id from the pre-check
-  ```
-
-  or delete the draft (`gh release delete "v<X.Y.Z>" --yes`) and re-run `gh release create`.
+- The REST publish fails (e.g. token scopes): delete the draft (`gh release delete "v<X.Y.Z>" --yes`) and use the `gh release create` fallback.
 - The tag already exists: the version was already tagged — pick the next patch version and repeat. If the tag push is rejected, fetch first (`git fetch --tags`) and check for a remote tag with the same name.
 - `git tag` fails with "already exists" (stale local tag from an earlier attempt): `git tag -d "v<X.Y.Z>"` and re-tag the squash SHA.
 
@@ -303,7 +322,14 @@ gh release view "v<X.Y.Z>" --json assets             # must list zha-toolkit.zip
 gh release download "v<X.Y.Z>" --pattern zha-toolkit.zip --dir /tmp/rel
 python3 -c "import zipfile,json; z=zipfile.ZipFile('/tmp/rel/zha-toolkit.zip'); \
   m=json.loads(z.read('manifest.json')); print(m['version'], m['requirements'])"
+# the change itself must be in the zip (paths are relative to the component dir)
+python3 -c "import zipfile; z=zipfile.ZipFile('/tmp/rel/zha-toolkit.zip'); \
+  print('fix present:', '<marker string>' in z.read('<file>.py').decode())"
 ```
+
+Run `gh` commands from the repository root — some need a git repo context
+(`gh release download` outside a repository fails with `failed to run git:
+fatal: not a git repository`).
 
 Note: the zip stores paths relative to the component dir, so the manifest is
 at the zip root (`manifest.json`), and `version` equals the full tag name
@@ -326,7 +352,17 @@ gh issue comment <issue> --body "Fixed by #<number> and released in v<X.Y.Z> ...
 gh issue close <issue> --reason completed
 ```
 
-**Expected:** Issue shows the comment and state `closed`.
+When the issue was reported by a user, thank them and invite them to test the
+new release (mention the version):
+
+```bash
+gh issue comment <issue> --body-file /tmp/thanks.md
+```
+
+Write the body to a file first (or use `--body-file`): a shell double-quoted
+`--body` string mangles backtick code spans via command substitution.
+
+**Expected:** Issue shows the comments and state `closed`.
 
 **On failure:** If the issue was already closed by the `Fixes #` keyword on merge, the comment still lands; skip the close. If `gh issue close` fails on scopes, close via REST: `curl -X PATCH -H "Authorization: token $GH_TOKEN" -d '{"state":"closed"}' "https://api.github.com/repos/<owner>/<repo>/issues/<issue>"`.
 
@@ -340,14 +376,15 @@ gh issue close <issue> --reason completed
 - [ ] Zip manifest shows `version` = full tag name (with `v` prefix) and the intended `requirements`
 - [ ] Release notes cover all changes since the last published release, with the merged PR under the matching category
 - [ ] Linked issue is closed with a comment referencing the PR and release
-- [ ] The remaining release-drafter draft targets the NEXT version, not the one just published: `gh api repos/<owner>/<repo>/releases --jq '[.[] | select(.draft) | .tag_name]'`
+- [ ] The reporter is thanked and invited to test the release (comment mentions the version)
+- [ ] No draft targets the just-published version: `gh api repos/<owner>/<repo>/releases --jq '[.[] | select(.draft) | .tag_name]'` (the next version's draft appears after the tag push triggers the stats workflow's commit to `main`)
 
 ## Common Pitfalls
 
 - **Publishing a stale draft release**: If a tag exists but its release was never fully published (draft/pre-release only), the release-drafter keeps folding new commits into that draft, whose tag already points at an older commit. Publishing it attaches the release to the OLD tag commit — the zip won't contain recent fixes. Always create the next version tag on the merged commit instead. After publishing, confirm the drafter's remaining draft targets the next version, and delete any draft whose tag already exists (`gh release delete <tag> --yes`).
 - **Re-running the skill after a partial run**: A previous attempt may have died mid-flow (branch pushed but no PR, PR open but unmerged, tag pushed but no release). Blindly re-doing a step then fails (`gh pr create` on an existing head branch, pushing an existing tag, `gh release create` on an existing tag). Check what already exists first (`gh pr list --head fix/<slug>`, `git ls-remote --tags origin "v<X.Y.Z>"`, `gh release view "v<X.Y.Z>"`) and resume from the first missing step.
 - **Direct pushes to `main` bypass CI**: Pushing a fix straight to `main` skips the PR gate. When a PR flow is required afterwards, branch from the fix's parent and cherry-pick so the PR diff shows the change.
-- **`gh` token scope gaps**: Some `gh` commands use GraphQL queries that need scopes the token lacks (`read:org`), e.g. `gh pr edit`. Fall back to the REST API via `curl` with `$GH_TOKEN`.
+- **`gh` and shell quirks**: Some `gh` commands use GraphQL queries that need scopes the token lacks (`read:org`), e.g. `gh pr edit` — fall back to the REST API via `curl` with `$GH_TOKEN`. Some `gh` commands need a git repo context: `gh release download` outside a repository fails with `failed to run git: fatal: not a git repository` — run them from the repo root. GitHub's API also rejects approving your own PR (`gh pr review --approve` fails with "Review Can not approve your own pull request") — submit a self-review with `gh pr review --comment`. And posting a comment body containing backtick code spans through a shell double-quoted string mangles it via command substitution — build the payload in a file (`jq -n`, `python3`) and PATCH via `curl`, or use `gh ... --body-file`.
 - **Forgetting the issue link**: Without `Fixes #N` in the PR body (before merge), GitHub won't auto-close the issue; close it manually in Step 9.
 - **Tag/commit mismatch**: `release.yml` builds the zip from the tag. Tag the recorded squash SHA, not a ref — tagging a stale local `main` ships stale code. Verify the zip manifest in Step 8.
 
@@ -356,3 +393,4 @@ gh issue close <issue> --reason completed
 - `create-pull-request` - open and manage PRs with gh (used in Step 3)
 - `review-pull-request` - review a PR end to end before merging (used in Steps 4-5)
 - `evolve-skill` - refine this skill after a release run reveals gaps
+- `update-skill-content` - apply post-release experience to this skill (version bump included)
