@@ -1,5 +1,5 @@
 # For tests
-pytest-homeassistant-custom-component>=0.13.373
+pytest-homeassistant-custom-component>=0.13.374
 # Test dependencies: importing the integration pulls in the ZHA stack
 # (homeassistant.components.zha -> zha, serialx, aiousbwatcher, ...)
 zigpy
