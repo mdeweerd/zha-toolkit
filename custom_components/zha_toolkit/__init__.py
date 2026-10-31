@@ -1,3 +1,4 @@
+import asyncio
 import importlib
 import logging
 import os
@@ -830,7 +831,7 @@ async def register_services(hass):  # noqa: C901
                 event_data,
             )
             if params[p.FAIL_EXCEPTION] or not isinstance(
-                handler_exception, DeliveryError
+                handler_exception, (DeliveryError, asyncio.TimeoutError)
             ):
                 raise handler_exception
 
