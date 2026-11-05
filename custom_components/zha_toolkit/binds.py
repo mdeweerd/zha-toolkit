@@ -495,6 +495,7 @@ async def binds_remove_all(
     errors: list[str] = []
     bindings_removed = []
     bindings_skipped = []
+    bindings_ignored = []
     try:
         for _i, binding in event_data["result"].items():
             LOGGER.debug(f"Remove bind {binding!r}")
@@ -518,8 +519,11 @@ async def binds_remove_all(
                     dst_ieee = t.EUI64.convert(binding["dst"]["dst_ieee"])
                     dst_addr.ieee = dst_ieee
 
+                # A group binding has no IEEE destination: never match it
+                # when filtering by target IEEE (e.g. unbind_coordinator).
+                # Group bindings are always preserved in that case.
                 match_filter = (
-                    (tgt_ieee is None or dst_ieee == tgt_ieee)
+                    (tgt_ieee is None)
                     and (len(endpoints) == 0 or ep_id in endpoints)
                     and (len(clusters) == 0 or cluster_id in clusters)
                 )
@@ -572,20 +576,30 @@ async def binds_remove_all(
                     event_data["replies"].append(res)
 
             if res is None:
-                msg = f"Binding not supported or not selected: {binding!r}"
-                bindings_skipped.append(binding)
-                LOGGER.error(msg)
-                errors.append(msg)
+                if addr_mode in (1, 3):
+                    # Not selected by the target/endpoint/cluster filter:
+                    # the binding is intentionally preserved (neutral)
+                    bindings_ignored.append(binding)
+                    LOGGER.debug(
+                        f"Binding not selected, preserved: {binding!r}"
+                    )
+                else:
+                    msg = f"Binding not supported: {binding!r}"
+                    bindings_skipped.append(binding)
+                    LOGGER.error(msg)
+                    errors.append(msg)
     except Exception as e:
         event_data["result"] = {
             "removed": bindings_removed,
             "skipped": bindings_skipped,
+            "ignored": bindings_ignored,
         }
         raise e
 
     event_data["result"] = {
         "removed": bindings_removed,
         "skipped": bindings_skipped,
+        "ignored": bindings_ignored,
     }
     event_data["success"] = len(bindings_skipped) == 0
 

@@ -507,9 +507,9 @@ data:
   fail_exception: true
 ```
 
-By default, the result of a zigbee transaction is "ignored" for the end
-result of the service call: it will appear as if it succeeds (unless you
-have the parameters wrong).
+By default, a failed zigbee transaction does not raise an exception: the
+service call completes normally but returns `success: false` with error
+details in the response data (unless you have the parameters wrong).
 
 So, if you want the `Developer Tools > Services > CALL SERVICE` button to
 turn red in case the zigbee transaction result is not `SUCCESS`, then add

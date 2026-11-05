@@ -88,7 +88,9 @@ async def zdo_join_with_code(
     # Note: Router is awake, there is no need for "tries"
     res = await app.permit_with_key(node, code, 60)
     link_key = bt.EmberKeyData(b"ZigBeeAlliance09")
-    res = await app._ezsp.addTransientLinkKey(node, link_key)
+    # addTransientLinkKey is gone from EZSP v13 on; add_transient_link_key
+    # is implemented for every protocol version.
+    res = await app._ezsp.add_transient_link_key(node, link_key)
     LOGGER.debug("permit with key: %s", res)
     res = await app.permit(60)
 
