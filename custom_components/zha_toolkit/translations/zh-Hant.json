@@ -1,0 +1,1532 @@
+{
+  "services": {
+    "execute": {
+      "name": "執行任何 zha toolkit 服務",
+      "description": "執行 ZHA Toolkit 服務（請查閱說明頁面或程式碼，以了解需要哪些參數）",
+      "fields": {
+        "command": {
+          "name": "指令名稱",
+          "description": "指令名稱"
+        },
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "指令資料",
+          "description": "指令的資料（依指令而定。例如綁定時的第二個 IEEE 位址）"
+        },
+        "manf": {
+          "name": "製造商 ID",
+          "description": "製造商 ID（0＝無製造商 ID，留空＝可能自動判斷）"
+        },
+        "cmd": {
+          "name": "指令 ID",
+          "description": "指令 ID（zcl_cmd）"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "dst_endpoint": {
+          "name": "目的端點",
+          "description": "目的端點"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集"
+        },
+        "attribute": {
+          "name": "屬性 ID 或名稱",
+          "description": "目標屬性 ID（或名稱，多數情況下可接受）"
+        },
+        "attr_type": {
+          "name": "屬性類型",
+          "description": "屬性類型（用於寫入等…）"
+        },
+        "attr_val": {
+          "name": "屬性值",
+          "description": "要寫入的屬性值"
+        },
+        "min_interval": {
+          "name": "最小回報間隔",
+          "description": "最小回報間隔（秒）"
+        },
+        "max_interval": {
+          "name": "最大回報間隔",
+          "description": "最大回報間隔（秒）"
+        },
+        "reportable_change": {
+          "name": "最小可回報變化量",
+          "description": "回報前的最小變化量"
+        },
+        "dir": {
+          "name": "方向",
+          "description": "方向指示，依指令而定"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "state_id": {
+          "name": "狀態 ID",
+          "description": "設定後，要寫入讀取到之屬性值的狀態名稱"
+        },
+        "state_attr": {
+          "name": "狀態屬性",
+          "description": "設定後，將讀取到的屬性值寫入 state_id 中的此屬性。未設定時（且已定義 state_id）則寫入狀態值"
+        },
+        "state_value_template": {
+          "name": "狀態值範本",
+          "description": "設定後，讀取到的屬性會先以此範本轉換，再寫入狀態。"
+        },
+        "force_update": {
+          "name": "強制更新",
+          "description": "寫入狀態時強制觸發更新事件。未設定或為 false 時，若狀態值未改變，可能不會觸發自動化。"
+        },
+        "use_cache": {
+          "name": "使用快取",
+          "description": "使用 zigpy 屬性快取取得屬性值。（不會傳送 Zigbee 封包來讀取該屬性）"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "allow_create": {
+          "name": "允許建立",
+          "description": "若狀態（由 state_id 指定）不存在，允許建立該狀態"
+        },
+        "read_before_write": {
+          "name": "寫入前讀取",
+          "description": "寫入前先讀取屬性（與 attr_write 搭配使用）。若讀取值與要寫入的值相符，則不進行寫入。預設為 True。"
+        },
+        "read_after_write": {
+          "name": "寫入後讀取",
+          "description": "寫入後讀取屬性。可用來確認數值相符。預設為 True"
+        },
+        "write_if_equal": {
+          "name": "相等時仍寫入",
+          "description": "即使讀取到的屬性已相符，仍強制寫入該屬性。預設為 False"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        },
+        "csvout": {
+          "name": "CSV 檔名",
+          "description": "用來寫入讀取資料的 CSV 檔名。寫入 'csv' 目錄"
+        },
+        "csvlabel": {
+          "name": "CSV 標籤",
+          "description": "用於讀取值的標籤（於 CSV 檔案中）"
+        }
+      }
+    },
+    "add_group": {
+      "name": "新增群組",
+      "description": "將群組加入裝置的端點群組清單。可能等同於 `add_to_group`",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "要取得資訊的端點（未設定時為所有端點）"
+        },
+        "command_data": {
+          "name": "群組 ID",
+          "description": "要新增的群組 ID"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "add_to_group": {
+      "name": "新增裝置至群組",
+      "description": "新增裝置至群組",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "要移除群組的端點（未設定時為所有 EP）"
+        },
+        "command_data": {
+          "name": "已移除的群組 ID",
+          "description": "要移除的群組 ID"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "all_routes_and_neigbours": {
+      "name": "掃描所有路由與鄰居",
+      "description": "掃描所有路由與鄰居，結果儲存至 /homeassistant/scans/...",
+      "fields": {
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "attr_read": {
+      "name": "讀取屬性",
+      "description": "讀取屬性",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "manf": {
+          "name": "製造商 ID",
+          "description": "製造商 ID（0＝無製造商 ID，留空＝可能自動判斷）"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集"
+        },
+        "attribute": {
+          "name": "屬性 ID 或名稱",
+          "description": "目標屬性 ID（或名稱，多數情況下可接受）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "state_id": {
+          "name": "狀態 ID",
+          "description": "設定後，要寫入讀取到之屬性值的狀態名稱"
+        },
+        "state_attr": {
+          "name": "狀態屬性",
+          "description": "設定後，將讀取到的屬性值寫入 state_id 中的此屬性。未設定時（且已定義 state_id）則寫入狀態值"
+        },
+        "state_value_template": {
+          "name": "狀態值範本",
+          "description": "設定後，讀取到的屬性會先以此範本轉換，再寫入狀態。"
+        },
+        "force_update": {
+          "name": "強制更新",
+          "description": "寫入狀態時強制觸發更新事件。未設定或為 false 時，若狀態值未改變，可能不會觸發自動化。"
+        },
+        "use_cache": {
+          "name": "使用快取",
+          "description": "使用 zigpy 屬性快取取得屬性值。（不會傳送 Zigbee 封包來讀取該屬性）"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "allow_create": {
+          "name": "允許建立",
+          "description": "若狀態（由 state_id 指定）不存在，允許建立該狀態"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        },
+        "csvout": {
+          "name": "CSV 檔名",
+          "description": "用來寫入讀取資料的 CSV 檔名。寫入 'csv' 目錄"
+        },
+        "csvlabel": {
+          "name": "CSV 標籤",
+          "description": "用於讀取值的標籤（於 CSV 檔案中）"
+        }
+      }
+    },
+    "attr_write": {
+      "name": "寫入屬性",
+      "description": "寫入屬性",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "manf": {
+          "name": "製造商 ID",
+          "description": "製造商 ID（0＝無製造商 ID，留空＝可能自動判斷）"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集"
+        },
+        "attribute": {
+          "name": "屬性 ID 或名稱",
+          "description": "目標屬性 ID（或名稱，多數情況下可接受）"
+        },
+        "attr_type": {
+          "name": "屬性類型",
+          "description": "屬性類型（用於寫入等…）"
+        },
+        "attr_val": {
+          "name": "屬性值",
+          "description": "要寫入的屬性值"
+        },
+        "use_cache": {
+          "name": "使用快取",
+          "description": "使用 zigpy 屬性快取取得屬性值。（不會傳送 Zigbee 封包來讀取該屬性）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "state_id": {
+          "name": "狀態 ID",
+          "description": "設定後，要寫入讀取到之屬性值的狀態名稱"
+        },
+        "state_attr": {
+          "name": "狀態屬性",
+          "description": "設定後，將讀取到的屬性值寫入 state_id 中的此屬性。未設定時（且已定義 state_id）則寫入狀態值"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "allow_create": {
+          "name": "允許建立",
+          "description": "若狀態（由 state_id 指定）不存在，允許建立該狀態"
+        },
+        "read_before_write": {
+          "name": "寫入前讀取",
+          "description": "寫入前先讀取屬性（與 attr_write 搭配使用）。若讀取值與要寫入的值相符，則不進行寫入。預設為 True。"
+        },
+        "read_after_write": {
+          "name": "寫入後讀取",
+          "description": "寫入後讀取屬性。可用來確認數值相符。預設為 True"
+        },
+        "write_if_equal": {
+          "name": "相等時仍寫入",
+          "description": "即使讀取到的屬性已相符，仍強制寫入該屬性。預設為 False"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        },
+        "csvout": {
+          "name": "CSV 檔名",
+          "description": "用來寫入讀取資料的 CSV 檔名。寫入 'csv' 目錄"
+        },
+        "csvlabel": {
+          "name": "CSV 標籤",
+          "description": "用於讀取值的標籤（於 CSV 檔案中）"
+        }
+      }
+    },
+    "backup": {
+      "name": "備份協調器資料",
+      "description": "備份協調器資料（znp、bellows/ezsp）",
+      "fields": {
+        "command_data": {
+          "name": "備份檔案後綴",
+          "description": "備份檔案的後綴"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "bind_ieee": {
+      "name": "綁定叢集",
+      "description": "將叢集從 ieee 裝置綁定到 command_data 裝置",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "綁定目標裝置參照",
+          "description": "綁定目標（要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址）。預設為協調器"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點（未指定時：所有端點）"
+        },
+        "dst_endpoint": {
+          "name": "目的端點",
+          "description": "目的端點（未指定時：第一個具有相符叢集的端點）"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集（或所有內部定義的叢集）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "bind_group": {
+      "name": "將叢集從裝置綁定到裝置",
+      "description": "將叢集從 ieee 裝置綁定到 command_data 裝置",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "目標綁定群組",
+          "description": "綁定的目標群組"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點（未指定時：所有端點）"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集（未指定時：所有內部定義的叢集）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "binds_get": {
+      "name": "取得綁定表",
+      "description": "從裝置取得綁定表。",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "binds_remove_all": {
+      "name": "移除裝置的所有綁定",
+      "description": "移除（解除綁定）裝置的所有綁定",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "移除與此裝置的綁定",
+          "description": "提供時，僅移除指向此裝置的綁定（綁定目的地的實體名稱、裝置名稱或 IEEE 位址）"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "提供時，僅移除此端點或端點清單的綁定（單一值或清單。例如：20 或 [20, 30]）；否則移除所有端點的綁定"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "提供時，僅移除此叢集或叢集清單的綁定（單一值或清單。例如：0x0200 或 [0x200, 0x300]）；否則移除所有叢集的綁定"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "conf_report": {
+      "name": "設定屬性回報",
+      "description": "設定屬性回報。對於休眠中的裝置，可將嘗試次數設為較高的值（100 或以上）。\"",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址\""
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集"
+        },
+        "attribute": {
+          "name": "屬性 ID 或名稱",
+          "description": "目標屬性 ID（或名稱，多數情況下可接受）"
+        },
+        "min_interval": {
+          "name": "最小回報間隔",
+          "description": "最小回報間隔（秒）"
+        },
+        "max_interval": {
+          "name": "最大回報間隔",
+          "description": "最大回報間隔（秒）"
+        },
+        "reportable_change": {
+          "name": "最小可回報變化量",
+          "description": "回報前的最小變化量"
+        },
+        "manf": {
+          "name": "製造商 ID",
+          "description": "製造商 ID（0＝無製造商 ID，留空＝可能自動判斷）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "conf_report_read": {
+      "name": "讀取回報設定",
+      "description": "讀取屬性回報設定。對於休眠中的裝置，可將嘗試次數設為較高的值（100 或以上）。\"",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址\""
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集"
+        },
+        "attribute": {
+          "name": "屬性 ID 或名稱",
+          "description": "目標屬性 ID（或名稱，多數情況下可接受），可為清單"
+        },
+        "manf": {
+          "name": "製造商 ID",
+          "description": "製造商 ID（0＝無製造商 ID，留空＝可能自動判斷）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "ezsp_backup": {
+      "name": "備份 Ezsp 協調器",
+      "description": "備份協調器資料（bellows/ezsp）",
+      "fields": {
+        "command_data": {
+          "name": "備份檔案後綴",
+          "description": "備份檔案的後綴"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "get_groups": {
+      "name": "取得端點上設定的群組",
+      "description": "取得裝置各端點上設定的群組",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "要取得資訊的端點（未設定時為所有端點）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "get_routes_and_neigbours": {
+      "name": "掃描裝置的路由與鄰居",
+      "description": "掃描所有路由與鄰居，結果儲存至 /homeassistant/scans/...",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "get_zll_groups": {
+      "name": "取得 ZLL 叢集的群組",
+      "description": "取得 zll_cluster 的群組（若存在）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "ha_set_state": {
+      "name": "設定／更新 Home Assistant 狀態",
+      "description": "設定／更新 Home Assistant 狀態",
+      "fields": {
+        "attr_val": {
+          "name": "屬性值",
+          "description": "要寫入狀態的值（或用於範本中）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "state_id": {
+          "name": "state_id",
+          "description": "要寫入讀取到之屬性值的狀態名稱"
+        },
+        "state_attr": {
+          "name": "狀態屬性",
+          "description": "設定後，將讀取到的屬性值寫入 state_id 中的此屬性。未設定時（且已定義 state_id）則寫入狀態值"
+        },
+        "state_value_template": {
+          "name": "狀態值範本",
+          "description": "設定後，作為範本運算式使用。例如 \"value + 10\" 在內部會被解讀為 \"{{ value + 10 }}\"，其中 'value' 會被代換為 'attr_val' 的值"
+        },
+        "allow_create": {
+          "name": "允許建立",
+          "description": "若狀態（由 state_id 指定）不存在，允許建立該狀態"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "csvout": {
+          "name": "CSV 檔名",
+          "description": "用來寫入更新狀態資訊的 CSV 檔名。寫入 'csv' 目錄。"
+        },
+        "csvlabel": {
+          "name": "CSV 標籤",
+          "description": "用來標示寫入值的標籤（於 CSV 檔案中）"
+        }
+      }
+    },
+    "handle_join": {
+      "name": "處理加入",
+      "description": "處理加入（ZHA 應像新加入時一樣重新詢問裝置）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "短網路位址",
+          "description": "裝置的短網路位址（選填，若 ZHA 已知）"
+        }
+      }
+    },
+    "ieee_ping": {
+      "name": "Ping 裝置",
+      "description": "Ping 裝置",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "Ping：要求 IEEE 位址（使用已知的 NWK 位址）"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "rejoin": {
+      "name": "傳送重新加入要求",
+      "description": "向裝置傳送重新加入要求（＝離開並重新加入）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要求重新加入的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "要傳送重新加入的節點",
+          "description": "用來接受重新加入的節點（節點的實體名稱、裝置名稱或 IEEE 位址）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "leave": {
+      "name": "傳送離開要求",
+      "description": "向裝置傳送離開要求",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要離開網路的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "misc_reinitialize": {
+      "name": "重新初始化裝置",
+      "description": "重新初始化裝置",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址\""
+        }
+      }
+    },
+    "misc_reinterview": {
+      "name": "重新訪查裝置",
+      "description": "重新訪查裝置而不將其從網路移除，等同於 ZHA 裝置頁面上的「重新設定」按鈕",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        }
+      }
+    },
+    "misc_settime": {
+      "name": "設定時間",
+      "description": "設定時間叢集屬性（時間、DST，不含 TimeStatus）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "read_before_write": {
+          "name": "寫入前讀取",
+          "description": "寫入屬性前先讀取"
+        },
+        "read_after_write": {
+          "name": "寫入後讀取",
+          "description": "寫入後讀取屬性。可用來確認數值相符。預設為 True"
+        },
+        "csvout": {
+          "name": "CSV 檔名",
+          "description": "用來寫入讀取資料的 CSV 檔名。寫入 'csv' 目錄"
+        }
+      }
+    },
+    "ota_notify": {
+      "name": "觸發裝置的韌體更新",
+      "description": "在觸發 OTA 映像檔提供者擷取新映像檔後，通知裝置有可用的更新。",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "download": {
+          "name": "啟用韌體下載",
+          "description": "為 True 時，從 KKoenk 的清單下載可能與裝置相符的韌體。"
+        },
+        "path": {
+          "name": "韌體目錄",
+          "description": "OTA 映像檔的寫入路徑（預設為 zha:zigpy_config:ota:otau_directory 的值，或 /homeassistant/zigpy_ota）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "映像檔更新且裝置收到通知時（無論成功或失敗）的事件名稱。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "register_services": {
+      "name": "註冊服務",
+      "description": "重新註冊 zha-toolkit 服務。在開發期間於 __init__.py 中更新服務時很有用"
+    },
+    "remove_all_groups": {
+      "name": "從端點移除所有群組",
+      "description": "從裝置的（所選）端點移除所有群組",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "要移除群組的端點（未設定時為所有端點）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "remove_from_group": {
+      "name": "從群組移除端點",
+      "description": "從群組移除裝置端點",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "要移除群組的端點（未設定時為所有 EP）"
+        },
+        "command_data": {
+          "name": "群組 ID",
+          "description": "要移除的群組 ID"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "remove_group": {
+      "name": "從端點移除群組",
+      "description": "從裝置的端點群組清單移除群組。可能等同於 `remove_from_group`",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "節點的實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "要移除群組的端點（未設定時為所有 EP）"
+        },
+        "command_data": {
+          "name": "群組 ID",
+          "description": "要移除的群組 ID"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    },
+    "scan_device": {
+      "name": "掃描裝置",
+      "description": "掃描裝置（結果寫入 /homeassistant/scans 中的檔案）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點，或端點清單"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "無回應時，Zigbee 封包重複傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "unbind_coordinator": {
+      "name": "移除與協調器的綁定",
+      "description": "移除（解除綁定）從裝置到協調器（您的 HA 執行個體）的所有綁定",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "提供時，僅移除此端點或端點清單的綁定（單一值或清單。例如：20 或 [20, 30]）；否則移除所有端點的綁定"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "提供時，僅移除此叢集或叢集清單的綁定（單一值或清單。例如：0x0200 或 [0x200, 0x300]）；否則移除所有叢集的綁定"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "tuya_magic": {
+      "name": "施放 Tuya 魔法咒語",
+      "description": "執行 Tuya 魔法咒語（＝讓大多數 Tuya 裝置正常運作）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要執行指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "zcl_cmd": {
+      "name": "傳送叢集指令",
+      "description": "傳送叢集指令",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要傳送指令的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "manf": {
+          "name": "製造商 ID",
+          "description": "製造商 ID（0＝無製造商 ID，留空＝可能自動判斷）"
+        },
+        "endpoint": {
+          "name": "目標端點",
+          "description": "目標端點"
+        },
+        "cluster": {
+          "name": "目標叢集",
+          "description": "目標叢集"
+        },
+        "cmd": {
+          "name": "指令 ID",
+          "description": "要執行的指令 ID"
+        },
+        "args": {
+          "name": "指令引數",
+          "description": "指令所需的引數（依 zigpy 對應 Zigbee 函式庫叢集（ZCL）規格的定義）"
+        },
+        "tries": {
+          "name": "嘗試次數",
+          "description": "Zigbee 封包應嘗試傳送的次數"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "zdo_join_with_code": {
+      "name": "允許裝置使用配對碼加入",
+      "description": "允許裝置使用配對碼加入（僅限 bellows 無線電類型）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "要求重新加入的節點之實體名稱、裝置名稱或 IEEE 位址"
+        },
+        "command_data": {
+          "name": "接受加入的裝置",
+          "description": "用來接受重新加入的節點（節點的實體名稱、裝置名稱或 IEEE 位址）"
+        },
+        "code": {
+          "name": "配對碼",
+          "description": "裝置需要出示的配對碼"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "znp_backup": {
+      "name": "備份 ZNP 協調器",
+      "description": "備份協調器資料（znp、bellows/ezsp）",
+      "fields": {
+        "command_data": {
+          "name": "備份檔案後綴",
+          "description": "備份檔案的後綴"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        },
+        "expect_reply": {
+          "name": "預期回覆",
+          "description": "等待／預期回覆（尚未使用）"
+        }
+      }
+    },
+    "zha_devices": {
+      "name": "取得／匯出裝置資訊",
+      "description": "匯出裝置資訊（回應、CSV 檔案、JSON 檔案、事件）",
+      "fields": {
+        "ieee": {
+          "name": "裝置參照",
+          "description": "選填，要提供詳細資訊的裝置之實體名稱、裝置名稱或 IEEE 位址。預設為所有裝置"
+        },
+        "command_data": {
+          "name": "所選欄位",
+          "description": "所選欄位"
+        },
+        "csvout": {
+          "name": "CSV 檔名",
+          "description": "用來寫入讀取資料的 CSV 檔名。寫入 'csv' 目錄（可使用相對路徑，如範例所示）。"
+        },
+        "csvlabel": {
+          "name": "CSV 排序欄位",
+          "description": "表格排序所依據的欄位"
+        },
+        "json_out": {
+          "name": "JSON 檔名",
+          "description": "用來寫入讀取資料的 JSON 檔名。寫入 '/homeassistant/json' 目錄"
+        },
+        "json_timestamp": {
+          "name": "JSON 時間戳記",
+          "description": "在 JSON 檔案的檔名中加入時間戳記。預設為 False。"
+        },
+        "event_success": {
+          "name": "成功事件名稱",
+          "description": "成功時的事件名稱"
+        },
+        "event_fail": {
+          "name": "失敗事件名稱",
+          "description": "失敗時的事件名稱"
+        },
+        "event_done": {
+          "name": "完成事件名稱",
+          "description": "服務呼叫完成所有工作時（無論成功或失敗）的事件名稱。事件資料中含有相關屬性。"
+        },
+        "fail_exception": {
+          "name": "失敗時擲出例外",
+          "description": "當 success==False 時擲出例外，適用於中止腳本與自動化"
+        }
+      }
+    }
+  }
+}
