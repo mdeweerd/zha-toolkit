@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import pathlib
 from glob import glob
 
 import aiohttp
@@ -156,26 +157,45 @@ async def download_sonoff_ota(listener, ota_dir):
                 LOGGER.warning("Exception getting '%s': %s", url, e)
 
 
+async def register_local_ota_provider(app, ota_dir):
+    """Register a toolkit-managed file provider for a local OTA directory.
+
+    Firmware files deposited in (or downloaded to) `ota_dir` are picked up
+    from the file system and become available for OTA updates, without
+    relying on the zigpy/ZHA OTA provider configuration.
+    """
+    if not (hasattr(app, "ota") and hasattr(app.ota, "register_provider")):
+        LOGGER.warning(
+            "Could not get ota object for register_local_ota_provider"
+        )
+        return
+    provider = zigpy.ota.providers.AdvancedFileProvider(
+        path=pathlib.Path(ota_dir)
+    )
+    app.ota.register_provider(provider)
+    LOGGER.debug("Registered local OTA file provider for '%s'", ota_dir)
+
+
 async def download_zigpy_ota(app, listener):
     LOGGER.debug("Zigpy download procedure starting")
-    if hasattr(app, "ota") and hasattr(app.ota, "_listeners"):
-        for _, (ota, _) in app.ota._listeners.items():
-            if isinstance(ota, zigpy.ota.provider.FileStore):
-                # Skip files provider
+    if hasattr(app, "ota") and hasattr(app.ota, "_providers"):
+        for provider in app.ota._providers:
+            if isinstance(provider, zigpy.ota.providers.AdvancedFileProvider):
+                # Skip file-based providers
                 continue
-            await ota.refresh_firmware_list()
-            for image_key, image in ota._cache.items():
-                url = getattr(image, "url", None)
-                LOGGER.error("Try getting %r, %r, %r", image_key, url, image)
+            await app.ota._refresh_provider_index(provider)
+            for image_meta, image in app.ota._image_cache.get(
+                provider, {}
+            ).items():
+                LOGGER.debug("Try getting %r from %r", image_meta, provider)
                 try:
-                    img = await app.ota.get_ota_image(
-                        image_key.manufacturer_id,
-                        image_key.image_type,
-                        model=None,
+                    img = await app.ota._fetch_image(image)
+                    LOGGER.info(
+                        "Got image %r",
+                        getattr(img.firmware, "header", None),
                     )
-                    LOGGER.info("Got image %r", getattr(img, "header", None))
                 except Exception as e:
-                    LOGGER.error("%r while getting %r - %s", e, image_key, url)
+                    LOGGER.error("%r while getting %r", e, image_meta)
     else:
         LOGGER.warning(
             "Could not get ota object for download_zigpy_ota, try again"
@@ -185,9 +205,9 @@ async def download_zigpy_ota(app, listener):
 async def ota_update_images(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    if hasattr(app, "ota") and hasattr(app.ota, "_listeners"):
-        for _, (ota, _) in app.ota._listeners.items():
-            await ota.refresh_firmware_list()
+    if hasattr(app, "ota") and hasattr(app.ota, "_providers"):
+        for provider in app.ota._providers:
+            await app.ota._refresh_provider_index(provider)
     else:
         LOGGER.warning(
             "Could not get ota object for ota_update_images, try again"
@@ -214,6 +234,9 @@ async def ota_notify(
         await download_zigpy_ota(app, listener)
         await download_koenkk_ota(listener, ota_dir)
         await download_sonoff_ota(listener, ota_dir)
+
+        # Make the local files available for OTA updates
+        await register_local_ota_provider(app, ota_dir)
 
     # Get tries
     tries = params[p.TRIES]

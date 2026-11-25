@@ -230,13 +230,13 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
 
             attr_type_hex = f"0x{attr_rec.datatype:02x}"
             if attr_type:
-                attr_type = [
+                attr_type_info: str | list[str] = [
                     attr_type_hex,
                     attr_type.python_type.__name__,
                     attr_type.type_class.name,
                 ]
             else:
-                attr_type = attr_type_hex
+                attr_type_info = attr_type_hex
 
             if access_acl != 0:
                 access = "|".join(
@@ -252,7 +252,7 @@ async def discover_attributes_extended(cluster, manufacturer=None, tries=3):
             result[attr_id] = {
                 "attribute_id": f"0x{attr_id:04x}",
                 "attribute_name": attr_name,
-                "value_type": attr_type,
+                "value_type": attr_type_info,
                 "access": access,
                 "access_acl": access_acl,
             }
@@ -344,20 +344,22 @@ async def discover_commands_received(
             cmd_def = cluster.server_commands.get(
                 cmd_id, (str(cmd_id), "not_in_zcl", None)
             )
-            if u.is_zigpy_ge("0.50.0") and isinstance(
-                cmd_def, foundation.ZCLCommandDef
-            ):
+            if isinstance(cmd_def, foundation.ZCLCommandDef):
                 cmd_name = cmd_def.name
-                cmd_args = cmd_def.schema
+                schema = cmd_def.schema
             else:
-                cmd_name, cmd_args, _ = cmd_def
+                cmd_name, schema, _ = cmd_def
 
-            if not isinstance(cmd_args, str):
-                try:
-                    cmd_args = [arg.__name__ for arg in cmd_args]
-                except TypeError:
-                    # Unexpected type, get repr to make sure it is ok for json
-                    cmd_args = f"{cmd_args!r}"
+            cmd_args: str | list[str]
+            if isinstance(schema, str):
+                cmd_args = schema
+            elif isinstance(schema, type) and issubclass(
+                schema, foundation.CommandSchema
+            ):
+                cmd_args = [field.type.__name__ for field in schema.fields]
+            else:
+                # Unexpected type, get repr to make sure it is ok for json
+                cmd_args = f"{schema!r}"
 
             key = f"0x{cmd_id:02x}"
             result[key] = {
@@ -409,20 +411,22 @@ async def discover_commands_generated(
             cmd_def = cluster.client_commands.get(
                 cmd_id, (str(cmd_id), "not_in_zcl", None)
             )
-            if u.is_zigpy_ge("0.50.0") and isinstance(
-                cmd_def, foundation.ZCLCommandDef
-            ):
+            if isinstance(cmd_def, foundation.ZCLCommandDef):
                 cmd_name = cmd_def.name
-                cmd_args = cmd_def.schema
+                schema = cmd_def.schema
             else:
-                cmd_name, cmd_args, _ = cmd_def
+                cmd_name, schema, _ = cmd_def
 
-            if not isinstance(cmd_args, str):
-                try:
-                    cmd_args = [arg.__name__ for arg in cmd_args]
-                except (TypeError, AttributeError):
-                    # Unexpected type, get repr to make sure it is ok for json
-                    cmd_args = f"{cmd_args!r}"
+            cmd_args: str | list[str]
+            if isinstance(schema, str):
+                cmd_args = schema
+            elif isinstance(schema, type) and issubclass(
+                schema, foundation.CommandSchema
+            ):
+                cmd_args = [field.type.__name__ for field in schema.fields]
+            else:
+                # Unexpected type, get repr to make sure it is ok for json
+                cmd_args = f"{schema!r}"
 
             key = f"0x{cmd_id:02x}"
             result[key] = {
