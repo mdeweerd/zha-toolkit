@@ -132,6 +132,7 @@ def getZigpyVersion() -> str:
 
 async def getVersion() -> str:
     # pylint: disable=global-variable-undefined,used-before-assignment
+    # pylint: disable=possibly-used-before-assignment
     # pylint: disable=global-statement
     global VERSION_TIME
     global VERSION

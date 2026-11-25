@@ -133,7 +133,7 @@ repos:
           - --skip="./.*"
           - --quiet-level=2
   - repo: https://github.com/pylint-dev/pylint
-    rev: ecb84baf74ae152a511e5fdada5000c85250a48f  # v4.0.8
+    rev: edc8e376ba4affd43bc07571bdf3a90efc281ba7  # v4.1.4
     hooks:
       - id: pylint
         args: [--reports=no, --py-version=3.10]
