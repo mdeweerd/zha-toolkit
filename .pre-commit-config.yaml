@@ -1,6 +1,6 @@
 ---
 files: ^(.*\.(py|json|md|sh|yaml|cfg|txt))$
-exclude: ^(\.[^/]*cache/.*|.*/_user.py)$
+exclude: ^(\.[^/]*cache/.*|.*/_user.py|custom_components/zha_toolkit/local/.*)$
 repos:
   - repo: https://github.com/executablebooks/mdformat
     # Do this before other tools "fixing" the line endings
@@ -92,7 +92,7 @@ repos:
       - id: pyupgrade
         args: [--py39-plus]
   - repo: https://github.com/psf/black
-    rev: 87928e6d6761a4a6d22250e1fee5601b3998086e  # 26.5.1
+    rev: 258e7dbf348bc23cb70b8cdf693481c04634ebcc  # 26.10.1
     hooks:
       - id: black
         args: [--safe, --quiet, -l 79]
@@ -107,17 +107,17 @@ repos:
       - id: autoflake
         args: [-i, -r, --expand-star-imports, custom_components]
   - repo: https://github.com/PyCQA/flake8
-    rev: d93590f5be797aabb60e3b09f2f52dddb02f349f  # 7.3.0
+    rev: 1c7fec1973ed3a7c192dbe1e96906fbbd1dbe49e  # 7.5.0
     hooks:
       - id: flake8
         additional_dependencies:
           # - pyproject-flake8>=0.0.1a5
-          - flake8-bugbear>=25.11.29
+          - flake8-bugbear>=26.11.16
           - flake8-comprehensions>=3.17.0
           - flake8-2020>=1.8.1
           - mccabe>=0.7.0
-          - pycodestyle>=2.14.0
-          - pyflakes>=3.4.0
+          - pycodestyle>=2.15.0
+          - pyflakes>=4.1.0
   - repo: https://github.com/PyCQA/isort
     rev: 9f905615631c545f5aea2516508109350d1d2f7d  # 9.0.2b5
     hooks:
