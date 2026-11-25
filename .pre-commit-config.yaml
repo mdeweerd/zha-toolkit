@@ -17,7 +17,7 @@ repos:
         additional_dependencies:
           - mdformat-toc
           - mdformat-beautysh
-          - setuptools==84.0.0  # workaround for beautysh
+          - setuptools==84.2.1  # workaround for beautysh
           # -mdformat-shfmt
           # -mdformat-tables
           - mdformat-config
@@ -28,7 +28,7 @@ repos:
     rev: dda8db18cfc68df532abf33b185ecd12d5b7b326  # 1.20.0
     hooks:
       - id: blacken-docs
-        additional_dependencies: [black==26.5.1]
+        additional_dependencies: [black==26.10.1]
         stages: [manual]  # Manual because already done by mdformat-black
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # v6.0.0
@@ -69,7 +69,7 @@ repos:
     hooks:
       - id: beautysh
         additional_dependencies:
-          - setuptools==84.0.0  # workaround for beautysh
+          - setuptools==84.2.1  # workaround for beautysh
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: a6564f5d57444e123433a5c9af733e3975c77229  # v0.11.0.1-1
     hooks:
@@ -79,7 +79,7 @@ repos:
         # args: [-x,-e2086,-e2004,-e2207,-e2002,-e2116]
         # args: ["--severity=warning"]  # Optionally only show errors and warnings
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 1f1e8bf348ff38fc88619a38d3ca4d9c56abea49  # v0.16.5
+    rev: 9026c9127e153371d7a78dfcb0c45ae2046a3d10  # v0.17.6
     hooks:
       # Note, added for future reference, not used
       - id: ruff
@@ -87,7 +87,7 @@ repos:
       - id: ruff-format
         stages: [manual]
   - repo: https://github.com/asottile/pyupgrade
-    rev: 75992aaa40730136014f34227e0135f63fc951b4  # v3.21.2
+    rev: f22ea0651f4355c655cc581f67813c991c74a312  # v3.22.0
     hooks:
       - id: pyupgrade
         args: [--py39-plus]
@@ -119,7 +119,7 @@ repos:
           - pycodestyle>=2.14.0
           - pyflakes>=3.4.0
   - repo: https://github.com/PyCQA/isort
-    rev: 131f4adcd5582bfc53928ab0d740eceb8b506b6c  # 9.0.1b5
+    rev: 9f905615631c545f5aea2516508109350d1d2f7d  # 9.0.2b5
     hooks:
       - id: isort
   - repo: https://github.com/codespell-project/codespell
@@ -143,7 +143,7 @@ repos:
           # - homeassistant-stubs>=2023.1.7
         # exclude: ^$
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 7ff8d35ae36a7d2b968f2f90b4c723e292e594ee  # v2.3.1
+    rev: ad26ebfa797fcb9b8f83275937c1c1d6e126719c  # v2.4.1
     hooks:
       - id: mypy
         args:
