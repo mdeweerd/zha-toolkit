@@ -99,15 +99,12 @@ def _configure_reporting_succeeded(
 
 
 if not hasattr(Cluster, "_read_reporting_configuration"):
-    if hasattr(f, "GeneralCommand"):
-        GeneralCommand = f.GeneralCommand
-    else:
-        GeneralCommand = f.Command
+    GeneralCommand = f.GeneralCommand
 
     def read_reporting_configuration(
         self, cfg: t.List[f.ReadReportingConfigRecord], **kwargs
     ):
-        command = f.COMMANDS[0x08]
+        command = f.COMMANDS[GeneralCommand.Read_Reporting_Configuration]
         if isinstance(command, f.ZCLCommandDef):
             # Since zigpy 0.44.0
             schema = command.schema
@@ -129,7 +126,9 @@ if not hasattr(Cluster, "_read_reporting_configuration"):
             **kwargs,
         )
 
-    Cluster._read_reporting_configuration = read_reporting_configuration
+    Cluster._read_reporting_configuration = (  # type: ignore[attr-defined]
+        read_reporting_configuration
+    )
 
     # Cluster._read_reporting_configuration = (
     #     functools.partial(
@@ -157,7 +156,7 @@ async def my_read_reporting_configuration_multiple(
             attrid = attribute
         record = f.ReadReportingConfigRecord()
         record.attrid = attrid
-        record.direction = direction
+        record.direction = t.uint8_t(direction)
         # LOGGER.warning(f"Record {record.direction} {record.attrid}")
         cfg.append(record)
     LOGGER.debug("Read reporting with %s %r", cfg, kwargs)
@@ -198,7 +197,7 @@ async def my_read_reporting_configuration_multiple(
     return res
 
 
-Cluster.my_read_reporting_configuration_multiple = (
+Cluster.my_read_reporting_configuration_multiple = (  # type: ignore
     my_read_reporting_configuration_multiple
 )
 

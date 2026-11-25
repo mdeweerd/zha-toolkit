@@ -691,9 +691,7 @@ async def record_read_data(
                 attr_def = cluster.attributes.get(
                     attr_id, (str(attr_id), None)
                 )
-                if is_zigpy_ge("0.50.0") and isinstance(
-                    attr_def, f.ZCLAttributeDef
-                ):
+                if isinstance(attr_def, f.ZCLAttributeDef):
                     attr_name = attr_def.name
                 else:
                     attr_name = attr_def[0]

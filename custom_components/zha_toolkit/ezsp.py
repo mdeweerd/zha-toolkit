@@ -64,20 +64,19 @@ async def ezsp_set_channel(
 async def ezsp_get_token(
     app, listener, ieee, cmd, data, service, params, event_data
 ):
-    token = t.uint8_t(data)
     event_data["tokens_info"] = {}
-    for token in range(0, 31):
-        LOGGER.info(f"Getting {token} token...")
-        res = await app._ezsp.getToken(token)
+    for token_idx in range(0, 31):
+        LOGGER.info(f"Getting {token_idx} token...")
+        res = await app._ezsp.getToken(token_idx)
         tkInfo = {
             "status": res[0],
             "data": binascii.hexlify(res[1].serialize()),
         }
-        event_data["tokens_info"][token] = tkInfo
-        LOGGER.info(f"Getting token {token} status: {res[0]}")
-        LOGGER.info(f"Getting token {token} data: {res[1]}")
+        event_data["tokens_info"][token_idx] = tkInfo
+        LOGGER.info(f"Getting token {token_idx} status: {res[0]}")
+        LOGGER.info(f"Getting token {token_idx} data: {res[1]}")
         LOGGER.info(
-            f"Getting token {token} data: "
+            f"Getting token {token_idx} data: "
             "{binascii.hexlify(res[1].serialize())}"
         )
 

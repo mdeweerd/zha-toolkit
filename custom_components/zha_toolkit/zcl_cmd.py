@@ -107,7 +107,8 @@ async def zcl_cmd(app, listener, ieee, cmd, data, service, params, event_data):
                     }
 
                 temp = foundation.ZCLCommandDef(
-                    schema=schema_dict,
+                    # dict schemas are compiled by with_compiled_schema() below
+                    schema=schema_dict,  # type: ignore[arg-type]
                     direction=foundation.Direction.Client_to_Server,
                     id=cmd_id,
                     name="schema",
