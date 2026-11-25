@@ -566,9 +566,7 @@ async def attr_write(  # noqa: C901
         and (
             (attr_id in result_read[0])  # type: ignore[index]
             and (
-                result_read[0][  # type: ignore[index]
-                    attr_id
-                ].serialize()  # type: ignore[union-attr]
+                result_read[0][attr_id].serialize()  # type: ignore
                 == compare_val.serialize()
                 if use_serialize
                 else result_read[0][  # type: ignore[index]
